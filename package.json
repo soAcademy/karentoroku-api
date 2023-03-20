@@ -31,6 +31,7 @@
     "prisma:format": "npx prisma format",
     "prisma:migrate": "npx prisma migrate dev --name init --schema prisma/schema.prisma",
     "prisma:generate": "yarn pnpify prisma generate --schema=prisma/schema.prisma",
-    "test": "jest --verbose"
+    "test": "jest --verbose",
+    "test:karentoroku": "jest -- src/karentoroku"
   }
 }

@@ -2,7 +2,7 @@ import { createUserHandler } from "./karentoroku/karentoroku.handlers";
 
 export const AppRoutes = [
   {
-    path: "/user/create",
+    path: "createUser",
     method: "post",
     action: createUserHandler,
   },
