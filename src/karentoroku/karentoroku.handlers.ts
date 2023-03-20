@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { CreateUserCodec } from "./karentoroku.interfaces";
-import { createUser, getUsers } from "./karentoroku.resolvers";
+import { createUser, getUser, getUsers } from "./karentoroku.resolvers";
 
 export const createUserHandler = async (req: Request, res: Response) => {
   const args = req?.body;
@@ -29,5 +29,24 @@ export const getUsersHandler = async (req: Request, res: Response) => {
     res.status(500).json({
       error: String(e),
     });
+  }
+};
+
+export const getUserHandler = async (req: Request, res: Response) => {
+  const args = req?.body;
+
+  if (typeof args.id === "number") {
+    try {
+      const result = await getUser({
+        id: args.id,
+      });
+      res.status(200).json(result);
+    } catch (e) {
+      res.status(500).json({
+        error: String(e),
+      });
+    }
+  } else {
+    res.status(500).json({ error: "ERROR: invalid request (getUser)" });
   }
 };

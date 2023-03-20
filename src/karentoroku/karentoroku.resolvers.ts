@@ -18,3 +18,14 @@ export const getUsers = () => {
     },
   });
 };
+
+export const getUser = (args: { id: number }) => {
+  return prisma.user.findUniqueOrThrow({
+    select: {
+      name: true,
+    },
+    where: {
+      id: args.id,
+    },
+  });
+};
