@@ -19,6 +19,13 @@ app.listen(8000, () => {
 AppRoutes.forEach((route) => {
   app[route.method as keyof Application](
     route.path,
-    (request: Request, response: Response) => route.action(request, response)
+    (request: Request, response: Response) => {
+      response.setHeader("Content-Type", "text/html");
+      response.setHeader(
+        "Cache-Control",
+        "s-max-age=1, stale-while-revalidate"
+      );
+      return route.action(request, response);
+    }
   );
 });
