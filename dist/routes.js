@@ -4,6 +4,11 @@ exports.AppRoutes = void 0;
 const karentoroku_handlers_1 = require("./karentoroku/karentoroku.handlers");
 exports.AppRoutes = [
     {
+        path: "/",
+        method: "get",
+        action: karentoroku_handlers_1.getIndexHandler,
+    },
+    {
         path: "/createUser",
         method: "post",
         action: karentoroku_handlers_1.createUserHandler,

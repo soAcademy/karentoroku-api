@@ -9,9 +9,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserHandler = exports.getUsersHandler = exports.createUserHandler = void 0;
+exports.getUserHandler = exports.getUsersHandler = exports.createUserHandler = exports.getIndexHandler = void 0;
 const karentoroku_interfaces_1 = require("./karentoroku.interfaces");
 const karentoroku_resolvers_1 = require("./karentoroku.resolvers");
+const getIndexHandler = (req, res) => {
+    res.setHeader("Content-Type", "text/html");
+    res.setHeader("Cache-Control", "s-max-age=1, stale-while-revalidate");
+    res.status(200).end(`Hello!`);
+};
+exports.getIndexHandler = getIndexHandler;
 const createUserHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const args = req === null || req === void 0 ? void 0 : req.body;
     if (karentoroku_interfaces_1.CreateUserCodec.decode(args)._tag === "Right") {

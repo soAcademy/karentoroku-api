@@ -19,8 +19,7 @@ app.listen(8000, () => {
 });
 routes_1.AppRoutes.forEach((route) => {
     app[route.method](route.path, (request, response) => {
-        response.setHeader("Content-Type", "text/html");
-        response.setHeader("Cache-Control", "s-max-age=1, stale-while-revalidate");
         return route.action(request, response);
     });
 });
+module.exports = app;
