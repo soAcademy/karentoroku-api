@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import { CreateUserCodec } from "./karentoroku.interfaces";
 import { createUser, getUser, getUsers } from "./karentoroku.resolvers";
 
+export const getIndexHandler = (req: Request, res: Response) =>
+  res.status(200).end(`Hello!`);
+
 export const createUserHandler = async (req: Request, res: Response) => {
   const args = req?.body;
 
