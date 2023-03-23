@@ -27,6 +27,8 @@
   "scripts": {
     "dev": "ts-node-dev -r tsconfig-paths/register src/main.ts",
     "start": "ts-node -r tsconfig-paths/register src/main",
+    "build": "npx tsc",
+    "serve": "node public/main.js",
     "prisma:merge": "cat prisma/schema/**.prisma > prisma/schema.prisma",
     "prisma:format": "npx prisma format",
     "prisma:migrate": "npx prisma migrate dev --name init --schema prisma/schema.prisma",
