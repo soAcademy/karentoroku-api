@@ -19,6 +19,10 @@ app.listen(8000, () => {
 AppRoutes.forEach((route) => {
   app[route.method as keyof Application](
     route.path,
-    (request: Request, response: Response) => route.action(request, response)
+    (request: Request, response: Response) => {
+      return route.action(request, response);
+    }
   );
 });
+
+module.exports = app;

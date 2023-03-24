@@ -2,6 +2,13 @@ import { Request, Response } from "express";
 import { CreateUserCodec } from "./karentoroku.interfaces";
 import { createUser, getUser, getUsers } from "./karentoroku.resolvers";
 
+export const getIndexHandler = (req: Request, res: Response) => {
+  res.setHeader("Content-Type", "text/html");
+  res.setHeader("Cache-Control", "s-max-age=1, stale-while-revalidate");
+
+  res.status(200).end(`Hello!`);
+};
+
 export const createUserHandler = async (req: Request, res: Response) => {
   const args = req?.body;
 
