@@ -110,6 +110,14 @@ exports.Prisma.QueryMode = makeEnum({
   insensitive: 'insensitive'
 });
 
+exports.Prisma.SessionScalarFieldEnum = makeEnum({
+  id: 'id',
+  token: 'token',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+});
+
 exports.Prisma.SortOrder = makeEnum({
   asc: 'asc',
   desc: 'desc'
@@ -124,7 +132,8 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
 
 exports.Prisma.UserScalarFieldEnum = makeEnum({
   id: 'id',
-  name: 'name',
+  username: 'username',
+  password_hash: 'password_hash',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 });
@@ -132,6 +141,7 @@ exports.Prisma.UserScalarFieldEnum = makeEnum({
 
 exports.Prisma.ModelName = makeEnum({
   User: 'User',
+  Session: 'Session',
   EventType: 'EventType',
   Event: 'Event'
 });

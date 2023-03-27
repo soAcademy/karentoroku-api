@@ -1,13 +1,13 @@
 import { createUser, getUser, getUsers } from "./karentoroku.resolvers";
 
 describe("Karentaroku", () => {
-  const name1 = "David";
+  const username1 = "alice";
   let userId1: number;
 
   test("should create a new user", async () => {
-    const result = await createUser({ name: name1 });
+    const result = await createUser({ username: username1 });
     userId1 = result.id;
-    expect(result.name).toStrictEqual(name1);
+    expect(result.username).toStrictEqual(username1);
   });
 
   test("should get all users", async () => {
@@ -19,6 +19,6 @@ describe("Karentaroku", () => {
   test("should get a user by ID", async () => {
     const result = await getUser({ id: userId1 });
     console.log("getUser", result);
-    expect(result.name).toStrictEqual(name1);
+    expect(result.username).toStrictEqual(username1);
   });
 });
