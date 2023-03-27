@@ -6,7 +6,7 @@ export const prisma = new PrismaClient();
 export const createUser = (args: ICreateUser) => {
   return prisma.user.create({
     data: {
-      name: args.name,
+      username: args.username,
     },
   });
 };
@@ -14,7 +14,7 @@ export const createUser = (args: ICreateUser) => {
 export const getUsers = () => {
   return prisma.user.findMany({
     select: {
-      name: true,
+      username: true,
     },
   });
 };
@@ -22,7 +22,7 @@ export const getUsers = () => {
 export const getUser = (args: { id: number }) => {
   return prisma.user.findUniqueOrThrow({
     select: {
-      name: true,
+      username: true,
     },
     where: {
       id: args.id,

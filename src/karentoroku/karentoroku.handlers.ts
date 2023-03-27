@@ -15,7 +15,7 @@ export const createUserHandler = async (req: Request, res: Response) => {
   if (CreateUserCodec.decode(args)._tag === "Right") {
     try {
       const result = await createUser({
-        name: args.name,
+        username: args.username,
       });
       res.status(200).json(result);
     } catch (e) {
