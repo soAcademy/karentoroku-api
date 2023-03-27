@@ -155,7 +155,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Users\\phisi\\sprinttech\\karentoroku-api\\prisma\\client",
+      "value": "C:\\Users\\hp\\OneDrive\\Desktop\\karentoroku-api\\prisma\\client",
       "fromEnvVar": null
     },
     "config": {
