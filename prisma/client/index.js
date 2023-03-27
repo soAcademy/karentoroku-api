@@ -183,6 +183,10 @@ const config = {
       {
         "fromEnvVar": null,
         "value": "debian-openssl-1.1.x"
+      },
+      {
+        "fromEnvVar": null,
+        "value": "rhel-openssl-1.0.x"
       }
     ],
     "previewFeatures": [],
@@ -227,5 +231,8 @@ path.join(process.cwd(), "prisma\\client\\libquery_engine-darwin-arm64.dylib.nod
 
 path.join(__dirname, "libquery_engine-debian-openssl-1.1.x.so.node");
 path.join(process.cwd(), "prisma\\client\\libquery_engine-debian-openssl-1.1.x.so.node")
+
+path.join(__dirname, "libquery_engine-rhel-openssl-1.0.x.so.node");
+path.join(process.cwd(), "prisma\\client\\libquery_engine-rhel-openssl-1.0.x.so.node")
 path.join(__dirname, "schema.prisma");
 path.join(process.cwd(), "prisma\\client\\schema.prisma")
