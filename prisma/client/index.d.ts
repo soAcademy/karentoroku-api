@@ -18,6 +18,7 @@ export type User = {
   id: number
   username: string | null
   password_hash: string | null
+  firebaseUid: string | null
   createdAt: Date
   updatedAt: Date
 }
@@ -965,6 +966,7 @@ export namespace Prisma {
     id: number | null
     username: string | null
     password_hash: string | null
+    firebaseUid: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -973,6 +975,7 @@ export namespace Prisma {
     id: number | null
     username: string | null
     password_hash: string | null
+    firebaseUid: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -981,6 +984,7 @@ export namespace Prisma {
     id: number
     username: number
     password_hash: number
+    firebaseUid: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -999,6 +1003,7 @@ export namespace Prisma {
     id?: true
     username?: true
     password_hash?: true
+    firebaseUid?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1007,6 +1012,7 @@ export namespace Prisma {
     id?: true
     username?: true
     password_hash?: true
+    firebaseUid?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1015,6 +1021,7 @@ export namespace Prisma {
     id?: true
     username?: true
     password_hash?: true
+    firebaseUid?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -1111,6 +1118,7 @@ export namespace Prisma {
     id: number
     username: string | null
     password_hash: string | null
+    firebaseUid: string | null
     createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
@@ -1138,6 +1146,7 @@ export namespace Prisma {
     id?: boolean
     username?: boolean
     password_hash?: boolean
+    firebaseUid?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     sessions?: boolean | User$sessionsArgs
@@ -4965,6 +4974,7 @@ export namespace Prisma {
     id: 'id',
     username: 'username',
     password_hash: 'password_hash',
+    firebaseUid: 'firebaseUid',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -4984,6 +4994,7 @@ export namespace Prisma {
     id?: IntFilter | number
     username?: StringNullableFilter | string | null
     password_hash?: StringNullableFilter | string | null
+    firebaseUid?: StringNullableFilter | string | null
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
     sessions?: SessionListRelationFilter
@@ -4994,6 +5005,7 @@ export namespace Prisma {
     id?: SortOrder
     username?: SortOrder
     password_hash?: SortOrder
+    firebaseUid?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     sessions?: SessionOrderByRelationAggregateInput
@@ -5003,13 +5015,14 @@ export namespace Prisma {
   export type UserWhereUniqueInput = {
     id?: number
     username?: string
-    password_hash?: string
+    firebaseUid?: string
   }
 
   export type UserOrderByWithAggregationInput = {
     id?: SortOrder
     username?: SortOrder
     password_hash?: SortOrder
+    firebaseUid?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
@@ -5026,6 +5039,7 @@ export namespace Prisma {
     id?: IntWithAggregatesFilter | number
     username?: StringNullableWithAggregatesFilter | string | null
     password_hash?: StringNullableWithAggregatesFilter | string | null
+    firebaseUid?: StringNullableWithAggregatesFilter | string | null
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
   }
@@ -5184,6 +5198,7 @@ export namespace Prisma {
   export type UserCreateInput = {
     username?: string | null
     password_hash?: string | null
+    firebaseUid?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
@@ -5194,6 +5209,7 @@ export namespace Prisma {
     id?: number
     username?: string | null
     password_hash?: string | null
+    firebaseUid?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -5203,6 +5219,7 @@ export namespace Prisma {
   export type UserUpdateInput = {
     username?: NullableStringFieldUpdateOperationsInput | string | null
     password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    firebaseUid?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
@@ -5213,6 +5230,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     username?: NullableStringFieldUpdateOperationsInput | string | null
     password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    firebaseUid?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -5223,6 +5241,7 @@ export namespace Prisma {
     id?: number
     username?: string | null
     password_hash?: string | null
+    firebaseUid?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -5230,6 +5249,7 @@ export namespace Prisma {
   export type UserUpdateManyMutationInput = {
     username?: NullableStringFieldUpdateOperationsInput | string | null
     password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    firebaseUid?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -5238,6 +5258,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     username?: NullableStringFieldUpdateOperationsInput | string | null
     password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    firebaseUid?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -5463,6 +5484,7 @@ export namespace Prisma {
     id?: SortOrder
     username?: SortOrder
     password_hash?: SortOrder
+    firebaseUid?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -5475,6 +5497,7 @@ export namespace Prisma {
     id?: SortOrder
     username?: SortOrder
     password_hash?: SortOrder
+    firebaseUid?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -5483,6 +5506,7 @@ export namespace Prisma {
     id?: SortOrder
     username?: SortOrder
     password_hash?: SortOrder
+    firebaseUid?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -6114,6 +6138,7 @@ export namespace Prisma {
   export type UserCreateWithoutSessionsInput = {
     username?: string | null
     password_hash?: string | null
+    firebaseUid?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     events?: EventCreateNestedManyWithoutUserInput
@@ -6123,6 +6148,7 @@ export namespace Prisma {
     id?: number
     username?: string | null
     password_hash?: string | null
+    firebaseUid?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     events?: EventUncheckedCreateNestedManyWithoutUserInput
@@ -6141,6 +6167,7 @@ export namespace Prisma {
   export type UserUpdateWithoutSessionsInput = {
     username?: NullableStringFieldUpdateOperationsInput | string | null
     password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    firebaseUid?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     events?: EventUpdateManyWithoutUserNestedInput
@@ -6150,6 +6177,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     username?: NullableStringFieldUpdateOperationsInput | string | null
     password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    firebaseUid?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     events?: EventUncheckedUpdateManyWithoutUserNestedInput
@@ -6199,6 +6227,7 @@ export namespace Prisma {
   export type UserCreateWithoutEventsInput = {
     username?: string | null
     password_hash?: string | null
+    firebaseUid?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
@@ -6208,6 +6237,7 @@ export namespace Prisma {
     id?: number
     username?: string | null
     password_hash?: string | null
+    firebaseUid?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -6244,6 +6274,7 @@ export namespace Prisma {
   export type UserUpdateWithoutEventsInput = {
     username?: NullableStringFieldUpdateOperationsInput | string | null
     password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    firebaseUid?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
@@ -6253,6 +6284,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     username?: NullableStringFieldUpdateOperationsInput | string | null
     password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    firebaseUid?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput

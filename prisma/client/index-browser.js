@@ -134,6 +134,7 @@ exports.Prisma.UserScalarFieldEnum = makeEnum({
   id: 'id',
   username: 'username',
   password_hash: 'password_hash',
+  firebaseUid: 'firebaseUid',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 });

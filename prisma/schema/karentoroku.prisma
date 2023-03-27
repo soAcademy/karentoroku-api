@@ -1,7 +1,8 @@
 model User {
   id            Int       @id @default(autoincrement())
   username      String?   @unique
-  password_hash String?   @unique
+  password_hash String?
+  firebaseUid   String?   @unique
   sessions      Session[]
   events        Event[]
   createdAt     DateTime  @default(now())

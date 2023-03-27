@@ -23,4 +23,9 @@ exports.AppRoutes = [
         method: "post",
         action: karentoroku_handlers_1.getUserHandler,
     },
+    {
+        path: "/getUserByFirebaseId",
+        method: "post",
+        action: karentoroku_handlers_1.getUserByFirebaseIdTokenHandler,
+    },
 ];
