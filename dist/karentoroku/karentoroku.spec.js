@@ -11,12 +11,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const karentoroku_resolvers_1 = require("./karentoroku.resolvers");
 describe("Karentaroku", () => {
-    const name1 = "David";
+    const username1 = "alice";
     let userId1;
     test("should create a new user", () => __awaiter(void 0, void 0, void 0, function* () {
-        const result = yield (0, karentoroku_resolvers_1.createUser)({ name: name1 });
+        const result = yield (0, karentoroku_resolvers_1.createUser)({ username: username1 });
         userId1 = result.id;
-        expect(result.name).toStrictEqual(name1);
+        expect(result.username).toStrictEqual(username1);
     }));
     test("should get all users", () => __awaiter(void 0, void 0, void 0, function* () {
         const result = yield (0, karentoroku_resolvers_1.getUsers)();
@@ -26,6 +26,6 @@ describe("Karentaroku", () => {
     test("should get a user by ID", () => __awaiter(void 0, void 0, void 0, function* () {
         const result = yield (0, karentoroku_resolvers_1.getUser)({ id: userId1 });
         console.log("getUser", result);
-        expect(result.name).toStrictEqual(name1);
+        expect(result.username).toStrictEqual(username1);
     }));
 });
