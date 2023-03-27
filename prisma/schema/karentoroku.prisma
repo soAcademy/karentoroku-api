@@ -1,11 +1,12 @@
 model User {
-  id            Int       @id @default(autoincrement())
-  username      String?   @unique
-  password_hash String?   @unique
+  id            Int        @id @default(autoincrement())
+  username      String?    @unique
+  password_hash String?    @unique
   sessions      Session[]
+  schedules     Schedule[]
   events        Event[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 }
 
 model Session {
@@ -18,20 +19,74 @@ model Session {
 }
 
 model EventType {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  schedules Schedule[]
   events    Event[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Schedule {
+  id            Int            @id @default(autoincrement())
+  name          String
+  owningUser    User           @relation(fields: [userId], references: [id])
+  userId        Int
+  eventType     EventType      @relation(fields: [eventTypeId], references: [id])
+  eventTypeId   Int
+  timeZone      String
+  scheduleSlots ScheduleSlot[]
+  events        Event[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model ScheduleSlot {
+  id            Int      @id @default(autoincrement())
+  schedule      Schedule @relation(fields: [scheduleId], references: [id])
+  scheduleId    Int
+  timeZone      String
+  startDateTime DateTime
+  duration      DateTime
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Event {
-  id          Int       @id @default(autoincrement())
-  name        String
-  user        User      @relation(fields: [userId], references: [id])
-  userId      Int
-  eventType   EventType @relation(fields: [eventTypeId], references: [id])
-  eventTypeId Int
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id           Int         @id @default(autoincrement())
+  name         String
+  owningUser   User        @relation(fields: [userId], references: [id])
+  userId       Int
+  eventType    EventType   @relation(fields: [eventTypeId], references: [id])
+  eventTypeId  Int
+  schedule     Schedule    @relation(fields: [scheduleId], references: [id])
+  scheduleId   Int
+  slotDuration DateTime
+  slotCapacity Int
+  eventSlots   EventSlot[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model EventSlot {
+  id              Int       @id @default(autoincrement())
+  event           Event?    @relation(fields: [eventId], references: [id])
+  eventId         Int?
+  timeZone        String
+  startDateTime   DateTime
+  duration        DateTime
+  isBooked        Boolean
+  bookingCustomer Customer? @relation(fields: [customerId], references: [id])
+  customerId      Int?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Customer {
+  id           Int         @id @default(autoincrement())
+  name         String
+  emailAddress String
+  eventSlots   EventSlot[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 }
