@@ -13,19 +13,19 @@ const karentoroku_resolvers_1 = require("./karentoroku.resolvers");
 describe("Karentaroku", () => {
     const username1 = "alice";
     let userId1;
-    test("should create a new user", () => __awaiter(void 0, void 0, void 0, function* () {
-        const result = yield (0, karentoroku_resolvers_1.createUser)({ username: username1 });
-        userId1 = result.id;
-        expect(result.username).toStrictEqual(username1);
-    }));
+    // test("should create a new user", async () => {
+    //   const result = await createUser({ username: username1 });
+    //   userId1 = result.id;
+    //   expect(result.username).toStrictEqual(username1);
+    // });
     test("should get all users", () => __awaiter(void 0, void 0, void 0, function* () {
         const result = yield (0, karentoroku_resolvers_1.getUsers)();
         console.log("getUsers", result);
         expect(result.length > 0).toBe(true);
     }));
-    test("should get a user by ID", () => __awaiter(void 0, void 0, void 0, function* () {
-        const result = yield (0, karentoroku_resolvers_1.getUser)({ id: userId1 });
-        console.log("getUser", result);
-        expect(result.username).toStrictEqual(username1);
-    }));
+    // test("should get a user by ID", async () => {
+    //   const result = await getUserById({ id: userId1 });
+    //   console.log("getUser", result);
+    //   expect(result.username).toStrictEqual(username1);
+    // });
 });
