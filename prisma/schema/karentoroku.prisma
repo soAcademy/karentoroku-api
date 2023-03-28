@@ -1,20 +1,20 @@
 model User {
-  id            Int            @id @default(autoincrement())
-  name          String
-  username      String         @unique
+  id                  Int                  @id @default(autoincrement())
+  name                String
+  username            String               @unique
   // password_hash String   @unique
   // sessions      Session[]
-  firebaseUid   String         @unique
-  eventTypes    EventType[]
-  subscription  String?
-  mobileNumber  String?
-  userLink      String?
-  billings      Billing[]
-  job           String?
-  education     String?
-  groupMeetings GroupMeeting[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  firebaseUid         String               @unique
+  eventTypes          EventType[]
+  subscription        String?
+  mobileNumber        String?
+  userLink            String?
+  billings            Billing[]
+  job                 String?
+  education           String?
+  userOnGroupMeetings UserOnGroupMeeting[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
 }
 
 // model Session {
@@ -88,6 +88,7 @@ model WeekDay {
   eventType              EventType?            @relation(fields: [eventTypeId], references: [id])
   eventTypeId            Int?
   status                 String
+  date                   DateTime
   createdAt              DateTime              @default(now())
   updatedAt              DateTime              @updatedAt
 }
@@ -127,24 +128,24 @@ model Billing {
   subscriptionPrice Int
   user              User     @relation(fields: [userId], references: [id])
   userId            Int
+  name              String
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }
 
 model GroupMeeting {
-  id          Int       @id @default(autoincrement())
-  location    Location  @relation(fields: [locationId], references: [id])
-  locationId  Int
-  customer    Customer  @relation(fields: [customerId], references: [id])
-  customerId  Int
-  totalPrice  Int
-  timezone    String
-  eventType   EventType @relation(fields: [eventTypeId], references: [id])
-  eventTypeId Int
-  user        User      @relation(fields: [userId], references: [id])
-  userId      Int
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id                  Int                  @id @default(autoincrement())
+  location            Location             @relation(fields: [locationId], references: [id])
+  locationId          Int
+  customer            Customer             @relation(fields: [customerId], references: [id])
+  customerId          Int
+  totalPrice          Int
+  timezone            String
+  eventType           EventType            @relation(fields: [eventTypeId], references: [id])
+  eventTypeId         Int
+  userOnGroupMeetings UserOnGroupMeeting[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
 }
 
 model EventSelect {
@@ -155,6 +156,17 @@ model EventSelect {
   customerId  Int
   selectDate  String
   selectTime  DateTime
+  status      String
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+}
+
+model UserOnGroupMeeting {
+  id             Int          @id @default(autoincrement())
+  user           User         @relation(fields: [userId], references: [id])
+  userId         Int
+  groupMeeting   GroupMeeting @relation(fields: [groupMeetingId], references: [id])
+  groupMeetingId Int
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 }
