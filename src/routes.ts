@@ -1,7 +1,7 @@
 import {
   createUserHandler,
   getIndexHandler,
-  getUserHandler,
+  getUserByIdHandler,
   getUsersHandler,
 } from "./karentoroku/karentoroku.handlers";
 
@@ -22,8 +22,8 @@ export const AppRoutes = [
     action: getUsersHandler,
   },
   {
-    path: "/getUser",
+    path: "/getUserById",
     method: "post",
-    action: getUserHandler,
+    action: getUserByIdHandler,
   },
 ];

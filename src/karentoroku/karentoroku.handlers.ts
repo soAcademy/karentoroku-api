@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { CreateUserCodec } from "./karentoroku.interfaces";
-import { createUser, getUser, getUsers } from "./karentoroku.resolvers";
+import { createUser, getUserById, getUsers } from "./karentoroku.resolvers";
 
 export const getIndexHandler = (req: Request, res: Response) => {
   res.setHeader("Content-Type", "text/html");
@@ -14,8 +14,10 @@ export const createUserHandler = async (req: Request, res: Response) => {
 
   if (CreateUserCodec.decode(args)._tag === "Right") {
     try {
-      const result = await createUser({
+      const result = createUser({
+        name: args.name,
         username: args.username,
+        idToken: args.idToken,
       });
       res.status(200).json(result);
     } catch (e) {
@@ -39,12 +41,12 @@ export const getUsersHandler = async (req: Request, res: Response) => {
   }
 };
 
-export const getUserHandler = async (req: Request, res: Response) => {
+export const getUserByIdHandler = async (req: Request, res: Response) => {
   const args = req?.body;
 
   if (typeof args.id === "number") {
     try {
-      const result = await getUser({
+      const result = await getUserById({
         id: args.id,
       });
       res.status(200).json(result);
