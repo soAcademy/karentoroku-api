@@ -19,8 +19,8 @@ exports.AppRoutes = [
         action: karentoroku_handlers_1.getUsersHandler,
     },
     {
-        path: "/getUser",
+        path: "/getUserById",
         method: "post",
-        action: karentoroku_handlers_1.getUserHandler,
+        action: karentoroku_handlers_1.getUserByIdHandler,
     },
 ];

@@ -26,5 +26,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateUserCodec = void 0;
 const t = __importStar(require("io-ts"));
 exports.CreateUserCodec = t.type({
+    name: t.string,
     username: t.string,
+    idToken: t.string,
 });

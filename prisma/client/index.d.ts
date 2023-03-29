@@ -16,20 +16,14 @@ type UnwrapTuple<Tuple extends readonly unknown[]> = {
  */
 export type User = {
   id: number
-  username: string | null
-  password_hash: string | null
-  createdAt: Date
-  updatedAt: Date
-}
-
-/**
- * Model Session
- * 
- */
-export type Session = {
-  id: number
-  token: string
-  userId: number
+  name: string
+  username: string
+  firebaseUid: string
+  subscription: string | null
+  mobileNumber: string | null
+  userLink: string | null
+  job: string | null
+  education: string | null
   createdAt: Date
   updatedAt: Date
 }
@@ -41,19 +35,157 @@ export type Session = {
 export type EventType = {
   id: number
   name: string
+  userId: number
+  description: string
+  price: number
+  timeDuration: number
+  calendarSelectId: number
+  customerId: number
+  status: string
   createdAt: Date
   updatedAt: Date
 }
 
 /**
- * Model Event
+ * Model Location
  * 
  */
-export type Event = {
+export type Location = {
   id: number
   name: string
-  userId: number
+  createdAt: Date
+  updatedAt: Date
+}
+
+/**
+ * Model EventTypeOnLocation
+ * 
+ */
+export type EventTypeOnLocation = {
+  id: number
   eventTypeId: number
+  locationId: number
+  createdAt: Date
+  updatedAt: Date
+}
+
+/**
+ * Model AvailabilitySchedule
+ * 
+ */
+export type AvailabilitySchedule = {
+  id: number
+  name: string
+  eventTypeId: number
+  timezone: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+/**
+ * Model WeekDay
+ * 
+ */
+export type WeekDay = {
+  id: number
+  day: number
+  availabilityScheduleId: number | null
+  timeSelectId: number
+  eventTypeId: number | null
+  status: string
+  date: Date
+  createdAt: Date
+  updatedAt: Date
+}
+
+/**
+ * Model TimeSelect
+ * 
+ */
+export type TimeSelect = {
+  id: number
+  startTime: Date
+  endTime: Date
+  createdAt: Date
+  updatedAt: Date
+}
+
+/**
+ * Model Customer
+ * 
+ */
+export type Customer = {
+  id: number
+  name: string
+  email: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+/**
+ * Model CalendarSelect
+ * 
+ */
+export type CalendarSelect = {
+  id: number
+  startDate: Date
+  endDate: Date
+  createdAt: Date
+  updatedAt: Date
+}
+
+/**
+ * Model Billing
+ * 
+ */
+export type Billing = {
+  id: number
+  subscriptionMonth: number
+  subscriptionPrice: number
+  userId: number
+  name: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+/**
+ * Model GroupMeeting
+ * 
+ */
+export type GroupMeeting = {
+  id: number
+  locationId: number
+  customerId: number
+  totalPrice: number
+  timezone: string
+  eventTypeId: number
+  createdAt: Date
+  updatedAt: Date
+}
+
+/**
+ * Model EventSelect
+ * 
+ */
+export type EventSelect = {
+  id: number
+  eventTypeId: number
+  customerId: number
+  selectDate: string
+  selectTime: Date
+  status: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+/**
+ * Model UserOnGroupMeeting
+ * 
+ */
+export type UserOnGroupMeeting = {
+  id: number
+  userId: number
+  groupMeetingId: number
   createdAt: Date
   updatedAt: Date
 }
@@ -187,16 +319,6 @@ export class PrismaClient<
   get user(): Prisma.UserDelegate<GlobalReject>;
 
   /**
-   * `prisma.session`: Exposes CRUD operations for the **Session** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Sessions
-    * const sessions = await prisma.session.findMany()
-    * ```
-    */
-  get session(): Prisma.SessionDelegate<GlobalReject>;
-
-  /**
    * `prisma.eventType`: Exposes CRUD operations for the **EventType** model.
     * Example usage:
     * ```ts
@@ -207,14 +329,114 @@ export class PrismaClient<
   get eventType(): Prisma.EventTypeDelegate<GlobalReject>;
 
   /**
-   * `prisma.event`: Exposes CRUD operations for the **Event** model.
+   * `prisma.location`: Exposes CRUD operations for the **Location** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more Events
-    * const events = await prisma.event.findMany()
+    * // Fetch zero or more Locations
+    * const locations = await prisma.location.findMany()
     * ```
     */
-  get event(): Prisma.EventDelegate<GlobalReject>;
+  get location(): Prisma.LocationDelegate<GlobalReject>;
+
+  /**
+   * `prisma.eventTypeOnLocation`: Exposes CRUD operations for the **EventTypeOnLocation** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more EventTypeOnLocations
+    * const eventTypeOnLocations = await prisma.eventTypeOnLocation.findMany()
+    * ```
+    */
+  get eventTypeOnLocation(): Prisma.EventTypeOnLocationDelegate<GlobalReject>;
+
+  /**
+   * `prisma.availabilitySchedule`: Exposes CRUD operations for the **AvailabilitySchedule** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AvailabilitySchedules
+    * const availabilitySchedules = await prisma.availabilitySchedule.findMany()
+    * ```
+    */
+  get availabilitySchedule(): Prisma.AvailabilityScheduleDelegate<GlobalReject>;
+
+  /**
+   * `prisma.weekDay`: Exposes CRUD operations for the **WeekDay** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more WeekDays
+    * const weekDays = await prisma.weekDay.findMany()
+    * ```
+    */
+  get weekDay(): Prisma.WeekDayDelegate<GlobalReject>;
+
+  /**
+   * `prisma.timeSelect`: Exposes CRUD operations for the **TimeSelect** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TimeSelects
+    * const timeSelects = await prisma.timeSelect.findMany()
+    * ```
+    */
+  get timeSelect(): Prisma.TimeSelectDelegate<GlobalReject>;
+
+  /**
+   * `prisma.customer`: Exposes CRUD operations for the **Customer** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Customers
+    * const customers = await prisma.customer.findMany()
+    * ```
+    */
+  get customer(): Prisma.CustomerDelegate<GlobalReject>;
+
+  /**
+   * `prisma.calendarSelect`: Exposes CRUD operations for the **CalendarSelect** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CalendarSelects
+    * const calendarSelects = await prisma.calendarSelect.findMany()
+    * ```
+    */
+  get calendarSelect(): Prisma.CalendarSelectDelegate<GlobalReject>;
+
+  /**
+   * `prisma.billing`: Exposes CRUD operations for the **Billing** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Billings
+    * const billings = await prisma.billing.findMany()
+    * ```
+    */
+  get billing(): Prisma.BillingDelegate<GlobalReject>;
+
+  /**
+   * `prisma.groupMeeting`: Exposes CRUD operations for the **GroupMeeting** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more GroupMeetings
+    * const groupMeetings = await prisma.groupMeeting.findMany()
+    * ```
+    */
+  get groupMeeting(): Prisma.GroupMeetingDelegate<GlobalReject>;
+
+  /**
+   * `prisma.eventSelect`: Exposes CRUD operations for the **EventSelect** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more EventSelects
+    * const eventSelects = await prisma.eventSelect.findMany()
+    * ```
+    */
+  get eventSelect(): Prisma.EventSelectDelegate<GlobalReject>;
+
+  /**
+   * `prisma.userOnGroupMeeting`: Exposes CRUD operations for the **UserOnGroupMeeting** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more UserOnGroupMeetings
+    * const userOnGroupMeetings = await prisma.userOnGroupMeeting.findMany()
+    * ```
+    */
+  get userOnGroupMeeting(): Prisma.UserOnGroupMeetingDelegate<GlobalReject>;
 }
 
 export namespace Prisma {
@@ -685,9 +907,18 @@ export namespace Prisma {
 
   export const ModelName: {
     User: 'User',
-    Session: 'Session',
     EventType: 'EventType',
-    Event: 'Event'
+    Location: 'Location',
+    EventTypeOnLocation: 'EventTypeOnLocation',
+    AvailabilitySchedule: 'AvailabilitySchedule',
+    WeekDay: 'WeekDay',
+    TimeSelect: 'TimeSelect',
+    Customer: 'Customer',
+    CalendarSelect: 'CalendarSelect',
+    Billing: 'Billing',
+    GroupMeeting: 'GroupMeeting',
+    EventSelect: 'EventSelect',
+    UserOnGroupMeeting: 'UserOnGroupMeeting'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -854,13 +1085,15 @@ export namespace Prisma {
 
 
   export type UserCountOutputType = {
-    sessions: number
-    events: number
+    eventTypes: number
+    billings: number
+    userOnGroupMeetings: number
   }
 
   export type UserCountOutputTypeSelect = {
-    sessions?: boolean
-    events?: boolean
+    eventTypes?: boolean
+    billings?: boolean
+    userOnGroupMeetings?: boolean
   }
 
   export type UserCountOutputTypeGetPayload<S extends boolean | null | undefined | UserCountOutputTypeArgs> =
@@ -899,11 +1132,19 @@ export namespace Prisma {
 
 
   export type EventTypeCountOutputType = {
-    events: number
+    eventTypeOnLocations: number
+    availabilitySchedules: number
+    weekDays: number
+    groupMeetings: number
+    eventSelects: number
   }
 
   export type EventTypeCountOutputTypeSelect = {
-    events?: boolean
+    eventTypeOnLocations?: boolean
+    availabilitySchedules?: boolean
+    weekDays?: boolean
+    groupMeetings?: boolean
+    eventSelects?: boolean
   }
 
   export type EventTypeCountOutputTypeGetPayload<S extends boolean | null | undefined | EventTypeCountOutputTypeArgs> =
@@ -937,6 +1178,270 @@ export namespace Prisma {
 
 
   /**
+   * Count Type LocationCountOutputType
+   */
+
+
+  export type LocationCountOutputType = {
+    eventTypeOnLocations: number
+    groupMeetings: number
+  }
+
+  export type LocationCountOutputTypeSelect = {
+    eventTypeOnLocations?: boolean
+    groupMeetings?: boolean
+  }
+
+  export type LocationCountOutputTypeGetPayload<S extends boolean | null | undefined | LocationCountOutputTypeArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? LocationCountOutputType :
+    S extends undefined ? never :
+    S extends { include: any } & (LocationCountOutputTypeArgs)
+    ? LocationCountOutputType 
+    : S extends { select: any } & (LocationCountOutputTypeArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+    P extends keyof LocationCountOutputType ? LocationCountOutputType[P] : never
+  } 
+      : LocationCountOutputType
+
+
+
+
+  // Custom InputTypes
+
+  /**
+   * LocationCountOutputType without action
+   */
+  export type LocationCountOutputTypeArgs = {
+    /**
+     * Select specific fields to fetch from the LocationCountOutputType
+     */
+    select?: LocationCountOutputTypeSelect | null
+  }
+
+
+
+  /**
+   * Count Type AvailabilityScheduleCountOutputType
+   */
+
+
+  export type AvailabilityScheduleCountOutputType = {
+    weekDays: number
+  }
+
+  export type AvailabilityScheduleCountOutputTypeSelect = {
+    weekDays?: boolean
+  }
+
+  export type AvailabilityScheduleCountOutputTypeGetPayload<S extends boolean | null | undefined | AvailabilityScheduleCountOutputTypeArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? AvailabilityScheduleCountOutputType :
+    S extends undefined ? never :
+    S extends { include: any } & (AvailabilityScheduleCountOutputTypeArgs)
+    ? AvailabilityScheduleCountOutputType 
+    : S extends { select: any } & (AvailabilityScheduleCountOutputTypeArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+    P extends keyof AvailabilityScheduleCountOutputType ? AvailabilityScheduleCountOutputType[P] : never
+  } 
+      : AvailabilityScheduleCountOutputType
+
+
+
+
+  // Custom InputTypes
+
+  /**
+   * AvailabilityScheduleCountOutputType without action
+   */
+  export type AvailabilityScheduleCountOutputTypeArgs = {
+    /**
+     * Select specific fields to fetch from the AvailabilityScheduleCountOutputType
+     */
+    select?: AvailabilityScheduleCountOutputTypeSelect | null
+  }
+
+
+
+  /**
+   * Count Type TimeSelectCountOutputType
+   */
+
+
+  export type TimeSelectCountOutputType = {
+    weekDays: number
+  }
+
+  export type TimeSelectCountOutputTypeSelect = {
+    weekDays?: boolean
+  }
+
+  export type TimeSelectCountOutputTypeGetPayload<S extends boolean | null | undefined | TimeSelectCountOutputTypeArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? TimeSelectCountOutputType :
+    S extends undefined ? never :
+    S extends { include: any } & (TimeSelectCountOutputTypeArgs)
+    ? TimeSelectCountOutputType 
+    : S extends { select: any } & (TimeSelectCountOutputTypeArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+    P extends keyof TimeSelectCountOutputType ? TimeSelectCountOutputType[P] : never
+  } 
+      : TimeSelectCountOutputType
+
+
+
+
+  // Custom InputTypes
+
+  /**
+   * TimeSelectCountOutputType without action
+   */
+  export type TimeSelectCountOutputTypeArgs = {
+    /**
+     * Select specific fields to fetch from the TimeSelectCountOutputType
+     */
+    select?: TimeSelectCountOutputTypeSelect | null
+  }
+
+
+
+  /**
+   * Count Type CustomerCountOutputType
+   */
+
+
+  export type CustomerCountOutputType = {
+    eventTypes: number
+    groupMeetings: number
+    eventSelects: number
+  }
+
+  export type CustomerCountOutputTypeSelect = {
+    eventTypes?: boolean
+    groupMeetings?: boolean
+    eventSelects?: boolean
+  }
+
+  export type CustomerCountOutputTypeGetPayload<S extends boolean | null | undefined | CustomerCountOutputTypeArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? CustomerCountOutputType :
+    S extends undefined ? never :
+    S extends { include: any } & (CustomerCountOutputTypeArgs)
+    ? CustomerCountOutputType 
+    : S extends { select: any } & (CustomerCountOutputTypeArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+    P extends keyof CustomerCountOutputType ? CustomerCountOutputType[P] : never
+  } 
+      : CustomerCountOutputType
+
+
+
+
+  // Custom InputTypes
+
+  /**
+   * CustomerCountOutputType without action
+   */
+  export type CustomerCountOutputTypeArgs = {
+    /**
+     * Select specific fields to fetch from the CustomerCountOutputType
+     */
+    select?: CustomerCountOutputTypeSelect | null
+  }
+
+
+
+  /**
+   * Count Type CalendarSelectCountOutputType
+   */
+
+
+  export type CalendarSelectCountOutputType = {
+    eventTypes: number
+  }
+
+  export type CalendarSelectCountOutputTypeSelect = {
+    eventTypes?: boolean
+  }
+
+  export type CalendarSelectCountOutputTypeGetPayload<S extends boolean | null | undefined | CalendarSelectCountOutputTypeArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? CalendarSelectCountOutputType :
+    S extends undefined ? never :
+    S extends { include: any } & (CalendarSelectCountOutputTypeArgs)
+    ? CalendarSelectCountOutputType 
+    : S extends { select: any } & (CalendarSelectCountOutputTypeArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+    P extends keyof CalendarSelectCountOutputType ? CalendarSelectCountOutputType[P] : never
+  } 
+      : CalendarSelectCountOutputType
+
+
+
+
+  // Custom InputTypes
+
+  /**
+   * CalendarSelectCountOutputType without action
+   */
+  export type CalendarSelectCountOutputTypeArgs = {
+    /**
+     * Select specific fields to fetch from the CalendarSelectCountOutputType
+     */
+    select?: CalendarSelectCountOutputTypeSelect | null
+  }
+
+
+
+  /**
+   * Count Type GroupMeetingCountOutputType
+   */
+
+
+  export type GroupMeetingCountOutputType = {
+    userOnGroupMeetings: number
+  }
+
+  export type GroupMeetingCountOutputTypeSelect = {
+    userOnGroupMeetings?: boolean
+  }
+
+  export type GroupMeetingCountOutputTypeGetPayload<S extends boolean | null | undefined | GroupMeetingCountOutputTypeArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? GroupMeetingCountOutputType :
+    S extends undefined ? never :
+    S extends { include: any } & (GroupMeetingCountOutputTypeArgs)
+    ? GroupMeetingCountOutputType 
+    : S extends { select: any } & (GroupMeetingCountOutputTypeArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+    P extends keyof GroupMeetingCountOutputType ? GroupMeetingCountOutputType[P] : never
+  } 
+      : GroupMeetingCountOutputType
+
+
+
+
+  // Custom InputTypes
+
+  /**
+   * GroupMeetingCountOutputType without action
+   */
+  export type GroupMeetingCountOutputTypeArgs = {
+    /**
+     * Select specific fields to fetch from the GroupMeetingCountOutputType
+     */
+    select?: GroupMeetingCountOutputTypeSelect | null
+  }
+
+
+
+  /**
    * Models
    */
 
@@ -963,24 +1468,42 @@ export namespace Prisma {
 
   export type UserMinAggregateOutputType = {
     id: number | null
+    name: string | null
     username: string | null
-    password_hash: string | null
+    firebaseUid: string | null
+    subscription: string | null
+    mobileNumber: string | null
+    userLink: string | null
+    job: string | null
+    education: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
   export type UserMaxAggregateOutputType = {
     id: number | null
+    name: string | null
     username: string | null
-    password_hash: string | null
+    firebaseUid: string | null
+    subscription: string | null
+    mobileNumber: string | null
+    userLink: string | null
+    job: string | null
+    education: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
   export type UserCountAggregateOutputType = {
     id: number
+    name: number
     username: number
-    password_hash: number
+    firebaseUid: number
+    subscription: number
+    mobileNumber: number
+    userLink: number
+    job: number
+    education: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -997,24 +1520,42 @@ export namespace Prisma {
 
   export type UserMinAggregateInputType = {
     id?: true
+    name?: true
     username?: true
-    password_hash?: true
+    firebaseUid?: true
+    subscription?: true
+    mobileNumber?: true
+    userLink?: true
+    job?: true
+    education?: true
     createdAt?: true
     updatedAt?: true
   }
 
   export type UserMaxAggregateInputType = {
     id?: true
+    name?: true
     username?: true
-    password_hash?: true
+    firebaseUid?: true
+    subscription?: true
+    mobileNumber?: true
+    userLink?: true
+    job?: true
+    education?: true
     createdAt?: true
     updatedAt?: true
   }
 
   export type UserCountAggregateInputType = {
     id?: true
+    name?: true
     username?: true
-    password_hash?: true
+    firebaseUid?: true
+    subscription?: true
+    mobileNumber?: true
+    userLink?: true
+    job?: true
+    education?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -1109,8 +1650,14 @@ export namespace Prisma {
 
   export type UserGroupByOutputType = {
     id: number
-    username: string | null
-    password_hash: string | null
+    name: string
+    username: string
+    firebaseUid: string
+    subscription: string | null
+    mobileNumber: string | null
+    userLink: string | null
+    job: string | null
+    education: string | null
     createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
@@ -1136,19 +1683,27 @@ export namespace Prisma {
 
   export type UserSelect = {
     id?: boolean
+    name?: boolean
     username?: boolean
-    password_hash?: boolean
+    firebaseUid?: boolean
+    subscription?: boolean
+    mobileNumber?: boolean
+    userLink?: boolean
+    job?: boolean
+    education?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    sessions?: boolean | User$sessionsArgs
-    events?: boolean | User$eventsArgs
+    eventTypes?: boolean | User$eventTypesArgs
+    billings?: boolean | User$billingsArgs
+    userOnGroupMeetings?: boolean | User$userOnGroupMeetingsArgs
     _count?: boolean | UserCountOutputTypeArgs
   }
 
 
   export type UserInclude = {
-    sessions?: boolean | User$sessionsArgs
-    events?: boolean | User$eventsArgs
+    eventTypes?: boolean | User$eventTypesArgs
+    billings?: boolean | User$billingsArgs
+    userOnGroupMeetings?: boolean | User$userOnGroupMeetingsArgs
     _count?: boolean | UserCountOutputTypeArgs
   }
 
@@ -1159,15 +1714,17 @@ export namespace Prisma {
     S extends { include: any } & (UserArgs | UserFindManyArgs)
     ? User  & {
     [P in TruthyKeys<S['include']>]:
-        P extends 'sessions' ? Array < SessionGetPayload<S['include'][P]>>  :
-        P extends 'events' ? Array < EventGetPayload<S['include'][P]>>  :
+        P extends 'eventTypes' ? Array < EventTypeGetPayload<S['include'][P]>>  :
+        P extends 'billings' ? Array < BillingGetPayload<S['include'][P]>>  :
+        P extends 'userOnGroupMeetings' ? Array < UserOnGroupMeetingGetPayload<S['include'][P]>>  :
         P extends '_count' ? UserCountOutputTypeGetPayload<S['include'][P]> :  never
   } 
     : S extends { select: any } & (UserArgs | UserFindManyArgs)
       ? {
     [P in TruthyKeys<S['select']>]:
-        P extends 'sessions' ? Array < SessionGetPayload<S['select'][P]>>  :
-        P extends 'events' ? Array < EventGetPayload<S['select'][P]>>  :
+        P extends 'eventTypes' ? Array < EventTypeGetPayload<S['select'][P]>>  :
+        P extends 'billings' ? Array < BillingGetPayload<S['select'][P]>>  :
+        P extends 'userOnGroupMeetings' ? Array < UserOnGroupMeetingGetPayload<S['select'][P]>>  :
         P extends '_count' ? UserCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof User ? User[P] : never
   } 
       : User
@@ -1540,9 +2097,11 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
     constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
 
-    sessions<T extends User$sessionsArgs= {}>(args?: Subset<T, User$sessionsArgs>): Prisma.PrismaPromise<Array<SessionGetPayload<T>>| Null>;
+    eventTypes<T extends User$eventTypesArgs= {}>(args?: Subset<T, User$eventTypesArgs>): Prisma.PrismaPromise<Array<EventTypeGetPayload<T>>| Null>;
 
-    events<T extends User$eventsArgs= {}>(args?: Subset<T, User$eventsArgs>): Prisma.PrismaPromise<Array<EventGetPayload<T>>| Null>;
+    billings<T extends User$billingsArgs= {}>(args?: Subset<T, User$billingsArgs>): Prisma.PrismaPromise<Array<BillingGetPayload<T>>| Null>;
+
+    userOnGroupMeetings<T extends User$userOnGroupMeetingsArgs= {}>(args?: Subset<T, User$userOnGroupMeetingsArgs>): Prisma.PrismaPromise<Array<UserOnGroupMeetingGetPayload<T>>| Null>;
 
     private get _document();
     /**
@@ -1900,44 +2459,65 @@ export namespace Prisma {
 
 
   /**
-   * User.sessions
+   * User.eventTypes
    */
-  export type User$sessionsArgs = {
+  export type User$eventTypesArgs = {
     /**
-     * Select specific fields to fetch from the Session
+     * Select specific fields to fetch from the EventType
      */
-    select?: SessionSelect | null
+    select?: EventTypeSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: SessionInclude | null
-    where?: SessionWhereInput
-    orderBy?: Enumerable<SessionOrderByWithRelationInput>
-    cursor?: SessionWhereUniqueInput
+    include?: EventTypeInclude | null
+    where?: EventTypeWhereInput
+    orderBy?: Enumerable<EventTypeOrderByWithRelationInput>
+    cursor?: EventTypeWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: Enumerable<SessionScalarFieldEnum>
+    distinct?: Enumerable<EventTypeScalarFieldEnum>
   }
 
 
   /**
-   * User.events
+   * User.billings
    */
-  export type User$eventsArgs = {
+  export type User$billingsArgs = {
     /**
-     * Select specific fields to fetch from the Event
+     * Select specific fields to fetch from the Billing
      */
-    select?: EventSelect | null
+    select?: BillingSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: EventInclude | null
-    where?: EventWhereInput
-    orderBy?: Enumerable<EventOrderByWithRelationInput>
-    cursor?: EventWhereUniqueInput
+    include?: BillingInclude | null
+    where?: BillingWhereInput
+    orderBy?: Enumerable<BillingOrderByWithRelationInput>
+    cursor?: BillingWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: Enumerable<EventScalarFieldEnum>
+    distinct?: Enumerable<BillingScalarFieldEnum>
+  }
+
+
+  /**
+   * User.userOnGroupMeetings
+   */
+  export type User$userOnGroupMeetingsArgs = {
+    /**
+     * Select specific fields to fetch from the UserOnGroupMeeting
+     */
+    select?: UserOnGroupMeetingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: UserOnGroupMeetingInclude | null
+    where?: UserOnGroupMeetingWhereInput
+    orderBy?: Enumerable<UserOnGroupMeetingOrderByWithRelationInput>
+    cursor?: UserOnGroupMeetingWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Enumerable<UserOnGroupMeetingScalarFieldEnum>
   }
 
 
@@ -1958,975 +2538,6 @@ export namespace Prisma {
 
 
   /**
-   * Model Session
-   */
-
-
-  export type AggregateSession = {
-    _count: SessionCountAggregateOutputType | null
-    _avg: SessionAvgAggregateOutputType | null
-    _sum: SessionSumAggregateOutputType | null
-    _min: SessionMinAggregateOutputType | null
-    _max: SessionMaxAggregateOutputType | null
-  }
-
-  export type SessionAvgAggregateOutputType = {
-    id: number | null
-    userId: number | null
-  }
-
-  export type SessionSumAggregateOutputType = {
-    id: number | null
-    userId: number | null
-  }
-
-  export type SessionMinAggregateOutputType = {
-    id: number | null
-    token: string | null
-    userId: number | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type SessionMaxAggregateOutputType = {
-    id: number | null
-    token: string | null
-    userId: number | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type SessionCountAggregateOutputType = {
-    id: number
-    token: number
-    userId: number
-    createdAt: number
-    updatedAt: number
-    _all: number
-  }
-
-
-  export type SessionAvgAggregateInputType = {
-    id?: true
-    userId?: true
-  }
-
-  export type SessionSumAggregateInputType = {
-    id?: true
-    userId?: true
-  }
-
-  export type SessionMinAggregateInputType = {
-    id?: true
-    token?: true
-    userId?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type SessionMaxAggregateInputType = {
-    id?: true
-    token?: true
-    userId?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type SessionCountAggregateInputType = {
-    id?: true
-    token?: true
-    userId?: true
-    createdAt?: true
-    updatedAt?: true
-    _all?: true
-  }
-
-  export type SessionAggregateArgs = {
-    /**
-     * Filter which Session to aggregate.
-     */
-    where?: SessionWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Sessions to fetch.
-     */
-    orderBy?: Enumerable<SessionOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: SessionWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Sessions from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Sessions.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned Sessions
-    **/
-    _count?: true | SessionCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: SessionAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: SessionSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: SessionMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: SessionMaxAggregateInputType
-  }
-
-  export type GetSessionAggregateType<T extends SessionAggregateArgs> = {
-        [P in keyof T & keyof AggregateSession]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateSession[P]>
-      : GetScalarType<T[P], AggregateSession[P]>
-  }
-
-
-
-
-  export type SessionGroupByArgs = {
-    where?: SessionWhereInput
-    orderBy?: Enumerable<SessionOrderByWithAggregationInput>
-    by: SessionScalarFieldEnum[]
-    having?: SessionScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: SessionCountAggregateInputType | true
-    _avg?: SessionAvgAggregateInputType
-    _sum?: SessionSumAggregateInputType
-    _min?: SessionMinAggregateInputType
-    _max?: SessionMaxAggregateInputType
-  }
-
-
-  export type SessionGroupByOutputType = {
-    id: number
-    token: string
-    userId: number
-    createdAt: Date
-    updatedAt: Date
-    _count: SessionCountAggregateOutputType | null
-    _avg: SessionAvgAggregateOutputType | null
-    _sum: SessionSumAggregateOutputType | null
-    _min: SessionMinAggregateOutputType | null
-    _max: SessionMaxAggregateOutputType | null
-  }
-
-  type GetSessionGroupByPayload<T extends SessionGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickArray<SessionGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof SessionGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], SessionGroupByOutputType[P]>
-            : GetScalarType<T[P], SessionGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type SessionSelect = {
-    id?: boolean
-    token?: boolean
-    userId?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    user?: boolean | UserArgs
-  }
-
-
-  export type SessionInclude = {
-    user?: boolean | UserArgs
-  }
-
-  export type SessionGetPayload<S extends boolean | null | undefined | SessionArgs> =
-    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? Session :
-    S extends undefined ? never :
-    S extends { include: any } & (SessionArgs | SessionFindManyArgs)
-    ? Session  & {
-    [P in TruthyKeys<S['include']>]:
-        P extends 'user' ? UserGetPayload<S['include'][P]> :  never
-  } 
-    : S extends { select: any } & (SessionArgs | SessionFindManyArgs)
-      ? {
-    [P in TruthyKeys<S['select']>]:
-        P extends 'user' ? UserGetPayload<S['select'][P]> :  P extends keyof Session ? Session[P] : never
-  } 
-      : Session
-
-
-  type SessionCountArgs = 
-    Omit<SessionFindManyArgs, 'select' | 'include'> & {
-      select?: SessionCountAggregateInputType | true
-    }
-
-  export interface SessionDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
-
-    /**
-     * Find zero or one Session that matches the filter.
-     * @param {SessionFindUniqueArgs} args - Arguments to find a Session
-     * @example
-     * // Get one Session
-     * const session = await prisma.session.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUnique<T extends SessionFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args: SelectSubset<T, SessionFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Session'> extends True ? Prisma__SessionClient<SessionGetPayload<T>> : Prisma__SessionClient<SessionGetPayload<T> | null, null>
-
-    /**
-     * Find one Session that matches the filter or throw an error  with `error.code='P2025'` 
-     *     if no matches were found.
-     * @param {SessionFindUniqueOrThrowArgs} args - Arguments to find a Session
-     * @example
-     * // Get one Session
-     * const session = await prisma.session.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUniqueOrThrow<T extends SessionFindUniqueOrThrowArgs>(
-      args?: SelectSubset<T, SessionFindUniqueOrThrowArgs>
-    ): Prisma__SessionClient<SessionGetPayload<T>>
-
-    /**
-     * Find the first Session that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {SessionFindFirstArgs} args - Arguments to find a Session
-     * @example
-     * // Get one Session
-     * const session = await prisma.session.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirst<T extends SessionFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args?: SelectSubset<T, SessionFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Session'> extends True ? Prisma__SessionClient<SessionGetPayload<T>> : Prisma__SessionClient<SessionGetPayload<T> | null, null>
-
-    /**
-     * Find the first Session that matches the filter or
-     * throw `NotFoundError` if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {SessionFindFirstOrThrowArgs} args - Arguments to find a Session
-     * @example
-     * // Get one Session
-     * const session = await prisma.session.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirstOrThrow<T extends SessionFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, SessionFindFirstOrThrowArgs>
-    ): Prisma__SessionClient<SessionGetPayload<T>>
-
-    /**
-     * Find zero or more Sessions that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {SessionFindManyArgs=} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all Sessions
-     * const sessions = await prisma.session.findMany()
-     * 
-     * // Get first 10 Sessions
-     * const sessions = await prisma.session.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const sessionWithIdOnly = await prisma.session.findMany({ select: { id: true } })
-     * 
-    **/
-    findMany<T extends SessionFindManyArgs>(
-      args?: SelectSubset<T, SessionFindManyArgs>
-    ): Prisma.PrismaPromise<Array<SessionGetPayload<T>>>
-
-    /**
-     * Create a Session.
-     * @param {SessionCreateArgs} args - Arguments to create a Session.
-     * @example
-     * // Create one Session
-     * const Session = await prisma.session.create({
-     *   data: {
-     *     // ... data to create a Session
-     *   }
-     * })
-     * 
-    **/
-    create<T extends SessionCreateArgs>(
-      args: SelectSubset<T, SessionCreateArgs>
-    ): Prisma__SessionClient<SessionGetPayload<T>>
-
-    /**
-     * Create many Sessions.
-     *     @param {SessionCreateManyArgs} args - Arguments to create many Sessions.
-     *     @example
-     *     // Create many Sessions
-     *     const session = await prisma.session.createMany({
-     *       data: {
-     *         // ... provide data here
-     *       }
-     *     })
-     *     
-    **/
-    createMany<T extends SessionCreateManyArgs>(
-      args?: SelectSubset<T, SessionCreateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Delete a Session.
-     * @param {SessionDeleteArgs} args - Arguments to delete one Session.
-     * @example
-     * // Delete one Session
-     * const Session = await prisma.session.delete({
-     *   where: {
-     *     // ... filter to delete one Session
-     *   }
-     * })
-     * 
-    **/
-    delete<T extends SessionDeleteArgs>(
-      args: SelectSubset<T, SessionDeleteArgs>
-    ): Prisma__SessionClient<SessionGetPayload<T>>
-
-    /**
-     * Update one Session.
-     * @param {SessionUpdateArgs} args - Arguments to update one Session.
-     * @example
-     * // Update one Session
-     * const session = await prisma.session.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    update<T extends SessionUpdateArgs>(
-      args: SelectSubset<T, SessionUpdateArgs>
-    ): Prisma__SessionClient<SessionGetPayload<T>>
-
-    /**
-     * Delete zero or more Sessions.
-     * @param {SessionDeleteManyArgs} args - Arguments to filter Sessions to delete.
-     * @example
-     * // Delete a few Sessions
-     * const { count } = await prisma.session.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-    **/
-    deleteMany<T extends SessionDeleteManyArgs>(
-      args?: SelectSubset<T, SessionDeleteManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Sessions.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {SessionUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many Sessions
-     * const session = await prisma.session.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    updateMany<T extends SessionUpdateManyArgs>(
-      args: SelectSubset<T, SessionUpdateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one Session.
-     * @param {SessionUpsertArgs} args - Arguments to update or create a Session.
-     * @example
-     * // Update or create a Session
-     * const session = await prisma.session.upsert({
-     *   create: {
-     *     // ... data to create a Session
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the Session we want to update
-     *   }
-     * })
-    **/
-    upsert<T extends SessionUpsertArgs>(
-      args: SelectSubset<T, SessionUpsertArgs>
-    ): Prisma__SessionClient<SessionGetPayload<T>>
-
-    /**
-     * Count the number of Sessions.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {SessionCountArgs} args - Arguments to filter Sessions to count.
-     * @example
-     * // Count the number of Sessions
-     * const count = await prisma.session.count({
-     *   where: {
-     *     // ... the filter for the Sessions we want to count
-     *   }
-     * })
-    **/
-    count<T extends SessionCountArgs>(
-      args?: Subset<T, SessionCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends _Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], SessionCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a Session.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {SessionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends SessionAggregateArgs>(args: Subset<T, SessionAggregateArgs>): Prisma.PrismaPromise<GetSessionAggregateType<T>>
-
-    /**
-     * Group by Session.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {SessionGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends SessionGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: SessionGroupByArgs['orderBy'] }
-        : { orderBy?: SessionGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends TupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, SessionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSessionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for Session.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export class Prisma__SessionClient<T, Null = never> implements Prisma.PrismaPromise<T> {
-    private readonly _dmmf;
-    private readonly _queryType;
-    private readonly _rootField;
-    private readonly _clientMethod;
-    private readonly _args;
-    private readonly _dataPath;
-    private readonly _errorFormat;
-    private readonly _measurePerformance?;
-    private _isList;
-    private _callsite;
-    private _requestPromise?;
-    readonly [Symbol.toStringTag]: 'PrismaPromise';
-    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
-
-    user<T extends UserArgs= {}>(args?: Subset<T, UserArgs>): Prisma__UserClient<UserGetPayload<T> | Null>;
-
-    private get _document();
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
-  }
-
-
-
-  // Custom InputTypes
-
-  /**
-   * Session base type for findUnique actions
-   */
-  export type SessionFindUniqueArgsBase = {
-    /**
-     * Select specific fields to fetch from the Session
-     */
-    select?: SessionSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: SessionInclude | null
-    /**
-     * Filter, which Session to fetch.
-     */
-    where: SessionWhereUniqueInput
-  }
-
-  /**
-   * Session findUnique
-   */
-  export interface SessionFindUniqueArgs extends SessionFindUniqueArgsBase {
-   /**
-    * Throw an Error if query returns no results
-    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
-    */
-    rejectOnNotFound?: RejectOnNotFound
-  }
-      
-
-  /**
-   * Session findUniqueOrThrow
-   */
-  export type SessionFindUniqueOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the Session
-     */
-    select?: SessionSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: SessionInclude | null
-    /**
-     * Filter, which Session to fetch.
-     */
-    where: SessionWhereUniqueInput
-  }
-
-
-  /**
-   * Session base type for findFirst actions
-   */
-  export type SessionFindFirstArgsBase = {
-    /**
-     * Select specific fields to fetch from the Session
-     */
-    select?: SessionSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: SessionInclude | null
-    /**
-     * Filter, which Session to fetch.
-     */
-    where?: SessionWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Sessions to fetch.
-     */
-    orderBy?: Enumerable<SessionOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Sessions.
-     */
-    cursor?: SessionWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Sessions from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Sessions.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Sessions.
-     */
-    distinct?: Enumerable<SessionScalarFieldEnum>
-  }
-
-  /**
-   * Session findFirst
-   */
-  export interface SessionFindFirstArgs extends SessionFindFirstArgsBase {
-   /**
-    * Throw an Error if query returns no results
-    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
-    */
-    rejectOnNotFound?: RejectOnNotFound
-  }
-      
-
-  /**
-   * Session findFirstOrThrow
-   */
-  export type SessionFindFirstOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the Session
-     */
-    select?: SessionSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: SessionInclude | null
-    /**
-     * Filter, which Session to fetch.
-     */
-    where?: SessionWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Sessions to fetch.
-     */
-    orderBy?: Enumerable<SessionOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Sessions.
-     */
-    cursor?: SessionWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Sessions from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Sessions.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Sessions.
-     */
-    distinct?: Enumerable<SessionScalarFieldEnum>
-  }
-
-
-  /**
-   * Session findMany
-   */
-  export type SessionFindManyArgs = {
-    /**
-     * Select specific fields to fetch from the Session
-     */
-    select?: SessionSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: SessionInclude | null
-    /**
-     * Filter, which Sessions to fetch.
-     */
-    where?: SessionWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Sessions to fetch.
-     */
-    orderBy?: Enumerable<SessionOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing Sessions.
-     */
-    cursor?: SessionWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Sessions from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Sessions.
-     */
-    skip?: number
-    distinct?: Enumerable<SessionScalarFieldEnum>
-  }
-
-
-  /**
-   * Session create
-   */
-  export type SessionCreateArgs = {
-    /**
-     * Select specific fields to fetch from the Session
-     */
-    select?: SessionSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: SessionInclude | null
-    /**
-     * The data needed to create a Session.
-     */
-    data: XOR<SessionCreateInput, SessionUncheckedCreateInput>
-  }
-
-
-  /**
-   * Session createMany
-   */
-  export type SessionCreateManyArgs = {
-    /**
-     * The data used to create many Sessions.
-     */
-    data: Enumerable<SessionCreateManyInput>
-    skipDuplicates?: boolean
-  }
-
-
-  /**
-   * Session update
-   */
-  export type SessionUpdateArgs = {
-    /**
-     * Select specific fields to fetch from the Session
-     */
-    select?: SessionSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: SessionInclude | null
-    /**
-     * The data needed to update a Session.
-     */
-    data: XOR<SessionUpdateInput, SessionUncheckedUpdateInput>
-    /**
-     * Choose, which Session to update.
-     */
-    where: SessionWhereUniqueInput
-  }
-
-
-  /**
-   * Session updateMany
-   */
-  export type SessionUpdateManyArgs = {
-    /**
-     * The data used to update Sessions.
-     */
-    data: XOR<SessionUpdateManyMutationInput, SessionUncheckedUpdateManyInput>
-    /**
-     * Filter which Sessions to update
-     */
-    where?: SessionWhereInput
-  }
-
-
-  /**
-   * Session upsert
-   */
-  export type SessionUpsertArgs = {
-    /**
-     * Select specific fields to fetch from the Session
-     */
-    select?: SessionSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: SessionInclude | null
-    /**
-     * The filter to search for the Session to update in case it exists.
-     */
-    where: SessionWhereUniqueInput
-    /**
-     * In case the Session found by the `where` argument doesn't exist, create a new Session with this data.
-     */
-    create: XOR<SessionCreateInput, SessionUncheckedCreateInput>
-    /**
-     * In case the Session was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<SessionUpdateInput, SessionUncheckedUpdateInput>
-  }
-
-
-  /**
-   * Session delete
-   */
-  export type SessionDeleteArgs = {
-    /**
-     * Select specific fields to fetch from the Session
-     */
-    select?: SessionSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: SessionInclude | null
-    /**
-     * Filter which Session to delete.
-     */
-    where: SessionWhereUniqueInput
-  }
-
-
-  /**
-   * Session deleteMany
-   */
-  export type SessionDeleteManyArgs = {
-    /**
-     * Filter which Sessions to delete
-     */
-    where?: SessionWhereInput
-  }
-
-
-  /**
-   * Session without action
-   */
-  export type SessionArgs = {
-    /**
-     * Select specific fields to fetch from the Session
-     */
-    select?: SessionSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: SessionInclude | null
-  }
-
-
-
-  /**
    * Model EventType
    */
 
@@ -2941,15 +2552,32 @@ export namespace Prisma {
 
   export type EventTypeAvgAggregateOutputType = {
     id: number | null
+    userId: number | null
+    price: number | null
+    timeDuration: number | null
+    calendarSelectId: number | null
+    customerId: number | null
   }
 
   export type EventTypeSumAggregateOutputType = {
     id: number | null
+    userId: number | null
+    price: number | null
+    timeDuration: number | null
+    calendarSelectId: number | null
+    customerId: number | null
   }
 
   export type EventTypeMinAggregateOutputType = {
     id: number | null
     name: string | null
+    userId: number | null
+    description: string | null
+    price: number | null
+    timeDuration: number | null
+    calendarSelectId: number | null
+    customerId: number | null
+    status: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2957,6 +2585,13 @@ export namespace Prisma {
   export type EventTypeMaxAggregateOutputType = {
     id: number | null
     name: string | null
+    userId: number | null
+    description: string | null
+    price: number | null
+    timeDuration: number | null
+    calendarSelectId: number | null
+    customerId: number | null
+    status: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2964,6 +2599,13 @@ export namespace Prisma {
   export type EventTypeCountAggregateOutputType = {
     id: number
     name: number
+    userId: number
+    description: number
+    price: number
+    timeDuration: number
+    calendarSelectId: number
+    customerId: number
+    status: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -2972,15 +2614,32 @@ export namespace Prisma {
 
   export type EventTypeAvgAggregateInputType = {
     id?: true
+    userId?: true
+    price?: true
+    timeDuration?: true
+    calendarSelectId?: true
+    customerId?: true
   }
 
   export type EventTypeSumAggregateInputType = {
     id?: true
+    userId?: true
+    price?: true
+    timeDuration?: true
+    calendarSelectId?: true
+    customerId?: true
   }
 
   export type EventTypeMinAggregateInputType = {
     id?: true
     name?: true
+    userId?: true
+    description?: true
+    price?: true
+    timeDuration?: true
+    calendarSelectId?: true
+    customerId?: true
+    status?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2988,6 +2647,13 @@ export namespace Prisma {
   export type EventTypeMaxAggregateInputType = {
     id?: true
     name?: true
+    userId?: true
+    description?: true
+    price?: true
+    timeDuration?: true
+    calendarSelectId?: true
+    customerId?: true
+    status?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2995,6 +2661,13 @@ export namespace Prisma {
   export type EventTypeCountAggregateInputType = {
     id?: true
     name?: true
+    userId?: true
+    description?: true
+    price?: true
+    timeDuration?: true
+    calendarSelectId?: true
+    customerId?: true
+    status?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -3090,6 +2763,13 @@ export namespace Prisma {
   export type EventTypeGroupByOutputType = {
     id: number
     name: string
+    userId: number
+    description: string
+    price: number
+    timeDuration: number
+    calendarSelectId: number
+    customerId: number
+    status: string
     createdAt: Date
     updatedAt: Date
     _count: EventTypeCountAggregateOutputType | null
@@ -3116,15 +2796,36 @@ export namespace Prisma {
   export type EventTypeSelect = {
     id?: boolean
     name?: boolean
+    userId?: boolean
+    description?: boolean
+    price?: boolean
+    timeDuration?: boolean
+    calendarSelectId?: boolean
+    customerId?: boolean
+    status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    events?: boolean | EventType$eventsArgs
+    user?: boolean | UserArgs
+    eventTypeOnLocations?: boolean | EventType$eventTypeOnLocationsArgs
+    availabilitySchedules?: boolean | EventType$availabilitySchedulesArgs
+    weekDays?: boolean | EventType$weekDaysArgs
+    calendarSelect?: boolean | CalendarSelectArgs
+    customer?: boolean | CustomerArgs
+    groupMeetings?: boolean | EventType$groupMeetingsArgs
+    eventSelects?: boolean | EventType$eventSelectsArgs
     _count?: boolean | EventTypeCountOutputTypeArgs
   }
 
 
   export type EventTypeInclude = {
-    events?: boolean | EventType$eventsArgs
+    user?: boolean | UserArgs
+    eventTypeOnLocations?: boolean | EventType$eventTypeOnLocationsArgs
+    availabilitySchedules?: boolean | EventType$availabilitySchedulesArgs
+    weekDays?: boolean | EventType$weekDaysArgs
+    calendarSelect?: boolean | CalendarSelectArgs
+    customer?: boolean | CustomerArgs
+    groupMeetings?: boolean | EventType$groupMeetingsArgs
+    eventSelects?: boolean | EventType$eventSelectsArgs
     _count?: boolean | EventTypeCountOutputTypeArgs
   }
 
@@ -3135,13 +2836,27 @@ export namespace Prisma {
     S extends { include: any } & (EventTypeArgs | EventTypeFindManyArgs)
     ? EventType  & {
     [P in TruthyKeys<S['include']>]:
-        P extends 'events' ? Array < EventGetPayload<S['include'][P]>>  :
+        P extends 'user' ? UserGetPayload<S['include'][P]> :
+        P extends 'eventTypeOnLocations' ? Array < EventTypeOnLocationGetPayload<S['include'][P]>>  :
+        P extends 'availabilitySchedules' ? Array < AvailabilityScheduleGetPayload<S['include'][P]>>  :
+        P extends 'weekDays' ? Array < WeekDayGetPayload<S['include'][P]>>  :
+        P extends 'calendarSelect' ? CalendarSelectGetPayload<S['include'][P]> :
+        P extends 'customer' ? CustomerGetPayload<S['include'][P]> :
+        P extends 'groupMeetings' ? Array < GroupMeetingGetPayload<S['include'][P]>>  :
+        P extends 'eventSelects' ? Array < EventSelectGetPayload<S['include'][P]>>  :
         P extends '_count' ? EventTypeCountOutputTypeGetPayload<S['include'][P]> :  never
   } 
     : S extends { select: any } & (EventTypeArgs | EventTypeFindManyArgs)
       ? {
     [P in TruthyKeys<S['select']>]:
-        P extends 'events' ? Array < EventGetPayload<S['select'][P]>>  :
+        P extends 'user' ? UserGetPayload<S['select'][P]> :
+        P extends 'eventTypeOnLocations' ? Array < EventTypeOnLocationGetPayload<S['select'][P]>>  :
+        P extends 'availabilitySchedules' ? Array < AvailabilityScheduleGetPayload<S['select'][P]>>  :
+        P extends 'weekDays' ? Array < WeekDayGetPayload<S['select'][P]>>  :
+        P extends 'calendarSelect' ? CalendarSelectGetPayload<S['select'][P]> :
+        P extends 'customer' ? CustomerGetPayload<S['select'][P]> :
+        P extends 'groupMeetings' ? Array < GroupMeetingGetPayload<S['select'][P]>>  :
+        P extends 'eventSelects' ? Array < EventSelectGetPayload<S['select'][P]>>  :
         P extends '_count' ? EventTypeCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof EventType ? EventType[P] : never
   } 
       : EventType
@@ -3514,7 +3229,21 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
     constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
 
-    events<T extends EventType$eventsArgs= {}>(args?: Subset<T, EventType$eventsArgs>): Prisma.PrismaPromise<Array<EventGetPayload<T>>| Null>;
+    user<T extends UserArgs= {}>(args?: Subset<T, UserArgs>): Prisma__UserClient<UserGetPayload<T> | Null>;
+
+    eventTypeOnLocations<T extends EventType$eventTypeOnLocationsArgs= {}>(args?: Subset<T, EventType$eventTypeOnLocationsArgs>): Prisma.PrismaPromise<Array<EventTypeOnLocationGetPayload<T>>| Null>;
+
+    availabilitySchedules<T extends EventType$availabilitySchedulesArgs= {}>(args?: Subset<T, EventType$availabilitySchedulesArgs>): Prisma.PrismaPromise<Array<AvailabilityScheduleGetPayload<T>>| Null>;
+
+    weekDays<T extends EventType$weekDaysArgs= {}>(args?: Subset<T, EventType$weekDaysArgs>): Prisma.PrismaPromise<Array<WeekDayGetPayload<T>>| Null>;
+
+    calendarSelect<T extends CalendarSelectArgs= {}>(args?: Subset<T, CalendarSelectArgs>): Prisma__CalendarSelectClient<CalendarSelectGetPayload<T> | Null>;
+
+    customer<T extends CustomerArgs= {}>(args?: Subset<T, CustomerArgs>): Prisma__CustomerClient<CustomerGetPayload<T> | Null>;
+
+    groupMeetings<T extends EventType$groupMeetingsArgs= {}>(args?: Subset<T, EventType$groupMeetingsArgs>): Prisma.PrismaPromise<Array<GroupMeetingGetPayload<T>>| Null>;
+
+    eventSelects<T extends EventType$eventSelectsArgs= {}>(args?: Subset<T, EventType$eventSelectsArgs>): Prisma.PrismaPromise<Array<EventSelectGetPayload<T>>| Null>;
 
     private get _document();
     /**
@@ -3872,23 +3601,107 @@ export namespace Prisma {
 
 
   /**
-   * EventType.events
+   * EventType.eventTypeOnLocations
    */
-  export type EventType$eventsArgs = {
+  export type EventType$eventTypeOnLocationsArgs = {
     /**
-     * Select specific fields to fetch from the Event
+     * Select specific fields to fetch from the EventTypeOnLocation
      */
-    select?: EventSelect | null
+    select?: EventTypeOnLocationSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: EventInclude | null
-    where?: EventWhereInput
-    orderBy?: Enumerable<EventOrderByWithRelationInput>
-    cursor?: EventWhereUniqueInput
+    include?: EventTypeOnLocationInclude | null
+    where?: EventTypeOnLocationWhereInput
+    orderBy?: Enumerable<EventTypeOnLocationOrderByWithRelationInput>
+    cursor?: EventTypeOnLocationWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: Enumerable<EventScalarFieldEnum>
+    distinct?: Enumerable<EventTypeOnLocationScalarFieldEnum>
+  }
+
+
+  /**
+   * EventType.availabilitySchedules
+   */
+  export type EventType$availabilitySchedulesArgs = {
+    /**
+     * Select specific fields to fetch from the AvailabilitySchedule
+     */
+    select?: AvailabilityScheduleSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AvailabilityScheduleInclude | null
+    where?: AvailabilityScheduleWhereInput
+    orderBy?: Enumerable<AvailabilityScheduleOrderByWithRelationInput>
+    cursor?: AvailabilityScheduleWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Enumerable<AvailabilityScheduleScalarFieldEnum>
+  }
+
+
+  /**
+   * EventType.weekDays
+   */
+  export type EventType$weekDaysArgs = {
+    /**
+     * Select specific fields to fetch from the WeekDay
+     */
+    select?: WeekDaySelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: WeekDayInclude | null
+    where?: WeekDayWhereInput
+    orderBy?: Enumerable<WeekDayOrderByWithRelationInput>
+    cursor?: WeekDayWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Enumerable<WeekDayScalarFieldEnum>
+  }
+
+
+  /**
+   * EventType.groupMeetings
+   */
+  export type EventType$groupMeetingsArgs = {
+    /**
+     * Select specific fields to fetch from the GroupMeeting
+     */
+    select?: GroupMeetingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: GroupMeetingInclude | null
+    where?: GroupMeetingWhereInput
+    orderBy?: Enumerable<GroupMeetingOrderByWithRelationInput>
+    cursor?: GroupMeetingWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Enumerable<GroupMeetingScalarFieldEnum>
+  }
+
+
+  /**
+   * EventType.eventSelects
+   */
+  export type EventType$eventSelectsArgs = {
+    /**
+     * Select specific fields to fetch from the EventSelect
+     */
+    select?: EventSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: EventSelectInclude | null
+    where?: EventSelectWhereInput
+    orderBy?: Enumerable<EventSelectOrderByWithRelationInput>
+    cursor?: EventSelectWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Enumerable<EventSelectScalarFieldEnum>
   }
 
 
@@ -3909,397 +3722,377 @@ export namespace Prisma {
 
 
   /**
-   * Model Event
+   * Model Location
    */
 
 
-  export type AggregateEvent = {
-    _count: EventCountAggregateOutputType | null
-    _avg: EventAvgAggregateOutputType | null
-    _sum: EventSumAggregateOutputType | null
-    _min: EventMinAggregateOutputType | null
-    _max: EventMaxAggregateOutputType | null
+  export type AggregateLocation = {
+    _count: LocationCountAggregateOutputType | null
+    _avg: LocationAvgAggregateOutputType | null
+    _sum: LocationSumAggregateOutputType | null
+    _min: LocationMinAggregateOutputType | null
+    _max: LocationMaxAggregateOutputType | null
   }
 
-  export type EventAvgAggregateOutputType = {
+  export type LocationAvgAggregateOutputType = {
     id: number | null
-    userId: number | null
-    eventTypeId: number | null
   }
 
-  export type EventSumAggregateOutputType = {
+  export type LocationSumAggregateOutputType = {
     id: number | null
-    userId: number | null
-    eventTypeId: number | null
   }
 
-  export type EventMinAggregateOutputType = {
+  export type LocationMinAggregateOutputType = {
     id: number | null
     name: string | null
-    userId: number | null
-    eventTypeId: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
-  export type EventMaxAggregateOutputType = {
+  export type LocationMaxAggregateOutputType = {
     id: number | null
     name: string | null
-    userId: number | null
-    eventTypeId: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
-  export type EventCountAggregateOutputType = {
+  export type LocationCountAggregateOutputType = {
     id: number
     name: number
-    userId: number
-    eventTypeId: number
     createdAt: number
     updatedAt: number
     _all: number
   }
 
 
-  export type EventAvgAggregateInputType = {
+  export type LocationAvgAggregateInputType = {
     id?: true
-    userId?: true
-    eventTypeId?: true
   }
 
-  export type EventSumAggregateInputType = {
+  export type LocationSumAggregateInputType = {
     id?: true
-    userId?: true
-    eventTypeId?: true
   }
 
-  export type EventMinAggregateInputType = {
+  export type LocationMinAggregateInputType = {
     id?: true
     name?: true
-    userId?: true
-    eventTypeId?: true
     createdAt?: true
     updatedAt?: true
   }
 
-  export type EventMaxAggregateInputType = {
+  export type LocationMaxAggregateInputType = {
     id?: true
     name?: true
-    userId?: true
-    eventTypeId?: true
     createdAt?: true
     updatedAt?: true
   }
 
-  export type EventCountAggregateInputType = {
+  export type LocationCountAggregateInputType = {
     id?: true
     name?: true
-    userId?: true
-    eventTypeId?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
   }
 
-  export type EventAggregateArgs = {
+  export type LocationAggregateArgs = {
     /**
-     * Filter which Event to aggregate.
+     * Filter which Location to aggregate.
      */
-    where?: EventWhereInput
+    where?: LocationWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Events to fetch.
+     * Determine the order of Locations to fetch.
      */
-    orderBy?: Enumerable<EventOrderByWithRelationInput>
+    orderBy?: Enumerable<LocationOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
      */
-    cursor?: EventWhereUniqueInput
+    cursor?: LocationWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Events from the position of the cursor.
+     * Take `±n` Locations from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Events.
+     * Skip the first `n` Locations.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Count returned Events
+     * Count returned Locations
     **/
-    _count?: true | EventCountAggregateInputType
+    _count?: true | LocationCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
-    _avg?: EventAvgAggregateInputType
+    _avg?: LocationAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to sum
     **/
-    _sum?: EventSumAggregateInputType
+    _sum?: LocationSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
-    _min?: EventMinAggregateInputType
+    _min?: LocationMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
-    _max?: EventMaxAggregateInputType
+    _max?: LocationMaxAggregateInputType
   }
 
-  export type GetEventAggregateType<T extends EventAggregateArgs> = {
-        [P in keyof T & keyof AggregateEvent]: P extends '_count' | 'count'
+  export type GetLocationAggregateType<T extends LocationAggregateArgs> = {
+        [P in keyof T & keyof AggregateLocation]: P extends '_count' | 'count'
       ? T[P] extends true
         ? number
-        : GetScalarType<T[P], AggregateEvent[P]>
-      : GetScalarType<T[P], AggregateEvent[P]>
+        : GetScalarType<T[P], AggregateLocation[P]>
+      : GetScalarType<T[P], AggregateLocation[P]>
   }
 
 
 
 
-  export type EventGroupByArgs = {
-    where?: EventWhereInput
-    orderBy?: Enumerable<EventOrderByWithAggregationInput>
-    by: EventScalarFieldEnum[]
-    having?: EventScalarWhereWithAggregatesInput
+  export type LocationGroupByArgs = {
+    where?: LocationWhereInput
+    orderBy?: Enumerable<LocationOrderByWithAggregationInput>
+    by: LocationScalarFieldEnum[]
+    having?: LocationScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    _count?: EventCountAggregateInputType | true
-    _avg?: EventAvgAggregateInputType
-    _sum?: EventSumAggregateInputType
-    _min?: EventMinAggregateInputType
-    _max?: EventMaxAggregateInputType
+    _count?: LocationCountAggregateInputType | true
+    _avg?: LocationAvgAggregateInputType
+    _sum?: LocationSumAggregateInputType
+    _min?: LocationMinAggregateInputType
+    _max?: LocationMaxAggregateInputType
   }
 
 
-  export type EventGroupByOutputType = {
+  export type LocationGroupByOutputType = {
     id: number
     name: string
-    userId: number
-    eventTypeId: number
     createdAt: Date
     updatedAt: Date
-    _count: EventCountAggregateOutputType | null
-    _avg: EventAvgAggregateOutputType | null
-    _sum: EventSumAggregateOutputType | null
-    _min: EventMinAggregateOutputType | null
-    _max: EventMaxAggregateOutputType | null
+    _count: LocationCountAggregateOutputType | null
+    _avg: LocationAvgAggregateOutputType | null
+    _sum: LocationSumAggregateOutputType | null
+    _min: LocationMinAggregateOutputType | null
+    _max: LocationMaxAggregateOutputType | null
   }
 
-  type GetEventGroupByPayload<T extends EventGroupByArgs> = Prisma.PrismaPromise<
+  type GetLocationGroupByPayload<T extends LocationGroupByArgs> = Prisma.PrismaPromise<
     Array<
-      PickArray<EventGroupByOutputType, T['by']> &
+      PickArray<LocationGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof EventGroupByOutputType))]: P extends '_count'
+          [P in ((keyof T) & (keyof LocationGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
               ? number
-              : GetScalarType<T[P], EventGroupByOutputType[P]>
-            : GetScalarType<T[P], EventGroupByOutputType[P]>
+              : GetScalarType<T[P], LocationGroupByOutputType[P]>
+            : GetScalarType<T[P], LocationGroupByOutputType[P]>
         }
       >
     >
 
 
-  export type EventSelect = {
+  export type LocationSelect = {
     id?: boolean
     name?: boolean
-    userId?: boolean
-    eventTypeId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    user?: boolean | UserArgs
-    eventType?: boolean | EventTypeArgs
+    eventTypeOnLocations?: boolean | Location$eventTypeOnLocationsArgs
+    groupMeetings?: boolean | Location$groupMeetingsArgs
+    _count?: boolean | LocationCountOutputTypeArgs
   }
 
 
-  export type EventInclude = {
-    user?: boolean | UserArgs
-    eventType?: boolean | EventTypeArgs
+  export type LocationInclude = {
+    eventTypeOnLocations?: boolean | Location$eventTypeOnLocationsArgs
+    groupMeetings?: boolean | Location$groupMeetingsArgs
+    _count?: boolean | LocationCountOutputTypeArgs
   }
 
-  export type EventGetPayload<S extends boolean | null | undefined | EventArgs> =
+  export type LocationGetPayload<S extends boolean | null | undefined | LocationArgs> =
     S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? Event :
+    S extends true ? Location :
     S extends undefined ? never :
-    S extends { include: any } & (EventArgs | EventFindManyArgs)
-    ? Event  & {
+    S extends { include: any } & (LocationArgs | LocationFindManyArgs)
+    ? Location  & {
     [P in TruthyKeys<S['include']>]:
-        P extends 'user' ? UserGetPayload<S['include'][P]> :
-        P extends 'eventType' ? EventTypeGetPayload<S['include'][P]> :  never
+        P extends 'eventTypeOnLocations' ? Array < EventTypeOnLocationGetPayload<S['include'][P]>>  :
+        P extends 'groupMeetings' ? Array < GroupMeetingGetPayload<S['include'][P]>>  :
+        P extends '_count' ? LocationCountOutputTypeGetPayload<S['include'][P]> :  never
   } 
-    : S extends { select: any } & (EventArgs | EventFindManyArgs)
+    : S extends { select: any } & (LocationArgs | LocationFindManyArgs)
       ? {
     [P in TruthyKeys<S['select']>]:
-        P extends 'user' ? UserGetPayload<S['select'][P]> :
-        P extends 'eventType' ? EventTypeGetPayload<S['select'][P]> :  P extends keyof Event ? Event[P] : never
+        P extends 'eventTypeOnLocations' ? Array < EventTypeOnLocationGetPayload<S['select'][P]>>  :
+        P extends 'groupMeetings' ? Array < GroupMeetingGetPayload<S['select'][P]>>  :
+        P extends '_count' ? LocationCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof Location ? Location[P] : never
   } 
-      : Event
+      : Location
 
 
-  type EventCountArgs = 
-    Omit<EventFindManyArgs, 'select' | 'include'> & {
-      select?: EventCountAggregateInputType | true
+  type LocationCountArgs = 
+    Omit<LocationFindManyArgs, 'select' | 'include'> & {
+      select?: LocationCountAggregateInputType | true
     }
 
-  export interface EventDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+  export interface LocationDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
 
     /**
-     * Find zero or one Event that matches the filter.
-     * @param {EventFindUniqueArgs} args - Arguments to find a Event
+     * Find zero or one Location that matches the filter.
+     * @param {LocationFindUniqueArgs} args - Arguments to find a Location
      * @example
-     * // Get one Event
-     * const event = await prisma.event.findUnique({
+     * // Get one Location
+     * const location = await prisma.location.findUnique({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
     **/
-    findUnique<T extends EventFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args: SelectSubset<T, EventFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Event'> extends True ? Prisma__EventClient<EventGetPayload<T>> : Prisma__EventClient<EventGetPayload<T> | null, null>
+    findUnique<T extends LocationFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, LocationFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Location'> extends True ? Prisma__LocationClient<LocationGetPayload<T>> : Prisma__LocationClient<LocationGetPayload<T> | null, null>
 
     /**
-     * Find one Event that matches the filter or throw an error  with `error.code='P2025'` 
+     * Find one Location that matches the filter or throw an error  with `error.code='P2025'` 
      *     if no matches were found.
-     * @param {EventFindUniqueOrThrowArgs} args - Arguments to find a Event
+     * @param {LocationFindUniqueOrThrowArgs} args - Arguments to find a Location
      * @example
-     * // Get one Event
-     * const event = await prisma.event.findUniqueOrThrow({
+     * // Get one Location
+     * const location = await prisma.location.findUniqueOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
     **/
-    findUniqueOrThrow<T extends EventFindUniqueOrThrowArgs>(
-      args?: SelectSubset<T, EventFindUniqueOrThrowArgs>
-    ): Prisma__EventClient<EventGetPayload<T>>
+    findUniqueOrThrow<T extends LocationFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, LocationFindUniqueOrThrowArgs>
+    ): Prisma__LocationClient<LocationGetPayload<T>>
 
     /**
-     * Find the first Event that matches the filter.
+     * Find the first Location that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {EventFindFirstArgs} args - Arguments to find a Event
+     * @param {LocationFindFirstArgs} args - Arguments to find a Location
      * @example
-     * // Get one Event
-     * const event = await prisma.event.findFirst({
+     * // Get one Location
+     * const location = await prisma.location.findFirst({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
     **/
-    findFirst<T extends EventFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args?: SelectSubset<T, EventFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Event'> extends True ? Prisma__EventClient<EventGetPayload<T>> : Prisma__EventClient<EventGetPayload<T> | null, null>
+    findFirst<T extends LocationFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, LocationFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Location'> extends True ? Prisma__LocationClient<LocationGetPayload<T>> : Prisma__LocationClient<LocationGetPayload<T> | null, null>
 
     /**
-     * Find the first Event that matches the filter or
+     * Find the first Location that matches the filter or
      * throw `NotFoundError` if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {EventFindFirstOrThrowArgs} args - Arguments to find a Event
+     * @param {LocationFindFirstOrThrowArgs} args - Arguments to find a Location
      * @example
-     * // Get one Event
-     * const event = await prisma.event.findFirstOrThrow({
+     * // Get one Location
+     * const location = await prisma.location.findFirstOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
     **/
-    findFirstOrThrow<T extends EventFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, EventFindFirstOrThrowArgs>
-    ): Prisma__EventClient<EventGetPayload<T>>
+    findFirstOrThrow<T extends LocationFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, LocationFindFirstOrThrowArgs>
+    ): Prisma__LocationClient<LocationGetPayload<T>>
 
     /**
-     * Find zero or more Events that matches the filter.
+     * Find zero or more Locations that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {EventFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @param {LocationFindManyArgs=} args - Arguments to filter and select certain fields only.
      * @example
-     * // Get all Events
-     * const events = await prisma.event.findMany()
+     * // Get all Locations
+     * const locations = await prisma.location.findMany()
      * 
-     * // Get first 10 Events
-     * const events = await prisma.event.findMany({ take: 10 })
+     * // Get first 10 Locations
+     * const locations = await prisma.location.findMany({ take: 10 })
      * 
      * // Only select the `id`
-     * const eventWithIdOnly = await prisma.event.findMany({ select: { id: true } })
+     * const locationWithIdOnly = await prisma.location.findMany({ select: { id: true } })
      * 
     **/
-    findMany<T extends EventFindManyArgs>(
-      args?: SelectSubset<T, EventFindManyArgs>
-    ): Prisma.PrismaPromise<Array<EventGetPayload<T>>>
+    findMany<T extends LocationFindManyArgs>(
+      args?: SelectSubset<T, LocationFindManyArgs>
+    ): Prisma.PrismaPromise<Array<LocationGetPayload<T>>>
 
     /**
-     * Create a Event.
-     * @param {EventCreateArgs} args - Arguments to create a Event.
+     * Create a Location.
+     * @param {LocationCreateArgs} args - Arguments to create a Location.
      * @example
-     * // Create one Event
-     * const Event = await prisma.event.create({
+     * // Create one Location
+     * const Location = await prisma.location.create({
      *   data: {
-     *     // ... data to create a Event
+     *     // ... data to create a Location
      *   }
      * })
      * 
     **/
-    create<T extends EventCreateArgs>(
-      args: SelectSubset<T, EventCreateArgs>
-    ): Prisma__EventClient<EventGetPayload<T>>
+    create<T extends LocationCreateArgs>(
+      args: SelectSubset<T, LocationCreateArgs>
+    ): Prisma__LocationClient<LocationGetPayload<T>>
 
     /**
-     * Create many Events.
-     *     @param {EventCreateManyArgs} args - Arguments to create many Events.
+     * Create many Locations.
+     *     @param {LocationCreateManyArgs} args - Arguments to create many Locations.
      *     @example
-     *     // Create many Events
-     *     const event = await prisma.event.createMany({
+     *     // Create many Locations
+     *     const location = await prisma.location.createMany({
      *       data: {
      *         // ... provide data here
      *       }
      *     })
      *     
     **/
-    createMany<T extends EventCreateManyArgs>(
-      args?: SelectSubset<T, EventCreateManyArgs>
+    createMany<T extends LocationCreateManyArgs>(
+      args?: SelectSubset<T, LocationCreateManyArgs>
     ): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Delete a Event.
-     * @param {EventDeleteArgs} args - Arguments to delete one Event.
+     * Delete a Location.
+     * @param {LocationDeleteArgs} args - Arguments to delete one Location.
      * @example
-     * // Delete one Event
-     * const Event = await prisma.event.delete({
+     * // Delete one Location
+     * const Location = await prisma.location.delete({
      *   where: {
-     *     // ... filter to delete one Event
+     *     // ... filter to delete one Location
      *   }
      * })
      * 
     **/
-    delete<T extends EventDeleteArgs>(
-      args: SelectSubset<T, EventDeleteArgs>
-    ): Prisma__EventClient<EventGetPayload<T>>
+    delete<T extends LocationDeleteArgs>(
+      args: SelectSubset<T, LocationDeleteArgs>
+    ): Prisma__LocationClient<LocationGetPayload<T>>
 
     /**
-     * Update one Event.
-     * @param {EventUpdateArgs} args - Arguments to update one Event.
+     * Update one Location.
+     * @param {LocationUpdateArgs} args - Arguments to update one Location.
      * @example
-     * // Update one Event
-     * const event = await prisma.event.update({
+     * // Update one Location
+     * const location = await prisma.location.update({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -4309,34 +4102,34 @@ export namespace Prisma {
      * })
      * 
     **/
-    update<T extends EventUpdateArgs>(
-      args: SelectSubset<T, EventUpdateArgs>
-    ): Prisma__EventClient<EventGetPayload<T>>
+    update<T extends LocationUpdateArgs>(
+      args: SelectSubset<T, LocationUpdateArgs>
+    ): Prisma__LocationClient<LocationGetPayload<T>>
 
     /**
-     * Delete zero or more Events.
-     * @param {EventDeleteManyArgs} args - Arguments to filter Events to delete.
+     * Delete zero or more Locations.
+     * @param {LocationDeleteManyArgs} args - Arguments to filter Locations to delete.
      * @example
-     * // Delete a few Events
-     * const { count } = await prisma.event.deleteMany({
+     * // Delete a few Locations
+     * const { count } = await prisma.location.deleteMany({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      * 
     **/
-    deleteMany<T extends EventDeleteManyArgs>(
-      args?: SelectSubset<T, EventDeleteManyArgs>
+    deleteMany<T extends LocationDeleteManyArgs>(
+      args?: SelectSubset<T, LocationDeleteManyArgs>
     ): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more Events.
+     * Update zero or more Locations.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {EventUpdateManyArgs} args - Arguments to update one or more rows.
+     * @param {LocationUpdateManyArgs} args - Arguments to update one or more rows.
      * @example
-     * // Update many Events
-     * const event = await prisma.event.updateMany({
+     * // Update many Locations
+     * const location = await prisma.location.updateMany({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -4346,59 +4139,59 @@ export namespace Prisma {
      * })
      * 
     **/
-    updateMany<T extends EventUpdateManyArgs>(
-      args: SelectSubset<T, EventUpdateManyArgs>
+    updateMany<T extends LocationUpdateManyArgs>(
+      args: SelectSubset<T, LocationUpdateManyArgs>
     ): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Create or update one Event.
-     * @param {EventUpsertArgs} args - Arguments to update or create a Event.
+     * Create or update one Location.
+     * @param {LocationUpsertArgs} args - Arguments to update or create a Location.
      * @example
-     * // Update or create a Event
-     * const event = await prisma.event.upsert({
+     * // Update or create a Location
+     * const location = await prisma.location.upsert({
      *   create: {
-     *     // ... data to create a Event
+     *     // ... data to create a Location
      *   },
      *   update: {
      *     // ... in case it already exists, update
      *   },
      *   where: {
-     *     // ... the filter for the Event we want to update
+     *     // ... the filter for the Location we want to update
      *   }
      * })
     **/
-    upsert<T extends EventUpsertArgs>(
-      args: SelectSubset<T, EventUpsertArgs>
-    ): Prisma__EventClient<EventGetPayload<T>>
+    upsert<T extends LocationUpsertArgs>(
+      args: SelectSubset<T, LocationUpsertArgs>
+    ): Prisma__LocationClient<LocationGetPayload<T>>
 
     /**
-     * Count the number of Events.
+     * Count the number of Locations.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {EventCountArgs} args - Arguments to filter Events to count.
+     * @param {LocationCountArgs} args - Arguments to filter Locations to count.
      * @example
-     * // Count the number of Events
-     * const count = await prisma.event.count({
+     * // Count the number of Locations
+     * const count = await prisma.location.count({
      *   where: {
-     *     // ... the filter for the Events we want to count
+     *     // ... the filter for the Locations we want to count
      *   }
      * })
     **/
-    count<T extends EventCountArgs>(
-      args?: Subset<T, EventCountArgs>,
+    count<T extends LocationCountArgs>(
+      args?: Subset<T, LocationCountArgs>,
     ): Prisma.PrismaPromise<
       T extends _Record<'select', any>
         ? T['select'] extends true
           ? number
-          : GetScalarType<T['select'], EventCountAggregateOutputType>
+          : GetScalarType<T['select'], LocationCountAggregateOutputType>
         : number
     >
 
     /**
-     * Allows you to perform aggregations operations on a Event.
+     * Allows you to perform aggregations operations on a Location.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {EventAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @param {LocationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
      * @example
      * // Ordered by age ascending
      * // Where email contains prisma.io
@@ -4418,13 +4211,13 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends EventAggregateArgs>(args: Subset<T, EventAggregateArgs>): Prisma.PrismaPromise<GetEventAggregateType<T>>
+    aggregate<T extends LocationAggregateArgs>(args: Subset<T, LocationAggregateArgs>): Prisma.PrismaPromise<GetLocationAggregateType<T>>
 
     /**
-     * Group by Event.
+     * Group by Location.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {EventGroupByArgs} args - Group by arguments.
+     * @param {LocationGroupByArgs} args - Group by arguments.
      * @example
      * // Group by city, order by createdAt, get count
      * const result = await prisma.user.groupBy({
@@ -4439,14 +4232,14 @@ export namespace Prisma {
      * 
     **/
     groupBy<
-      T extends EventGroupByArgs,
+      T extends LocationGroupByArgs,
       HasSelectOrTake extends Or<
         Extends<'skip', Keys<T>>,
         Extends<'take', Keys<T>>
       >,
       OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: EventGroupByArgs['orderBy'] }
-        : { orderBy?: EventGroupByArgs['orderBy'] },
+        ? { orderBy: LocationGroupByArgs['orderBy'] }
+        : { orderBy?: LocationGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends TupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -4495,17 +4288,17 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, EventGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetEventGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, LocationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetLocationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
 
   }
 
   /**
-   * The delegate class that acts as a "Promise-like" for Event.
+   * The delegate class that acts as a "Promise-like" for Location.
    * Why is this prefixed with `Prisma__`?
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export class Prisma__EventClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+  export class Prisma__LocationClient<T, Null = never> implements Prisma.PrismaPromise<T> {
     private readonly _dmmf;
     private readonly _queryType;
     private readonly _rootField;
@@ -4520,7 +4313,3061 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
     constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
 
-    user<T extends UserArgs= {}>(args?: Subset<T, UserArgs>): Prisma__UserClient<UserGetPayload<T> | Null>;
+    eventTypeOnLocations<T extends Location$eventTypeOnLocationsArgs= {}>(args?: Subset<T, Location$eventTypeOnLocationsArgs>): Prisma.PrismaPromise<Array<EventTypeOnLocationGetPayload<T>>| Null>;
+
+    groupMeetings<T extends Location$groupMeetingsArgs= {}>(args?: Subset<T, Location$groupMeetingsArgs>): Prisma.PrismaPromise<Array<GroupMeetingGetPayload<T>>| Null>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+
+
+  // Custom InputTypes
+
+  /**
+   * Location base type for findUnique actions
+   */
+  export type LocationFindUniqueArgsBase = {
+    /**
+     * Select specific fields to fetch from the Location
+     */
+    select?: LocationSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: LocationInclude | null
+    /**
+     * Filter, which Location to fetch.
+     */
+    where: LocationWhereUniqueInput
+  }
+
+  /**
+   * Location findUnique
+   */
+  export interface LocationFindUniqueArgs extends LocationFindUniqueArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * Location findUniqueOrThrow
+   */
+  export type LocationFindUniqueOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the Location
+     */
+    select?: LocationSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: LocationInclude | null
+    /**
+     * Filter, which Location to fetch.
+     */
+    where: LocationWhereUniqueInput
+  }
+
+
+  /**
+   * Location base type for findFirst actions
+   */
+  export type LocationFindFirstArgsBase = {
+    /**
+     * Select specific fields to fetch from the Location
+     */
+    select?: LocationSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: LocationInclude | null
+    /**
+     * Filter, which Location to fetch.
+     */
+    where?: LocationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Locations to fetch.
+     */
+    orderBy?: Enumerable<LocationOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Locations.
+     */
+    cursor?: LocationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Locations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Locations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Locations.
+     */
+    distinct?: Enumerable<LocationScalarFieldEnum>
+  }
+
+  /**
+   * Location findFirst
+   */
+  export interface LocationFindFirstArgs extends LocationFindFirstArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * Location findFirstOrThrow
+   */
+  export type LocationFindFirstOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the Location
+     */
+    select?: LocationSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: LocationInclude | null
+    /**
+     * Filter, which Location to fetch.
+     */
+    where?: LocationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Locations to fetch.
+     */
+    orderBy?: Enumerable<LocationOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Locations.
+     */
+    cursor?: LocationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Locations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Locations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Locations.
+     */
+    distinct?: Enumerable<LocationScalarFieldEnum>
+  }
+
+
+  /**
+   * Location findMany
+   */
+  export type LocationFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the Location
+     */
+    select?: LocationSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: LocationInclude | null
+    /**
+     * Filter, which Locations to fetch.
+     */
+    where?: LocationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Locations to fetch.
+     */
+    orderBy?: Enumerable<LocationOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Locations.
+     */
+    cursor?: LocationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Locations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Locations.
+     */
+    skip?: number
+    distinct?: Enumerable<LocationScalarFieldEnum>
+  }
+
+
+  /**
+   * Location create
+   */
+  export type LocationCreateArgs = {
+    /**
+     * Select specific fields to fetch from the Location
+     */
+    select?: LocationSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: LocationInclude | null
+    /**
+     * The data needed to create a Location.
+     */
+    data: XOR<LocationCreateInput, LocationUncheckedCreateInput>
+  }
+
+
+  /**
+   * Location createMany
+   */
+  export type LocationCreateManyArgs = {
+    /**
+     * The data used to create many Locations.
+     */
+    data: Enumerable<LocationCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * Location update
+   */
+  export type LocationUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the Location
+     */
+    select?: LocationSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: LocationInclude | null
+    /**
+     * The data needed to update a Location.
+     */
+    data: XOR<LocationUpdateInput, LocationUncheckedUpdateInput>
+    /**
+     * Choose, which Location to update.
+     */
+    where: LocationWhereUniqueInput
+  }
+
+
+  /**
+   * Location updateMany
+   */
+  export type LocationUpdateManyArgs = {
+    /**
+     * The data used to update Locations.
+     */
+    data: XOR<LocationUpdateManyMutationInput, LocationUncheckedUpdateManyInput>
+    /**
+     * Filter which Locations to update
+     */
+    where?: LocationWhereInput
+  }
+
+
+  /**
+   * Location upsert
+   */
+  export type LocationUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the Location
+     */
+    select?: LocationSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: LocationInclude | null
+    /**
+     * The filter to search for the Location to update in case it exists.
+     */
+    where: LocationWhereUniqueInput
+    /**
+     * In case the Location found by the `where` argument doesn't exist, create a new Location with this data.
+     */
+    create: XOR<LocationCreateInput, LocationUncheckedCreateInput>
+    /**
+     * In case the Location was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<LocationUpdateInput, LocationUncheckedUpdateInput>
+  }
+
+
+  /**
+   * Location delete
+   */
+  export type LocationDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the Location
+     */
+    select?: LocationSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: LocationInclude | null
+    /**
+     * Filter which Location to delete.
+     */
+    where: LocationWhereUniqueInput
+  }
+
+
+  /**
+   * Location deleteMany
+   */
+  export type LocationDeleteManyArgs = {
+    /**
+     * Filter which Locations to delete
+     */
+    where?: LocationWhereInput
+  }
+
+
+  /**
+   * Location.eventTypeOnLocations
+   */
+  export type Location$eventTypeOnLocationsArgs = {
+    /**
+     * Select specific fields to fetch from the EventTypeOnLocation
+     */
+    select?: EventTypeOnLocationSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: EventTypeOnLocationInclude | null
+    where?: EventTypeOnLocationWhereInput
+    orderBy?: Enumerable<EventTypeOnLocationOrderByWithRelationInput>
+    cursor?: EventTypeOnLocationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Enumerable<EventTypeOnLocationScalarFieldEnum>
+  }
+
+
+  /**
+   * Location.groupMeetings
+   */
+  export type Location$groupMeetingsArgs = {
+    /**
+     * Select specific fields to fetch from the GroupMeeting
+     */
+    select?: GroupMeetingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: GroupMeetingInclude | null
+    where?: GroupMeetingWhereInput
+    orderBy?: Enumerable<GroupMeetingOrderByWithRelationInput>
+    cursor?: GroupMeetingWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Enumerable<GroupMeetingScalarFieldEnum>
+  }
+
+
+  /**
+   * Location without action
+   */
+  export type LocationArgs = {
+    /**
+     * Select specific fields to fetch from the Location
+     */
+    select?: LocationSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: LocationInclude | null
+  }
+
+
+
+  /**
+   * Model EventTypeOnLocation
+   */
+
+
+  export type AggregateEventTypeOnLocation = {
+    _count: EventTypeOnLocationCountAggregateOutputType | null
+    _avg: EventTypeOnLocationAvgAggregateOutputType | null
+    _sum: EventTypeOnLocationSumAggregateOutputType | null
+    _min: EventTypeOnLocationMinAggregateOutputType | null
+    _max: EventTypeOnLocationMaxAggregateOutputType | null
+  }
+
+  export type EventTypeOnLocationAvgAggregateOutputType = {
+    id: number | null
+    eventTypeId: number | null
+    locationId: number | null
+  }
+
+  export type EventTypeOnLocationSumAggregateOutputType = {
+    id: number | null
+    eventTypeId: number | null
+    locationId: number | null
+  }
+
+  export type EventTypeOnLocationMinAggregateOutputType = {
+    id: number | null
+    eventTypeId: number | null
+    locationId: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type EventTypeOnLocationMaxAggregateOutputType = {
+    id: number | null
+    eventTypeId: number | null
+    locationId: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type EventTypeOnLocationCountAggregateOutputType = {
+    id: number
+    eventTypeId: number
+    locationId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type EventTypeOnLocationAvgAggregateInputType = {
+    id?: true
+    eventTypeId?: true
+    locationId?: true
+  }
+
+  export type EventTypeOnLocationSumAggregateInputType = {
+    id?: true
+    eventTypeId?: true
+    locationId?: true
+  }
+
+  export type EventTypeOnLocationMinAggregateInputType = {
+    id?: true
+    eventTypeId?: true
+    locationId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type EventTypeOnLocationMaxAggregateInputType = {
+    id?: true
+    eventTypeId?: true
+    locationId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type EventTypeOnLocationCountAggregateInputType = {
+    id?: true
+    eventTypeId?: true
+    locationId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type EventTypeOnLocationAggregateArgs = {
+    /**
+     * Filter which EventTypeOnLocation to aggregate.
+     */
+    where?: EventTypeOnLocationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EventTypeOnLocations to fetch.
+     */
+    orderBy?: Enumerable<EventTypeOnLocationOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: EventTypeOnLocationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EventTypeOnLocations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EventTypeOnLocations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned EventTypeOnLocations
+    **/
+    _count?: true | EventTypeOnLocationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: EventTypeOnLocationAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: EventTypeOnLocationSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: EventTypeOnLocationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: EventTypeOnLocationMaxAggregateInputType
+  }
+
+  export type GetEventTypeOnLocationAggregateType<T extends EventTypeOnLocationAggregateArgs> = {
+        [P in keyof T & keyof AggregateEventTypeOnLocation]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateEventTypeOnLocation[P]>
+      : GetScalarType<T[P], AggregateEventTypeOnLocation[P]>
+  }
+
+
+
+
+  export type EventTypeOnLocationGroupByArgs = {
+    where?: EventTypeOnLocationWhereInput
+    orderBy?: Enumerable<EventTypeOnLocationOrderByWithAggregationInput>
+    by: EventTypeOnLocationScalarFieldEnum[]
+    having?: EventTypeOnLocationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: EventTypeOnLocationCountAggregateInputType | true
+    _avg?: EventTypeOnLocationAvgAggregateInputType
+    _sum?: EventTypeOnLocationSumAggregateInputType
+    _min?: EventTypeOnLocationMinAggregateInputType
+    _max?: EventTypeOnLocationMaxAggregateInputType
+  }
+
+
+  export type EventTypeOnLocationGroupByOutputType = {
+    id: number
+    eventTypeId: number
+    locationId: number
+    createdAt: Date
+    updatedAt: Date
+    _count: EventTypeOnLocationCountAggregateOutputType | null
+    _avg: EventTypeOnLocationAvgAggregateOutputType | null
+    _sum: EventTypeOnLocationSumAggregateOutputType | null
+    _min: EventTypeOnLocationMinAggregateOutputType | null
+    _max: EventTypeOnLocationMaxAggregateOutputType | null
+  }
+
+  type GetEventTypeOnLocationGroupByPayload<T extends EventTypeOnLocationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickArray<EventTypeOnLocationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof EventTypeOnLocationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], EventTypeOnLocationGroupByOutputType[P]>
+            : GetScalarType<T[P], EventTypeOnLocationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type EventTypeOnLocationSelect = {
+    id?: boolean
+    eventTypeId?: boolean
+    locationId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    eventType?: boolean | EventTypeArgs
+    location?: boolean | LocationArgs
+  }
+
+
+  export type EventTypeOnLocationInclude = {
+    eventType?: boolean | EventTypeArgs
+    location?: boolean | LocationArgs
+  }
+
+  export type EventTypeOnLocationGetPayload<S extends boolean | null | undefined | EventTypeOnLocationArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? EventTypeOnLocation :
+    S extends undefined ? never :
+    S extends { include: any } & (EventTypeOnLocationArgs | EventTypeOnLocationFindManyArgs)
+    ? EventTypeOnLocation  & {
+    [P in TruthyKeys<S['include']>]:
+        P extends 'eventType' ? EventTypeGetPayload<S['include'][P]> :
+        P extends 'location' ? LocationGetPayload<S['include'][P]> :  never
+  } 
+    : S extends { select: any } & (EventTypeOnLocationArgs | EventTypeOnLocationFindManyArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+        P extends 'eventType' ? EventTypeGetPayload<S['select'][P]> :
+        P extends 'location' ? LocationGetPayload<S['select'][P]> :  P extends keyof EventTypeOnLocation ? EventTypeOnLocation[P] : never
+  } 
+      : EventTypeOnLocation
+
+
+  type EventTypeOnLocationCountArgs = 
+    Omit<EventTypeOnLocationFindManyArgs, 'select' | 'include'> & {
+      select?: EventTypeOnLocationCountAggregateInputType | true
+    }
+
+  export interface EventTypeOnLocationDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+
+    /**
+     * Find zero or one EventTypeOnLocation that matches the filter.
+     * @param {EventTypeOnLocationFindUniqueArgs} args - Arguments to find a EventTypeOnLocation
+     * @example
+     * // Get one EventTypeOnLocation
+     * const eventTypeOnLocation = await prisma.eventTypeOnLocation.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends EventTypeOnLocationFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, EventTypeOnLocationFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'EventTypeOnLocation'> extends True ? Prisma__EventTypeOnLocationClient<EventTypeOnLocationGetPayload<T>> : Prisma__EventTypeOnLocationClient<EventTypeOnLocationGetPayload<T> | null, null>
+
+    /**
+     * Find one EventTypeOnLocation that matches the filter or throw an error  with `error.code='P2025'` 
+     *     if no matches were found.
+     * @param {EventTypeOnLocationFindUniqueOrThrowArgs} args - Arguments to find a EventTypeOnLocation
+     * @example
+     * // Get one EventTypeOnLocation
+     * const eventTypeOnLocation = await prisma.eventTypeOnLocation.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends EventTypeOnLocationFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, EventTypeOnLocationFindUniqueOrThrowArgs>
+    ): Prisma__EventTypeOnLocationClient<EventTypeOnLocationGetPayload<T>>
+
+    /**
+     * Find the first EventTypeOnLocation that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EventTypeOnLocationFindFirstArgs} args - Arguments to find a EventTypeOnLocation
+     * @example
+     * // Get one EventTypeOnLocation
+     * const eventTypeOnLocation = await prisma.eventTypeOnLocation.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends EventTypeOnLocationFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, EventTypeOnLocationFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'EventTypeOnLocation'> extends True ? Prisma__EventTypeOnLocationClient<EventTypeOnLocationGetPayload<T>> : Prisma__EventTypeOnLocationClient<EventTypeOnLocationGetPayload<T> | null, null>
+
+    /**
+     * Find the first EventTypeOnLocation that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EventTypeOnLocationFindFirstOrThrowArgs} args - Arguments to find a EventTypeOnLocation
+     * @example
+     * // Get one EventTypeOnLocation
+     * const eventTypeOnLocation = await prisma.eventTypeOnLocation.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends EventTypeOnLocationFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, EventTypeOnLocationFindFirstOrThrowArgs>
+    ): Prisma__EventTypeOnLocationClient<EventTypeOnLocationGetPayload<T>>
+
+    /**
+     * Find zero or more EventTypeOnLocations that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EventTypeOnLocationFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all EventTypeOnLocations
+     * const eventTypeOnLocations = await prisma.eventTypeOnLocation.findMany()
+     * 
+     * // Get first 10 EventTypeOnLocations
+     * const eventTypeOnLocations = await prisma.eventTypeOnLocation.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const eventTypeOnLocationWithIdOnly = await prisma.eventTypeOnLocation.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends EventTypeOnLocationFindManyArgs>(
+      args?: SelectSubset<T, EventTypeOnLocationFindManyArgs>
+    ): Prisma.PrismaPromise<Array<EventTypeOnLocationGetPayload<T>>>
+
+    /**
+     * Create a EventTypeOnLocation.
+     * @param {EventTypeOnLocationCreateArgs} args - Arguments to create a EventTypeOnLocation.
+     * @example
+     * // Create one EventTypeOnLocation
+     * const EventTypeOnLocation = await prisma.eventTypeOnLocation.create({
+     *   data: {
+     *     // ... data to create a EventTypeOnLocation
+     *   }
+     * })
+     * 
+    **/
+    create<T extends EventTypeOnLocationCreateArgs>(
+      args: SelectSubset<T, EventTypeOnLocationCreateArgs>
+    ): Prisma__EventTypeOnLocationClient<EventTypeOnLocationGetPayload<T>>
+
+    /**
+     * Create many EventTypeOnLocations.
+     *     @param {EventTypeOnLocationCreateManyArgs} args - Arguments to create many EventTypeOnLocations.
+     *     @example
+     *     // Create many EventTypeOnLocations
+     *     const eventTypeOnLocation = await prisma.eventTypeOnLocation.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends EventTypeOnLocationCreateManyArgs>(
+      args?: SelectSubset<T, EventTypeOnLocationCreateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a EventTypeOnLocation.
+     * @param {EventTypeOnLocationDeleteArgs} args - Arguments to delete one EventTypeOnLocation.
+     * @example
+     * // Delete one EventTypeOnLocation
+     * const EventTypeOnLocation = await prisma.eventTypeOnLocation.delete({
+     *   where: {
+     *     // ... filter to delete one EventTypeOnLocation
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends EventTypeOnLocationDeleteArgs>(
+      args: SelectSubset<T, EventTypeOnLocationDeleteArgs>
+    ): Prisma__EventTypeOnLocationClient<EventTypeOnLocationGetPayload<T>>
+
+    /**
+     * Update one EventTypeOnLocation.
+     * @param {EventTypeOnLocationUpdateArgs} args - Arguments to update one EventTypeOnLocation.
+     * @example
+     * // Update one EventTypeOnLocation
+     * const eventTypeOnLocation = await prisma.eventTypeOnLocation.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends EventTypeOnLocationUpdateArgs>(
+      args: SelectSubset<T, EventTypeOnLocationUpdateArgs>
+    ): Prisma__EventTypeOnLocationClient<EventTypeOnLocationGetPayload<T>>
+
+    /**
+     * Delete zero or more EventTypeOnLocations.
+     * @param {EventTypeOnLocationDeleteManyArgs} args - Arguments to filter EventTypeOnLocations to delete.
+     * @example
+     * // Delete a few EventTypeOnLocations
+     * const { count } = await prisma.eventTypeOnLocation.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends EventTypeOnLocationDeleteManyArgs>(
+      args?: SelectSubset<T, EventTypeOnLocationDeleteManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more EventTypeOnLocations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EventTypeOnLocationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many EventTypeOnLocations
+     * const eventTypeOnLocation = await prisma.eventTypeOnLocation.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends EventTypeOnLocationUpdateManyArgs>(
+      args: SelectSubset<T, EventTypeOnLocationUpdateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one EventTypeOnLocation.
+     * @param {EventTypeOnLocationUpsertArgs} args - Arguments to update or create a EventTypeOnLocation.
+     * @example
+     * // Update or create a EventTypeOnLocation
+     * const eventTypeOnLocation = await prisma.eventTypeOnLocation.upsert({
+     *   create: {
+     *     // ... data to create a EventTypeOnLocation
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the EventTypeOnLocation we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends EventTypeOnLocationUpsertArgs>(
+      args: SelectSubset<T, EventTypeOnLocationUpsertArgs>
+    ): Prisma__EventTypeOnLocationClient<EventTypeOnLocationGetPayload<T>>
+
+    /**
+     * Count the number of EventTypeOnLocations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EventTypeOnLocationCountArgs} args - Arguments to filter EventTypeOnLocations to count.
+     * @example
+     * // Count the number of EventTypeOnLocations
+     * const count = await prisma.eventTypeOnLocation.count({
+     *   where: {
+     *     // ... the filter for the EventTypeOnLocations we want to count
+     *   }
+     * })
+    **/
+    count<T extends EventTypeOnLocationCountArgs>(
+      args?: Subset<T, EventTypeOnLocationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], EventTypeOnLocationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a EventTypeOnLocation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EventTypeOnLocationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends EventTypeOnLocationAggregateArgs>(args: Subset<T, EventTypeOnLocationAggregateArgs>): Prisma.PrismaPromise<GetEventTypeOnLocationAggregateType<T>>
+
+    /**
+     * Group by EventTypeOnLocation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EventTypeOnLocationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends EventTypeOnLocationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: EventTypeOnLocationGroupByArgs['orderBy'] }
+        : { orderBy?: EventTypeOnLocationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, EventTypeOnLocationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetEventTypeOnLocationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for EventTypeOnLocation.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__EventTypeOnLocationClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+    private readonly _dmmf;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+
+    eventType<T extends EventTypeArgs= {}>(args?: Subset<T, EventTypeArgs>): Prisma__EventTypeClient<EventTypeGetPayload<T> | Null>;
+
+    location<T extends LocationArgs= {}>(args?: Subset<T, LocationArgs>): Prisma__LocationClient<LocationGetPayload<T> | Null>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+
+
+  // Custom InputTypes
+
+  /**
+   * EventTypeOnLocation base type for findUnique actions
+   */
+  export type EventTypeOnLocationFindUniqueArgsBase = {
+    /**
+     * Select specific fields to fetch from the EventTypeOnLocation
+     */
+    select?: EventTypeOnLocationSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: EventTypeOnLocationInclude | null
+    /**
+     * Filter, which EventTypeOnLocation to fetch.
+     */
+    where: EventTypeOnLocationWhereUniqueInput
+  }
+
+  /**
+   * EventTypeOnLocation findUnique
+   */
+  export interface EventTypeOnLocationFindUniqueArgs extends EventTypeOnLocationFindUniqueArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * EventTypeOnLocation findUniqueOrThrow
+   */
+  export type EventTypeOnLocationFindUniqueOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the EventTypeOnLocation
+     */
+    select?: EventTypeOnLocationSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: EventTypeOnLocationInclude | null
+    /**
+     * Filter, which EventTypeOnLocation to fetch.
+     */
+    where: EventTypeOnLocationWhereUniqueInput
+  }
+
+
+  /**
+   * EventTypeOnLocation base type for findFirst actions
+   */
+  export type EventTypeOnLocationFindFirstArgsBase = {
+    /**
+     * Select specific fields to fetch from the EventTypeOnLocation
+     */
+    select?: EventTypeOnLocationSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: EventTypeOnLocationInclude | null
+    /**
+     * Filter, which EventTypeOnLocation to fetch.
+     */
+    where?: EventTypeOnLocationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EventTypeOnLocations to fetch.
+     */
+    orderBy?: Enumerable<EventTypeOnLocationOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EventTypeOnLocations.
+     */
+    cursor?: EventTypeOnLocationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EventTypeOnLocations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EventTypeOnLocations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EventTypeOnLocations.
+     */
+    distinct?: Enumerable<EventTypeOnLocationScalarFieldEnum>
+  }
+
+  /**
+   * EventTypeOnLocation findFirst
+   */
+  export interface EventTypeOnLocationFindFirstArgs extends EventTypeOnLocationFindFirstArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * EventTypeOnLocation findFirstOrThrow
+   */
+  export type EventTypeOnLocationFindFirstOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the EventTypeOnLocation
+     */
+    select?: EventTypeOnLocationSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: EventTypeOnLocationInclude | null
+    /**
+     * Filter, which EventTypeOnLocation to fetch.
+     */
+    where?: EventTypeOnLocationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EventTypeOnLocations to fetch.
+     */
+    orderBy?: Enumerable<EventTypeOnLocationOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EventTypeOnLocations.
+     */
+    cursor?: EventTypeOnLocationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EventTypeOnLocations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EventTypeOnLocations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EventTypeOnLocations.
+     */
+    distinct?: Enumerable<EventTypeOnLocationScalarFieldEnum>
+  }
+
+
+  /**
+   * EventTypeOnLocation findMany
+   */
+  export type EventTypeOnLocationFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the EventTypeOnLocation
+     */
+    select?: EventTypeOnLocationSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: EventTypeOnLocationInclude | null
+    /**
+     * Filter, which EventTypeOnLocations to fetch.
+     */
+    where?: EventTypeOnLocationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EventTypeOnLocations to fetch.
+     */
+    orderBy?: Enumerable<EventTypeOnLocationOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing EventTypeOnLocations.
+     */
+    cursor?: EventTypeOnLocationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EventTypeOnLocations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EventTypeOnLocations.
+     */
+    skip?: number
+    distinct?: Enumerable<EventTypeOnLocationScalarFieldEnum>
+  }
+
+
+  /**
+   * EventTypeOnLocation create
+   */
+  export type EventTypeOnLocationCreateArgs = {
+    /**
+     * Select specific fields to fetch from the EventTypeOnLocation
+     */
+    select?: EventTypeOnLocationSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: EventTypeOnLocationInclude | null
+    /**
+     * The data needed to create a EventTypeOnLocation.
+     */
+    data: XOR<EventTypeOnLocationCreateInput, EventTypeOnLocationUncheckedCreateInput>
+  }
+
+
+  /**
+   * EventTypeOnLocation createMany
+   */
+  export type EventTypeOnLocationCreateManyArgs = {
+    /**
+     * The data used to create many EventTypeOnLocations.
+     */
+    data: Enumerable<EventTypeOnLocationCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * EventTypeOnLocation update
+   */
+  export type EventTypeOnLocationUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the EventTypeOnLocation
+     */
+    select?: EventTypeOnLocationSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: EventTypeOnLocationInclude | null
+    /**
+     * The data needed to update a EventTypeOnLocation.
+     */
+    data: XOR<EventTypeOnLocationUpdateInput, EventTypeOnLocationUncheckedUpdateInput>
+    /**
+     * Choose, which EventTypeOnLocation to update.
+     */
+    where: EventTypeOnLocationWhereUniqueInput
+  }
+
+
+  /**
+   * EventTypeOnLocation updateMany
+   */
+  export type EventTypeOnLocationUpdateManyArgs = {
+    /**
+     * The data used to update EventTypeOnLocations.
+     */
+    data: XOR<EventTypeOnLocationUpdateManyMutationInput, EventTypeOnLocationUncheckedUpdateManyInput>
+    /**
+     * Filter which EventTypeOnLocations to update
+     */
+    where?: EventTypeOnLocationWhereInput
+  }
+
+
+  /**
+   * EventTypeOnLocation upsert
+   */
+  export type EventTypeOnLocationUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the EventTypeOnLocation
+     */
+    select?: EventTypeOnLocationSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: EventTypeOnLocationInclude | null
+    /**
+     * The filter to search for the EventTypeOnLocation to update in case it exists.
+     */
+    where: EventTypeOnLocationWhereUniqueInput
+    /**
+     * In case the EventTypeOnLocation found by the `where` argument doesn't exist, create a new EventTypeOnLocation with this data.
+     */
+    create: XOR<EventTypeOnLocationCreateInput, EventTypeOnLocationUncheckedCreateInput>
+    /**
+     * In case the EventTypeOnLocation was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<EventTypeOnLocationUpdateInput, EventTypeOnLocationUncheckedUpdateInput>
+  }
+
+
+  /**
+   * EventTypeOnLocation delete
+   */
+  export type EventTypeOnLocationDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the EventTypeOnLocation
+     */
+    select?: EventTypeOnLocationSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: EventTypeOnLocationInclude | null
+    /**
+     * Filter which EventTypeOnLocation to delete.
+     */
+    where: EventTypeOnLocationWhereUniqueInput
+  }
+
+
+  /**
+   * EventTypeOnLocation deleteMany
+   */
+  export type EventTypeOnLocationDeleteManyArgs = {
+    /**
+     * Filter which EventTypeOnLocations to delete
+     */
+    where?: EventTypeOnLocationWhereInput
+  }
+
+
+  /**
+   * EventTypeOnLocation without action
+   */
+  export type EventTypeOnLocationArgs = {
+    /**
+     * Select specific fields to fetch from the EventTypeOnLocation
+     */
+    select?: EventTypeOnLocationSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: EventTypeOnLocationInclude | null
+  }
+
+
+
+  /**
+   * Model AvailabilitySchedule
+   */
+
+
+  export type AggregateAvailabilitySchedule = {
+    _count: AvailabilityScheduleCountAggregateOutputType | null
+    _avg: AvailabilityScheduleAvgAggregateOutputType | null
+    _sum: AvailabilityScheduleSumAggregateOutputType | null
+    _min: AvailabilityScheduleMinAggregateOutputType | null
+    _max: AvailabilityScheduleMaxAggregateOutputType | null
+  }
+
+  export type AvailabilityScheduleAvgAggregateOutputType = {
+    id: number | null
+    eventTypeId: number | null
+  }
+
+  export type AvailabilityScheduleSumAggregateOutputType = {
+    id: number | null
+    eventTypeId: number | null
+  }
+
+  export type AvailabilityScheduleMinAggregateOutputType = {
+    id: number | null
+    name: string | null
+    eventTypeId: number | null
+    timezone: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AvailabilityScheduleMaxAggregateOutputType = {
+    id: number | null
+    name: string | null
+    eventTypeId: number | null
+    timezone: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AvailabilityScheduleCountAggregateOutputType = {
+    id: number
+    name: number
+    eventTypeId: number
+    timezone: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type AvailabilityScheduleAvgAggregateInputType = {
+    id?: true
+    eventTypeId?: true
+  }
+
+  export type AvailabilityScheduleSumAggregateInputType = {
+    id?: true
+    eventTypeId?: true
+  }
+
+  export type AvailabilityScheduleMinAggregateInputType = {
+    id?: true
+    name?: true
+    eventTypeId?: true
+    timezone?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AvailabilityScheduleMaxAggregateInputType = {
+    id?: true
+    name?: true
+    eventTypeId?: true
+    timezone?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AvailabilityScheduleCountAggregateInputType = {
+    id?: true
+    name?: true
+    eventTypeId?: true
+    timezone?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type AvailabilityScheduleAggregateArgs = {
+    /**
+     * Filter which AvailabilitySchedule to aggregate.
+     */
+    where?: AvailabilityScheduleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AvailabilitySchedules to fetch.
+     */
+    orderBy?: Enumerable<AvailabilityScheduleOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AvailabilityScheduleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AvailabilitySchedules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AvailabilitySchedules.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AvailabilitySchedules
+    **/
+    _count?: true | AvailabilityScheduleCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AvailabilityScheduleAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AvailabilityScheduleSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AvailabilityScheduleMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AvailabilityScheduleMaxAggregateInputType
+  }
+
+  export type GetAvailabilityScheduleAggregateType<T extends AvailabilityScheduleAggregateArgs> = {
+        [P in keyof T & keyof AggregateAvailabilitySchedule]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAvailabilitySchedule[P]>
+      : GetScalarType<T[P], AggregateAvailabilitySchedule[P]>
+  }
+
+
+
+
+  export type AvailabilityScheduleGroupByArgs = {
+    where?: AvailabilityScheduleWhereInput
+    orderBy?: Enumerable<AvailabilityScheduleOrderByWithAggregationInput>
+    by: AvailabilityScheduleScalarFieldEnum[]
+    having?: AvailabilityScheduleScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AvailabilityScheduleCountAggregateInputType | true
+    _avg?: AvailabilityScheduleAvgAggregateInputType
+    _sum?: AvailabilityScheduleSumAggregateInputType
+    _min?: AvailabilityScheduleMinAggregateInputType
+    _max?: AvailabilityScheduleMaxAggregateInputType
+  }
+
+
+  export type AvailabilityScheduleGroupByOutputType = {
+    id: number
+    name: string
+    eventTypeId: number
+    timezone: string
+    createdAt: Date
+    updatedAt: Date
+    _count: AvailabilityScheduleCountAggregateOutputType | null
+    _avg: AvailabilityScheduleAvgAggregateOutputType | null
+    _sum: AvailabilityScheduleSumAggregateOutputType | null
+    _min: AvailabilityScheduleMinAggregateOutputType | null
+    _max: AvailabilityScheduleMaxAggregateOutputType | null
+  }
+
+  type GetAvailabilityScheduleGroupByPayload<T extends AvailabilityScheduleGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickArray<AvailabilityScheduleGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AvailabilityScheduleGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AvailabilityScheduleGroupByOutputType[P]>
+            : GetScalarType<T[P], AvailabilityScheduleGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AvailabilityScheduleSelect = {
+    id?: boolean
+    name?: boolean
+    eventTypeId?: boolean
+    timezone?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    eventType?: boolean | EventTypeArgs
+    weekDays?: boolean | AvailabilitySchedule$weekDaysArgs
+    _count?: boolean | AvailabilityScheduleCountOutputTypeArgs
+  }
+
+
+  export type AvailabilityScheduleInclude = {
+    eventType?: boolean | EventTypeArgs
+    weekDays?: boolean | AvailabilitySchedule$weekDaysArgs
+    _count?: boolean | AvailabilityScheduleCountOutputTypeArgs
+  }
+
+  export type AvailabilityScheduleGetPayload<S extends boolean | null | undefined | AvailabilityScheduleArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? AvailabilitySchedule :
+    S extends undefined ? never :
+    S extends { include: any } & (AvailabilityScheduleArgs | AvailabilityScheduleFindManyArgs)
+    ? AvailabilitySchedule  & {
+    [P in TruthyKeys<S['include']>]:
+        P extends 'eventType' ? EventTypeGetPayload<S['include'][P]> :
+        P extends 'weekDays' ? Array < WeekDayGetPayload<S['include'][P]>>  :
+        P extends '_count' ? AvailabilityScheduleCountOutputTypeGetPayload<S['include'][P]> :  never
+  } 
+    : S extends { select: any } & (AvailabilityScheduleArgs | AvailabilityScheduleFindManyArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+        P extends 'eventType' ? EventTypeGetPayload<S['select'][P]> :
+        P extends 'weekDays' ? Array < WeekDayGetPayload<S['select'][P]>>  :
+        P extends '_count' ? AvailabilityScheduleCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof AvailabilitySchedule ? AvailabilitySchedule[P] : never
+  } 
+      : AvailabilitySchedule
+
+
+  type AvailabilityScheduleCountArgs = 
+    Omit<AvailabilityScheduleFindManyArgs, 'select' | 'include'> & {
+      select?: AvailabilityScheduleCountAggregateInputType | true
+    }
+
+  export interface AvailabilityScheduleDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+
+    /**
+     * Find zero or one AvailabilitySchedule that matches the filter.
+     * @param {AvailabilityScheduleFindUniqueArgs} args - Arguments to find a AvailabilitySchedule
+     * @example
+     * // Get one AvailabilitySchedule
+     * const availabilitySchedule = await prisma.availabilitySchedule.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends AvailabilityScheduleFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, AvailabilityScheduleFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'AvailabilitySchedule'> extends True ? Prisma__AvailabilityScheduleClient<AvailabilityScheduleGetPayload<T>> : Prisma__AvailabilityScheduleClient<AvailabilityScheduleGetPayload<T> | null, null>
+
+    /**
+     * Find one AvailabilitySchedule that matches the filter or throw an error  with `error.code='P2025'` 
+     *     if no matches were found.
+     * @param {AvailabilityScheduleFindUniqueOrThrowArgs} args - Arguments to find a AvailabilitySchedule
+     * @example
+     * // Get one AvailabilitySchedule
+     * const availabilitySchedule = await prisma.availabilitySchedule.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends AvailabilityScheduleFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, AvailabilityScheduleFindUniqueOrThrowArgs>
+    ): Prisma__AvailabilityScheduleClient<AvailabilityScheduleGetPayload<T>>
+
+    /**
+     * Find the first AvailabilitySchedule that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AvailabilityScheduleFindFirstArgs} args - Arguments to find a AvailabilitySchedule
+     * @example
+     * // Get one AvailabilitySchedule
+     * const availabilitySchedule = await prisma.availabilitySchedule.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends AvailabilityScheduleFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, AvailabilityScheduleFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'AvailabilitySchedule'> extends True ? Prisma__AvailabilityScheduleClient<AvailabilityScheduleGetPayload<T>> : Prisma__AvailabilityScheduleClient<AvailabilityScheduleGetPayload<T> | null, null>
+
+    /**
+     * Find the first AvailabilitySchedule that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AvailabilityScheduleFindFirstOrThrowArgs} args - Arguments to find a AvailabilitySchedule
+     * @example
+     * // Get one AvailabilitySchedule
+     * const availabilitySchedule = await prisma.availabilitySchedule.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends AvailabilityScheduleFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, AvailabilityScheduleFindFirstOrThrowArgs>
+    ): Prisma__AvailabilityScheduleClient<AvailabilityScheduleGetPayload<T>>
+
+    /**
+     * Find zero or more AvailabilitySchedules that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AvailabilityScheduleFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AvailabilitySchedules
+     * const availabilitySchedules = await prisma.availabilitySchedule.findMany()
+     * 
+     * // Get first 10 AvailabilitySchedules
+     * const availabilitySchedules = await prisma.availabilitySchedule.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const availabilityScheduleWithIdOnly = await prisma.availabilitySchedule.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends AvailabilityScheduleFindManyArgs>(
+      args?: SelectSubset<T, AvailabilityScheduleFindManyArgs>
+    ): Prisma.PrismaPromise<Array<AvailabilityScheduleGetPayload<T>>>
+
+    /**
+     * Create a AvailabilitySchedule.
+     * @param {AvailabilityScheduleCreateArgs} args - Arguments to create a AvailabilitySchedule.
+     * @example
+     * // Create one AvailabilitySchedule
+     * const AvailabilitySchedule = await prisma.availabilitySchedule.create({
+     *   data: {
+     *     // ... data to create a AvailabilitySchedule
+     *   }
+     * })
+     * 
+    **/
+    create<T extends AvailabilityScheduleCreateArgs>(
+      args: SelectSubset<T, AvailabilityScheduleCreateArgs>
+    ): Prisma__AvailabilityScheduleClient<AvailabilityScheduleGetPayload<T>>
+
+    /**
+     * Create many AvailabilitySchedules.
+     *     @param {AvailabilityScheduleCreateManyArgs} args - Arguments to create many AvailabilitySchedules.
+     *     @example
+     *     // Create many AvailabilitySchedules
+     *     const availabilitySchedule = await prisma.availabilitySchedule.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends AvailabilityScheduleCreateManyArgs>(
+      args?: SelectSubset<T, AvailabilityScheduleCreateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a AvailabilitySchedule.
+     * @param {AvailabilityScheduleDeleteArgs} args - Arguments to delete one AvailabilitySchedule.
+     * @example
+     * // Delete one AvailabilitySchedule
+     * const AvailabilitySchedule = await prisma.availabilitySchedule.delete({
+     *   where: {
+     *     // ... filter to delete one AvailabilitySchedule
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends AvailabilityScheduleDeleteArgs>(
+      args: SelectSubset<T, AvailabilityScheduleDeleteArgs>
+    ): Prisma__AvailabilityScheduleClient<AvailabilityScheduleGetPayload<T>>
+
+    /**
+     * Update one AvailabilitySchedule.
+     * @param {AvailabilityScheduleUpdateArgs} args - Arguments to update one AvailabilitySchedule.
+     * @example
+     * // Update one AvailabilitySchedule
+     * const availabilitySchedule = await prisma.availabilitySchedule.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends AvailabilityScheduleUpdateArgs>(
+      args: SelectSubset<T, AvailabilityScheduleUpdateArgs>
+    ): Prisma__AvailabilityScheduleClient<AvailabilityScheduleGetPayload<T>>
+
+    /**
+     * Delete zero or more AvailabilitySchedules.
+     * @param {AvailabilityScheduleDeleteManyArgs} args - Arguments to filter AvailabilitySchedules to delete.
+     * @example
+     * // Delete a few AvailabilitySchedules
+     * const { count } = await prisma.availabilitySchedule.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends AvailabilityScheduleDeleteManyArgs>(
+      args?: SelectSubset<T, AvailabilityScheduleDeleteManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AvailabilitySchedules.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AvailabilityScheduleUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AvailabilitySchedules
+     * const availabilitySchedule = await prisma.availabilitySchedule.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends AvailabilityScheduleUpdateManyArgs>(
+      args: SelectSubset<T, AvailabilityScheduleUpdateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one AvailabilitySchedule.
+     * @param {AvailabilityScheduleUpsertArgs} args - Arguments to update or create a AvailabilitySchedule.
+     * @example
+     * // Update or create a AvailabilitySchedule
+     * const availabilitySchedule = await prisma.availabilitySchedule.upsert({
+     *   create: {
+     *     // ... data to create a AvailabilitySchedule
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AvailabilitySchedule we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends AvailabilityScheduleUpsertArgs>(
+      args: SelectSubset<T, AvailabilityScheduleUpsertArgs>
+    ): Prisma__AvailabilityScheduleClient<AvailabilityScheduleGetPayload<T>>
+
+    /**
+     * Count the number of AvailabilitySchedules.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AvailabilityScheduleCountArgs} args - Arguments to filter AvailabilitySchedules to count.
+     * @example
+     * // Count the number of AvailabilitySchedules
+     * const count = await prisma.availabilitySchedule.count({
+     *   where: {
+     *     // ... the filter for the AvailabilitySchedules we want to count
+     *   }
+     * })
+    **/
+    count<T extends AvailabilityScheduleCountArgs>(
+      args?: Subset<T, AvailabilityScheduleCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AvailabilityScheduleCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AvailabilitySchedule.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AvailabilityScheduleAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AvailabilityScheduleAggregateArgs>(args: Subset<T, AvailabilityScheduleAggregateArgs>): Prisma.PrismaPromise<GetAvailabilityScheduleAggregateType<T>>
+
+    /**
+     * Group by AvailabilitySchedule.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AvailabilityScheduleGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AvailabilityScheduleGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AvailabilityScheduleGroupByArgs['orderBy'] }
+        : { orderBy?: AvailabilityScheduleGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AvailabilityScheduleGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAvailabilityScheduleGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AvailabilitySchedule.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__AvailabilityScheduleClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+    private readonly _dmmf;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+
+    eventType<T extends EventTypeArgs= {}>(args?: Subset<T, EventTypeArgs>): Prisma__EventTypeClient<EventTypeGetPayload<T> | Null>;
+
+    weekDays<T extends AvailabilitySchedule$weekDaysArgs= {}>(args?: Subset<T, AvailabilitySchedule$weekDaysArgs>): Prisma.PrismaPromise<Array<WeekDayGetPayload<T>>| Null>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+
+
+  // Custom InputTypes
+
+  /**
+   * AvailabilitySchedule base type for findUnique actions
+   */
+  export type AvailabilityScheduleFindUniqueArgsBase = {
+    /**
+     * Select specific fields to fetch from the AvailabilitySchedule
+     */
+    select?: AvailabilityScheduleSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AvailabilityScheduleInclude | null
+    /**
+     * Filter, which AvailabilitySchedule to fetch.
+     */
+    where: AvailabilityScheduleWhereUniqueInput
+  }
+
+  /**
+   * AvailabilitySchedule findUnique
+   */
+  export interface AvailabilityScheduleFindUniqueArgs extends AvailabilityScheduleFindUniqueArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * AvailabilitySchedule findUniqueOrThrow
+   */
+  export type AvailabilityScheduleFindUniqueOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the AvailabilitySchedule
+     */
+    select?: AvailabilityScheduleSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AvailabilityScheduleInclude | null
+    /**
+     * Filter, which AvailabilitySchedule to fetch.
+     */
+    where: AvailabilityScheduleWhereUniqueInput
+  }
+
+
+  /**
+   * AvailabilitySchedule base type for findFirst actions
+   */
+  export type AvailabilityScheduleFindFirstArgsBase = {
+    /**
+     * Select specific fields to fetch from the AvailabilitySchedule
+     */
+    select?: AvailabilityScheduleSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AvailabilityScheduleInclude | null
+    /**
+     * Filter, which AvailabilitySchedule to fetch.
+     */
+    where?: AvailabilityScheduleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AvailabilitySchedules to fetch.
+     */
+    orderBy?: Enumerable<AvailabilityScheduleOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AvailabilitySchedules.
+     */
+    cursor?: AvailabilityScheduleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AvailabilitySchedules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AvailabilitySchedules.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AvailabilitySchedules.
+     */
+    distinct?: Enumerable<AvailabilityScheduleScalarFieldEnum>
+  }
+
+  /**
+   * AvailabilitySchedule findFirst
+   */
+  export interface AvailabilityScheduleFindFirstArgs extends AvailabilityScheduleFindFirstArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * AvailabilitySchedule findFirstOrThrow
+   */
+  export type AvailabilityScheduleFindFirstOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the AvailabilitySchedule
+     */
+    select?: AvailabilityScheduleSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AvailabilityScheduleInclude | null
+    /**
+     * Filter, which AvailabilitySchedule to fetch.
+     */
+    where?: AvailabilityScheduleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AvailabilitySchedules to fetch.
+     */
+    orderBy?: Enumerable<AvailabilityScheduleOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AvailabilitySchedules.
+     */
+    cursor?: AvailabilityScheduleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AvailabilitySchedules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AvailabilitySchedules.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AvailabilitySchedules.
+     */
+    distinct?: Enumerable<AvailabilityScheduleScalarFieldEnum>
+  }
+
+
+  /**
+   * AvailabilitySchedule findMany
+   */
+  export type AvailabilityScheduleFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the AvailabilitySchedule
+     */
+    select?: AvailabilityScheduleSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AvailabilityScheduleInclude | null
+    /**
+     * Filter, which AvailabilitySchedules to fetch.
+     */
+    where?: AvailabilityScheduleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AvailabilitySchedules to fetch.
+     */
+    orderBy?: Enumerable<AvailabilityScheduleOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AvailabilitySchedules.
+     */
+    cursor?: AvailabilityScheduleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AvailabilitySchedules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AvailabilitySchedules.
+     */
+    skip?: number
+    distinct?: Enumerable<AvailabilityScheduleScalarFieldEnum>
+  }
+
+
+  /**
+   * AvailabilitySchedule create
+   */
+  export type AvailabilityScheduleCreateArgs = {
+    /**
+     * Select specific fields to fetch from the AvailabilitySchedule
+     */
+    select?: AvailabilityScheduleSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AvailabilityScheduleInclude | null
+    /**
+     * The data needed to create a AvailabilitySchedule.
+     */
+    data: XOR<AvailabilityScheduleCreateInput, AvailabilityScheduleUncheckedCreateInput>
+  }
+
+
+  /**
+   * AvailabilitySchedule createMany
+   */
+  export type AvailabilityScheduleCreateManyArgs = {
+    /**
+     * The data used to create many AvailabilitySchedules.
+     */
+    data: Enumerable<AvailabilityScheduleCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * AvailabilitySchedule update
+   */
+  export type AvailabilityScheduleUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the AvailabilitySchedule
+     */
+    select?: AvailabilityScheduleSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AvailabilityScheduleInclude | null
+    /**
+     * The data needed to update a AvailabilitySchedule.
+     */
+    data: XOR<AvailabilityScheduleUpdateInput, AvailabilityScheduleUncheckedUpdateInput>
+    /**
+     * Choose, which AvailabilitySchedule to update.
+     */
+    where: AvailabilityScheduleWhereUniqueInput
+  }
+
+
+  /**
+   * AvailabilitySchedule updateMany
+   */
+  export type AvailabilityScheduleUpdateManyArgs = {
+    /**
+     * The data used to update AvailabilitySchedules.
+     */
+    data: XOR<AvailabilityScheduleUpdateManyMutationInput, AvailabilityScheduleUncheckedUpdateManyInput>
+    /**
+     * Filter which AvailabilitySchedules to update
+     */
+    where?: AvailabilityScheduleWhereInput
+  }
+
+
+  /**
+   * AvailabilitySchedule upsert
+   */
+  export type AvailabilityScheduleUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the AvailabilitySchedule
+     */
+    select?: AvailabilityScheduleSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AvailabilityScheduleInclude | null
+    /**
+     * The filter to search for the AvailabilitySchedule to update in case it exists.
+     */
+    where: AvailabilityScheduleWhereUniqueInput
+    /**
+     * In case the AvailabilitySchedule found by the `where` argument doesn't exist, create a new AvailabilitySchedule with this data.
+     */
+    create: XOR<AvailabilityScheduleCreateInput, AvailabilityScheduleUncheckedCreateInput>
+    /**
+     * In case the AvailabilitySchedule was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AvailabilityScheduleUpdateInput, AvailabilityScheduleUncheckedUpdateInput>
+  }
+
+
+  /**
+   * AvailabilitySchedule delete
+   */
+  export type AvailabilityScheduleDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the AvailabilitySchedule
+     */
+    select?: AvailabilityScheduleSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AvailabilityScheduleInclude | null
+    /**
+     * Filter which AvailabilitySchedule to delete.
+     */
+    where: AvailabilityScheduleWhereUniqueInput
+  }
+
+
+  /**
+   * AvailabilitySchedule deleteMany
+   */
+  export type AvailabilityScheduleDeleteManyArgs = {
+    /**
+     * Filter which AvailabilitySchedules to delete
+     */
+    where?: AvailabilityScheduleWhereInput
+  }
+
+
+  /**
+   * AvailabilitySchedule.weekDays
+   */
+  export type AvailabilitySchedule$weekDaysArgs = {
+    /**
+     * Select specific fields to fetch from the WeekDay
+     */
+    select?: WeekDaySelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: WeekDayInclude | null
+    where?: WeekDayWhereInput
+    orderBy?: Enumerable<WeekDayOrderByWithRelationInput>
+    cursor?: WeekDayWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Enumerable<WeekDayScalarFieldEnum>
+  }
+
+
+  /**
+   * AvailabilitySchedule without action
+   */
+  export type AvailabilityScheduleArgs = {
+    /**
+     * Select specific fields to fetch from the AvailabilitySchedule
+     */
+    select?: AvailabilityScheduleSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: AvailabilityScheduleInclude | null
+  }
+
+
+
+  /**
+   * Model WeekDay
+   */
+
+
+  export type AggregateWeekDay = {
+    _count: WeekDayCountAggregateOutputType | null
+    _avg: WeekDayAvgAggregateOutputType | null
+    _sum: WeekDaySumAggregateOutputType | null
+    _min: WeekDayMinAggregateOutputType | null
+    _max: WeekDayMaxAggregateOutputType | null
+  }
+
+  export type WeekDayAvgAggregateOutputType = {
+    id: number | null
+    day: number | null
+    availabilityScheduleId: number | null
+    timeSelectId: number | null
+    eventTypeId: number | null
+  }
+
+  export type WeekDaySumAggregateOutputType = {
+    id: number | null
+    day: number | null
+    availabilityScheduleId: number | null
+    timeSelectId: number | null
+    eventTypeId: number | null
+  }
+
+  export type WeekDayMinAggregateOutputType = {
+    id: number | null
+    day: number | null
+    availabilityScheduleId: number | null
+    timeSelectId: number | null
+    eventTypeId: number | null
+    status: string | null
+    date: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type WeekDayMaxAggregateOutputType = {
+    id: number | null
+    day: number | null
+    availabilityScheduleId: number | null
+    timeSelectId: number | null
+    eventTypeId: number | null
+    status: string | null
+    date: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type WeekDayCountAggregateOutputType = {
+    id: number
+    day: number
+    availabilityScheduleId: number
+    timeSelectId: number
+    eventTypeId: number
+    status: number
+    date: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type WeekDayAvgAggregateInputType = {
+    id?: true
+    day?: true
+    availabilityScheduleId?: true
+    timeSelectId?: true
+    eventTypeId?: true
+  }
+
+  export type WeekDaySumAggregateInputType = {
+    id?: true
+    day?: true
+    availabilityScheduleId?: true
+    timeSelectId?: true
+    eventTypeId?: true
+  }
+
+  export type WeekDayMinAggregateInputType = {
+    id?: true
+    day?: true
+    availabilityScheduleId?: true
+    timeSelectId?: true
+    eventTypeId?: true
+    status?: true
+    date?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type WeekDayMaxAggregateInputType = {
+    id?: true
+    day?: true
+    availabilityScheduleId?: true
+    timeSelectId?: true
+    eventTypeId?: true
+    status?: true
+    date?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type WeekDayCountAggregateInputType = {
+    id?: true
+    day?: true
+    availabilityScheduleId?: true
+    timeSelectId?: true
+    eventTypeId?: true
+    status?: true
+    date?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type WeekDayAggregateArgs = {
+    /**
+     * Filter which WeekDay to aggregate.
+     */
+    where?: WeekDayWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WeekDays to fetch.
+     */
+    orderBy?: Enumerable<WeekDayOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: WeekDayWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WeekDays from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WeekDays.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned WeekDays
+    **/
+    _count?: true | WeekDayCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: WeekDayAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: WeekDaySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: WeekDayMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: WeekDayMaxAggregateInputType
+  }
+
+  export type GetWeekDayAggregateType<T extends WeekDayAggregateArgs> = {
+        [P in keyof T & keyof AggregateWeekDay]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateWeekDay[P]>
+      : GetScalarType<T[P], AggregateWeekDay[P]>
+  }
+
+
+
+
+  export type WeekDayGroupByArgs = {
+    where?: WeekDayWhereInput
+    orderBy?: Enumerable<WeekDayOrderByWithAggregationInput>
+    by: WeekDayScalarFieldEnum[]
+    having?: WeekDayScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: WeekDayCountAggregateInputType | true
+    _avg?: WeekDayAvgAggregateInputType
+    _sum?: WeekDaySumAggregateInputType
+    _min?: WeekDayMinAggregateInputType
+    _max?: WeekDayMaxAggregateInputType
+  }
+
+
+  export type WeekDayGroupByOutputType = {
+    id: number
+    day: number
+    availabilityScheduleId: number | null
+    timeSelectId: number
+    eventTypeId: number | null
+    status: string
+    date: Date
+    createdAt: Date
+    updatedAt: Date
+    _count: WeekDayCountAggregateOutputType | null
+    _avg: WeekDayAvgAggregateOutputType | null
+    _sum: WeekDaySumAggregateOutputType | null
+    _min: WeekDayMinAggregateOutputType | null
+    _max: WeekDayMaxAggregateOutputType | null
+  }
+
+  type GetWeekDayGroupByPayload<T extends WeekDayGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickArray<WeekDayGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof WeekDayGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], WeekDayGroupByOutputType[P]>
+            : GetScalarType<T[P], WeekDayGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type WeekDaySelect = {
+    id?: boolean
+    day?: boolean
+    availabilityScheduleId?: boolean
+    timeSelectId?: boolean
+    eventTypeId?: boolean
+    status?: boolean
+    date?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    availabilitySchedule?: boolean | AvailabilityScheduleArgs
+    timeSelect?: boolean | TimeSelectArgs
+    eventType?: boolean | EventTypeArgs
+  }
+
+
+  export type WeekDayInclude = {
+    availabilitySchedule?: boolean | AvailabilityScheduleArgs
+    timeSelect?: boolean | TimeSelectArgs
+    eventType?: boolean | EventTypeArgs
+  }
+
+  export type WeekDayGetPayload<S extends boolean | null | undefined | WeekDayArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? WeekDay :
+    S extends undefined ? never :
+    S extends { include: any } & (WeekDayArgs | WeekDayFindManyArgs)
+    ? WeekDay  & {
+    [P in TruthyKeys<S['include']>]:
+        P extends 'availabilitySchedule' ? AvailabilityScheduleGetPayload<S['include'][P]> | null :
+        P extends 'timeSelect' ? TimeSelectGetPayload<S['include'][P]> :
+        P extends 'eventType' ? EventTypeGetPayload<S['include'][P]> | null :  never
+  } 
+    : S extends { select: any } & (WeekDayArgs | WeekDayFindManyArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+        P extends 'availabilitySchedule' ? AvailabilityScheduleGetPayload<S['select'][P]> | null :
+        P extends 'timeSelect' ? TimeSelectGetPayload<S['select'][P]> :
+        P extends 'eventType' ? EventTypeGetPayload<S['select'][P]> | null :  P extends keyof WeekDay ? WeekDay[P] : never
+  } 
+      : WeekDay
+
+
+  type WeekDayCountArgs = 
+    Omit<WeekDayFindManyArgs, 'select' | 'include'> & {
+      select?: WeekDayCountAggregateInputType | true
+    }
+
+  export interface WeekDayDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+
+    /**
+     * Find zero or one WeekDay that matches the filter.
+     * @param {WeekDayFindUniqueArgs} args - Arguments to find a WeekDay
+     * @example
+     * // Get one WeekDay
+     * const weekDay = await prisma.weekDay.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends WeekDayFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, WeekDayFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'WeekDay'> extends True ? Prisma__WeekDayClient<WeekDayGetPayload<T>> : Prisma__WeekDayClient<WeekDayGetPayload<T> | null, null>
+
+    /**
+     * Find one WeekDay that matches the filter or throw an error  with `error.code='P2025'` 
+     *     if no matches were found.
+     * @param {WeekDayFindUniqueOrThrowArgs} args - Arguments to find a WeekDay
+     * @example
+     * // Get one WeekDay
+     * const weekDay = await prisma.weekDay.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends WeekDayFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, WeekDayFindUniqueOrThrowArgs>
+    ): Prisma__WeekDayClient<WeekDayGetPayload<T>>
+
+    /**
+     * Find the first WeekDay that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WeekDayFindFirstArgs} args - Arguments to find a WeekDay
+     * @example
+     * // Get one WeekDay
+     * const weekDay = await prisma.weekDay.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends WeekDayFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, WeekDayFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'WeekDay'> extends True ? Prisma__WeekDayClient<WeekDayGetPayload<T>> : Prisma__WeekDayClient<WeekDayGetPayload<T> | null, null>
+
+    /**
+     * Find the first WeekDay that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WeekDayFindFirstOrThrowArgs} args - Arguments to find a WeekDay
+     * @example
+     * // Get one WeekDay
+     * const weekDay = await prisma.weekDay.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends WeekDayFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, WeekDayFindFirstOrThrowArgs>
+    ): Prisma__WeekDayClient<WeekDayGetPayload<T>>
+
+    /**
+     * Find zero or more WeekDays that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WeekDayFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all WeekDays
+     * const weekDays = await prisma.weekDay.findMany()
+     * 
+     * // Get first 10 WeekDays
+     * const weekDays = await prisma.weekDay.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const weekDayWithIdOnly = await prisma.weekDay.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends WeekDayFindManyArgs>(
+      args?: SelectSubset<T, WeekDayFindManyArgs>
+    ): Prisma.PrismaPromise<Array<WeekDayGetPayload<T>>>
+
+    /**
+     * Create a WeekDay.
+     * @param {WeekDayCreateArgs} args - Arguments to create a WeekDay.
+     * @example
+     * // Create one WeekDay
+     * const WeekDay = await prisma.weekDay.create({
+     *   data: {
+     *     // ... data to create a WeekDay
+     *   }
+     * })
+     * 
+    **/
+    create<T extends WeekDayCreateArgs>(
+      args: SelectSubset<T, WeekDayCreateArgs>
+    ): Prisma__WeekDayClient<WeekDayGetPayload<T>>
+
+    /**
+     * Create many WeekDays.
+     *     @param {WeekDayCreateManyArgs} args - Arguments to create many WeekDays.
+     *     @example
+     *     // Create many WeekDays
+     *     const weekDay = await prisma.weekDay.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends WeekDayCreateManyArgs>(
+      args?: SelectSubset<T, WeekDayCreateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a WeekDay.
+     * @param {WeekDayDeleteArgs} args - Arguments to delete one WeekDay.
+     * @example
+     * // Delete one WeekDay
+     * const WeekDay = await prisma.weekDay.delete({
+     *   where: {
+     *     // ... filter to delete one WeekDay
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends WeekDayDeleteArgs>(
+      args: SelectSubset<T, WeekDayDeleteArgs>
+    ): Prisma__WeekDayClient<WeekDayGetPayload<T>>
+
+    /**
+     * Update one WeekDay.
+     * @param {WeekDayUpdateArgs} args - Arguments to update one WeekDay.
+     * @example
+     * // Update one WeekDay
+     * const weekDay = await prisma.weekDay.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends WeekDayUpdateArgs>(
+      args: SelectSubset<T, WeekDayUpdateArgs>
+    ): Prisma__WeekDayClient<WeekDayGetPayload<T>>
+
+    /**
+     * Delete zero or more WeekDays.
+     * @param {WeekDayDeleteManyArgs} args - Arguments to filter WeekDays to delete.
+     * @example
+     * // Delete a few WeekDays
+     * const { count } = await prisma.weekDay.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends WeekDayDeleteManyArgs>(
+      args?: SelectSubset<T, WeekDayDeleteManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more WeekDays.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WeekDayUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many WeekDays
+     * const weekDay = await prisma.weekDay.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends WeekDayUpdateManyArgs>(
+      args: SelectSubset<T, WeekDayUpdateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one WeekDay.
+     * @param {WeekDayUpsertArgs} args - Arguments to update or create a WeekDay.
+     * @example
+     * // Update or create a WeekDay
+     * const weekDay = await prisma.weekDay.upsert({
+     *   create: {
+     *     // ... data to create a WeekDay
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the WeekDay we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends WeekDayUpsertArgs>(
+      args: SelectSubset<T, WeekDayUpsertArgs>
+    ): Prisma__WeekDayClient<WeekDayGetPayload<T>>
+
+    /**
+     * Count the number of WeekDays.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WeekDayCountArgs} args - Arguments to filter WeekDays to count.
+     * @example
+     * // Count the number of WeekDays
+     * const count = await prisma.weekDay.count({
+     *   where: {
+     *     // ... the filter for the WeekDays we want to count
+     *   }
+     * })
+    **/
+    count<T extends WeekDayCountArgs>(
+      args?: Subset<T, WeekDayCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], WeekDayCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a WeekDay.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WeekDayAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends WeekDayAggregateArgs>(args: Subset<T, WeekDayAggregateArgs>): Prisma.PrismaPromise<GetWeekDayAggregateType<T>>
+
+    /**
+     * Group by WeekDay.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WeekDayGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends WeekDayGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: WeekDayGroupByArgs['orderBy'] }
+        : { orderBy?: WeekDayGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, WeekDayGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetWeekDayGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for WeekDay.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__WeekDayClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+    private readonly _dmmf;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+
+    availabilitySchedule<T extends AvailabilityScheduleArgs= {}>(args?: Subset<T, AvailabilityScheduleArgs>): Prisma__AvailabilityScheduleClient<AvailabilityScheduleGetPayload<T> | Null>;
+
+    timeSelect<T extends TimeSelectArgs= {}>(args?: Subset<T, TimeSelectArgs>): Prisma__TimeSelectClient<TimeSelectGetPayload<T> | Null>;
 
     eventType<T extends EventTypeArgs= {}>(args?: Subset<T, EventTypeArgs>): Prisma__EventTypeClient<EventTypeGetPayload<T> | Null>;
 
@@ -4552,27 +7399,27 @@ export namespace Prisma {
   // Custom InputTypes
 
   /**
-   * Event base type for findUnique actions
+   * WeekDay base type for findUnique actions
    */
-  export type EventFindUniqueArgsBase = {
+  export type WeekDayFindUniqueArgsBase = {
     /**
-     * Select specific fields to fetch from the Event
+     * Select specific fields to fetch from the WeekDay
      */
-    select?: EventSelect | null
+    select?: WeekDaySelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: EventInclude | null
+    include?: WeekDayInclude | null
     /**
-     * Filter, which Event to fetch.
+     * Filter, which WeekDay to fetch.
      */
-    where: EventWhereUniqueInput
+    where: WeekDayWhereUniqueInput
   }
 
   /**
-   * Event findUnique
+   * WeekDay findUnique
    */
-  export interface EventFindUniqueArgs extends EventFindUniqueArgsBase {
+  export interface WeekDayFindUniqueArgs extends WeekDayFindUniqueArgsBase {
    /**
     * Throw an Error if query returns no results
     * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
@@ -4582,76 +7429,76 @@ export namespace Prisma {
       
 
   /**
-   * Event findUniqueOrThrow
+   * WeekDay findUniqueOrThrow
    */
-  export type EventFindUniqueOrThrowArgs = {
+  export type WeekDayFindUniqueOrThrowArgs = {
     /**
-     * Select specific fields to fetch from the Event
+     * Select specific fields to fetch from the WeekDay
      */
-    select?: EventSelect | null
+    select?: WeekDaySelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: EventInclude | null
+    include?: WeekDayInclude | null
     /**
-     * Filter, which Event to fetch.
+     * Filter, which WeekDay to fetch.
      */
-    where: EventWhereUniqueInput
+    where: WeekDayWhereUniqueInput
   }
 
 
   /**
-   * Event base type for findFirst actions
+   * WeekDay base type for findFirst actions
    */
-  export type EventFindFirstArgsBase = {
+  export type WeekDayFindFirstArgsBase = {
     /**
-     * Select specific fields to fetch from the Event
+     * Select specific fields to fetch from the WeekDay
      */
-    select?: EventSelect | null
+    select?: WeekDaySelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: EventInclude | null
+    include?: WeekDayInclude | null
     /**
-     * Filter, which Event to fetch.
+     * Filter, which WeekDay to fetch.
      */
-    where?: EventWhereInput
+    where?: WeekDayWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Events to fetch.
+     * Determine the order of WeekDays to fetch.
      */
-    orderBy?: Enumerable<EventOrderByWithRelationInput>
+    orderBy?: Enumerable<WeekDayOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for Events.
+     * Sets the position for searching for WeekDays.
      */
-    cursor?: EventWhereUniqueInput
+    cursor?: WeekDayWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Events from the position of the cursor.
+     * Take `±n` WeekDays from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Events.
+     * Skip the first `n` WeekDays.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of Events.
+     * Filter by unique combinations of WeekDays.
      */
-    distinct?: Enumerable<EventScalarFieldEnum>
+    distinct?: Enumerable<WeekDayScalarFieldEnum>
   }
 
   /**
-   * Event findFirst
+   * WeekDay findFirst
    */
-  export interface EventFindFirstArgs extends EventFindFirstArgsBase {
+  export interface WeekDayFindFirstArgs extends WeekDayFindFirstArgsBase {
    /**
     * Throw an Error if query returns no results
     * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
@@ -4661,236 +7508,7283 @@ export namespace Prisma {
       
 
   /**
-   * Event findFirstOrThrow
+   * WeekDay findFirstOrThrow
    */
-  export type EventFindFirstOrThrowArgs = {
+  export type WeekDayFindFirstOrThrowArgs = {
     /**
-     * Select specific fields to fetch from the Event
+     * Select specific fields to fetch from the WeekDay
      */
-    select?: EventSelect | null
+    select?: WeekDaySelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: EventInclude | null
+    include?: WeekDayInclude | null
     /**
-     * Filter, which Event to fetch.
+     * Filter, which WeekDay to fetch.
      */
-    where?: EventWhereInput
+    where?: WeekDayWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Events to fetch.
+     * Determine the order of WeekDays to fetch.
      */
-    orderBy?: Enumerable<EventOrderByWithRelationInput>
+    orderBy?: Enumerable<WeekDayOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for Events.
+     * Sets the position for searching for WeekDays.
      */
-    cursor?: EventWhereUniqueInput
+    cursor?: WeekDayWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Events from the position of the cursor.
+     * Take `±n` WeekDays from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Events.
+     * Skip the first `n` WeekDays.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of Events.
+     * Filter by unique combinations of WeekDays.
      */
-    distinct?: Enumerable<EventScalarFieldEnum>
+    distinct?: Enumerable<WeekDayScalarFieldEnum>
   }
 
 
   /**
-   * Event findMany
+   * WeekDay findMany
    */
-  export type EventFindManyArgs = {
+  export type WeekDayFindManyArgs = {
     /**
-     * Select specific fields to fetch from the Event
+     * Select specific fields to fetch from the WeekDay
      */
-    select?: EventSelect | null
+    select?: WeekDaySelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: EventInclude | null
+    include?: WeekDayInclude | null
     /**
-     * Filter, which Events to fetch.
+     * Filter, which WeekDays to fetch.
      */
-    where?: EventWhereInput
+    where?: WeekDayWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Events to fetch.
+     * Determine the order of WeekDays to fetch.
      */
-    orderBy?: Enumerable<EventOrderByWithRelationInput>
+    orderBy?: Enumerable<WeekDayOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for listing Events.
+     * Sets the position for listing WeekDays.
      */
-    cursor?: EventWhereUniqueInput
+    cursor?: WeekDayWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Events from the position of the cursor.
+     * Take `±n` WeekDays from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Events.
+     * Skip the first `n` WeekDays.
      */
     skip?: number
-    distinct?: Enumerable<EventScalarFieldEnum>
+    distinct?: Enumerable<WeekDayScalarFieldEnum>
   }
 
 
   /**
-   * Event create
+   * WeekDay create
    */
-  export type EventCreateArgs = {
+  export type WeekDayCreateArgs = {
     /**
-     * Select specific fields to fetch from the Event
+     * Select specific fields to fetch from the WeekDay
      */
-    select?: EventSelect | null
+    select?: WeekDaySelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: EventInclude | null
+    include?: WeekDayInclude | null
     /**
-     * The data needed to create a Event.
+     * The data needed to create a WeekDay.
      */
-    data: XOR<EventCreateInput, EventUncheckedCreateInput>
+    data: XOR<WeekDayCreateInput, WeekDayUncheckedCreateInput>
   }
 
 
   /**
-   * Event createMany
+   * WeekDay createMany
    */
-  export type EventCreateManyArgs = {
+  export type WeekDayCreateManyArgs = {
     /**
-     * The data used to create many Events.
+     * The data used to create many WeekDays.
      */
-    data: Enumerable<EventCreateManyInput>
+    data: Enumerable<WeekDayCreateManyInput>
     skipDuplicates?: boolean
   }
 
 
   /**
-   * Event update
+   * WeekDay update
    */
-  export type EventUpdateArgs = {
+  export type WeekDayUpdateArgs = {
     /**
-     * Select specific fields to fetch from the Event
+     * Select specific fields to fetch from the WeekDay
      */
-    select?: EventSelect | null
+    select?: WeekDaySelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: EventInclude | null
+    include?: WeekDayInclude | null
     /**
-     * The data needed to update a Event.
+     * The data needed to update a WeekDay.
      */
-    data: XOR<EventUpdateInput, EventUncheckedUpdateInput>
+    data: XOR<WeekDayUpdateInput, WeekDayUncheckedUpdateInput>
     /**
-     * Choose, which Event to update.
+     * Choose, which WeekDay to update.
      */
-    where: EventWhereUniqueInput
+    where: WeekDayWhereUniqueInput
   }
 
 
   /**
-   * Event updateMany
+   * WeekDay updateMany
    */
-  export type EventUpdateManyArgs = {
+  export type WeekDayUpdateManyArgs = {
     /**
-     * The data used to update Events.
+     * The data used to update WeekDays.
      */
-    data: XOR<EventUpdateManyMutationInput, EventUncheckedUpdateManyInput>
+    data: XOR<WeekDayUpdateManyMutationInput, WeekDayUncheckedUpdateManyInput>
     /**
-     * Filter which Events to update
+     * Filter which WeekDays to update
      */
-    where?: EventWhereInput
+    where?: WeekDayWhereInput
   }
 
 
   /**
-   * Event upsert
+   * WeekDay upsert
    */
-  export type EventUpsertArgs = {
+  export type WeekDayUpsertArgs = {
     /**
-     * Select specific fields to fetch from the Event
+     * Select specific fields to fetch from the WeekDay
      */
-    select?: EventSelect | null
+    select?: WeekDaySelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: EventInclude | null
+    include?: WeekDayInclude | null
     /**
-     * The filter to search for the Event to update in case it exists.
+     * The filter to search for the WeekDay to update in case it exists.
      */
-    where: EventWhereUniqueInput
+    where: WeekDayWhereUniqueInput
     /**
-     * In case the Event found by the `where` argument doesn't exist, create a new Event with this data.
+     * In case the WeekDay found by the `where` argument doesn't exist, create a new WeekDay with this data.
      */
-    create: XOR<EventCreateInput, EventUncheckedCreateInput>
+    create: XOR<WeekDayCreateInput, WeekDayUncheckedCreateInput>
     /**
-     * In case the Event was found with the provided `where` argument, update it with this data.
+     * In case the WeekDay was found with the provided `where` argument, update it with this data.
      */
-    update: XOR<EventUpdateInput, EventUncheckedUpdateInput>
+    update: XOR<WeekDayUpdateInput, WeekDayUncheckedUpdateInput>
   }
 
 
   /**
-   * Event delete
+   * WeekDay delete
    */
-  export type EventDeleteArgs = {
+  export type WeekDayDeleteArgs = {
     /**
-     * Select specific fields to fetch from the Event
+     * Select specific fields to fetch from the WeekDay
      */
-    select?: EventSelect | null
+    select?: WeekDaySelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: EventInclude | null
+    include?: WeekDayInclude | null
     /**
-     * Filter which Event to delete.
+     * Filter which WeekDay to delete.
      */
-    where: EventWhereUniqueInput
+    where: WeekDayWhereUniqueInput
   }
 
 
   /**
-   * Event deleteMany
+   * WeekDay deleteMany
    */
-  export type EventDeleteManyArgs = {
+  export type WeekDayDeleteManyArgs = {
     /**
-     * Filter which Events to delete
+     * Filter which WeekDays to delete
      */
-    where?: EventWhereInput
+    where?: WeekDayWhereInput
   }
 
 
   /**
-   * Event without action
+   * WeekDay without action
    */
-  export type EventArgs = {
+  export type WeekDayArgs = {
     /**
-     * Select specific fields to fetch from the Event
+     * Select specific fields to fetch from the WeekDay
      */
-    select?: EventSelect | null
+    select?: WeekDaySelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: EventInclude | null
+    include?: WeekDayInclude | null
+  }
+
+
+
+  /**
+   * Model TimeSelect
+   */
+
+
+  export type AggregateTimeSelect = {
+    _count: TimeSelectCountAggregateOutputType | null
+    _avg: TimeSelectAvgAggregateOutputType | null
+    _sum: TimeSelectSumAggregateOutputType | null
+    _min: TimeSelectMinAggregateOutputType | null
+    _max: TimeSelectMaxAggregateOutputType | null
+  }
+
+  export type TimeSelectAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type TimeSelectSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type TimeSelectMinAggregateOutputType = {
+    id: number | null
+    startTime: Date | null
+    endTime: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TimeSelectMaxAggregateOutputType = {
+    id: number | null
+    startTime: Date | null
+    endTime: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TimeSelectCountAggregateOutputType = {
+    id: number
+    startTime: number
+    endTime: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type TimeSelectAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type TimeSelectSumAggregateInputType = {
+    id?: true
+  }
+
+  export type TimeSelectMinAggregateInputType = {
+    id?: true
+    startTime?: true
+    endTime?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TimeSelectMaxAggregateInputType = {
+    id?: true
+    startTime?: true
+    endTime?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TimeSelectCountAggregateInputType = {
+    id?: true
+    startTime?: true
+    endTime?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type TimeSelectAggregateArgs = {
+    /**
+     * Filter which TimeSelect to aggregate.
+     */
+    where?: TimeSelectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TimeSelects to fetch.
+     */
+    orderBy?: Enumerable<TimeSelectOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TimeSelectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TimeSelects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TimeSelects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TimeSelects
+    **/
+    _count?: true | TimeSelectCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: TimeSelectAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TimeSelectSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TimeSelectMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TimeSelectMaxAggregateInputType
+  }
+
+  export type GetTimeSelectAggregateType<T extends TimeSelectAggregateArgs> = {
+        [P in keyof T & keyof AggregateTimeSelect]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTimeSelect[P]>
+      : GetScalarType<T[P], AggregateTimeSelect[P]>
+  }
+
+
+
+
+  export type TimeSelectGroupByArgs = {
+    where?: TimeSelectWhereInput
+    orderBy?: Enumerable<TimeSelectOrderByWithAggregationInput>
+    by: TimeSelectScalarFieldEnum[]
+    having?: TimeSelectScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TimeSelectCountAggregateInputType | true
+    _avg?: TimeSelectAvgAggregateInputType
+    _sum?: TimeSelectSumAggregateInputType
+    _min?: TimeSelectMinAggregateInputType
+    _max?: TimeSelectMaxAggregateInputType
+  }
+
+
+  export type TimeSelectGroupByOutputType = {
+    id: number
+    startTime: Date
+    endTime: Date
+    createdAt: Date
+    updatedAt: Date
+    _count: TimeSelectCountAggregateOutputType | null
+    _avg: TimeSelectAvgAggregateOutputType | null
+    _sum: TimeSelectSumAggregateOutputType | null
+    _min: TimeSelectMinAggregateOutputType | null
+    _max: TimeSelectMaxAggregateOutputType | null
+  }
+
+  type GetTimeSelectGroupByPayload<T extends TimeSelectGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickArray<TimeSelectGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TimeSelectGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TimeSelectGroupByOutputType[P]>
+            : GetScalarType<T[P], TimeSelectGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TimeSelectSelect = {
+    id?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    weekDays?: boolean | TimeSelect$weekDaysArgs
+    _count?: boolean | TimeSelectCountOutputTypeArgs
+  }
+
+
+  export type TimeSelectInclude = {
+    weekDays?: boolean | TimeSelect$weekDaysArgs
+    _count?: boolean | TimeSelectCountOutputTypeArgs
+  }
+
+  export type TimeSelectGetPayload<S extends boolean | null | undefined | TimeSelectArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? TimeSelect :
+    S extends undefined ? never :
+    S extends { include: any } & (TimeSelectArgs | TimeSelectFindManyArgs)
+    ? TimeSelect  & {
+    [P in TruthyKeys<S['include']>]:
+        P extends 'weekDays' ? Array < WeekDayGetPayload<S['include'][P]>>  :
+        P extends '_count' ? TimeSelectCountOutputTypeGetPayload<S['include'][P]> :  never
+  } 
+    : S extends { select: any } & (TimeSelectArgs | TimeSelectFindManyArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+        P extends 'weekDays' ? Array < WeekDayGetPayload<S['select'][P]>>  :
+        P extends '_count' ? TimeSelectCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof TimeSelect ? TimeSelect[P] : never
+  } 
+      : TimeSelect
+
+
+  type TimeSelectCountArgs = 
+    Omit<TimeSelectFindManyArgs, 'select' | 'include'> & {
+      select?: TimeSelectCountAggregateInputType | true
+    }
+
+  export interface TimeSelectDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+
+    /**
+     * Find zero or one TimeSelect that matches the filter.
+     * @param {TimeSelectFindUniqueArgs} args - Arguments to find a TimeSelect
+     * @example
+     * // Get one TimeSelect
+     * const timeSelect = await prisma.timeSelect.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends TimeSelectFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, TimeSelectFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'TimeSelect'> extends True ? Prisma__TimeSelectClient<TimeSelectGetPayload<T>> : Prisma__TimeSelectClient<TimeSelectGetPayload<T> | null, null>
+
+    /**
+     * Find one TimeSelect that matches the filter or throw an error  with `error.code='P2025'` 
+     *     if no matches were found.
+     * @param {TimeSelectFindUniqueOrThrowArgs} args - Arguments to find a TimeSelect
+     * @example
+     * // Get one TimeSelect
+     * const timeSelect = await prisma.timeSelect.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends TimeSelectFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, TimeSelectFindUniqueOrThrowArgs>
+    ): Prisma__TimeSelectClient<TimeSelectGetPayload<T>>
+
+    /**
+     * Find the first TimeSelect that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeSelectFindFirstArgs} args - Arguments to find a TimeSelect
+     * @example
+     * // Get one TimeSelect
+     * const timeSelect = await prisma.timeSelect.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends TimeSelectFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, TimeSelectFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'TimeSelect'> extends True ? Prisma__TimeSelectClient<TimeSelectGetPayload<T>> : Prisma__TimeSelectClient<TimeSelectGetPayload<T> | null, null>
+
+    /**
+     * Find the first TimeSelect that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeSelectFindFirstOrThrowArgs} args - Arguments to find a TimeSelect
+     * @example
+     * // Get one TimeSelect
+     * const timeSelect = await prisma.timeSelect.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends TimeSelectFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, TimeSelectFindFirstOrThrowArgs>
+    ): Prisma__TimeSelectClient<TimeSelectGetPayload<T>>
+
+    /**
+     * Find zero or more TimeSelects that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeSelectFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TimeSelects
+     * const timeSelects = await prisma.timeSelect.findMany()
+     * 
+     * // Get first 10 TimeSelects
+     * const timeSelects = await prisma.timeSelect.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const timeSelectWithIdOnly = await prisma.timeSelect.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends TimeSelectFindManyArgs>(
+      args?: SelectSubset<T, TimeSelectFindManyArgs>
+    ): Prisma.PrismaPromise<Array<TimeSelectGetPayload<T>>>
+
+    /**
+     * Create a TimeSelect.
+     * @param {TimeSelectCreateArgs} args - Arguments to create a TimeSelect.
+     * @example
+     * // Create one TimeSelect
+     * const TimeSelect = await prisma.timeSelect.create({
+     *   data: {
+     *     // ... data to create a TimeSelect
+     *   }
+     * })
+     * 
+    **/
+    create<T extends TimeSelectCreateArgs>(
+      args: SelectSubset<T, TimeSelectCreateArgs>
+    ): Prisma__TimeSelectClient<TimeSelectGetPayload<T>>
+
+    /**
+     * Create many TimeSelects.
+     *     @param {TimeSelectCreateManyArgs} args - Arguments to create many TimeSelects.
+     *     @example
+     *     // Create many TimeSelects
+     *     const timeSelect = await prisma.timeSelect.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends TimeSelectCreateManyArgs>(
+      args?: SelectSubset<T, TimeSelectCreateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a TimeSelect.
+     * @param {TimeSelectDeleteArgs} args - Arguments to delete one TimeSelect.
+     * @example
+     * // Delete one TimeSelect
+     * const TimeSelect = await prisma.timeSelect.delete({
+     *   where: {
+     *     // ... filter to delete one TimeSelect
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends TimeSelectDeleteArgs>(
+      args: SelectSubset<T, TimeSelectDeleteArgs>
+    ): Prisma__TimeSelectClient<TimeSelectGetPayload<T>>
+
+    /**
+     * Update one TimeSelect.
+     * @param {TimeSelectUpdateArgs} args - Arguments to update one TimeSelect.
+     * @example
+     * // Update one TimeSelect
+     * const timeSelect = await prisma.timeSelect.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends TimeSelectUpdateArgs>(
+      args: SelectSubset<T, TimeSelectUpdateArgs>
+    ): Prisma__TimeSelectClient<TimeSelectGetPayload<T>>
+
+    /**
+     * Delete zero or more TimeSelects.
+     * @param {TimeSelectDeleteManyArgs} args - Arguments to filter TimeSelects to delete.
+     * @example
+     * // Delete a few TimeSelects
+     * const { count } = await prisma.timeSelect.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends TimeSelectDeleteManyArgs>(
+      args?: SelectSubset<T, TimeSelectDeleteManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TimeSelects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeSelectUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TimeSelects
+     * const timeSelect = await prisma.timeSelect.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends TimeSelectUpdateManyArgs>(
+      args: SelectSubset<T, TimeSelectUpdateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one TimeSelect.
+     * @param {TimeSelectUpsertArgs} args - Arguments to update or create a TimeSelect.
+     * @example
+     * // Update or create a TimeSelect
+     * const timeSelect = await prisma.timeSelect.upsert({
+     *   create: {
+     *     // ... data to create a TimeSelect
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TimeSelect we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends TimeSelectUpsertArgs>(
+      args: SelectSubset<T, TimeSelectUpsertArgs>
+    ): Prisma__TimeSelectClient<TimeSelectGetPayload<T>>
+
+    /**
+     * Count the number of TimeSelects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeSelectCountArgs} args - Arguments to filter TimeSelects to count.
+     * @example
+     * // Count the number of TimeSelects
+     * const count = await prisma.timeSelect.count({
+     *   where: {
+     *     // ... the filter for the TimeSelects we want to count
+     *   }
+     * })
+    **/
+    count<T extends TimeSelectCountArgs>(
+      args?: Subset<T, TimeSelectCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TimeSelectCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TimeSelect.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeSelectAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TimeSelectAggregateArgs>(args: Subset<T, TimeSelectAggregateArgs>): Prisma.PrismaPromise<GetTimeSelectAggregateType<T>>
+
+    /**
+     * Group by TimeSelect.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeSelectGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TimeSelectGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TimeSelectGroupByArgs['orderBy'] }
+        : { orderBy?: TimeSelectGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TimeSelectGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTimeSelectGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TimeSelect.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__TimeSelectClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+    private readonly _dmmf;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+
+    weekDays<T extends TimeSelect$weekDaysArgs= {}>(args?: Subset<T, TimeSelect$weekDaysArgs>): Prisma.PrismaPromise<Array<WeekDayGetPayload<T>>| Null>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+
+
+  // Custom InputTypes
+
+  /**
+   * TimeSelect base type for findUnique actions
+   */
+  export type TimeSelectFindUniqueArgsBase = {
+    /**
+     * Select specific fields to fetch from the TimeSelect
+     */
+    select?: TimeSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSelectInclude | null
+    /**
+     * Filter, which TimeSelect to fetch.
+     */
+    where: TimeSelectWhereUniqueInput
+  }
+
+  /**
+   * TimeSelect findUnique
+   */
+  export interface TimeSelectFindUniqueArgs extends TimeSelectFindUniqueArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * TimeSelect findUniqueOrThrow
+   */
+  export type TimeSelectFindUniqueOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the TimeSelect
+     */
+    select?: TimeSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSelectInclude | null
+    /**
+     * Filter, which TimeSelect to fetch.
+     */
+    where: TimeSelectWhereUniqueInput
+  }
+
+
+  /**
+   * TimeSelect base type for findFirst actions
+   */
+  export type TimeSelectFindFirstArgsBase = {
+    /**
+     * Select specific fields to fetch from the TimeSelect
+     */
+    select?: TimeSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSelectInclude | null
+    /**
+     * Filter, which TimeSelect to fetch.
+     */
+    where?: TimeSelectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TimeSelects to fetch.
+     */
+    orderBy?: Enumerable<TimeSelectOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TimeSelects.
+     */
+    cursor?: TimeSelectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TimeSelects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TimeSelects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TimeSelects.
+     */
+    distinct?: Enumerable<TimeSelectScalarFieldEnum>
+  }
+
+  /**
+   * TimeSelect findFirst
+   */
+  export interface TimeSelectFindFirstArgs extends TimeSelectFindFirstArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * TimeSelect findFirstOrThrow
+   */
+  export type TimeSelectFindFirstOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the TimeSelect
+     */
+    select?: TimeSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSelectInclude | null
+    /**
+     * Filter, which TimeSelect to fetch.
+     */
+    where?: TimeSelectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TimeSelects to fetch.
+     */
+    orderBy?: Enumerable<TimeSelectOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TimeSelects.
+     */
+    cursor?: TimeSelectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TimeSelects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TimeSelects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TimeSelects.
+     */
+    distinct?: Enumerable<TimeSelectScalarFieldEnum>
+  }
+
+
+  /**
+   * TimeSelect findMany
+   */
+  export type TimeSelectFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the TimeSelect
+     */
+    select?: TimeSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSelectInclude | null
+    /**
+     * Filter, which TimeSelects to fetch.
+     */
+    where?: TimeSelectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TimeSelects to fetch.
+     */
+    orderBy?: Enumerable<TimeSelectOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TimeSelects.
+     */
+    cursor?: TimeSelectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TimeSelects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TimeSelects.
+     */
+    skip?: number
+    distinct?: Enumerable<TimeSelectScalarFieldEnum>
+  }
+
+
+  /**
+   * TimeSelect create
+   */
+  export type TimeSelectCreateArgs = {
+    /**
+     * Select specific fields to fetch from the TimeSelect
+     */
+    select?: TimeSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSelectInclude | null
+    /**
+     * The data needed to create a TimeSelect.
+     */
+    data: XOR<TimeSelectCreateInput, TimeSelectUncheckedCreateInput>
+  }
+
+
+  /**
+   * TimeSelect createMany
+   */
+  export type TimeSelectCreateManyArgs = {
+    /**
+     * The data used to create many TimeSelects.
+     */
+    data: Enumerable<TimeSelectCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * TimeSelect update
+   */
+  export type TimeSelectUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the TimeSelect
+     */
+    select?: TimeSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSelectInclude | null
+    /**
+     * The data needed to update a TimeSelect.
+     */
+    data: XOR<TimeSelectUpdateInput, TimeSelectUncheckedUpdateInput>
+    /**
+     * Choose, which TimeSelect to update.
+     */
+    where: TimeSelectWhereUniqueInput
+  }
+
+
+  /**
+   * TimeSelect updateMany
+   */
+  export type TimeSelectUpdateManyArgs = {
+    /**
+     * The data used to update TimeSelects.
+     */
+    data: XOR<TimeSelectUpdateManyMutationInput, TimeSelectUncheckedUpdateManyInput>
+    /**
+     * Filter which TimeSelects to update
+     */
+    where?: TimeSelectWhereInput
+  }
+
+
+  /**
+   * TimeSelect upsert
+   */
+  export type TimeSelectUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the TimeSelect
+     */
+    select?: TimeSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSelectInclude | null
+    /**
+     * The filter to search for the TimeSelect to update in case it exists.
+     */
+    where: TimeSelectWhereUniqueInput
+    /**
+     * In case the TimeSelect found by the `where` argument doesn't exist, create a new TimeSelect with this data.
+     */
+    create: XOR<TimeSelectCreateInput, TimeSelectUncheckedCreateInput>
+    /**
+     * In case the TimeSelect was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TimeSelectUpdateInput, TimeSelectUncheckedUpdateInput>
+  }
+
+
+  /**
+   * TimeSelect delete
+   */
+  export type TimeSelectDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the TimeSelect
+     */
+    select?: TimeSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSelectInclude | null
+    /**
+     * Filter which TimeSelect to delete.
+     */
+    where: TimeSelectWhereUniqueInput
+  }
+
+
+  /**
+   * TimeSelect deleteMany
+   */
+  export type TimeSelectDeleteManyArgs = {
+    /**
+     * Filter which TimeSelects to delete
+     */
+    where?: TimeSelectWhereInput
+  }
+
+
+  /**
+   * TimeSelect.weekDays
+   */
+  export type TimeSelect$weekDaysArgs = {
+    /**
+     * Select specific fields to fetch from the WeekDay
+     */
+    select?: WeekDaySelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: WeekDayInclude | null
+    where?: WeekDayWhereInput
+    orderBy?: Enumerable<WeekDayOrderByWithRelationInput>
+    cursor?: WeekDayWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Enumerable<WeekDayScalarFieldEnum>
+  }
+
+
+  /**
+   * TimeSelect without action
+   */
+  export type TimeSelectArgs = {
+    /**
+     * Select specific fields to fetch from the TimeSelect
+     */
+    select?: TimeSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSelectInclude | null
+  }
+
+
+
+  /**
+   * Model Customer
+   */
+
+
+  export type AggregateCustomer = {
+    _count: CustomerCountAggregateOutputType | null
+    _avg: CustomerAvgAggregateOutputType | null
+    _sum: CustomerSumAggregateOutputType | null
+    _min: CustomerMinAggregateOutputType | null
+    _max: CustomerMaxAggregateOutputType | null
+  }
+
+  export type CustomerAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type CustomerSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type CustomerMinAggregateOutputType = {
+    id: number | null
+    name: string | null
+    email: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CustomerMaxAggregateOutputType = {
+    id: number | null
+    name: string | null
+    email: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CustomerCountAggregateOutputType = {
+    id: number
+    name: number
+    email: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type CustomerAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type CustomerSumAggregateInputType = {
+    id?: true
+  }
+
+  export type CustomerMinAggregateInputType = {
+    id?: true
+    name?: true
+    email?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CustomerMaxAggregateInputType = {
+    id?: true
+    name?: true
+    email?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CustomerCountAggregateInputType = {
+    id?: true
+    name?: true
+    email?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type CustomerAggregateArgs = {
+    /**
+     * Filter which Customer to aggregate.
+     */
+    where?: CustomerWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Customers to fetch.
+     */
+    orderBy?: Enumerable<CustomerOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CustomerWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Customers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Customers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Customers
+    **/
+    _count?: true | CustomerCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: CustomerAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: CustomerSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CustomerMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CustomerMaxAggregateInputType
+  }
+
+  export type GetCustomerAggregateType<T extends CustomerAggregateArgs> = {
+        [P in keyof T & keyof AggregateCustomer]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCustomer[P]>
+      : GetScalarType<T[P], AggregateCustomer[P]>
+  }
+
+
+
+
+  export type CustomerGroupByArgs = {
+    where?: CustomerWhereInput
+    orderBy?: Enumerable<CustomerOrderByWithAggregationInput>
+    by: CustomerScalarFieldEnum[]
+    having?: CustomerScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CustomerCountAggregateInputType | true
+    _avg?: CustomerAvgAggregateInputType
+    _sum?: CustomerSumAggregateInputType
+    _min?: CustomerMinAggregateInputType
+    _max?: CustomerMaxAggregateInputType
+  }
+
+
+  export type CustomerGroupByOutputType = {
+    id: number
+    name: string
+    email: string
+    createdAt: Date
+    updatedAt: Date
+    _count: CustomerCountAggregateOutputType | null
+    _avg: CustomerAvgAggregateOutputType | null
+    _sum: CustomerSumAggregateOutputType | null
+    _min: CustomerMinAggregateOutputType | null
+    _max: CustomerMaxAggregateOutputType | null
+  }
+
+  type GetCustomerGroupByPayload<T extends CustomerGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickArray<CustomerGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CustomerGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CustomerGroupByOutputType[P]>
+            : GetScalarType<T[P], CustomerGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CustomerSelect = {
+    id?: boolean
+    name?: boolean
+    email?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    eventTypes?: boolean | Customer$eventTypesArgs
+    groupMeetings?: boolean | Customer$groupMeetingsArgs
+    eventSelects?: boolean | Customer$eventSelectsArgs
+    _count?: boolean | CustomerCountOutputTypeArgs
+  }
+
+
+  export type CustomerInclude = {
+    eventTypes?: boolean | Customer$eventTypesArgs
+    groupMeetings?: boolean | Customer$groupMeetingsArgs
+    eventSelects?: boolean | Customer$eventSelectsArgs
+    _count?: boolean | CustomerCountOutputTypeArgs
+  }
+
+  export type CustomerGetPayload<S extends boolean | null | undefined | CustomerArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? Customer :
+    S extends undefined ? never :
+    S extends { include: any } & (CustomerArgs | CustomerFindManyArgs)
+    ? Customer  & {
+    [P in TruthyKeys<S['include']>]:
+        P extends 'eventTypes' ? Array < EventTypeGetPayload<S['include'][P]>>  :
+        P extends 'groupMeetings' ? Array < GroupMeetingGetPayload<S['include'][P]>>  :
+        P extends 'eventSelects' ? Array < EventSelectGetPayload<S['include'][P]>>  :
+        P extends '_count' ? CustomerCountOutputTypeGetPayload<S['include'][P]> :  never
+  } 
+    : S extends { select: any } & (CustomerArgs | CustomerFindManyArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+        P extends 'eventTypes' ? Array < EventTypeGetPayload<S['select'][P]>>  :
+        P extends 'groupMeetings' ? Array < GroupMeetingGetPayload<S['select'][P]>>  :
+        P extends 'eventSelects' ? Array < EventSelectGetPayload<S['select'][P]>>  :
+        P extends '_count' ? CustomerCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof Customer ? Customer[P] : never
+  } 
+      : Customer
+
+
+  type CustomerCountArgs = 
+    Omit<CustomerFindManyArgs, 'select' | 'include'> & {
+      select?: CustomerCountAggregateInputType | true
+    }
+
+  export interface CustomerDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+
+    /**
+     * Find zero or one Customer that matches the filter.
+     * @param {CustomerFindUniqueArgs} args - Arguments to find a Customer
+     * @example
+     * // Get one Customer
+     * const customer = await prisma.customer.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends CustomerFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, CustomerFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Customer'> extends True ? Prisma__CustomerClient<CustomerGetPayload<T>> : Prisma__CustomerClient<CustomerGetPayload<T> | null, null>
+
+    /**
+     * Find one Customer that matches the filter or throw an error  with `error.code='P2025'` 
+     *     if no matches were found.
+     * @param {CustomerFindUniqueOrThrowArgs} args - Arguments to find a Customer
+     * @example
+     * // Get one Customer
+     * const customer = await prisma.customer.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends CustomerFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, CustomerFindUniqueOrThrowArgs>
+    ): Prisma__CustomerClient<CustomerGetPayload<T>>
+
+    /**
+     * Find the first Customer that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerFindFirstArgs} args - Arguments to find a Customer
+     * @example
+     * // Get one Customer
+     * const customer = await prisma.customer.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends CustomerFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, CustomerFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Customer'> extends True ? Prisma__CustomerClient<CustomerGetPayload<T>> : Prisma__CustomerClient<CustomerGetPayload<T> | null, null>
+
+    /**
+     * Find the first Customer that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerFindFirstOrThrowArgs} args - Arguments to find a Customer
+     * @example
+     * // Get one Customer
+     * const customer = await prisma.customer.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends CustomerFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, CustomerFindFirstOrThrowArgs>
+    ): Prisma__CustomerClient<CustomerGetPayload<T>>
+
+    /**
+     * Find zero or more Customers that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Customers
+     * const customers = await prisma.customer.findMany()
+     * 
+     * // Get first 10 Customers
+     * const customers = await prisma.customer.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const customerWithIdOnly = await prisma.customer.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends CustomerFindManyArgs>(
+      args?: SelectSubset<T, CustomerFindManyArgs>
+    ): Prisma.PrismaPromise<Array<CustomerGetPayload<T>>>
+
+    /**
+     * Create a Customer.
+     * @param {CustomerCreateArgs} args - Arguments to create a Customer.
+     * @example
+     * // Create one Customer
+     * const Customer = await prisma.customer.create({
+     *   data: {
+     *     // ... data to create a Customer
+     *   }
+     * })
+     * 
+    **/
+    create<T extends CustomerCreateArgs>(
+      args: SelectSubset<T, CustomerCreateArgs>
+    ): Prisma__CustomerClient<CustomerGetPayload<T>>
+
+    /**
+     * Create many Customers.
+     *     @param {CustomerCreateManyArgs} args - Arguments to create many Customers.
+     *     @example
+     *     // Create many Customers
+     *     const customer = await prisma.customer.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends CustomerCreateManyArgs>(
+      args?: SelectSubset<T, CustomerCreateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Customer.
+     * @param {CustomerDeleteArgs} args - Arguments to delete one Customer.
+     * @example
+     * // Delete one Customer
+     * const Customer = await prisma.customer.delete({
+     *   where: {
+     *     // ... filter to delete one Customer
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends CustomerDeleteArgs>(
+      args: SelectSubset<T, CustomerDeleteArgs>
+    ): Prisma__CustomerClient<CustomerGetPayload<T>>
+
+    /**
+     * Update one Customer.
+     * @param {CustomerUpdateArgs} args - Arguments to update one Customer.
+     * @example
+     * // Update one Customer
+     * const customer = await prisma.customer.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends CustomerUpdateArgs>(
+      args: SelectSubset<T, CustomerUpdateArgs>
+    ): Prisma__CustomerClient<CustomerGetPayload<T>>
+
+    /**
+     * Delete zero or more Customers.
+     * @param {CustomerDeleteManyArgs} args - Arguments to filter Customers to delete.
+     * @example
+     * // Delete a few Customers
+     * const { count } = await prisma.customer.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends CustomerDeleteManyArgs>(
+      args?: SelectSubset<T, CustomerDeleteManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Customers.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Customers
+     * const customer = await prisma.customer.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends CustomerUpdateManyArgs>(
+      args: SelectSubset<T, CustomerUpdateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Customer.
+     * @param {CustomerUpsertArgs} args - Arguments to update or create a Customer.
+     * @example
+     * // Update or create a Customer
+     * const customer = await prisma.customer.upsert({
+     *   create: {
+     *     // ... data to create a Customer
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Customer we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends CustomerUpsertArgs>(
+      args: SelectSubset<T, CustomerUpsertArgs>
+    ): Prisma__CustomerClient<CustomerGetPayload<T>>
+
+    /**
+     * Count the number of Customers.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerCountArgs} args - Arguments to filter Customers to count.
+     * @example
+     * // Count the number of Customers
+     * const count = await prisma.customer.count({
+     *   where: {
+     *     // ... the filter for the Customers we want to count
+     *   }
+     * })
+    **/
+    count<T extends CustomerCountArgs>(
+      args?: Subset<T, CustomerCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CustomerCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Customer.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CustomerAggregateArgs>(args: Subset<T, CustomerAggregateArgs>): Prisma.PrismaPromise<GetCustomerAggregateType<T>>
+
+    /**
+     * Group by Customer.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CustomerGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CustomerGroupByArgs['orderBy'] }
+        : { orderBy?: CustomerGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CustomerGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCustomerGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Customer.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__CustomerClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+    private readonly _dmmf;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+
+    eventTypes<T extends Customer$eventTypesArgs= {}>(args?: Subset<T, Customer$eventTypesArgs>): Prisma.PrismaPromise<Array<EventTypeGetPayload<T>>| Null>;
+
+    groupMeetings<T extends Customer$groupMeetingsArgs= {}>(args?: Subset<T, Customer$groupMeetingsArgs>): Prisma.PrismaPromise<Array<GroupMeetingGetPayload<T>>| Null>;
+
+    eventSelects<T extends Customer$eventSelectsArgs= {}>(args?: Subset<T, Customer$eventSelectsArgs>): Prisma.PrismaPromise<Array<EventSelectGetPayload<T>>| Null>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+
+
+  // Custom InputTypes
+
+  /**
+   * Customer base type for findUnique actions
+   */
+  export type CustomerFindUniqueArgsBase = {
+    /**
+     * Select specific fields to fetch from the Customer
+     */
+    select?: CustomerSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: CustomerInclude | null
+    /**
+     * Filter, which Customer to fetch.
+     */
+    where: CustomerWhereUniqueInput
+  }
+
+  /**
+   * Customer findUnique
+   */
+  export interface CustomerFindUniqueArgs extends CustomerFindUniqueArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * Customer findUniqueOrThrow
+   */
+  export type CustomerFindUniqueOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the Customer
+     */
+    select?: CustomerSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: CustomerInclude | null
+    /**
+     * Filter, which Customer to fetch.
+     */
+    where: CustomerWhereUniqueInput
+  }
+
+
+  /**
+   * Customer base type for findFirst actions
+   */
+  export type CustomerFindFirstArgsBase = {
+    /**
+     * Select specific fields to fetch from the Customer
+     */
+    select?: CustomerSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: CustomerInclude | null
+    /**
+     * Filter, which Customer to fetch.
+     */
+    where?: CustomerWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Customers to fetch.
+     */
+    orderBy?: Enumerable<CustomerOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Customers.
+     */
+    cursor?: CustomerWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Customers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Customers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Customers.
+     */
+    distinct?: Enumerable<CustomerScalarFieldEnum>
+  }
+
+  /**
+   * Customer findFirst
+   */
+  export interface CustomerFindFirstArgs extends CustomerFindFirstArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * Customer findFirstOrThrow
+   */
+  export type CustomerFindFirstOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the Customer
+     */
+    select?: CustomerSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: CustomerInclude | null
+    /**
+     * Filter, which Customer to fetch.
+     */
+    where?: CustomerWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Customers to fetch.
+     */
+    orderBy?: Enumerable<CustomerOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Customers.
+     */
+    cursor?: CustomerWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Customers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Customers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Customers.
+     */
+    distinct?: Enumerable<CustomerScalarFieldEnum>
+  }
+
+
+  /**
+   * Customer findMany
+   */
+  export type CustomerFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the Customer
+     */
+    select?: CustomerSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: CustomerInclude | null
+    /**
+     * Filter, which Customers to fetch.
+     */
+    where?: CustomerWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Customers to fetch.
+     */
+    orderBy?: Enumerable<CustomerOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Customers.
+     */
+    cursor?: CustomerWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Customers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Customers.
+     */
+    skip?: number
+    distinct?: Enumerable<CustomerScalarFieldEnum>
+  }
+
+
+  /**
+   * Customer create
+   */
+  export type CustomerCreateArgs = {
+    /**
+     * Select specific fields to fetch from the Customer
+     */
+    select?: CustomerSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: CustomerInclude | null
+    /**
+     * The data needed to create a Customer.
+     */
+    data: XOR<CustomerCreateInput, CustomerUncheckedCreateInput>
+  }
+
+
+  /**
+   * Customer createMany
+   */
+  export type CustomerCreateManyArgs = {
+    /**
+     * The data used to create many Customers.
+     */
+    data: Enumerable<CustomerCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * Customer update
+   */
+  export type CustomerUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the Customer
+     */
+    select?: CustomerSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: CustomerInclude | null
+    /**
+     * The data needed to update a Customer.
+     */
+    data: XOR<CustomerUpdateInput, CustomerUncheckedUpdateInput>
+    /**
+     * Choose, which Customer to update.
+     */
+    where: CustomerWhereUniqueInput
+  }
+
+
+  /**
+   * Customer updateMany
+   */
+  export type CustomerUpdateManyArgs = {
+    /**
+     * The data used to update Customers.
+     */
+    data: XOR<CustomerUpdateManyMutationInput, CustomerUncheckedUpdateManyInput>
+    /**
+     * Filter which Customers to update
+     */
+    where?: CustomerWhereInput
+  }
+
+
+  /**
+   * Customer upsert
+   */
+  export type CustomerUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the Customer
+     */
+    select?: CustomerSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: CustomerInclude | null
+    /**
+     * The filter to search for the Customer to update in case it exists.
+     */
+    where: CustomerWhereUniqueInput
+    /**
+     * In case the Customer found by the `where` argument doesn't exist, create a new Customer with this data.
+     */
+    create: XOR<CustomerCreateInput, CustomerUncheckedCreateInput>
+    /**
+     * In case the Customer was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CustomerUpdateInput, CustomerUncheckedUpdateInput>
+  }
+
+
+  /**
+   * Customer delete
+   */
+  export type CustomerDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the Customer
+     */
+    select?: CustomerSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: CustomerInclude | null
+    /**
+     * Filter which Customer to delete.
+     */
+    where: CustomerWhereUniqueInput
+  }
+
+
+  /**
+   * Customer deleteMany
+   */
+  export type CustomerDeleteManyArgs = {
+    /**
+     * Filter which Customers to delete
+     */
+    where?: CustomerWhereInput
+  }
+
+
+  /**
+   * Customer.eventTypes
+   */
+  export type Customer$eventTypesArgs = {
+    /**
+     * Select specific fields to fetch from the EventType
+     */
+    select?: EventTypeSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: EventTypeInclude | null
+    where?: EventTypeWhereInput
+    orderBy?: Enumerable<EventTypeOrderByWithRelationInput>
+    cursor?: EventTypeWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Enumerable<EventTypeScalarFieldEnum>
+  }
+
+
+  /**
+   * Customer.groupMeetings
+   */
+  export type Customer$groupMeetingsArgs = {
+    /**
+     * Select specific fields to fetch from the GroupMeeting
+     */
+    select?: GroupMeetingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: GroupMeetingInclude | null
+    where?: GroupMeetingWhereInput
+    orderBy?: Enumerable<GroupMeetingOrderByWithRelationInput>
+    cursor?: GroupMeetingWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Enumerable<GroupMeetingScalarFieldEnum>
+  }
+
+
+  /**
+   * Customer.eventSelects
+   */
+  export type Customer$eventSelectsArgs = {
+    /**
+     * Select specific fields to fetch from the EventSelect
+     */
+    select?: EventSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: EventSelectInclude | null
+    where?: EventSelectWhereInput
+    orderBy?: Enumerable<EventSelectOrderByWithRelationInput>
+    cursor?: EventSelectWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Enumerable<EventSelectScalarFieldEnum>
+  }
+
+
+  /**
+   * Customer without action
+   */
+  export type CustomerArgs = {
+    /**
+     * Select specific fields to fetch from the Customer
+     */
+    select?: CustomerSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: CustomerInclude | null
+  }
+
+
+
+  /**
+   * Model CalendarSelect
+   */
+
+
+  export type AggregateCalendarSelect = {
+    _count: CalendarSelectCountAggregateOutputType | null
+    _avg: CalendarSelectAvgAggregateOutputType | null
+    _sum: CalendarSelectSumAggregateOutputType | null
+    _min: CalendarSelectMinAggregateOutputType | null
+    _max: CalendarSelectMaxAggregateOutputType | null
+  }
+
+  export type CalendarSelectAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type CalendarSelectSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type CalendarSelectMinAggregateOutputType = {
+    id: number | null
+    startDate: Date | null
+    endDate: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CalendarSelectMaxAggregateOutputType = {
+    id: number | null
+    startDate: Date | null
+    endDate: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CalendarSelectCountAggregateOutputType = {
+    id: number
+    startDate: number
+    endDate: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type CalendarSelectAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type CalendarSelectSumAggregateInputType = {
+    id?: true
+  }
+
+  export type CalendarSelectMinAggregateInputType = {
+    id?: true
+    startDate?: true
+    endDate?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CalendarSelectMaxAggregateInputType = {
+    id?: true
+    startDate?: true
+    endDate?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CalendarSelectCountAggregateInputType = {
+    id?: true
+    startDate?: true
+    endDate?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type CalendarSelectAggregateArgs = {
+    /**
+     * Filter which CalendarSelect to aggregate.
+     */
+    where?: CalendarSelectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CalendarSelects to fetch.
+     */
+    orderBy?: Enumerable<CalendarSelectOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CalendarSelectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CalendarSelects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CalendarSelects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CalendarSelects
+    **/
+    _count?: true | CalendarSelectCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: CalendarSelectAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: CalendarSelectSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CalendarSelectMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CalendarSelectMaxAggregateInputType
+  }
+
+  export type GetCalendarSelectAggregateType<T extends CalendarSelectAggregateArgs> = {
+        [P in keyof T & keyof AggregateCalendarSelect]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCalendarSelect[P]>
+      : GetScalarType<T[P], AggregateCalendarSelect[P]>
+  }
+
+
+
+
+  export type CalendarSelectGroupByArgs = {
+    where?: CalendarSelectWhereInput
+    orderBy?: Enumerable<CalendarSelectOrderByWithAggregationInput>
+    by: CalendarSelectScalarFieldEnum[]
+    having?: CalendarSelectScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CalendarSelectCountAggregateInputType | true
+    _avg?: CalendarSelectAvgAggregateInputType
+    _sum?: CalendarSelectSumAggregateInputType
+    _min?: CalendarSelectMinAggregateInputType
+    _max?: CalendarSelectMaxAggregateInputType
+  }
+
+
+  export type CalendarSelectGroupByOutputType = {
+    id: number
+    startDate: Date
+    endDate: Date
+    createdAt: Date
+    updatedAt: Date
+    _count: CalendarSelectCountAggregateOutputType | null
+    _avg: CalendarSelectAvgAggregateOutputType | null
+    _sum: CalendarSelectSumAggregateOutputType | null
+    _min: CalendarSelectMinAggregateOutputType | null
+    _max: CalendarSelectMaxAggregateOutputType | null
+  }
+
+  type GetCalendarSelectGroupByPayload<T extends CalendarSelectGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickArray<CalendarSelectGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CalendarSelectGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CalendarSelectGroupByOutputType[P]>
+            : GetScalarType<T[P], CalendarSelectGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CalendarSelectSelect = {
+    id?: boolean
+    startDate?: boolean
+    endDate?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    eventTypes?: boolean | CalendarSelect$eventTypesArgs
+    _count?: boolean | CalendarSelectCountOutputTypeArgs
+  }
+
+
+  export type CalendarSelectInclude = {
+    eventTypes?: boolean | CalendarSelect$eventTypesArgs
+    _count?: boolean | CalendarSelectCountOutputTypeArgs
+  }
+
+  export type CalendarSelectGetPayload<S extends boolean | null | undefined | CalendarSelectArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? CalendarSelect :
+    S extends undefined ? never :
+    S extends { include: any } & (CalendarSelectArgs | CalendarSelectFindManyArgs)
+    ? CalendarSelect  & {
+    [P in TruthyKeys<S['include']>]:
+        P extends 'eventTypes' ? Array < EventTypeGetPayload<S['include'][P]>>  :
+        P extends '_count' ? CalendarSelectCountOutputTypeGetPayload<S['include'][P]> :  never
+  } 
+    : S extends { select: any } & (CalendarSelectArgs | CalendarSelectFindManyArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+        P extends 'eventTypes' ? Array < EventTypeGetPayload<S['select'][P]>>  :
+        P extends '_count' ? CalendarSelectCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof CalendarSelect ? CalendarSelect[P] : never
+  } 
+      : CalendarSelect
+
+
+  type CalendarSelectCountArgs = 
+    Omit<CalendarSelectFindManyArgs, 'select' | 'include'> & {
+      select?: CalendarSelectCountAggregateInputType | true
+    }
+
+  export interface CalendarSelectDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+
+    /**
+     * Find zero or one CalendarSelect that matches the filter.
+     * @param {CalendarSelectFindUniqueArgs} args - Arguments to find a CalendarSelect
+     * @example
+     * // Get one CalendarSelect
+     * const calendarSelect = await prisma.calendarSelect.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends CalendarSelectFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, CalendarSelectFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'CalendarSelect'> extends True ? Prisma__CalendarSelectClient<CalendarSelectGetPayload<T>> : Prisma__CalendarSelectClient<CalendarSelectGetPayload<T> | null, null>
+
+    /**
+     * Find one CalendarSelect that matches the filter or throw an error  with `error.code='P2025'` 
+     *     if no matches were found.
+     * @param {CalendarSelectFindUniqueOrThrowArgs} args - Arguments to find a CalendarSelect
+     * @example
+     * // Get one CalendarSelect
+     * const calendarSelect = await prisma.calendarSelect.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends CalendarSelectFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, CalendarSelectFindUniqueOrThrowArgs>
+    ): Prisma__CalendarSelectClient<CalendarSelectGetPayload<T>>
+
+    /**
+     * Find the first CalendarSelect that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CalendarSelectFindFirstArgs} args - Arguments to find a CalendarSelect
+     * @example
+     * // Get one CalendarSelect
+     * const calendarSelect = await prisma.calendarSelect.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends CalendarSelectFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, CalendarSelectFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'CalendarSelect'> extends True ? Prisma__CalendarSelectClient<CalendarSelectGetPayload<T>> : Prisma__CalendarSelectClient<CalendarSelectGetPayload<T> | null, null>
+
+    /**
+     * Find the first CalendarSelect that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CalendarSelectFindFirstOrThrowArgs} args - Arguments to find a CalendarSelect
+     * @example
+     * // Get one CalendarSelect
+     * const calendarSelect = await prisma.calendarSelect.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends CalendarSelectFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, CalendarSelectFindFirstOrThrowArgs>
+    ): Prisma__CalendarSelectClient<CalendarSelectGetPayload<T>>
+
+    /**
+     * Find zero or more CalendarSelects that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CalendarSelectFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CalendarSelects
+     * const calendarSelects = await prisma.calendarSelect.findMany()
+     * 
+     * // Get first 10 CalendarSelects
+     * const calendarSelects = await prisma.calendarSelect.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const calendarSelectWithIdOnly = await prisma.calendarSelect.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends CalendarSelectFindManyArgs>(
+      args?: SelectSubset<T, CalendarSelectFindManyArgs>
+    ): Prisma.PrismaPromise<Array<CalendarSelectGetPayload<T>>>
+
+    /**
+     * Create a CalendarSelect.
+     * @param {CalendarSelectCreateArgs} args - Arguments to create a CalendarSelect.
+     * @example
+     * // Create one CalendarSelect
+     * const CalendarSelect = await prisma.calendarSelect.create({
+     *   data: {
+     *     // ... data to create a CalendarSelect
+     *   }
+     * })
+     * 
+    **/
+    create<T extends CalendarSelectCreateArgs>(
+      args: SelectSubset<T, CalendarSelectCreateArgs>
+    ): Prisma__CalendarSelectClient<CalendarSelectGetPayload<T>>
+
+    /**
+     * Create many CalendarSelects.
+     *     @param {CalendarSelectCreateManyArgs} args - Arguments to create many CalendarSelects.
+     *     @example
+     *     // Create many CalendarSelects
+     *     const calendarSelect = await prisma.calendarSelect.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends CalendarSelectCreateManyArgs>(
+      args?: SelectSubset<T, CalendarSelectCreateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a CalendarSelect.
+     * @param {CalendarSelectDeleteArgs} args - Arguments to delete one CalendarSelect.
+     * @example
+     * // Delete one CalendarSelect
+     * const CalendarSelect = await prisma.calendarSelect.delete({
+     *   where: {
+     *     // ... filter to delete one CalendarSelect
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends CalendarSelectDeleteArgs>(
+      args: SelectSubset<T, CalendarSelectDeleteArgs>
+    ): Prisma__CalendarSelectClient<CalendarSelectGetPayload<T>>
+
+    /**
+     * Update one CalendarSelect.
+     * @param {CalendarSelectUpdateArgs} args - Arguments to update one CalendarSelect.
+     * @example
+     * // Update one CalendarSelect
+     * const calendarSelect = await prisma.calendarSelect.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends CalendarSelectUpdateArgs>(
+      args: SelectSubset<T, CalendarSelectUpdateArgs>
+    ): Prisma__CalendarSelectClient<CalendarSelectGetPayload<T>>
+
+    /**
+     * Delete zero or more CalendarSelects.
+     * @param {CalendarSelectDeleteManyArgs} args - Arguments to filter CalendarSelects to delete.
+     * @example
+     * // Delete a few CalendarSelects
+     * const { count } = await prisma.calendarSelect.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends CalendarSelectDeleteManyArgs>(
+      args?: SelectSubset<T, CalendarSelectDeleteManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CalendarSelects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CalendarSelectUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CalendarSelects
+     * const calendarSelect = await prisma.calendarSelect.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends CalendarSelectUpdateManyArgs>(
+      args: SelectSubset<T, CalendarSelectUpdateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one CalendarSelect.
+     * @param {CalendarSelectUpsertArgs} args - Arguments to update or create a CalendarSelect.
+     * @example
+     * // Update or create a CalendarSelect
+     * const calendarSelect = await prisma.calendarSelect.upsert({
+     *   create: {
+     *     // ... data to create a CalendarSelect
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CalendarSelect we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends CalendarSelectUpsertArgs>(
+      args: SelectSubset<T, CalendarSelectUpsertArgs>
+    ): Prisma__CalendarSelectClient<CalendarSelectGetPayload<T>>
+
+    /**
+     * Count the number of CalendarSelects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CalendarSelectCountArgs} args - Arguments to filter CalendarSelects to count.
+     * @example
+     * // Count the number of CalendarSelects
+     * const count = await prisma.calendarSelect.count({
+     *   where: {
+     *     // ... the filter for the CalendarSelects we want to count
+     *   }
+     * })
+    **/
+    count<T extends CalendarSelectCountArgs>(
+      args?: Subset<T, CalendarSelectCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CalendarSelectCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CalendarSelect.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CalendarSelectAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CalendarSelectAggregateArgs>(args: Subset<T, CalendarSelectAggregateArgs>): Prisma.PrismaPromise<GetCalendarSelectAggregateType<T>>
+
+    /**
+     * Group by CalendarSelect.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CalendarSelectGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CalendarSelectGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CalendarSelectGroupByArgs['orderBy'] }
+        : { orderBy?: CalendarSelectGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CalendarSelectGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCalendarSelectGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CalendarSelect.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__CalendarSelectClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+    private readonly _dmmf;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+
+    eventTypes<T extends CalendarSelect$eventTypesArgs= {}>(args?: Subset<T, CalendarSelect$eventTypesArgs>): Prisma.PrismaPromise<Array<EventTypeGetPayload<T>>| Null>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+
+
+  // Custom InputTypes
+
+  /**
+   * CalendarSelect base type for findUnique actions
+   */
+  export type CalendarSelectFindUniqueArgsBase = {
+    /**
+     * Select specific fields to fetch from the CalendarSelect
+     */
+    select?: CalendarSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: CalendarSelectInclude | null
+    /**
+     * Filter, which CalendarSelect to fetch.
+     */
+    where: CalendarSelectWhereUniqueInput
+  }
+
+  /**
+   * CalendarSelect findUnique
+   */
+  export interface CalendarSelectFindUniqueArgs extends CalendarSelectFindUniqueArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * CalendarSelect findUniqueOrThrow
+   */
+  export type CalendarSelectFindUniqueOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the CalendarSelect
+     */
+    select?: CalendarSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: CalendarSelectInclude | null
+    /**
+     * Filter, which CalendarSelect to fetch.
+     */
+    where: CalendarSelectWhereUniqueInput
+  }
+
+
+  /**
+   * CalendarSelect base type for findFirst actions
+   */
+  export type CalendarSelectFindFirstArgsBase = {
+    /**
+     * Select specific fields to fetch from the CalendarSelect
+     */
+    select?: CalendarSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: CalendarSelectInclude | null
+    /**
+     * Filter, which CalendarSelect to fetch.
+     */
+    where?: CalendarSelectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CalendarSelects to fetch.
+     */
+    orderBy?: Enumerable<CalendarSelectOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CalendarSelects.
+     */
+    cursor?: CalendarSelectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CalendarSelects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CalendarSelects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CalendarSelects.
+     */
+    distinct?: Enumerable<CalendarSelectScalarFieldEnum>
+  }
+
+  /**
+   * CalendarSelect findFirst
+   */
+  export interface CalendarSelectFindFirstArgs extends CalendarSelectFindFirstArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * CalendarSelect findFirstOrThrow
+   */
+  export type CalendarSelectFindFirstOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the CalendarSelect
+     */
+    select?: CalendarSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: CalendarSelectInclude | null
+    /**
+     * Filter, which CalendarSelect to fetch.
+     */
+    where?: CalendarSelectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CalendarSelects to fetch.
+     */
+    orderBy?: Enumerable<CalendarSelectOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CalendarSelects.
+     */
+    cursor?: CalendarSelectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CalendarSelects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CalendarSelects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CalendarSelects.
+     */
+    distinct?: Enumerable<CalendarSelectScalarFieldEnum>
+  }
+
+
+  /**
+   * CalendarSelect findMany
+   */
+  export type CalendarSelectFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the CalendarSelect
+     */
+    select?: CalendarSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: CalendarSelectInclude | null
+    /**
+     * Filter, which CalendarSelects to fetch.
+     */
+    where?: CalendarSelectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CalendarSelects to fetch.
+     */
+    orderBy?: Enumerable<CalendarSelectOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CalendarSelects.
+     */
+    cursor?: CalendarSelectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CalendarSelects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CalendarSelects.
+     */
+    skip?: number
+    distinct?: Enumerable<CalendarSelectScalarFieldEnum>
+  }
+
+
+  /**
+   * CalendarSelect create
+   */
+  export type CalendarSelectCreateArgs = {
+    /**
+     * Select specific fields to fetch from the CalendarSelect
+     */
+    select?: CalendarSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: CalendarSelectInclude | null
+    /**
+     * The data needed to create a CalendarSelect.
+     */
+    data: XOR<CalendarSelectCreateInput, CalendarSelectUncheckedCreateInput>
+  }
+
+
+  /**
+   * CalendarSelect createMany
+   */
+  export type CalendarSelectCreateManyArgs = {
+    /**
+     * The data used to create many CalendarSelects.
+     */
+    data: Enumerable<CalendarSelectCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * CalendarSelect update
+   */
+  export type CalendarSelectUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the CalendarSelect
+     */
+    select?: CalendarSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: CalendarSelectInclude | null
+    /**
+     * The data needed to update a CalendarSelect.
+     */
+    data: XOR<CalendarSelectUpdateInput, CalendarSelectUncheckedUpdateInput>
+    /**
+     * Choose, which CalendarSelect to update.
+     */
+    where: CalendarSelectWhereUniqueInput
+  }
+
+
+  /**
+   * CalendarSelect updateMany
+   */
+  export type CalendarSelectUpdateManyArgs = {
+    /**
+     * The data used to update CalendarSelects.
+     */
+    data: XOR<CalendarSelectUpdateManyMutationInput, CalendarSelectUncheckedUpdateManyInput>
+    /**
+     * Filter which CalendarSelects to update
+     */
+    where?: CalendarSelectWhereInput
+  }
+
+
+  /**
+   * CalendarSelect upsert
+   */
+  export type CalendarSelectUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the CalendarSelect
+     */
+    select?: CalendarSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: CalendarSelectInclude | null
+    /**
+     * The filter to search for the CalendarSelect to update in case it exists.
+     */
+    where: CalendarSelectWhereUniqueInput
+    /**
+     * In case the CalendarSelect found by the `where` argument doesn't exist, create a new CalendarSelect with this data.
+     */
+    create: XOR<CalendarSelectCreateInput, CalendarSelectUncheckedCreateInput>
+    /**
+     * In case the CalendarSelect was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CalendarSelectUpdateInput, CalendarSelectUncheckedUpdateInput>
+  }
+
+
+  /**
+   * CalendarSelect delete
+   */
+  export type CalendarSelectDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the CalendarSelect
+     */
+    select?: CalendarSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: CalendarSelectInclude | null
+    /**
+     * Filter which CalendarSelect to delete.
+     */
+    where: CalendarSelectWhereUniqueInput
+  }
+
+
+  /**
+   * CalendarSelect deleteMany
+   */
+  export type CalendarSelectDeleteManyArgs = {
+    /**
+     * Filter which CalendarSelects to delete
+     */
+    where?: CalendarSelectWhereInput
+  }
+
+
+  /**
+   * CalendarSelect.eventTypes
+   */
+  export type CalendarSelect$eventTypesArgs = {
+    /**
+     * Select specific fields to fetch from the EventType
+     */
+    select?: EventTypeSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: EventTypeInclude | null
+    where?: EventTypeWhereInput
+    orderBy?: Enumerable<EventTypeOrderByWithRelationInput>
+    cursor?: EventTypeWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Enumerable<EventTypeScalarFieldEnum>
+  }
+
+
+  /**
+   * CalendarSelect without action
+   */
+  export type CalendarSelectArgs = {
+    /**
+     * Select specific fields to fetch from the CalendarSelect
+     */
+    select?: CalendarSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: CalendarSelectInclude | null
+  }
+
+
+
+  /**
+   * Model Billing
+   */
+
+
+  export type AggregateBilling = {
+    _count: BillingCountAggregateOutputType | null
+    _avg: BillingAvgAggregateOutputType | null
+    _sum: BillingSumAggregateOutputType | null
+    _min: BillingMinAggregateOutputType | null
+    _max: BillingMaxAggregateOutputType | null
+  }
+
+  export type BillingAvgAggregateOutputType = {
+    id: number | null
+    subscriptionMonth: number | null
+    subscriptionPrice: number | null
+    userId: number | null
+  }
+
+  export type BillingSumAggregateOutputType = {
+    id: number | null
+    subscriptionMonth: number | null
+    subscriptionPrice: number | null
+    userId: number | null
+  }
+
+  export type BillingMinAggregateOutputType = {
+    id: number | null
+    subscriptionMonth: number | null
+    subscriptionPrice: number | null
+    userId: number | null
+    name: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BillingMaxAggregateOutputType = {
+    id: number | null
+    subscriptionMonth: number | null
+    subscriptionPrice: number | null
+    userId: number | null
+    name: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BillingCountAggregateOutputType = {
+    id: number
+    subscriptionMonth: number
+    subscriptionPrice: number
+    userId: number
+    name: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type BillingAvgAggregateInputType = {
+    id?: true
+    subscriptionMonth?: true
+    subscriptionPrice?: true
+    userId?: true
+  }
+
+  export type BillingSumAggregateInputType = {
+    id?: true
+    subscriptionMonth?: true
+    subscriptionPrice?: true
+    userId?: true
+  }
+
+  export type BillingMinAggregateInputType = {
+    id?: true
+    subscriptionMonth?: true
+    subscriptionPrice?: true
+    userId?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BillingMaxAggregateInputType = {
+    id?: true
+    subscriptionMonth?: true
+    subscriptionPrice?: true
+    userId?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BillingCountAggregateInputType = {
+    id?: true
+    subscriptionMonth?: true
+    subscriptionPrice?: true
+    userId?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type BillingAggregateArgs = {
+    /**
+     * Filter which Billing to aggregate.
+     */
+    where?: BillingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Billings to fetch.
+     */
+    orderBy?: Enumerable<BillingOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BillingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Billings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Billings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Billings
+    **/
+    _count?: true | BillingCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: BillingAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: BillingSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BillingMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BillingMaxAggregateInputType
+  }
+
+  export type GetBillingAggregateType<T extends BillingAggregateArgs> = {
+        [P in keyof T & keyof AggregateBilling]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBilling[P]>
+      : GetScalarType<T[P], AggregateBilling[P]>
+  }
+
+
+
+
+  export type BillingGroupByArgs = {
+    where?: BillingWhereInput
+    orderBy?: Enumerable<BillingOrderByWithAggregationInput>
+    by: BillingScalarFieldEnum[]
+    having?: BillingScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BillingCountAggregateInputType | true
+    _avg?: BillingAvgAggregateInputType
+    _sum?: BillingSumAggregateInputType
+    _min?: BillingMinAggregateInputType
+    _max?: BillingMaxAggregateInputType
+  }
+
+
+  export type BillingGroupByOutputType = {
+    id: number
+    subscriptionMonth: number
+    subscriptionPrice: number
+    userId: number
+    name: string
+    createdAt: Date
+    updatedAt: Date
+    _count: BillingCountAggregateOutputType | null
+    _avg: BillingAvgAggregateOutputType | null
+    _sum: BillingSumAggregateOutputType | null
+    _min: BillingMinAggregateOutputType | null
+    _max: BillingMaxAggregateOutputType | null
+  }
+
+  type GetBillingGroupByPayload<T extends BillingGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickArray<BillingGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BillingGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BillingGroupByOutputType[P]>
+            : GetScalarType<T[P], BillingGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BillingSelect = {
+    id?: boolean
+    subscriptionMonth?: boolean
+    subscriptionPrice?: boolean
+    userId?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserArgs
+  }
+
+
+  export type BillingInclude = {
+    user?: boolean | UserArgs
+  }
+
+  export type BillingGetPayload<S extends boolean | null | undefined | BillingArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? Billing :
+    S extends undefined ? never :
+    S extends { include: any } & (BillingArgs | BillingFindManyArgs)
+    ? Billing  & {
+    [P in TruthyKeys<S['include']>]:
+        P extends 'user' ? UserGetPayload<S['include'][P]> :  never
+  } 
+    : S extends { select: any } & (BillingArgs | BillingFindManyArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+        P extends 'user' ? UserGetPayload<S['select'][P]> :  P extends keyof Billing ? Billing[P] : never
+  } 
+      : Billing
+
+
+  type BillingCountArgs = 
+    Omit<BillingFindManyArgs, 'select' | 'include'> & {
+      select?: BillingCountAggregateInputType | true
+    }
+
+  export interface BillingDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+
+    /**
+     * Find zero or one Billing that matches the filter.
+     * @param {BillingFindUniqueArgs} args - Arguments to find a Billing
+     * @example
+     * // Get one Billing
+     * const billing = await prisma.billing.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends BillingFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, BillingFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Billing'> extends True ? Prisma__BillingClient<BillingGetPayload<T>> : Prisma__BillingClient<BillingGetPayload<T> | null, null>
+
+    /**
+     * Find one Billing that matches the filter or throw an error  with `error.code='P2025'` 
+     *     if no matches were found.
+     * @param {BillingFindUniqueOrThrowArgs} args - Arguments to find a Billing
+     * @example
+     * // Get one Billing
+     * const billing = await prisma.billing.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends BillingFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, BillingFindUniqueOrThrowArgs>
+    ): Prisma__BillingClient<BillingGetPayload<T>>
+
+    /**
+     * Find the first Billing that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillingFindFirstArgs} args - Arguments to find a Billing
+     * @example
+     * // Get one Billing
+     * const billing = await prisma.billing.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends BillingFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, BillingFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Billing'> extends True ? Prisma__BillingClient<BillingGetPayload<T>> : Prisma__BillingClient<BillingGetPayload<T> | null, null>
+
+    /**
+     * Find the first Billing that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillingFindFirstOrThrowArgs} args - Arguments to find a Billing
+     * @example
+     * // Get one Billing
+     * const billing = await prisma.billing.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends BillingFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, BillingFindFirstOrThrowArgs>
+    ): Prisma__BillingClient<BillingGetPayload<T>>
+
+    /**
+     * Find zero or more Billings that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillingFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Billings
+     * const billings = await prisma.billing.findMany()
+     * 
+     * // Get first 10 Billings
+     * const billings = await prisma.billing.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const billingWithIdOnly = await prisma.billing.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends BillingFindManyArgs>(
+      args?: SelectSubset<T, BillingFindManyArgs>
+    ): Prisma.PrismaPromise<Array<BillingGetPayload<T>>>
+
+    /**
+     * Create a Billing.
+     * @param {BillingCreateArgs} args - Arguments to create a Billing.
+     * @example
+     * // Create one Billing
+     * const Billing = await prisma.billing.create({
+     *   data: {
+     *     // ... data to create a Billing
+     *   }
+     * })
+     * 
+    **/
+    create<T extends BillingCreateArgs>(
+      args: SelectSubset<T, BillingCreateArgs>
+    ): Prisma__BillingClient<BillingGetPayload<T>>
+
+    /**
+     * Create many Billings.
+     *     @param {BillingCreateManyArgs} args - Arguments to create many Billings.
+     *     @example
+     *     // Create many Billings
+     *     const billing = await prisma.billing.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends BillingCreateManyArgs>(
+      args?: SelectSubset<T, BillingCreateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Billing.
+     * @param {BillingDeleteArgs} args - Arguments to delete one Billing.
+     * @example
+     * // Delete one Billing
+     * const Billing = await prisma.billing.delete({
+     *   where: {
+     *     // ... filter to delete one Billing
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends BillingDeleteArgs>(
+      args: SelectSubset<T, BillingDeleteArgs>
+    ): Prisma__BillingClient<BillingGetPayload<T>>
+
+    /**
+     * Update one Billing.
+     * @param {BillingUpdateArgs} args - Arguments to update one Billing.
+     * @example
+     * // Update one Billing
+     * const billing = await prisma.billing.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends BillingUpdateArgs>(
+      args: SelectSubset<T, BillingUpdateArgs>
+    ): Prisma__BillingClient<BillingGetPayload<T>>
+
+    /**
+     * Delete zero or more Billings.
+     * @param {BillingDeleteManyArgs} args - Arguments to filter Billings to delete.
+     * @example
+     * // Delete a few Billings
+     * const { count } = await prisma.billing.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends BillingDeleteManyArgs>(
+      args?: SelectSubset<T, BillingDeleteManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Billings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillingUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Billings
+     * const billing = await prisma.billing.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends BillingUpdateManyArgs>(
+      args: SelectSubset<T, BillingUpdateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Billing.
+     * @param {BillingUpsertArgs} args - Arguments to update or create a Billing.
+     * @example
+     * // Update or create a Billing
+     * const billing = await prisma.billing.upsert({
+     *   create: {
+     *     // ... data to create a Billing
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Billing we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends BillingUpsertArgs>(
+      args: SelectSubset<T, BillingUpsertArgs>
+    ): Prisma__BillingClient<BillingGetPayload<T>>
+
+    /**
+     * Count the number of Billings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillingCountArgs} args - Arguments to filter Billings to count.
+     * @example
+     * // Count the number of Billings
+     * const count = await prisma.billing.count({
+     *   where: {
+     *     // ... the filter for the Billings we want to count
+     *   }
+     * })
+    **/
+    count<T extends BillingCountArgs>(
+      args?: Subset<T, BillingCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BillingCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Billing.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillingAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BillingAggregateArgs>(args: Subset<T, BillingAggregateArgs>): Prisma.PrismaPromise<GetBillingAggregateType<T>>
+
+    /**
+     * Group by Billing.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillingGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BillingGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BillingGroupByArgs['orderBy'] }
+        : { orderBy?: BillingGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BillingGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBillingGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Billing.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__BillingClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+    private readonly _dmmf;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+
+    user<T extends UserArgs= {}>(args?: Subset<T, UserArgs>): Prisma__UserClient<UserGetPayload<T> | Null>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+
+
+  // Custom InputTypes
+
+  /**
+   * Billing base type for findUnique actions
+   */
+  export type BillingFindUniqueArgsBase = {
+    /**
+     * Select specific fields to fetch from the Billing
+     */
+    select?: BillingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: BillingInclude | null
+    /**
+     * Filter, which Billing to fetch.
+     */
+    where: BillingWhereUniqueInput
+  }
+
+  /**
+   * Billing findUnique
+   */
+  export interface BillingFindUniqueArgs extends BillingFindUniqueArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * Billing findUniqueOrThrow
+   */
+  export type BillingFindUniqueOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the Billing
+     */
+    select?: BillingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: BillingInclude | null
+    /**
+     * Filter, which Billing to fetch.
+     */
+    where: BillingWhereUniqueInput
+  }
+
+
+  /**
+   * Billing base type for findFirst actions
+   */
+  export type BillingFindFirstArgsBase = {
+    /**
+     * Select specific fields to fetch from the Billing
+     */
+    select?: BillingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: BillingInclude | null
+    /**
+     * Filter, which Billing to fetch.
+     */
+    where?: BillingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Billings to fetch.
+     */
+    orderBy?: Enumerable<BillingOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Billings.
+     */
+    cursor?: BillingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Billings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Billings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Billings.
+     */
+    distinct?: Enumerable<BillingScalarFieldEnum>
+  }
+
+  /**
+   * Billing findFirst
+   */
+  export interface BillingFindFirstArgs extends BillingFindFirstArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * Billing findFirstOrThrow
+   */
+  export type BillingFindFirstOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the Billing
+     */
+    select?: BillingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: BillingInclude | null
+    /**
+     * Filter, which Billing to fetch.
+     */
+    where?: BillingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Billings to fetch.
+     */
+    orderBy?: Enumerable<BillingOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Billings.
+     */
+    cursor?: BillingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Billings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Billings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Billings.
+     */
+    distinct?: Enumerable<BillingScalarFieldEnum>
+  }
+
+
+  /**
+   * Billing findMany
+   */
+  export type BillingFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the Billing
+     */
+    select?: BillingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: BillingInclude | null
+    /**
+     * Filter, which Billings to fetch.
+     */
+    where?: BillingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Billings to fetch.
+     */
+    orderBy?: Enumerable<BillingOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Billings.
+     */
+    cursor?: BillingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Billings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Billings.
+     */
+    skip?: number
+    distinct?: Enumerable<BillingScalarFieldEnum>
+  }
+
+
+  /**
+   * Billing create
+   */
+  export type BillingCreateArgs = {
+    /**
+     * Select specific fields to fetch from the Billing
+     */
+    select?: BillingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: BillingInclude | null
+    /**
+     * The data needed to create a Billing.
+     */
+    data: XOR<BillingCreateInput, BillingUncheckedCreateInput>
+  }
+
+
+  /**
+   * Billing createMany
+   */
+  export type BillingCreateManyArgs = {
+    /**
+     * The data used to create many Billings.
+     */
+    data: Enumerable<BillingCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * Billing update
+   */
+  export type BillingUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the Billing
+     */
+    select?: BillingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: BillingInclude | null
+    /**
+     * The data needed to update a Billing.
+     */
+    data: XOR<BillingUpdateInput, BillingUncheckedUpdateInput>
+    /**
+     * Choose, which Billing to update.
+     */
+    where: BillingWhereUniqueInput
+  }
+
+
+  /**
+   * Billing updateMany
+   */
+  export type BillingUpdateManyArgs = {
+    /**
+     * The data used to update Billings.
+     */
+    data: XOR<BillingUpdateManyMutationInput, BillingUncheckedUpdateManyInput>
+    /**
+     * Filter which Billings to update
+     */
+    where?: BillingWhereInput
+  }
+
+
+  /**
+   * Billing upsert
+   */
+  export type BillingUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the Billing
+     */
+    select?: BillingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: BillingInclude | null
+    /**
+     * The filter to search for the Billing to update in case it exists.
+     */
+    where: BillingWhereUniqueInput
+    /**
+     * In case the Billing found by the `where` argument doesn't exist, create a new Billing with this data.
+     */
+    create: XOR<BillingCreateInput, BillingUncheckedCreateInput>
+    /**
+     * In case the Billing was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BillingUpdateInput, BillingUncheckedUpdateInput>
+  }
+
+
+  /**
+   * Billing delete
+   */
+  export type BillingDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the Billing
+     */
+    select?: BillingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: BillingInclude | null
+    /**
+     * Filter which Billing to delete.
+     */
+    where: BillingWhereUniqueInput
+  }
+
+
+  /**
+   * Billing deleteMany
+   */
+  export type BillingDeleteManyArgs = {
+    /**
+     * Filter which Billings to delete
+     */
+    where?: BillingWhereInput
+  }
+
+
+  /**
+   * Billing without action
+   */
+  export type BillingArgs = {
+    /**
+     * Select specific fields to fetch from the Billing
+     */
+    select?: BillingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: BillingInclude | null
+  }
+
+
+
+  /**
+   * Model GroupMeeting
+   */
+
+
+  export type AggregateGroupMeeting = {
+    _count: GroupMeetingCountAggregateOutputType | null
+    _avg: GroupMeetingAvgAggregateOutputType | null
+    _sum: GroupMeetingSumAggregateOutputType | null
+    _min: GroupMeetingMinAggregateOutputType | null
+    _max: GroupMeetingMaxAggregateOutputType | null
+  }
+
+  export type GroupMeetingAvgAggregateOutputType = {
+    id: number | null
+    locationId: number | null
+    customerId: number | null
+    totalPrice: number | null
+    eventTypeId: number | null
+  }
+
+  export type GroupMeetingSumAggregateOutputType = {
+    id: number | null
+    locationId: number | null
+    customerId: number | null
+    totalPrice: number | null
+    eventTypeId: number | null
+  }
+
+  export type GroupMeetingMinAggregateOutputType = {
+    id: number | null
+    locationId: number | null
+    customerId: number | null
+    totalPrice: number | null
+    timezone: string | null
+    eventTypeId: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type GroupMeetingMaxAggregateOutputType = {
+    id: number | null
+    locationId: number | null
+    customerId: number | null
+    totalPrice: number | null
+    timezone: string | null
+    eventTypeId: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type GroupMeetingCountAggregateOutputType = {
+    id: number
+    locationId: number
+    customerId: number
+    totalPrice: number
+    timezone: number
+    eventTypeId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type GroupMeetingAvgAggregateInputType = {
+    id?: true
+    locationId?: true
+    customerId?: true
+    totalPrice?: true
+    eventTypeId?: true
+  }
+
+  export type GroupMeetingSumAggregateInputType = {
+    id?: true
+    locationId?: true
+    customerId?: true
+    totalPrice?: true
+    eventTypeId?: true
+  }
+
+  export type GroupMeetingMinAggregateInputType = {
+    id?: true
+    locationId?: true
+    customerId?: true
+    totalPrice?: true
+    timezone?: true
+    eventTypeId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type GroupMeetingMaxAggregateInputType = {
+    id?: true
+    locationId?: true
+    customerId?: true
+    totalPrice?: true
+    timezone?: true
+    eventTypeId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type GroupMeetingCountAggregateInputType = {
+    id?: true
+    locationId?: true
+    customerId?: true
+    totalPrice?: true
+    timezone?: true
+    eventTypeId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type GroupMeetingAggregateArgs = {
+    /**
+     * Filter which GroupMeeting to aggregate.
+     */
+    where?: GroupMeetingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GroupMeetings to fetch.
+     */
+    orderBy?: Enumerable<GroupMeetingOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: GroupMeetingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GroupMeetings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GroupMeetings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned GroupMeetings
+    **/
+    _count?: true | GroupMeetingCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: GroupMeetingAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: GroupMeetingSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: GroupMeetingMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: GroupMeetingMaxAggregateInputType
+  }
+
+  export type GetGroupMeetingAggregateType<T extends GroupMeetingAggregateArgs> = {
+        [P in keyof T & keyof AggregateGroupMeeting]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateGroupMeeting[P]>
+      : GetScalarType<T[P], AggregateGroupMeeting[P]>
+  }
+
+
+
+
+  export type GroupMeetingGroupByArgs = {
+    where?: GroupMeetingWhereInput
+    orderBy?: Enumerable<GroupMeetingOrderByWithAggregationInput>
+    by: GroupMeetingScalarFieldEnum[]
+    having?: GroupMeetingScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: GroupMeetingCountAggregateInputType | true
+    _avg?: GroupMeetingAvgAggregateInputType
+    _sum?: GroupMeetingSumAggregateInputType
+    _min?: GroupMeetingMinAggregateInputType
+    _max?: GroupMeetingMaxAggregateInputType
+  }
+
+
+  export type GroupMeetingGroupByOutputType = {
+    id: number
+    locationId: number
+    customerId: number
+    totalPrice: number
+    timezone: string
+    eventTypeId: number
+    createdAt: Date
+    updatedAt: Date
+    _count: GroupMeetingCountAggregateOutputType | null
+    _avg: GroupMeetingAvgAggregateOutputType | null
+    _sum: GroupMeetingSumAggregateOutputType | null
+    _min: GroupMeetingMinAggregateOutputType | null
+    _max: GroupMeetingMaxAggregateOutputType | null
+  }
+
+  type GetGroupMeetingGroupByPayload<T extends GroupMeetingGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickArray<GroupMeetingGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof GroupMeetingGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], GroupMeetingGroupByOutputType[P]>
+            : GetScalarType<T[P], GroupMeetingGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type GroupMeetingSelect = {
+    id?: boolean
+    locationId?: boolean
+    customerId?: boolean
+    totalPrice?: boolean
+    timezone?: boolean
+    eventTypeId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    location?: boolean | LocationArgs
+    customer?: boolean | CustomerArgs
+    eventType?: boolean | EventTypeArgs
+    userOnGroupMeetings?: boolean | GroupMeeting$userOnGroupMeetingsArgs
+    _count?: boolean | GroupMeetingCountOutputTypeArgs
+  }
+
+
+  export type GroupMeetingInclude = {
+    location?: boolean | LocationArgs
+    customer?: boolean | CustomerArgs
+    eventType?: boolean | EventTypeArgs
+    userOnGroupMeetings?: boolean | GroupMeeting$userOnGroupMeetingsArgs
+    _count?: boolean | GroupMeetingCountOutputTypeArgs
+  }
+
+  export type GroupMeetingGetPayload<S extends boolean | null | undefined | GroupMeetingArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? GroupMeeting :
+    S extends undefined ? never :
+    S extends { include: any } & (GroupMeetingArgs | GroupMeetingFindManyArgs)
+    ? GroupMeeting  & {
+    [P in TruthyKeys<S['include']>]:
+        P extends 'location' ? LocationGetPayload<S['include'][P]> :
+        P extends 'customer' ? CustomerGetPayload<S['include'][P]> :
+        P extends 'eventType' ? EventTypeGetPayload<S['include'][P]> :
+        P extends 'userOnGroupMeetings' ? Array < UserOnGroupMeetingGetPayload<S['include'][P]>>  :
+        P extends '_count' ? GroupMeetingCountOutputTypeGetPayload<S['include'][P]> :  never
+  } 
+    : S extends { select: any } & (GroupMeetingArgs | GroupMeetingFindManyArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+        P extends 'location' ? LocationGetPayload<S['select'][P]> :
+        P extends 'customer' ? CustomerGetPayload<S['select'][P]> :
+        P extends 'eventType' ? EventTypeGetPayload<S['select'][P]> :
+        P extends 'userOnGroupMeetings' ? Array < UserOnGroupMeetingGetPayload<S['select'][P]>>  :
+        P extends '_count' ? GroupMeetingCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof GroupMeeting ? GroupMeeting[P] : never
+  } 
+      : GroupMeeting
+
+
+  type GroupMeetingCountArgs = 
+    Omit<GroupMeetingFindManyArgs, 'select' | 'include'> & {
+      select?: GroupMeetingCountAggregateInputType | true
+    }
+
+  export interface GroupMeetingDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+
+    /**
+     * Find zero or one GroupMeeting that matches the filter.
+     * @param {GroupMeetingFindUniqueArgs} args - Arguments to find a GroupMeeting
+     * @example
+     * // Get one GroupMeeting
+     * const groupMeeting = await prisma.groupMeeting.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends GroupMeetingFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, GroupMeetingFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'GroupMeeting'> extends True ? Prisma__GroupMeetingClient<GroupMeetingGetPayload<T>> : Prisma__GroupMeetingClient<GroupMeetingGetPayload<T> | null, null>
+
+    /**
+     * Find one GroupMeeting that matches the filter or throw an error  with `error.code='P2025'` 
+     *     if no matches were found.
+     * @param {GroupMeetingFindUniqueOrThrowArgs} args - Arguments to find a GroupMeeting
+     * @example
+     * // Get one GroupMeeting
+     * const groupMeeting = await prisma.groupMeeting.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends GroupMeetingFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, GroupMeetingFindUniqueOrThrowArgs>
+    ): Prisma__GroupMeetingClient<GroupMeetingGetPayload<T>>
+
+    /**
+     * Find the first GroupMeeting that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GroupMeetingFindFirstArgs} args - Arguments to find a GroupMeeting
+     * @example
+     * // Get one GroupMeeting
+     * const groupMeeting = await prisma.groupMeeting.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends GroupMeetingFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, GroupMeetingFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'GroupMeeting'> extends True ? Prisma__GroupMeetingClient<GroupMeetingGetPayload<T>> : Prisma__GroupMeetingClient<GroupMeetingGetPayload<T> | null, null>
+
+    /**
+     * Find the first GroupMeeting that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GroupMeetingFindFirstOrThrowArgs} args - Arguments to find a GroupMeeting
+     * @example
+     * // Get one GroupMeeting
+     * const groupMeeting = await prisma.groupMeeting.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends GroupMeetingFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, GroupMeetingFindFirstOrThrowArgs>
+    ): Prisma__GroupMeetingClient<GroupMeetingGetPayload<T>>
+
+    /**
+     * Find zero or more GroupMeetings that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GroupMeetingFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all GroupMeetings
+     * const groupMeetings = await prisma.groupMeeting.findMany()
+     * 
+     * // Get first 10 GroupMeetings
+     * const groupMeetings = await prisma.groupMeeting.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const groupMeetingWithIdOnly = await prisma.groupMeeting.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends GroupMeetingFindManyArgs>(
+      args?: SelectSubset<T, GroupMeetingFindManyArgs>
+    ): Prisma.PrismaPromise<Array<GroupMeetingGetPayload<T>>>
+
+    /**
+     * Create a GroupMeeting.
+     * @param {GroupMeetingCreateArgs} args - Arguments to create a GroupMeeting.
+     * @example
+     * // Create one GroupMeeting
+     * const GroupMeeting = await prisma.groupMeeting.create({
+     *   data: {
+     *     // ... data to create a GroupMeeting
+     *   }
+     * })
+     * 
+    **/
+    create<T extends GroupMeetingCreateArgs>(
+      args: SelectSubset<T, GroupMeetingCreateArgs>
+    ): Prisma__GroupMeetingClient<GroupMeetingGetPayload<T>>
+
+    /**
+     * Create many GroupMeetings.
+     *     @param {GroupMeetingCreateManyArgs} args - Arguments to create many GroupMeetings.
+     *     @example
+     *     // Create many GroupMeetings
+     *     const groupMeeting = await prisma.groupMeeting.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends GroupMeetingCreateManyArgs>(
+      args?: SelectSubset<T, GroupMeetingCreateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a GroupMeeting.
+     * @param {GroupMeetingDeleteArgs} args - Arguments to delete one GroupMeeting.
+     * @example
+     * // Delete one GroupMeeting
+     * const GroupMeeting = await prisma.groupMeeting.delete({
+     *   where: {
+     *     // ... filter to delete one GroupMeeting
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends GroupMeetingDeleteArgs>(
+      args: SelectSubset<T, GroupMeetingDeleteArgs>
+    ): Prisma__GroupMeetingClient<GroupMeetingGetPayload<T>>
+
+    /**
+     * Update one GroupMeeting.
+     * @param {GroupMeetingUpdateArgs} args - Arguments to update one GroupMeeting.
+     * @example
+     * // Update one GroupMeeting
+     * const groupMeeting = await prisma.groupMeeting.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends GroupMeetingUpdateArgs>(
+      args: SelectSubset<T, GroupMeetingUpdateArgs>
+    ): Prisma__GroupMeetingClient<GroupMeetingGetPayload<T>>
+
+    /**
+     * Delete zero or more GroupMeetings.
+     * @param {GroupMeetingDeleteManyArgs} args - Arguments to filter GroupMeetings to delete.
+     * @example
+     * // Delete a few GroupMeetings
+     * const { count } = await prisma.groupMeeting.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends GroupMeetingDeleteManyArgs>(
+      args?: SelectSubset<T, GroupMeetingDeleteManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more GroupMeetings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GroupMeetingUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many GroupMeetings
+     * const groupMeeting = await prisma.groupMeeting.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends GroupMeetingUpdateManyArgs>(
+      args: SelectSubset<T, GroupMeetingUpdateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one GroupMeeting.
+     * @param {GroupMeetingUpsertArgs} args - Arguments to update or create a GroupMeeting.
+     * @example
+     * // Update or create a GroupMeeting
+     * const groupMeeting = await prisma.groupMeeting.upsert({
+     *   create: {
+     *     // ... data to create a GroupMeeting
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the GroupMeeting we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends GroupMeetingUpsertArgs>(
+      args: SelectSubset<T, GroupMeetingUpsertArgs>
+    ): Prisma__GroupMeetingClient<GroupMeetingGetPayload<T>>
+
+    /**
+     * Count the number of GroupMeetings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GroupMeetingCountArgs} args - Arguments to filter GroupMeetings to count.
+     * @example
+     * // Count the number of GroupMeetings
+     * const count = await prisma.groupMeeting.count({
+     *   where: {
+     *     // ... the filter for the GroupMeetings we want to count
+     *   }
+     * })
+    **/
+    count<T extends GroupMeetingCountArgs>(
+      args?: Subset<T, GroupMeetingCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], GroupMeetingCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a GroupMeeting.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GroupMeetingAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends GroupMeetingAggregateArgs>(args: Subset<T, GroupMeetingAggregateArgs>): Prisma.PrismaPromise<GetGroupMeetingAggregateType<T>>
+
+    /**
+     * Group by GroupMeeting.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GroupMeetingGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends GroupMeetingGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: GroupMeetingGroupByArgs['orderBy'] }
+        : { orderBy?: GroupMeetingGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, GroupMeetingGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetGroupMeetingGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for GroupMeeting.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__GroupMeetingClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+    private readonly _dmmf;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+
+    location<T extends LocationArgs= {}>(args?: Subset<T, LocationArgs>): Prisma__LocationClient<LocationGetPayload<T> | Null>;
+
+    customer<T extends CustomerArgs= {}>(args?: Subset<T, CustomerArgs>): Prisma__CustomerClient<CustomerGetPayload<T> | Null>;
+
+    eventType<T extends EventTypeArgs= {}>(args?: Subset<T, EventTypeArgs>): Prisma__EventTypeClient<EventTypeGetPayload<T> | Null>;
+
+    userOnGroupMeetings<T extends GroupMeeting$userOnGroupMeetingsArgs= {}>(args?: Subset<T, GroupMeeting$userOnGroupMeetingsArgs>): Prisma.PrismaPromise<Array<UserOnGroupMeetingGetPayload<T>>| Null>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+
+
+  // Custom InputTypes
+
+  /**
+   * GroupMeeting base type for findUnique actions
+   */
+  export type GroupMeetingFindUniqueArgsBase = {
+    /**
+     * Select specific fields to fetch from the GroupMeeting
+     */
+    select?: GroupMeetingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: GroupMeetingInclude | null
+    /**
+     * Filter, which GroupMeeting to fetch.
+     */
+    where: GroupMeetingWhereUniqueInput
+  }
+
+  /**
+   * GroupMeeting findUnique
+   */
+  export interface GroupMeetingFindUniqueArgs extends GroupMeetingFindUniqueArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * GroupMeeting findUniqueOrThrow
+   */
+  export type GroupMeetingFindUniqueOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the GroupMeeting
+     */
+    select?: GroupMeetingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: GroupMeetingInclude | null
+    /**
+     * Filter, which GroupMeeting to fetch.
+     */
+    where: GroupMeetingWhereUniqueInput
+  }
+
+
+  /**
+   * GroupMeeting base type for findFirst actions
+   */
+  export type GroupMeetingFindFirstArgsBase = {
+    /**
+     * Select specific fields to fetch from the GroupMeeting
+     */
+    select?: GroupMeetingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: GroupMeetingInclude | null
+    /**
+     * Filter, which GroupMeeting to fetch.
+     */
+    where?: GroupMeetingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GroupMeetings to fetch.
+     */
+    orderBy?: Enumerable<GroupMeetingOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GroupMeetings.
+     */
+    cursor?: GroupMeetingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GroupMeetings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GroupMeetings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GroupMeetings.
+     */
+    distinct?: Enumerable<GroupMeetingScalarFieldEnum>
+  }
+
+  /**
+   * GroupMeeting findFirst
+   */
+  export interface GroupMeetingFindFirstArgs extends GroupMeetingFindFirstArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * GroupMeeting findFirstOrThrow
+   */
+  export type GroupMeetingFindFirstOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the GroupMeeting
+     */
+    select?: GroupMeetingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: GroupMeetingInclude | null
+    /**
+     * Filter, which GroupMeeting to fetch.
+     */
+    where?: GroupMeetingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GroupMeetings to fetch.
+     */
+    orderBy?: Enumerable<GroupMeetingOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GroupMeetings.
+     */
+    cursor?: GroupMeetingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GroupMeetings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GroupMeetings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GroupMeetings.
+     */
+    distinct?: Enumerable<GroupMeetingScalarFieldEnum>
+  }
+
+
+  /**
+   * GroupMeeting findMany
+   */
+  export type GroupMeetingFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the GroupMeeting
+     */
+    select?: GroupMeetingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: GroupMeetingInclude | null
+    /**
+     * Filter, which GroupMeetings to fetch.
+     */
+    where?: GroupMeetingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GroupMeetings to fetch.
+     */
+    orderBy?: Enumerable<GroupMeetingOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing GroupMeetings.
+     */
+    cursor?: GroupMeetingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GroupMeetings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GroupMeetings.
+     */
+    skip?: number
+    distinct?: Enumerable<GroupMeetingScalarFieldEnum>
+  }
+
+
+  /**
+   * GroupMeeting create
+   */
+  export type GroupMeetingCreateArgs = {
+    /**
+     * Select specific fields to fetch from the GroupMeeting
+     */
+    select?: GroupMeetingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: GroupMeetingInclude | null
+    /**
+     * The data needed to create a GroupMeeting.
+     */
+    data: XOR<GroupMeetingCreateInput, GroupMeetingUncheckedCreateInput>
+  }
+
+
+  /**
+   * GroupMeeting createMany
+   */
+  export type GroupMeetingCreateManyArgs = {
+    /**
+     * The data used to create many GroupMeetings.
+     */
+    data: Enumerable<GroupMeetingCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * GroupMeeting update
+   */
+  export type GroupMeetingUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the GroupMeeting
+     */
+    select?: GroupMeetingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: GroupMeetingInclude | null
+    /**
+     * The data needed to update a GroupMeeting.
+     */
+    data: XOR<GroupMeetingUpdateInput, GroupMeetingUncheckedUpdateInput>
+    /**
+     * Choose, which GroupMeeting to update.
+     */
+    where: GroupMeetingWhereUniqueInput
+  }
+
+
+  /**
+   * GroupMeeting updateMany
+   */
+  export type GroupMeetingUpdateManyArgs = {
+    /**
+     * The data used to update GroupMeetings.
+     */
+    data: XOR<GroupMeetingUpdateManyMutationInput, GroupMeetingUncheckedUpdateManyInput>
+    /**
+     * Filter which GroupMeetings to update
+     */
+    where?: GroupMeetingWhereInput
+  }
+
+
+  /**
+   * GroupMeeting upsert
+   */
+  export type GroupMeetingUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the GroupMeeting
+     */
+    select?: GroupMeetingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: GroupMeetingInclude | null
+    /**
+     * The filter to search for the GroupMeeting to update in case it exists.
+     */
+    where: GroupMeetingWhereUniqueInput
+    /**
+     * In case the GroupMeeting found by the `where` argument doesn't exist, create a new GroupMeeting with this data.
+     */
+    create: XOR<GroupMeetingCreateInput, GroupMeetingUncheckedCreateInput>
+    /**
+     * In case the GroupMeeting was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<GroupMeetingUpdateInput, GroupMeetingUncheckedUpdateInput>
+  }
+
+
+  /**
+   * GroupMeeting delete
+   */
+  export type GroupMeetingDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the GroupMeeting
+     */
+    select?: GroupMeetingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: GroupMeetingInclude | null
+    /**
+     * Filter which GroupMeeting to delete.
+     */
+    where: GroupMeetingWhereUniqueInput
+  }
+
+
+  /**
+   * GroupMeeting deleteMany
+   */
+  export type GroupMeetingDeleteManyArgs = {
+    /**
+     * Filter which GroupMeetings to delete
+     */
+    where?: GroupMeetingWhereInput
+  }
+
+
+  /**
+   * GroupMeeting.userOnGroupMeetings
+   */
+  export type GroupMeeting$userOnGroupMeetingsArgs = {
+    /**
+     * Select specific fields to fetch from the UserOnGroupMeeting
+     */
+    select?: UserOnGroupMeetingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: UserOnGroupMeetingInclude | null
+    where?: UserOnGroupMeetingWhereInput
+    orderBy?: Enumerable<UserOnGroupMeetingOrderByWithRelationInput>
+    cursor?: UserOnGroupMeetingWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Enumerable<UserOnGroupMeetingScalarFieldEnum>
+  }
+
+
+  /**
+   * GroupMeeting without action
+   */
+  export type GroupMeetingArgs = {
+    /**
+     * Select specific fields to fetch from the GroupMeeting
+     */
+    select?: GroupMeetingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: GroupMeetingInclude | null
+  }
+
+
+
+  /**
+   * Model EventSelect
+   */
+
+
+  export type AggregateEventSelect = {
+    _count: EventSelectCountAggregateOutputType | null
+    _avg: EventSelectAvgAggregateOutputType | null
+    _sum: EventSelectSumAggregateOutputType | null
+    _min: EventSelectMinAggregateOutputType | null
+    _max: EventSelectMaxAggregateOutputType | null
+  }
+
+  export type EventSelectAvgAggregateOutputType = {
+    id: number | null
+    eventTypeId: number | null
+    customerId: number | null
+  }
+
+  export type EventSelectSumAggregateOutputType = {
+    id: number | null
+    eventTypeId: number | null
+    customerId: number | null
+  }
+
+  export type EventSelectMinAggregateOutputType = {
+    id: number | null
+    eventTypeId: number | null
+    customerId: number | null
+    selectDate: string | null
+    selectTime: Date | null
+    status: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type EventSelectMaxAggregateOutputType = {
+    id: number | null
+    eventTypeId: number | null
+    customerId: number | null
+    selectDate: string | null
+    selectTime: Date | null
+    status: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type EventSelectCountAggregateOutputType = {
+    id: number
+    eventTypeId: number
+    customerId: number
+    selectDate: number
+    selectTime: number
+    status: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type EventSelectAvgAggregateInputType = {
+    id?: true
+    eventTypeId?: true
+    customerId?: true
+  }
+
+  export type EventSelectSumAggregateInputType = {
+    id?: true
+    eventTypeId?: true
+    customerId?: true
+  }
+
+  export type EventSelectMinAggregateInputType = {
+    id?: true
+    eventTypeId?: true
+    customerId?: true
+    selectDate?: true
+    selectTime?: true
+    status?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type EventSelectMaxAggregateInputType = {
+    id?: true
+    eventTypeId?: true
+    customerId?: true
+    selectDate?: true
+    selectTime?: true
+    status?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type EventSelectCountAggregateInputType = {
+    id?: true
+    eventTypeId?: true
+    customerId?: true
+    selectDate?: true
+    selectTime?: true
+    status?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type EventSelectAggregateArgs = {
+    /**
+     * Filter which EventSelect to aggregate.
+     */
+    where?: EventSelectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EventSelects to fetch.
+     */
+    orderBy?: Enumerable<EventSelectOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: EventSelectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EventSelects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EventSelects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned EventSelects
+    **/
+    _count?: true | EventSelectCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: EventSelectAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: EventSelectSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: EventSelectMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: EventSelectMaxAggregateInputType
+  }
+
+  export type GetEventSelectAggregateType<T extends EventSelectAggregateArgs> = {
+        [P in keyof T & keyof AggregateEventSelect]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateEventSelect[P]>
+      : GetScalarType<T[P], AggregateEventSelect[P]>
+  }
+
+
+
+
+  export type EventSelectGroupByArgs = {
+    where?: EventSelectWhereInput
+    orderBy?: Enumerable<EventSelectOrderByWithAggregationInput>
+    by: EventSelectScalarFieldEnum[]
+    having?: EventSelectScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: EventSelectCountAggregateInputType | true
+    _avg?: EventSelectAvgAggregateInputType
+    _sum?: EventSelectSumAggregateInputType
+    _min?: EventSelectMinAggregateInputType
+    _max?: EventSelectMaxAggregateInputType
+  }
+
+
+  export type EventSelectGroupByOutputType = {
+    id: number
+    eventTypeId: number
+    customerId: number
+    selectDate: string
+    selectTime: Date
+    status: string
+    createdAt: Date
+    updatedAt: Date
+    _count: EventSelectCountAggregateOutputType | null
+    _avg: EventSelectAvgAggregateOutputType | null
+    _sum: EventSelectSumAggregateOutputType | null
+    _min: EventSelectMinAggregateOutputType | null
+    _max: EventSelectMaxAggregateOutputType | null
+  }
+
+  type GetEventSelectGroupByPayload<T extends EventSelectGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickArray<EventSelectGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof EventSelectGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], EventSelectGroupByOutputType[P]>
+            : GetScalarType<T[P], EventSelectGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type EventSelectSelect = {
+    id?: boolean
+    eventTypeId?: boolean
+    customerId?: boolean
+    selectDate?: boolean
+    selectTime?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    eventType?: boolean | EventTypeArgs
+    customer?: boolean | CustomerArgs
+  }
+
+
+  export type EventSelectInclude = {
+    eventType?: boolean | EventTypeArgs
+    customer?: boolean | CustomerArgs
+  }
+
+  export type EventSelectGetPayload<S extends boolean | null | undefined | EventSelectArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? EventSelect :
+    S extends undefined ? never :
+    S extends { include: any } & (EventSelectArgs | EventSelectFindManyArgs)
+    ? EventSelect  & {
+    [P in TruthyKeys<S['include']>]:
+        P extends 'eventType' ? EventTypeGetPayload<S['include'][P]> :
+        P extends 'customer' ? CustomerGetPayload<S['include'][P]> :  never
+  } 
+    : S extends { select: any } & (EventSelectArgs | EventSelectFindManyArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+        P extends 'eventType' ? EventTypeGetPayload<S['select'][P]> :
+        P extends 'customer' ? CustomerGetPayload<S['select'][P]> :  P extends keyof EventSelect ? EventSelect[P] : never
+  } 
+      : EventSelect
+
+
+  type EventSelectCountArgs = 
+    Omit<EventSelectFindManyArgs, 'select' | 'include'> & {
+      select?: EventSelectCountAggregateInputType | true
+    }
+
+  export interface EventSelectDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+
+    /**
+     * Find zero or one EventSelect that matches the filter.
+     * @param {EventSelectFindUniqueArgs} args - Arguments to find a EventSelect
+     * @example
+     * // Get one EventSelect
+     * const eventSelect = await prisma.eventSelect.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends EventSelectFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, EventSelectFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'EventSelect'> extends True ? Prisma__EventSelectClient<EventSelectGetPayload<T>> : Prisma__EventSelectClient<EventSelectGetPayload<T> | null, null>
+
+    /**
+     * Find one EventSelect that matches the filter or throw an error  with `error.code='P2025'` 
+     *     if no matches were found.
+     * @param {EventSelectFindUniqueOrThrowArgs} args - Arguments to find a EventSelect
+     * @example
+     * // Get one EventSelect
+     * const eventSelect = await prisma.eventSelect.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends EventSelectFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, EventSelectFindUniqueOrThrowArgs>
+    ): Prisma__EventSelectClient<EventSelectGetPayload<T>>
+
+    /**
+     * Find the first EventSelect that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EventSelectFindFirstArgs} args - Arguments to find a EventSelect
+     * @example
+     * // Get one EventSelect
+     * const eventSelect = await prisma.eventSelect.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends EventSelectFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, EventSelectFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'EventSelect'> extends True ? Prisma__EventSelectClient<EventSelectGetPayload<T>> : Prisma__EventSelectClient<EventSelectGetPayload<T> | null, null>
+
+    /**
+     * Find the first EventSelect that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EventSelectFindFirstOrThrowArgs} args - Arguments to find a EventSelect
+     * @example
+     * // Get one EventSelect
+     * const eventSelect = await prisma.eventSelect.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends EventSelectFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, EventSelectFindFirstOrThrowArgs>
+    ): Prisma__EventSelectClient<EventSelectGetPayload<T>>
+
+    /**
+     * Find zero or more EventSelects that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EventSelectFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all EventSelects
+     * const eventSelects = await prisma.eventSelect.findMany()
+     * 
+     * // Get first 10 EventSelects
+     * const eventSelects = await prisma.eventSelect.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const eventSelectWithIdOnly = await prisma.eventSelect.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends EventSelectFindManyArgs>(
+      args?: SelectSubset<T, EventSelectFindManyArgs>
+    ): Prisma.PrismaPromise<Array<EventSelectGetPayload<T>>>
+
+    /**
+     * Create a EventSelect.
+     * @param {EventSelectCreateArgs} args - Arguments to create a EventSelect.
+     * @example
+     * // Create one EventSelect
+     * const EventSelect = await prisma.eventSelect.create({
+     *   data: {
+     *     // ... data to create a EventSelect
+     *   }
+     * })
+     * 
+    **/
+    create<T extends EventSelectCreateArgs>(
+      args: SelectSubset<T, EventSelectCreateArgs>
+    ): Prisma__EventSelectClient<EventSelectGetPayload<T>>
+
+    /**
+     * Create many EventSelects.
+     *     @param {EventSelectCreateManyArgs} args - Arguments to create many EventSelects.
+     *     @example
+     *     // Create many EventSelects
+     *     const eventSelect = await prisma.eventSelect.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends EventSelectCreateManyArgs>(
+      args?: SelectSubset<T, EventSelectCreateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a EventSelect.
+     * @param {EventSelectDeleteArgs} args - Arguments to delete one EventSelect.
+     * @example
+     * // Delete one EventSelect
+     * const EventSelect = await prisma.eventSelect.delete({
+     *   where: {
+     *     // ... filter to delete one EventSelect
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends EventSelectDeleteArgs>(
+      args: SelectSubset<T, EventSelectDeleteArgs>
+    ): Prisma__EventSelectClient<EventSelectGetPayload<T>>
+
+    /**
+     * Update one EventSelect.
+     * @param {EventSelectUpdateArgs} args - Arguments to update one EventSelect.
+     * @example
+     * // Update one EventSelect
+     * const eventSelect = await prisma.eventSelect.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends EventSelectUpdateArgs>(
+      args: SelectSubset<T, EventSelectUpdateArgs>
+    ): Prisma__EventSelectClient<EventSelectGetPayload<T>>
+
+    /**
+     * Delete zero or more EventSelects.
+     * @param {EventSelectDeleteManyArgs} args - Arguments to filter EventSelects to delete.
+     * @example
+     * // Delete a few EventSelects
+     * const { count } = await prisma.eventSelect.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends EventSelectDeleteManyArgs>(
+      args?: SelectSubset<T, EventSelectDeleteManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more EventSelects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EventSelectUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many EventSelects
+     * const eventSelect = await prisma.eventSelect.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends EventSelectUpdateManyArgs>(
+      args: SelectSubset<T, EventSelectUpdateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one EventSelect.
+     * @param {EventSelectUpsertArgs} args - Arguments to update or create a EventSelect.
+     * @example
+     * // Update or create a EventSelect
+     * const eventSelect = await prisma.eventSelect.upsert({
+     *   create: {
+     *     // ... data to create a EventSelect
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the EventSelect we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends EventSelectUpsertArgs>(
+      args: SelectSubset<T, EventSelectUpsertArgs>
+    ): Prisma__EventSelectClient<EventSelectGetPayload<T>>
+
+    /**
+     * Count the number of EventSelects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EventSelectCountArgs} args - Arguments to filter EventSelects to count.
+     * @example
+     * // Count the number of EventSelects
+     * const count = await prisma.eventSelect.count({
+     *   where: {
+     *     // ... the filter for the EventSelects we want to count
+     *   }
+     * })
+    **/
+    count<T extends EventSelectCountArgs>(
+      args?: Subset<T, EventSelectCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], EventSelectCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a EventSelect.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EventSelectAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends EventSelectAggregateArgs>(args: Subset<T, EventSelectAggregateArgs>): Prisma.PrismaPromise<GetEventSelectAggregateType<T>>
+
+    /**
+     * Group by EventSelect.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EventSelectGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends EventSelectGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: EventSelectGroupByArgs['orderBy'] }
+        : { orderBy?: EventSelectGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, EventSelectGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetEventSelectGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for EventSelect.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__EventSelectClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+    private readonly _dmmf;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+
+    eventType<T extends EventTypeArgs= {}>(args?: Subset<T, EventTypeArgs>): Prisma__EventTypeClient<EventTypeGetPayload<T> | Null>;
+
+    customer<T extends CustomerArgs= {}>(args?: Subset<T, CustomerArgs>): Prisma__CustomerClient<CustomerGetPayload<T> | Null>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+
+
+  // Custom InputTypes
+
+  /**
+   * EventSelect base type for findUnique actions
+   */
+  export type EventSelectFindUniqueArgsBase = {
+    /**
+     * Select specific fields to fetch from the EventSelect
+     */
+    select?: EventSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: EventSelectInclude | null
+    /**
+     * Filter, which EventSelect to fetch.
+     */
+    where: EventSelectWhereUniqueInput
+  }
+
+  /**
+   * EventSelect findUnique
+   */
+  export interface EventSelectFindUniqueArgs extends EventSelectFindUniqueArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * EventSelect findUniqueOrThrow
+   */
+  export type EventSelectFindUniqueOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the EventSelect
+     */
+    select?: EventSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: EventSelectInclude | null
+    /**
+     * Filter, which EventSelect to fetch.
+     */
+    where: EventSelectWhereUniqueInput
+  }
+
+
+  /**
+   * EventSelect base type for findFirst actions
+   */
+  export type EventSelectFindFirstArgsBase = {
+    /**
+     * Select specific fields to fetch from the EventSelect
+     */
+    select?: EventSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: EventSelectInclude | null
+    /**
+     * Filter, which EventSelect to fetch.
+     */
+    where?: EventSelectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EventSelects to fetch.
+     */
+    orderBy?: Enumerable<EventSelectOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EventSelects.
+     */
+    cursor?: EventSelectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EventSelects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EventSelects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EventSelects.
+     */
+    distinct?: Enumerable<EventSelectScalarFieldEnum>
+  }
+
+  /**
+   * EventSelect findFirst
+   */
+  export interface EventSelectFindFirstArgs extends EventSelectFindFirstArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * EventSelect findFirstOrThrow
+   */
+  export type EventSelectFindFirstOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the EventSelect
+     */
+    select?: EventSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: EventSelectInclude | null
+    /**
+     * Filter, which EventSelect to fetch.
+     */
+    where?: EventSelectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EventSelects to fetch.
+     */
+    orderBy?: Enumerable<EventSelectOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EventSelects.
+     */
+    cursor?: EventSelectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EventSelects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EventSelects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EventSelects.
+     */
+    distinct?: Enumerable<EventSelectScalarFieldEnum>
+  }
+
+
+  /**
+   * EventSelect findMany
+   */
+  export type EventSelectFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the EventSelect
+     */
+    select?: EventSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: EventSelectInclude | null
+    /**
+     * Filter, which EventSelects to fetch.
+     */
+    where?: EventSelectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EventSelects to fetch.
+     */
+    orderBy?: Enumerable<EventSelectOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing EventSelects.
+     */
+    cursor?: EventSelectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EventSelects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EventSelects.
+     */
+    skip?: number
+    distinct?: Enumerable<EventSelectScalarFieldEnum>
+  }
+
+
+  /**
+   * EventSelect create
+   */
+  export type EventSelectCreateArgs = {
+    /**
+     * Select specific fields to fetch from the EventSelect
+     */
+    select?: EventSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: EventSelectInclude | null
+    /**
+     * The data needed to create a EventSelect.
+     */
+    data: XOR<EventSelectCreateInput, EventSelectUncheckedCreateInput>
+  }
+
+
+  /**
+   * EventSelect createMany
+   */
+  export type EventSelectCreateManyArgs = {
+    /**
+     * The data used to create many EventSelects.
+     */
+    data: Enumerable<EventSelectCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * EventSelect update
+   */
+  export type EventSelectUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the EventSelect
+     */
+    select?: EventSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: EventSelectInclude | null
+    /**
+     * The data needed to update a EventSelect.
+     */
+    data: XOR<EventSelectUpdateInput, EventSelectUncheckedUpdateInput>
+    /**
+     * Choose, which EventSelect to update.
+     */
+    where: EventSelectWhereUniqueInput
+  }
+
+
+  /**
+   * EventSelect updateMany
+   */
+  export type EventSelectUpdateManyArgs = {
+    /**
+     * The data used to update EventSelects.
+     */
+    data: XOR<EventSelectUpdateManyMutationInput, EventSelectUncheckedUpdateManyInput>
+    /**
+     * Filter which EventSelects to update
+     */
+    where?: EventSelectWhereInput
+  }
+
+
+  /**
+   * EventSelect upsert
+   */
+  export type EventSelectUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the EventSelect
+     */
+    select?: EventSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: EventSelectInclude | null
+    /**
+     * The filter to search for the EventSelect to update in case it exists.
+     */
+    where: EventSelectWhereUniqueInput
+    /**
+     * In case the EventSelect found by the `where` argument doesn't exist, create a new EventSelect with this data.
+     */
+    create: XOR<EventSelectCreateInput, EventSelectUncheckedCreateInput>
+    /**
+     * In case the EventSelect was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<EventSelectUpdateInput, EventSelectUncheckedUpdateInput>
+  }
+
+
+  /**
+   * EventSelect delete
+   */
+  export type EventSelectDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the EventSelect
+     */
+    select?: EventSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: EventSelectInclude | null
+    /**
+     * Filter which EventSelect to delete.
+     */
+    where: EventSelectWhereUniqueInput
+  }
+
+
+  /**
+   * EventSelect deleteMany
+   */
+  export type EventSelectDeleteManyArgs = {
+    /**
+     * Filter which EventSelects to delete
+     */
+    where?: EventSelectWhereInput
+  }
+
+
+  /**
+   * EventSelect without action
+   */
+  export type EventSelectArgs = {
+    /**
+     * Select specific fields to fetch from the EventSelect
+     */
+    select?: EventSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: EventSelectInclude | null
+  }
+
+
+
+  /**
+   * Model UserOnGroupMeeting
+   */
+
+
+  export type AggregateUserOnGroupMeeting = {
+    _count: UserOnGroupMeetingCountAggregateOutputType | null
+    _avg: UserOnGroupMeetingAvgAggregateOutputType | null
+    _sum: UserOnGroupMeetingSumAggregateOutputType | null
+    _min: UserOnGroupMeetingMinAggregateOutputType | null
+    _max: UserOnGroupMeetingMaxAggregateOutputType | null
+  }
+
+  export type UserOnGroupMeetingAvgAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    groupMeetingId: number | null
+  }
+
+  export type UserOnGroupMeetingSumAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    groupMeetingId: number | null
+  }
+
+  export type UserOnGroupMeetingMinAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    groupMeetingId: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type UserOnGroupMeetingMaxAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    groupMeetingId: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type UserOnGroupMeetingCountAggregateOutputType = {
+    id: number
+    userId: number
+    groupMeetingId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type UserOnGroupMeetingAvgAggregateInputType = {
+    id?: true
+    userId?: true
+    groupMeetingId?: true
+  }
+
+  export type UserOnGroupMeetingSumAggregateInputType = {
+    id?: true
+    userId?: true
+    groupMeetingId?: true
+  }
+
+  export type UserOnGroupMeetingMinAggregateInputType = {
+    id?: true
+    userId?: true
+    groupMeetingId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type UserOnGroupMeetingMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    groupMeetingId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type UserOnGroupMeetingCountAggregateInputType = {
+    id?: true
+    userId?: true
+    groupMeetingId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type UserOnGroupMeetingAggregateArgs = {
+    /**
+     * Filter which UserOnGroupMeeting to aggregate.
+     */
+    where?: UserOnGroupMeetingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserOnGroupMeetings to fetch.
+     */
+    orderBy?: Enumerable<UserOnGroupMeetingOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: UserOnGroupMeetingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserOnGroupMeetings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserOnGroupMeetings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned UserOnGroupMeetings
+    **/
+    _count?: true | UserOnGroupMeetingCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: UserOnGroupMeetingAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: UserOnGroupMeetingSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: UserOnGroupMeetingMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: UserOnGroupMeetingMaxAggregateInputType
+  }
+
+  export type GetUserOnGroupMeetingAggregateType<T extends UserOnGroupMeetingAggregateArgs> = {
+        [P in keyof T & keyof AggregateUserOnGroupMeeting]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateUserOnGroupMeeting[P]>
+      : GetScalarType<T[P], AggregateUserOnGroupMeeting[P]>
+  }
+
+
+
+
+  export type UserOnGroupMeetingGroupByArgs = {
+    where?: UserOnGroupMeetingWhereInput
+    orderBy?: Enumerable<UserOnGroupMeetingOrderByWithAggregationInput>
+    by: UserOnGroupMeetingScalarFieldEnum[]
+    having?: UserOnGroupMeetingScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: UserOnGroupMeetingCountAggregateInputType | true
+    _avg?: UserOnGroupMeetingAvgAggregateInputType
+    _sum?: UserOnGroupMeetingSumAggregateInputType
+    _min?: UserOnGroupMeetingMinAggregateInputType
+    _max?: UserOnGroupMeetingMaxAggregateInputType
+  }
+
+
+  export type UserOnGroupMeetingGroupByOutputType = {
+    id: number
+    userId: number
+    groupMeetingId: number
+    createdAt: Date
+    updatedAt: Date
+    _count: UserOnGroupMeetingCountAggregateOutputType | null
+    _avg: UserOnGroupMeetingAvgAggregateOutputType | null
+    _sum: UserOnGroupMeetingSumAggregateOutputType | null
+    _min: UserOnGroupMeetingMinAggregateOutputType | null
+    _max: UserOnGroupMeetingMaxAggregateOutputType | null
+  }
+
+  type GetUserOnGroupMeetingGroupByPayload<T extends UserOnGroupMeetingGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickArray<UserOnGroupMeetingGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof UserOnGroupMeetingGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], UserOnGroupMeetingGroupByOutputType[P]>
+            : GetScalarType<T[P], UserOnGroupMeetingGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type UserOnGroupMeetingSelect = {
+    id?: boolean
+    userId?: boolean
+    groupMeetingId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserArgs
+    groupMeeting?: boolean | GroupMeetingArgs
+  }
+
+
+  export type UserOnGroupMeetingInclude = {
+    user?: boolean | UserArgs
+    groupMeeting?: boolean | GroupMeetingArgs
+  }
+
+  export type UserOnGroupMeetingGetPayload<S extends boolean | null | undefined | UserOnGroupMeetingArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? UserOnGroupMeeting :
+    S extends undefined ? never :
+    S extends { include: any } & (UserOnGroupMeetingArgs | UserOnGroupMeetingFindManyArgs)
+    ? UserOnGroupMeeting  & {
+    [P in TruthyKeys<S['include']>]:
+        P extends 'user' ? UserGetPayload<S['include'][P]> :
+        P extends 'groupMeeting' ? GroupMeetingGetPayload<S['include'][P]> :  never
+  } 
+    : S extends { select: any } & (UserOnGroupMeetingArgs | UserOnGroupMeetingFindManyArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+        P extends 'user' ? UserGetPayload<S['select'][P]> :
+        P extends 'groupMeeting' ? GroupMeetingGetPayload<S['select'][P]> :  P extends keyof UserOnGroupMeeting ? UserOnGroupMeeting[P] : never
+  } 
+      : UserOnGroupMeeting
+
+
+  type UserOnGroupMeetingCountArgs = 
+    Omit<UserOnGroupMeetingFindManyArgs, 'select' | 'include'> & {
+      select?: UserOnGroupMeetingCountAggregateInputType | true
+    }
+
+  export interface UserOnGroupMeetingDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+
+    /**
+     * Find zero or one UserOnGroupMeeting that matches the filter.
+     * @param {UserOnGroupMeetingFindUniqueArgs} args - Arguments to find a UserOnGroupMeeting
+     * @example
+     * // Get one UserOnGroupMeeting
+     * const userOnGroupMeeting = await prisma.userOnGroupMeeting.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends UserOnGroupMeetingFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, UserOnGroupMeetingFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'UserOnGroupMeeting'> extends True ? Prisma__UserOnGroupMeetingClient<UserOnGroupMeetingGetPayload<T>> : Prisma__UserOnGroupMeetingClient<UserOnGroupMeetingGetPayload<T> | null, null>
+
+    /**
+     * Find one UserOnGroupMeeting that matches the filter or throw an error  with `error.code='P2025'` 
+     *     if no matches were found.
+     * @param {UserOnGroupMeetingFindUniqueOrThrowArgs} args - Arguments to find a UserOnGroupMeeting
+     * @example
+     * // Get one UserOnGroupMeeting
+     * const userOnGroupMeeting = await prisma.userOnGroupMeeting.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends UserOnGroupMeetingFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, UserOnGroupMeetingFindUniqueOrThrowArgs>
+    ): Prisma__UserOnGroupMeetingClient<UserOnGroupMeetingGetPayload<T>>
+
+    /**
+     * Find the first UserOnGroupMeeting that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserOnGroupMeetingFindFirstArgs} args - Arguments to find a UserOnGroupMeeting
+     * @example
+     * // Get one UserOnGroupMeeting
+     * const userOnGroupMeeting = await prisma.userOnGroupMeeting.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends UserOnGroupMeetingFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, UserOnGroupMeetingFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'UserOnGroupMeeting'> extends True ? Prisma__UserOnGroupMeetingClient<UserOnGroupMeetingGetPayload<T>> : Prisma__UserOnGroupMeetingClient<UserOnGroupMeetingGetPayload<T> | null, null>
+
+    /**
+     * Find the first UserOnGroupMeeting that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserOnGroupMeetingFindFirstOrThrowArgs} args - Arguments to find a UserOnGroupMeeting
+     * @example
+     * // Get one UserOnGroupMeeting
+     * const userOnGroupMeeting = await prisma.userOnGroupMeeting.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends UserOnGroupMeetingFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, UserOnGroupMeetingFindFirstOrThrowArgs>
+    ): Prisma__UserOnGroupMeetingClient<UserOnGroupMeetingGetPayload<T>>
+
+    /**
+     * Find zero or more UserOnGroupMeetings that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserOnGroupMeetingFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all UserOnGroupMeetings
+     * const userOnGroupMeetings = await prisma.userOnGroupMeeting.findMany()
+     * 
+     * // Get first 10 UserOnGroupMeetings
+     * const userOnGroupMeetings = await prisma.userOnGroupMeeting.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const userOnGroupMeetingWithIdOnly = await prisma.userOnGroupMeeting.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends UserOnGroupMeetingFindManyArgs>(
+      args?: SelectSubset<T, UserOnGroupMeetingFindManyArgs>
+    ): Prisma.PrismaPromise<Array<UserOnGroupMeetingGetPayload<T>>>
+
+    /**
+     * Create a UserOnGroupMeeting.
+     * @param {UserOnGroupMeetingCreateArgs} args - Arguments to create a UserOnGroupMeeting.
+     * @example
+     * // Create one UserOnGroupMeeting
+     * const UserOnGroupMeeting = await prisma.userOnGroupMeeting.create({
+     *   data: {
+     *     // ... data to create a UserOnGroupMeeting
+     *   }
+     * })
+     * 
+    **/
+    create<T extends UserOnGroupMeetingCreateArgs>(
+      args: SelectSubset<T, UserOnGroupMeetingCreateArgs>
+    ): Prisma__UserOnGroupMeetingClient<UserOnGroupMeetingGetPayload<T>>
+
+    /**
+     * Create many UserOnGroupMeetings.
+     *     @param {UserOnGroupMeetingCreateManyArgs} args - Arguments to create many UserOnGroupMeetings.
+     *     @example
+     *     // Create many UserOnGroupMeetings
+     *     const userOnGroupMeeting = await prisma.userOnGroupMeeting.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends UserOnGroupMeetingCreateManyArgs>(
+      args?: SelectSubset<T, UserOnGroupMeetingCreateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a UserOnGroupMeeting.
+     * @param {UserOnGroupMeetingDeleteArgs} args - Arguments to delete one UserOnGroupMeeting.
+     * @example
+     * // Delete one UserOnGroupMeeting
+     * const UserOnGroupMeeting = await prisma.userOnGroupMeeting.delete({
+     *   where: {
+     *     // ... filter to delete one UserOnGroupMeeting
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends UserOnGroupMeetingDeleteArgs>(
+      args: SelectSubset<T, UserOnGroupMeetingDeleteArgs>
+    ): Prisma__UserOnGroupMeetingClient<UserOnGroupMeetingGetPayload<T>>
+
+    /**
+     * Update one UserOnGroupMeeting.
+     * @param {UserOnGroupMeetingUpdateArgs} args - Arguments to update one UserOnGroupMeeting.
+     * @example
+     * // Update one UserOnGroupMeeting
+     * const userOnGroupMeeting = await prisma.userOnGroupMeeting.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends UserOnGroupMeetingUpdateArgs>(
+      args: SelectSubset<T, UserOnGroupMeetingUpdateArgs>
+    ): Prisma__UserOnGroupMeetingClient<UserOnGroupMeetingGetPayload<T>>
+
+    /**
+     * Delete zero or more UserOnGroupMeetings.
+     * @param {UserOnGroupMeetingDeleteManyArgs} args - Arguments to filter UserOnGroupMeetings to delete.
+     * @example
+     * // Delete a few UserOnGroupMeetings
+     * const { count } = await prisma.userOnGroupMeeting.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends UserOnGroupMeetingDeleteManyArgs>(
+      args?: SelectSubset<T, UserOnGroupMeetingDeleteManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more UserOnGroupMeetings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserOnGroupMeetingUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many UserOnGroupMeetings
+     * const userOnGroupMeeting = await prisma.userOnGroupMeeting.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends UserOnGroupMeetingUpdateManyArgs>(
+      args: SelectSubset<T, UserOnGroupMeetingUpdateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one UserOnGroupMeeting.
+     * @param {UserOnGroupMeetingUpsertArgs} args - Arguments to update or create a UserOnGroupMeeting.
+     * @example
+     * // Update or create a UserOnGroupMeeting
+     * const userOnGroupMeeting = await prisma.userOnGroupMeeting.upsert({
+     *   create: {
+     *     // ... data to create a UserOnGroupMeeting
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the UserOnGroupMeeting we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends UserOnGroupMeetingUpsertArgs>(
+      args: SelectSubset<T, UserOnGroupMeetingUpsertArgs>
+    ): Prisma__UserOnGroupMeetingClient<UserOnGroupMeetingGetPayload<T>>
+
+    /**
+     * Count the number of UserOnGroupMeetings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserOnGroupMeetingCountArgs} args - Arguments to filter UserOnGroupMeetings to count.
+     * @example
+     * // Count the number of UserOnGroupMeetings
+     * const count = await prisma.userOnGroupMeeting.count({
+     *   where: {
+     *     // ... the filter for the UserOnGroupMeetings we want to count
+     *   }
+     * })
+    **/
+    count<T extends UserOnGroupMeetingCountArgs>(
+      args?: Subset<T, UserOnGroupMeetingCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], UserOnGroupMeetingCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a UserOnGroupMeeting.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserOnGroupMeetingAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends UserOnGroupMeetingAggregateArgs>(args: Subset<T, UserOnGroupMeetingAggregateArgs>): Prisma.PrismaPromise<GetUserOnGroupMeetingAggregateType<T>>
+
+    /**
+     * Group by UserOnGroupMeeting.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserOnGroupMeetingGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends UserOnGroupMeetingGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: UserOnGroupMeetingGroupByArgs['orderBy'] }
+        : { orderBy?: UserOnGroupMeetingGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, UserOnGroupMeetingGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUserOnGroupMeetingGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for UserOnGroupMeeting.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__UserOnGroupMeetingClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+    private readonly _dmmf;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+
+    user<T extends UserArgs= {}>(args?: Subset<T, UserArgs>): Prisma__UserClient<UserGetPayload<T> | Null>;
+
+    groupMeeting<T extends GroupMeetingArgs= {}>(args?: Subset<T, GroupMeetingArgs>): Prisma__GroupMeetingClient<GroupMeetingGetPayload<T> | Null>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+
+
+  // Custom InputTypes
+
+  /**
+   * UserOnGroupMeeting base type for findUnique actions
+   */
+  export type UserOnGroupMeetingFindUniqueArgsBase = {
+    /**
+     * Select specific fields to fetch from the UserOnGroupMeeting
+     */
+    select?: UserOnGroupMeetingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: UserOnGroupMeetingInclude | null
+    /**
+     * Filter, which UserOnGroupMeeting to fetch.
+     */
+    where: UserOnGroupMeetingWhereUniqueInput
+  }
+
+  /**
+   * UserOnGroupMeeting findUnique
+   */
+  export interface UserOnGroupMeetingFindUniqueArgs extends UserOnGroupMeetingFindUniqueArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * UserOnGroupMeeting findUniqueOrThrow
+   */
+  export type UserOnGroupMeetingFindUniqueOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the UserOnGroupMeeting
+     */
+    select?: UserOnGroupMeetingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: UserOnGroupMeetingInclude | null
+    /**
+     * Filter, which UserOnGroupMeeting to fetch.
+     */
+    where: UserOnGroupMeetingWhereUniqueInput
+  }
+
+
+  /**
+   * UserOnGroupMeeting base type for findFirst actions
+   */
+  export type UserOnGroupMeetingFindFirstArgsBase = {
+    /**
+     * Select specific fields to fetch from the UserOnGroupMeeting
+     */
+    select?: UserOnGroupMeetingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: UserOnGroupMeetingInclude | null
+    /**
+     * Filter, which UserOnGroupMeeting to fetch.
+     */
+    where?: UserOnGroupMeetingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserOnGroupMeetings to fetch.
+     */
+    orderBy?: Enumerable<UserOnGroupMeetingOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for UserOnGroupMeetings.
+     */
+    cursor?: UserOnGroupMeetingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserOnGroupMeetings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserOnGroupMeetings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserOnGroupMeetings.
+     */
+    distinct?: Enumerable<UserOnGroupMeetingScalarFieldEnum>
+  }
+
+  /**
+   * UserOnGroupMeeting findFirst
+   */
+  export interface UserOnGroupMeetingFindFirstArgs extends UserOnGroupMeetingFindFirstArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * UserOnGroupMeeting findFirstOrThrow
+   */
+  export type UserOnGroupMeetingFindFirstOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the UserOnGroupMeeting
+     */
+    select?: UserOnGroupMeetingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: UserOnGroupMeetingInclude | null
+    /**
+     * Filter, which UserOnGroupMeeting to fetch.
+     */
+    where?: UserOnGroupMeetingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserOnGroupMeetings to fetch.
+     */
+    orderBy?: Enumerable<UserOnGroupMeetingOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for UserOnGroupMeetings.
+     */
+    cursor?: UserOnGroupMeetingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserOnGroupMeetings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserOnGroupMeetings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserOnGroupMeetings.
+     */
+    distinct?: Enumerable<UserOnGroupMeetingScalarFieldEnum>
+  }
+
+
+  /**
+   * UserOnGroupMeeting findMany
+   */
+  export type UserOnGroupMeetingFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the UserOnGroupMeeting
+     */
+    select?: UserOnGroupMeetingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: UserOnGroupMeetingInclude | null
+    /**
+     * Filter, which UserOnGroupMeetings to fetch.
+     */
+    where?: UserOnGroupMeetingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserOnGroupMeetings to fetch.
+     */
+    orderBy?: Enumerable<UserOnGroupMeetingOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing UserOnGroupMeetings.
+     */
+    cursor?: UserOnGroupMeetingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserOnGroupMeetings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserOnGroupMeetings.
+     */
+    skip?: number
+    distinct?: Enumerable<UserOnGroupMeetingScalarFieldEnum>
+  }
+
+
+  /**
+   * UserOnGroupMeeting create
+   */
+  export type UserOnGroupMeetingCreateArgs = {
+    /**
+     * Select specific fields to fetch from the UserOnGroupMeeting
+     */
+    select?: UserOnGroupMeetingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: UserOnGroupMeetingInclude | null
+    /**
+     * The data needed to create a UserOnGroupMeeting.
+     */
+    data: XOR<UserOnGroupMeetingCreateInput, UserOnGroupMeetingUncheckedCreateInput>
+  }
+
+
+  /**
+   * UserOnGroupMeeting createMany
+   */
+  export type UserOnGroupMeetingCreateManyArgs = {
+    /**
+     * The data used to create many UserOnGroupMeetings.
+     */
+    data: Enumerable<UserOnGroupMeetingCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * UserOnGroupMeeting update
+   */
+  export type UserOnGroupMeetingUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the UserOnGroupMeeting
+     */
+    select?: UserOnGroupMeetingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: UserOnGroupMeetingInclude | null
+    /**
+     * The data needed to update a UserOnGroupMeeting.
+     */
+    data: XOR<UserOnGroupMeetingUpdateInput, UserOnGroupMeetingUncheckedUpdateInput>
+    /**
+     * Choose, which UserOnGroupMeeting to update.
+     */
+    where: UserOnGroupMeetingWhereUniqueInput
+  }
+
+
+  /**
+   * UserOnGroupMeeting updateMany
+   */
+  export type UserOnGroupMeetingUpdateManyArgs = {
+    /**
+     * The data used to update UserOnGroupMeetings.
+     */
+    data: XOR<UserOnGroupMeetingUpdateManyMutationInput, UserOnGroupMeetingUncheckedUpdateManyInput>
+    /**
+     * Filter which UserOnGroupMeetings to update
+     */
+    where?: UserOnGroupMeetingWhereInput
+  }
+
+
+  /**
+   * UserOnGroupMeeting upsert
+   */
+  export type UserOnGroupMeetingUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the UserOnGroupMeeting
+     */
+    select?: UserOnGroupMeetingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: UserOnGroupMeetingInclude | null
+    /**
+     * The filter to search for the UserOnGroupMeeting to update in case it exists.
+     */
+    where: UserOnGroupMeetingWhereUniqueInput
+    /**
+     * In case the UserOnGroupMeeting found by the `where` argument doesn't exist, create a new UserOnGroupMeeting with this data.
+     */
+    create: XOR<UserOnGroupMeetingCreateInput, UserOnGroupMeetingUncheckedCreateInput>
+    /**
+     * In case the UserOnGroupMeeting was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<UserOnGroupMeetingUpdateInput, UserOnGroupMeetingUncheckedUpdateInput>
+  }
+
+
+  /**
+   * UserOnGroupMeeting delete
+   */
+  export type UserOnGroupMeetingDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the UserOnGroupMeeting
+     */
+    select?: UserOnGroupMeetingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: UserOnGroupMeetingInclude | null
+    /**
+     * Filter which UserOnGroupMeeting to delete.
+     */
+    where: UserOnGroupMeetingWhereUniqueInput
+  }
+
+
+  /**
+   * UserOnGroupMeeting deleteMany
+   */
+  export type UserOnGroupMeetingDeleteManyArgs = {
+    /**
+     * Filter which UserOnGroupMeetings to delete
+     */
+    where?: UserOnGroupMeetingWhereInput
+  }
+
+
+  /**
+   * UserOnGroupMeeting without action
+   */
+  export type UserOnGroupMeetingArgs = {
+    /**
+     * Select specific fields to fetch from the UserOnGroupMeeting
+     */
+    select?: UserOnGroupMeetingSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: UserOnGroupMeetingInclude | null
   }
 
 
@@ -4902,26 +14796,117 @@ export namespace Prisma {
   // Based on
   // https://github.com/microsoft/TypeScript/issues/3192#issuecomment-261720275
 
-  export const EventScalarFieldEnum: {
+  export const AvailabilityScheduleScalarFieldEnum: {
     id: 'id',
     name: 'name',
-    userId: 'userId',
     eventTypeId: 'eventTypeId',
+    timezone: 'timezone',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
 
-  export type EventScalarFieldEnum = (typeof EventScalarFieldEnum)[keyof typeof EventScalarFieldEnum]
+  export type AvailabilityScheduleScalarFieldEnum = (typeof AvailabilityScheduleScalarFieldEnum)[keyof typeof AvailabilityScheduleScalarFieldEnum]
+
+
+  export const BillingScalarFieldEnum: {
+    id: 'id',
+    subscriptionMonth: 'subscriptionMonth',
+    subscriptionPrice: 'subscriptionPrice',
+    userId: 'userId',
+    name: 'name',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type BillingScalarFieldEnum = (typeof BillingScalarFieldEnum)[keyof typeof BillingScalarFieldEnum]
+
+
+  export const CalendarSelectScalarFieldEnum: {
+    id: 'id',
+    startDate: 'startDate',
+    endDate: 'endDate',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type CalendarSelectScalarFieldEnum = (typeof CalendarSelectScalarFieldEnum)[keyof typeof CalendarSelectScalarFieldEnum]
+
+
+  export const CustomerScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    email: 'email',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
+
+
+  export const EventSelectScalarFieldEnum: {
+    id: 'id',
+    eventTypeId: 'eventTypeId',
+    customerId: 'customerId',
+    selectDate: 'selectDate',
+    selectTime: 'selectTime',
+    status: 'status',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type EventSelectScalarFieldEnum = (typeof EventSelectScalarFieldEnum)[keyof typeof EventSelectScalarFieldEnum]
+
+
+  export const EventTypeOnLocationScalarFieldEnum: {
+    id: 'id',
+    eventTypeId: 'eventTypeId',
+    locationId: 'locationId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type EventTypeOnLocationScalarFieldEnum = (typeof EventTypeOnLocationScalarFieldEnum)[keyof typeof EventTypeOnLocationScalarFieldEnum]
 
 
   export const EventTypeScalarFieldEnum: {
     id: 'id',
     name: 'name',
+    userId: 'userId',
+    description: 'description',
+    price: 'price',
+    timeDuration: 'timeDuration',
+    calendarSelectId: 'calendarSelectId',
+    customerId: 'customerId',
+    status: 'status',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
 
   export type EventTypeScalarFieldEnum = (typeof EventTypeScalarFieldEnum)[keyof typeof EventTypeScalarFieldEnum]
+
+
+  export const GroupMeetingScalarFieldEnum: {
+    id: 'id',
+    locationId: 'locationId',
+    customerId: 'customerId',
+    totalPrice: 'totalPrice',
+    timezone: 'timezone',
+    eventTypeId: 'eventTypeId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type GroupMeetingScalarFieldEnum = (typeof GroupMeetingScalarFieldEnum)[keyof typeof GroupMeetingScalarFieldEnum]
+
+
+  export const LocationScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type LocationScalarFieldEnum = (typeof LocationScalarFieldEnum)[keyof typeof LocationScalarFieldEnum]
 
 
   export const QueryMode: {
@@ -4932,23 +14917,23 @@ export namespace Prisma {
   export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
-  export const SessionScalarFieldEnum: {
-    id: 'id',
-    token: 'token',
-    userId: 'userId',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
-  };
-
-  export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
-
-
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
   };
 
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+  export const TimeSelectScalarFieldEnum: {
+    id: 'id',
+    startTime: 'startTime',
+    endTime: 'endTime',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type TimeSelectScalarFieldEnum = (typeof TimeSelectScalarFieldEnum)[keyof typeof TimeSelectScalarFieldEnum]
 
 
   export const TransactionIsolationLevel: {
@@ -4961,15 +14946,47 @@ export namespace Prisma {
   export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+  export const UserOnGroupMeetingScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    groupMeetingId: 'groupMeetingId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type UserOnGroupMeetingScalarFieldEnum = (typeof UserOnGroupMeetingScalarFieldEnum)[keyof typeof UserOnGroupMeetingScalarFieldEnum]
+
+
   export const UserScalarFieldEnum: {
     id: 'id',
+    name: 'name',
     username: 'username',
-    password_hash: 'password_hash',
+    firebaseUid: 'firebaseUid',
+    subscription: 'subscription',
+    mobileNumber: 'mobileNumber',
+    userLink: 'userLink',
+    job: 'job',
+    education: 'education',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+  export const WeekDayScalarFieldEnum: {
+    id: 'id',
+    day: 'day',
+    availabilityScheduleId: 'availabilityScheduleId',
+    timeSelectId: 'timeSelectId',
+    eventTypeId: 'eventTypeId',
+    status: 'status',
+    date: 'date',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type WeekDayScalarFieldEnum = (typeof WeekDayScalarFieldEnum)[keyof typeof WeekDayScalarFieldEnum]
 
 
   /**
@@ -4982,34 +14999,54 @@ export namespace Prisma {
     OR?: Enumerable<UserWhereInput>
     NOT?: Enumerable<UserWhereInput>
     id?: IntFilter | number
-    username?: StringNullableFilter | string | null
-    password_hash?: StringNullableFilter | string | null
+    name?: StringFilter | string
+    username?: StringFilter | string
+    firebaseUid?: StringFilter | string
+    subscription?: StringNullableFilter | string | null
+    mobileNumber?: StringNullableFilter | string | null
+    userLink?: StringNullableFilter | string | null
+    job?: StringNullableFilter | string | null
+    education?: StringNullableFilter | string | null
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
-    sessions?: SessionListRelationFilter
-    events?: EventListRelationFilter
+    eventTypes?: EventTypeListRelationFilter
+    billings?: BillingListRelationFilter
+    userOnGroupMeetings?: UserOnGroupMeetingListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
     id?: SortOrder
+    name?: SortOrder
     username?: SortOrder
-    password_hash?: SortOrder
+    firebaseUid?: SortOrder
+    subscription?: SortOrder
+    mobileNumber?: SortOrder
+    userLink?: SortOrder
+    job?: SortOrder
+    education?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    sessions?: SessionOrderByRelationAggregateInput
-    events?: EventOrderByRelationAggregateInput
+    eventTypes?: EventTypeOrderByRelationAggregateInput
+    billings?: BillingOrderByRelationAggregateInput
+    userOnGroupMeetings?: UserOnGroupMeetingOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = {
     id?: number
     username?: string
-    password_hash?: string
+    firebaseUid?: string
   }
 
   export type UserOrderByWithAggregationInput = {
     id?: SortOrder
+    name?: SortOrder
     username?: SortOrder
-    password_hash?: SortOrder
+    firebaseUid?: SortOrder
+    subscription?: SortOrder
+    mobileNumber?: SortOrder
+    userLink?: SortOrder
+    job?: SortOrder
+    education?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
@@ -5024,58 +15061,14 @@ export namespace Prisma {
     OR?: Enumerable<UserScalarWhereWithAggregatesInput>
     NOT?: Enumerable<UserScalarWhereWithAggregatesInput>
     id?: IntWithAggregatesFilter | number
-    username?: StringNullableWithAggregatesFilter | string | null
-    password_hash?: StringNullableWithAggregatesFilter | string | null
-    createdAt?: DateTimeWithAggregatesFilter | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter | Date | string
-  }
-
-  export type SessionWhereInput = {
-    AND?: Enumerable<SessionWhereInput>
-    OR?: Enumerable<SessionWhereInput>
-    NOT?: Enumerable<SessionWhereInput>
-    id?: IntFilter | number
-    token?: StringFilter | string
-    userId?: IntFilter | number
-    createdAt?: DateTimeFilter | Date | string
-    updatedAt?: DateTimeFilter | Date | string
-    user?: XOR<UserRelationFilter, UserWhereInput>
-  }
-
-  export type SessionOrderByWithRelationInput = {
-    id?: SortOrder
-    token?: SortOrder
-    userId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    user?: UserOrderByWithRelationInput
-  }
-
-  export type SessionWhereUniqueInput = {
-    id?: number
-    token?: string
-  }
-
-  export type SessionOrderByWithAggregationInput = {
-    id?: SortOrder
-    token?: SortOrder
-    userId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    _count?: SessionCountOrderByAggregateInput
-    _avg?: SessionAvgOrderByAggregateInput
-    _max?: SessionMaxOrderByAggregateInput
-    _min?: SessionMinOrderByAggregateInput
-    _sum?: SessionSumOrderByAggregateInput
-  }
-
-  export type SessionScalarWhereWithAggregatesInput = {
-    AND?: Enumerable<SessionScalarWhereWithAggregatesInput>
-    OR?: Enumerable<SessionScalarWhereWithAggregatesInput>
-    NOT?: Enumerable<SessionScalarWhereWithAggregatesInput>
-    id?: IntWithAggregatesFilter | number
-    token?: StringWithAggregatesFilter | string
-    userId?: IntWithAggregatesFilter | number
+    name?: StringWithAggregatesFilter | string
+    username?: StringWithAggregatesFilter | string
+    firebaseUid?: StringWithAggregatesFilter | string
+    subscription?: StringNullableWithAggregatesFilter | string | null
+    mobileNumber?: StringNullableWithAggregatesFilter | string | null
+    userLink?: StringNullableWithAggregatesFilter | string | null
+    job?: StringNullableWithAggregatesFilter | string | null
+    education?: StringNullableWithAggregatesFilter | string | null
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
   }
@@ -5086,27 +15079,61 @@ export namespace Prisma {
     NOT?: Enumerable<EventTypeWhereInput>
     id?: IntFilter | number
     name?: StringFilter | string
+    userId?: IntFilter | number
+    description?: StringFilter | string
+    price?: IntFilter | number
+    timeDuration?: IntFilter | number
+    calendarSelectId?: IntFilter | number
+    customerId?: IntFilter | number
+    status?: StringFilter | string
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
-    events?: EventListRelationFilter
+    user?: XOR<UserRelationFilter, UserWhereInput>
+    eventTypeOnLocations?: EventTypeOnLocationListRelationFilter
+    availabilitySchedules?: AvailabilityScheduleListRelationFilter
+    weekDays?: WeekDayListRelationFilter
+    calendarSelect?: XOR<CalendarSelectRelationFilter, CalendarSelectWhereInput>
+    customer?: XOR<CustomerRelationFilter, CustomerWhereInput>
+    groupMeetings?: GroupMeetingListRelationFilter
+    eventSelects?: EventSelectListRelationFilter
   }
 
   export type EventTypeOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
+    userId?: SortOrder
+    description?: SortOrder
+    price?: SortOrder
+    timeDuration?: SortOrder
+    calendarSelectId?: SortOrder
+    customerId?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    events?: EventOrderByRelationAggregateInput
+    user?: UserOrderByWithRelationInput
+    eventTypeOnLocations?: EventTypeOnLocationOrderByRelationAggregateInput
+    availabilitySchedules?: AvailabilityScheduleOrderByRelationAggregateInput
+    weekDays?: WeekDayOrderByRelationAggregateInput
+    calendarSelect?: CalendarSelectOrderByWithRelationInput
+    customer?: CustomerOrderByWithRelationInput
+    groupMeetings?: GroupMeetingOrderByRelationAggregateInput
+    eventSelects?: EventSelectOrderByRelationAggregateInput
   }
 
   export type EventTypeWhereUniqueInput = {
     id?: number
-    name?: string
   }
 
   export type EventTypeOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
+    userId?: SortOrder
+    description?: SortOrder
+    price?: SortOrder
+    timeDuration?: SortOrder
+    calendarSelectId?: SortOrder
+    customerId?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: EventTypeCountOrderByAggregateInput
@@ -5122,217 +15149,829 @@ export namespace Prisma {
     NOT?: Enumerable<EventTypeScalarWhereWithAggregatesInput>
     id?: IntWithAggregatesFilter | number
     name?: StringWithAggregatesFilter | string
+    userId?: IntWithAggregatesFilter | number
+    description?: StringWithAggregatesFilter | string
+    price?: IntWithAggregatesFilter | number
+    timeDuration?: IntWithAggregatesFilter | number
+    calendarSelectId?: IntWithAggregatesFilter | number
+    customerId?: IntWithAggregatesFilter | number
+    status?: StringWithAggregatesFilter | string
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
   }
 
-  export type EventWhereInput = {
-    AND?: Enumerable<EventWhereInput>
-    OR?: Enumerable<EventWhereInput>
-    NOT?: Enumerable<EventWhereInput>
+  export type LocationWhereInput = {
+    AND?: Enumerable<LocationWhereInput>
+    OR?: Enumerable<LocationWhereInput>
+    NOT?: Enumerable<LocationWhereInput>
     id?: IntFilter | number
     name?: StringFilter | string
-    userId?: IntFilter | number
-    eventTypeId?: IntFilter | number
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
-    user?: XOR<UserRelationFilter, UserWhereInput>
-    eventType?: XOR<EventTypeRelationFilter, EventTypeWhereInput>
+    eventTypeOnLocations?: EventTypeOnLocationListRelationFilter
+    groupMeetings?: GroupMeetingListRelationFilter
   }
 
-  export type EventOrderByWithRelationInput = {
+  export type LocationOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
-    userId?: SortOrder
-    eventTypeId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    user?: UserOrderByWithRelationInput
-    eventType?: EventTypeOrderByWithRelationInput
+    eventTypeOnLocations?: EventTypeOnLocationOrderByRelationAggregateInput
+    groupMeetings?: GroupMeetingOrderByRelationAggregateInput
   }
 
-  export type EventWhereUniqueInput = {
+  export type LocationWhereUniqueInput = {
     id?: number
   }
 
-  export type EventOrderByWithAggregationInput = {
+  export type LocationOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: LocationCountOrderByAggregateInput
+    _avg?: LocationAvgOrderByAggregateInput
+    _max?: LocationMaxOrderByAggregateInput
+    _min?: LocationMinOrderByAggregateInput
+    _sum?: LocationSumOrderByAggregateInput
+  }
+
+  export type LocationScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<LocationScalarWhereWithAggregatesInput>
+    OR?: Enumerable<LocationScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<LocationScalarWhereWithAggregatesInput>
+    id?: IntWithAggregatesFilter | number
+    name?: StringWithAggregatesFilter | string
+    createdAt?: DateTimeWithAggregatesFilter | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter | Date | string
+  }
+
+  export type EventTypeOnLocationWhereInput = {
+    AND?: Enumerable<EventTypeOnLocationWhereInput>
+    OR?: Enumerable<EventTypeOnLocationWhereInput>
+    NOT?: Enumerable<EventTypeOnLocationWhereInput>
+    id?: IntFilter | number
+    eventTypeId?: IntFilter | number
+    locationId?: IntFilter | number
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+    eventType?: XOR<EventTypeRelationFilter, EventTypeWhereInput>
+    location?: XOR<LocationRelationFilter, LocationWhereInput>
+  }
+
+  export type EventTypeOnLocationOrderByWithRelationInput = {
+    id?: SortOrder
+    eventTypeId?: SortOrder
+    locationId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    eventType?: EventTypeOrderByWithRelationInput
+    location?: LocationOrderByWithRelationInput
+  }
+
+  export type EventTypeOnLocationWhereUniqueInput = {
+    id?: number
+  }
+
+  export type EventTypeOnLocationOrderByWithAggregationInput = {
+    id?: SortOrder
+    eventTypeId?: SortOrder
+    locationId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: EventTypeOnLocationCountOrderByAggregateInput
+    _avg?: EventTypeOnLocationAvgOrderByAggregateInput
+    _max?: EventTypeOnLocationMaxOrderByAggregateInput
+    _min?: EventTypeOnLocationMinOrderByAggregateInput
+    _sum?: EventTypeOnLocationSumOrderByAggregateInput
+  }
+
+  export type EventTypeOnLocationScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<EventTypeOnLocationScalarWhereWithAggregatesInput>
+    OR?: Enumerable<EventTypeOnLocationScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<EventTypeOnLocationScalarWhereWithAggregatesInput>
+    id?: IntWithAggregatesFilter | number
+    eventTypeId?: IntWithAggregatesFilter | number
+    locationId?: IntWithAggregatesFilter | number
+    createdAt?: DateTimeWithAggregatesFilter | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter | Date | string
+  }
+
+  export type AvailabilityScheduleWhereInput = {
+    AND?: Enumerable<AvailabilityScheduleWhereInput>
+    OR?: Enumerable<AvailabilityScheduleWhereInput>
+    NOT?: Enumerable<AvailabilityScheduleWhereInput>
+    id?: IntFilter | number
+    name?: StringFilter | string
+    eventTypeId?: IntFilter | number
+    timezone?: StringFilter | string
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+    eventType?: XOR<EventTypeRelationFilter, EventTypeWhereInput>
+    weekDays?: WeekDayListRelationFilter
+  }
+
+  export type AvailabilityScheduleOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    eventTypeId?: SortOrder
+    timezone?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    eventType?: EventTypeOrderByWithRelationInput
+    weekDays?: WeekDayOrderByRelationAggregateInput
+  }
+
+  export type AvailabilityScheduleWhereUniqueInput = {
+    id?: number
+  }
+
+  export type AvailabilityScheduleOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    eventTypeId?: SortOrder
+    timezone?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: AvailabilityScheduleCountOrderByAggregateInput
+    _avg?: AvailabilityScheduleAvgOrderByAggregateInput
+    _max?: AvailabilityScheduleMaxOrderByAggregateInput
+    _min?: AvailabilityScheduleMinOrderByAggregateInput
+    _sum?: AvailabilityScheduleSumOrderByAggregateInput
+  }
+
+  export type AvailabilityScheduleScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<AvailabilityScheduleScalarWhereWithAggregatesInput>
+    OR?: Enumerable<AvailabilityScheduleScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<AvailabilityScheduleScalarWhereWithAggregatesInput>
+    id?: IntWithAggregatesFilter | number
+    name?: StringWithAggregatesFilter | string
+    eventTypeId?: IntWithAggregatesFilter | number
+    timezone?: StringWithAggregatesFilter | string
+    createdAt?: DateTimeWithAggregatesFilter | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter | Date | string
+  }
+
+  export type WeekDayWhereInput = {
+    AND?: Enumerable<WeekDayWhereInput>
+    OR?: Enumerable<WeekDayWhereInput>
+    NOT?: Enumerable<WeekDayWhereInput>
+    id?: IntFilter | number
+    day?: IntFilter | number
+    availabilityScheduleId?: IntNullableFilter | number | null
+    timeSelectId?: IntFilter | number
+    eventTypeId?: IntNullableFilter | number | null
+    status?: StringFilter | string
+    date?: DateTimeFilter | Date | string
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+    availabilitySchedule?: XOR<AvailabilityScheduleRelationFilter, AvailabilityScheduleWhereInput> | null
+    timeSelect?: XOR<TimeSelectRelationFilter, TimeSelectWhereInput>
+    eventType?: XOR<EventTypeRelationFilter, EventTypeWhereInput> | null
+  }
+
+  export type WeekDayOrderByWithRelationInput = {
+    id?: SortOrder
+    day?: SortOrder
+    availabilityScheduleId?: SortOrder
+    timeSelectId?: SortOrder
+    eventTypeId?: SortOrder
+    status?: SortOrder
+    date?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    availabilitySchedule?: AvailabilityScheduleOrderByWithRelationInput
+    timeSelect?: TimeSelectOrderByWithRelationInput
+    eventType?: EventTypeOrderByWithRelationInput
+  }
+
+  export type WeekDayWhereUniqueInput = {
+    id?: number
+  }
+
+  export type WeekDayOrderByWithAggregationInput = {
+    id?: SortOrder
+    day?: SortOrder
+    availabilityScheduleId?: SortOrder
+    timeSelectId?: SortOrder
+    eventTypeId?: SortOrder
+    status?: SortOrder
+    date?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: WeekDayCountOrderByAggregateInput
+    _avg?: WeekDayAvgOrderByAggregateInput
+    _max?: WeekDayMaxOrderByAggregateInput
+    _min?: WeekDayMinOrderByAggregateInput
+    _sum?: WeekDaySumOrderByAggregateInput
+  }
+
+  export type WeekDayScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<WeekDayScalarWhereWithAggregatesInput>
+    OR?: Enumerable<WeekDayScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<WeekDayScalarWhereWithAggregatesInput>
+    id?: IntWithAggregatesFilter | number
+    day?: IntWithAggregatesFilter | number
+    availabilityScheduleId?: IntNullableWithAggregatesFilter | number | null
+    timeSelectId?: IntWithAggregatesFilter | number
+    eventTypeId?: IntNullableWithAggregatesFilter | number | null
+    status?: StringWithAggregatesFilter | string
+    date?: DateTimeWithAggregatesFilter | Date | string
+    createdAt?: DateTimeWithAggregatesFilter | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter | Date | string
+  }
+
+  export type TimeSelectWhereInput = {
+    AND?: Enumerable<TimeSelectWhereInput>
+    OR?: Enumerable<TimeSelectWhereInput>
+    NOT?: Enumerable<TimeSelectWhereInput>
+    id?: IntFilter | number
+    startTime?: DateTimeFilter | Date | string
+    endTime?: DateTimeFilter | Date | string
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+    weekDays?: WeekDayListRelationFilter
+  }
+
+  export type TimeSelectOrderByWithRelationInput = {
+    id?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    weekDays?: WeekDayOrderByRelationAggregateInput
+  }
+
+  export type TimeSelectWhereUniqueInput = {
+    id?: number
+  }
+
+  export type TimeSelectOrderByWithAggregationInput = {
+    id?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: TimeSelectCountOrderByAggregateInput
+    _avg?: TimeSelectAvgOrderByAggregateInput
+    _max?: TimeSelectMaxOrderByAggregateInput
+    _min?: TimeSelectMinOrderByAggregateInput
+    _sum?: TimeSelectSumOrderByAggregateInput
+  }
+
+  export type TimeSelectScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<TimeSelectScalarWhereWithAggregatesInput>
+    OR?: Enumerable<TimeSelectScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<TimeSelectScalarWhereWithAggregatesInput>
+    id?: IntWithAggregatesFilter | number
+    startTime?: DateTimeWithAggregatesFilter | Date | string
+    endTime?: DateTimeWithAggregatesFilter | Date | string
+    createdAt?: DateTimeWithAggregatesFilter | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter | Date | string
+  }
+
+  export type CustomerWhereInput = {
+    AND?: Enumerable<CustomerWhereInput>
+    OR?: Enumerable<CustomerWhereInput>
+    NOT?: Enumerable<CustomerWhereInput>
+    id?: IntFilter | number
+    name?: StringFilter | string
+    email?: StringFilter | string
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+    eventTypes?: EventTypeListRelationFilter
+    groupMeetings?: GroupMeetingListRelationFilter
+    eventSelects?: EventSelectListRelationFilter
+  }
+
+  export type CustomerOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    eventTypes?: EventTypeOrderByRelationAggregateInput
+    groupMeetings?: GroupMeetingOrderByRelationAggregateInput
+    eventSelects?: EventSelectOrderByRelationAggregateInput
+  }
+
+  export type CustomerWhereUniqueInput = {
+    id?: number
+  }
+
+  export type CustomerOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: CustomerCountOrderByAggregateInput
+    _avg?: CustomerAvgOrderByAggregateInput
+    _max?: CustomerMaxOrderByAggregateInput
+    _min?: CustomerMinOrderByAggregateInput
+    _sum?: CustomerSumOrderByAggregateInput
+  }
+
+  export type CustomerScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<CustomerScalarWhereWithAggregatesInput>
+    OR?: Enumerable<CustomerScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<CustomerScalarWhereWithAggregatesInput>
+    id?: IntWithAggregatesFilter | number
+    name?: StringWithAggregatesFilter | string
+    email?: StringWithAggregatesFilter | string
+    createdAt?: DateTimeWithAggregatesFilter | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter | Date | string
+  }
+
+  export type CalendarSelectWhereInput = {
+    AND?: Enumerable<CalendarSelectWhereInput>
+    OR?: Enumerable<CalendarSelectWhereInput>
+    NOT?: Enumerable<CalendarSelectWhereInput>
+    id?: IntFilter | number
+    startDate?: DateTimeFilter | Date | string
+    endDate?: DateTimeFilter | Date | string
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+    eventTypes?: EventTypeListRelationFilter
+  }
+
+  export type CalendarSelectOrderByWithRelationInput = {
+    id?: SortOrder
+    startDate?: SortOrder
+    endDate?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    eventTypes?: EventTypeOrderByRelationAggregateInput
+  }
+
+  export type CalendarSelectWhereUniqueInput = {
+    id?: number
+  }
+
+  export type CalendarSelectOrderByWithAggregationInput = {
+    id?: SortOrder
+    startDate?: SortOrder
+    endDate?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: CalendarSelectCountOrderByAggregateInput
+    _avg?: CalendarSelectAvgOrderByAggregateInput
+    _max?: CalendarSelectMaxOrderByAggregateInput
+    _min?: CalendarSelectMinOrderByAggregateInput
+    _sum?: CalendarSelectSumOrderByAggregateInput
+  }
+
+  export type CalendarSelectScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<CalendarSelectScalarWhereWithAggregatesInput>
+    OR?: Enumerable<CalendarSelectScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<CalendarSelectScalarWhereWithAggregatesInput>
+    id?: IntWithAggregatesFilter | number
+    startDate?: DateTimeWithAggregatesFilter | Date | string
+    endDate?: DateTimeWithAggregatesFilter | Date | string
+    createdAt?: DateTimeWithAggregatesFilter | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter | Date | string
+  }
+
+  export type BillingWhereInput = {
+    AND?: Enumerable<BillingWhereInput>
+    OR?: Enumerable<BillingWhereInput>
+    NOT?: Enumerable<BillingWhereInput>
+    id?: IntFilter | number
+    subscriptionMonth?: IntFilter | number
+    subscriptionPrice?: IntFilter | number
+    userId?: IntFilter | number
+    name?: StringFilter | string
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }
+
+  export type BillingOrderByWithRelationInput = {
+    id?: SortOrder
+    subscriptionMonth?: SortOrder
+    subscriptionPrice?: SortOrder
     userId?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type BillingWhereUniqueInput = {
+    id?: number
+  }
+
+  export type BillingOrderByWithAggregationInput = {
+    id?: SortOrder
+    subscriptionMonth?: SortOrder
+    subscriptionPrice?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: BillingCountOrderByAggregateInput
+    _avg?: BillingAvgOrderByAggregateInput
+    _max?: BillingMaxOrderByAggregateInput
+    _min?: BillingMinOrderByAggregateInput
+    _sum?: BillingSumOrderByAggregateInput
+  }
+
+  export type BillingScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<BillingScalarWhereWithAggregatesInput>
+    OR?: Enumerable<BillingScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<BillingScalarWhereWithAggregatesInput>
+    id?: IntWithAggregatesFilter | number
+    subscriptionMonth?: IntWithAggregatesFilter | number
+    subscriptionPrice?: IntWithAggregatesFilter | number
+    userId?: IntWithAggregatesFilter | number
+    name?: StringWithAggregatesFilter | string
+    createdAt?: DateTimeWithAggregatesFilter | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter | Date | string
+  }
+
+  export type GroupMeetingWhereInput = {
+    AND?: Enumerable<GroupMeetingWhereInput>
+    OR?: Enumerable<GroupMeetingWhereInput>
+    NOT?: Enumerable<GroupMeetingWhereInput>
+    id?: IntFilter | number
+    locationId?: IntFilter | number
+    customerId?: IntFilter | number
+    totalPrice?: IntFilter | number
+    timezone?: StringFilter | string
+    eventTypeId?: IntFilter | number
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+    location?: XOR<LocationRelationFilter, LocationWhereInput>
+    customer?: XOR<CustomerRelationFilter, CustomerWhereInput>
+    eventType?: XOR<EventTypeRelationFilter, EventTypeWhereInput>
+    userOnGroupMeetings?: UserOnGroupMeetingListRelationFilter
+  }
+
+  export type GroupMeetingOrderByWithRelationInput = {
+    id?: SortOrder
+    locationId?: SortOrder
+    customerId?: SortOrder
+    totalPrice?: SortOrder
+    timezone?: SortOrder
     eventTypeId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    _count?: EventCountOrderByAggregateInput
-    _avg?: EventAvgOrderByAggregateInput
-    _max?: EventMaxOrderByAggregateInput
-    _min?: EventMinOrderByAggregateInput
-    _sum?: EventSumOrderByAggregateInput
+    location?: LocationOrderByWithRelationInput
+    customer?: CustomerOrderByWithRelationInput
+    eventType?: EventTypeOrderByWithRelationInput
+    userOnGroupMeetings?: UserOnGroupMeetingOrderByRelationAggregateInput
   }
 
-  export type EventScalarWhereWithAggregatesInput = {
-    AND?: Enumerable<EventScalarWhereWithAggregatesInput>
-    OR?: Enumerable<EventScalarWhereWithAggregatesInput>
-    NOT?: Enumerable<EventScalarWhereWithAggregatesInput>
+  export type GroupMeetingWhereUniqueInput = {
+    id?: number
+  }
+
+  export type GroupMeetingOrderByWithAggregationInput = {
+    id?: SortOrder
+    locationId?: SortOrder
+    customerId?: SortOrder
+    totalPrice?: SortOrder
+    timezone?: SortOrder
+    eventTypeId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: GroupMeetingCountOrderByAggregateInput
+    _avg?: GroupMeetingAvgOrderByAggregateInput
+    _max?: GroupMeetingMaxOrderByAggregateInput
+    _min?: GroupMeetingMinOrderByAggregateInput
+    _sum?: GroupMeetingSumOrderByAggregateInput
+  }
+
+  export type GroupMeetingScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<GroupMeetingScalarWhereWithAggregatesInput>
+    OR?: Enumerable<GroupMeetingScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<GroupMeetingScalarWhereWithAggregatesInput>
     id?: IntWithAggregatesFilter | number
-    name?: StringWithAggregatesFilter | string
-    userId?: IntWithAggregatesFilter | number
+    locationId?: IntWithAggregatesFilter | number
+    customerId?: IntWithAggregatesFilter | number
+    totalPrice?: IntWithAggregatesFilter | number
+    timezone?: StringWithAggregatesFilter | string
     eventTypeId?: IntWithAggregatesFilter | number
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
   }
 
+  export type EventSelectWhereInput = {
+    AND?: Enumerable<EventSelectWhereInput>
+    OR?: Enumerable<EventSelectWhereInput>
+    NOT?: Enumerable<EventSelectWhereInput>
+    id?: IntFilter | number
+    eventTypeId?: IntFilter | number
+    customerId?: IntFilter | number
+    selectDate?: StringFilter | string
+    selectTime?: DateTimeFilter | Date | string
+    status?: StringFilter | string
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+    eventType?: XOR<EventTypeRelationFilter, EventTypeWhereInput>
+    customer?: XOR<CustomerRelationFilter, CustomerWhereInput>
+  }
+
+  export type EventSelectOrderByWithRelationInput = {
+    id?: SortOrder
+    eventTypeId?: SortOrder
+    customerId?: SortOrder
+    selectDate?: SortOrder
+    selectTime?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    eventType?: EventTypeOrderByWithRelationInput
+    customer?: CustomerOrderByWithRelationInput
+  }
+
+  export type EventSelectWhereUniqueInput = {
+    id?: number
+  }
+
+  export type EventSelectOrderByWithAggregationInput = {
+    id?: SortOrder
+    eventTypeId?: SortOrder
+    customerId?: SortOrder
+    selectDate?: SortOrder
+    selectTime?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: EventSelectCountOrderByAggregateInput
+    _avg?: EventSelectAvgOrderByAggregateInput
+    _max?: EventSelectMaxOrderByAggregateInput
+    _min?: EventSelectMinOrderByAggregateInput
+    _sum?: EventSelectSumOrderByAggregateInput
+  }
+
+  export type EventSelectScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<EventSelectScalarWhereWithAggregatesInput>
+    OR?: Enumerable<EventSelectScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<EventSelectScalarWhereWithAggregatesInput>
+    id?: IntWithAggregatesFilter | number
+    eventTypeId?: IntWithAggregatesFilter | number
+    customerId?: IntWithAggregatesFilter | number
+    selectDate?: StringWithAggregatesFilter | string
+    selectTime?: DateTimeWithAggregatesFilter | Date | string
+    status?: StringWithAggregatesFilter | string
+    createdAt?: DateTimeWithAggregatesFilter | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter | Date | string
+  }
+
+  export type UserOnGroupMeetingWhereInput = {
+    AND?: Enumerable<UserOnGroupMeetingWhereInput>
+    OR?: Enumerable<UserOnGroupMeetingWhereInput>
+    NOT?: Enumerable<UserOnGroupMeetingWhereInput>
+    id?: IntFilter | number
+    userId?: IntFilter | number
+    groupMeetingId?: IntFilter | number
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+    groupMeeting?: XOR<GroupMeetingRelationFilter, GroupMeetingWhereInput>
+  }
+
+  export type UserOnGroupMeetingOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    groupMeetingId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+    groupMeeting?: GroupMeetingOrderByWithRelationInput
+  }
+
+  export type UserOnGroupMeetingWhereUniqueInput = {
+    id?: number
+  }
+
+  export type UserOnGroupMeetingOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    groupMeetingId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: UserOnGroupMeetingCountOrderByAggregateInput
+    _avg?: UserOnGroupMeetingAvgOrderByAggregateInput
+    _max?: UserOnGroupMeetingMaxOrderByAggregateInput
+    _min?: UserOnGroupMeetingMinOrderByAggregateInput
+    _sum?: UserOnGroupMeetingSumOrderByAggregateInput
+  }
+
+  export type UserOnGroupMeetingScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<UserOnGroupMeetingScalarWhereWithAggregatesInput>
+    OR?: Enumerable<UserOnGroupMeetingScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<UserOnGroupMeetingScalarWhereWithAggregatesInput>
+    id?: IntWithAggregatesFilter | number
+    userId?: IntWithAggregatesFilter | number
+    groupMeetingId?: IntWithAggregatesFilter | number
+    createdAt?: DateTimeWithAggregatesFilter | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter | Date | string
+  }
+
   export type UserCreateInput = {
-    username?: string | null
-    password_hash?: string | null
+    name: string
+    username: string
+    firebaseUid: string
+    subscription?: string | null
+    mobileNumber?: string | null
+    userLink?: string | null
+    job?: string | null
+    education?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    sessions?: SessionCreateNestedManyWithoutUserInput
-    events?: EventCreateNestedManyWithoutUserInput
+    eventTypes?: EventTypeCreateNestedManyWithoutUserInput
+    billings?: BillingCreateNestedManyWithoutUserInput
+    userOnGroupMeetings?: UserOnGroupMeetingCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
     id?: number
-    username?: string | null
-    password_hash?: string | null
+    name: string
+    username: string
+    firebaseUid: string
+    subscription?: string | null
+    mobileNumber?: string | null
+    userLink?: string | null
+    job?: string | null
+    education?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
-    events?: EventUncheckedCreateNestedManyWithoutUserInput
+    eventTypes?: EventTypeUncheckedCreateNestedManyWithoutUserInput
+    billings?: BillingUncheckedCreateNestedManyWithoutUserInput
+    userOnGroupMeetings?: UserOnGroupMeetingUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
-    username?: NullableStringFieldUpdateOperationsInput | string | null
-    password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    firebaseUid?: StringFieldUpdateOperationsInput | string
+    subscription?: NullableStringFieldUpdateOperationsInput | string | null
+    mobileNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    userLink?: NullableStringFieldUpdateOperationsInput | string | null
+    job?: NullableStringFieldUpdateOperationsInput | string | null
+    education?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sessions?: SessionUpdateManyWithoutUserNestedInput
-    events?: EventUpdateManyWithoutUserNestedInput
+    eventTypes?: EventTypeUpdateManyWithoutUserNestedInput
+    billings?: BillingUpdateManyWithoutUserNestedInput
+    userOnGroupMeetings?: UserOnGroupMeetingUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
-    username?: NullableStringFieldUpdateOperationsInput | string | null
-    password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    firebaseUid?: StringFieldUpdateOperationsInput | string
+    subscription?: NullableStringFieldUpdateOperationsInput | string | null
+    mobileNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    userLink?: NullableStringFieldUpdateOperationsInput | string | null
+    job?: NullableStringFieldUpdateOperationsInput | string | null
+    education?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
-    events?: EventUncheckedUpdateManyWithoutUserNestedInput
+    eventTypes?: EventTypeUncheckedUpdateManyWithoutUserNestedInput
+    billings?: BillingUncheckedUpdateManyWithoutUserNestedInput
+    userOnGroupMeetings?: UserOnGroupMeetingUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
     id?: number
-    username?: string | null
-    password_hash?: string | null
+    name: string
+    username: string
+    firebaseUid: string
+    subscription?: string | null
+    mobileNumber?: string | null
+    userLink?: string | null
+    job?: string | null
+    education?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type UserUpdateManyMutationInput = {
-    username?: NullableStringFieldUpdateOperationsInput | string | null
-    password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    firebaseUid?: StringFieldUpdateOperationsInput | string
+    subscription?: NullableStringFieldUpdateOperationsInput | string | null
+    mobileNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    userLink?: NullableStringFieldUpdateOperationsInput | string | null
+    job?: NullableStringFieldUpdateOperationsInput | string | null
+    education?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
-    username?: NullableStringFieldUpdateOperationsInput | string | null
-    password_hash?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type SessionCreateInput = {
-    token: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    user: UserCreateNestedOneWithoutSessionsInput
-  }
-
-  export type SessionUncheckedCreateInput = {
-    id?: number
-    token: string
-    userId: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type SessionUpdateInput = {
-    token?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutSessionsNestedInput
-  }
-
-  export type SessionUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    token?: StringFieldUpdateOperationsInput | string
-    userId?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type SessionCreateManyInput = {
-    id?: number
-    token: string
-    userId: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type SessionUpdateManyMutationInput = {
-    token?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type SessionUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    token?: StringFieldUpdateOperationsInput | string
-    userId?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    firebaseUid?: StringFieldUpdateOperationsInput | string
+    subscription?: NullableStringFieldUpdateOperationsInput | string | null
+    mobileNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    userLink?: NullableStringFieldUpdateOperationsInput | string | null
+    job?: NullableStringFieldUpdateOperationsInput | string | null
+    education?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type EventTypeCreateInput = {
     name: string
+    description: string
+    price: number
+    timeDuration: number
+    status: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    events?: EventCreateNestedManyWithoutEventTypeInput
+    user: UserCreateNestedOneWithoutEventTypesInput
+    eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutEventTypeInput
+    availabilitySchedules?: AvailabilityScheduleCreateNestedManyWithoutEventTypeInput
+    weekDays?: WeekDayCreateNestedManyWithoutEventTypeInput
+    calendarSelect: CalendarSelectCreateNestedOneWithoutEventTypesInput
+    customer: CustomerCreateNestedOneWithoutEventTypesInput
+    groupMeetings?: GroupMeetingCreateNestedManyWithoutEventTypeInput
+    eventSelects?: EventSelectCreateNestedManyWithoutEventTypeInput
   }
 
   export type EventTypeUncheckedCreateInput = {
     id?: number
     name: string
+    userId: number
+    description: string
+    price: number
+    timeDuration: number
+    calendarSelectId: number
+    customerId: number
+    status: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    events?: EventUncheckedCreateNestedManyWithoutEventTypeInput
+    eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput
+    availabilitySchedules?: AvailabilityScheduleUncheckedCreateNestedManyWithoutEventTypeInput
+    weekDays?: WeekDayUncheckedCreateNestedManyWithoutEventTypeInput
+    groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput
+    eventSelects?: EventSelectUncheckedCreateNestedManyWithoutEventTypeInput
   }
 
   export type EventTypeUpdateInput = {
     name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    events?: EventUpdateManyWithoutEventTypeNestedInput
+    user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
+    eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
+    availabilitySchedules?: AvailabilityScheduleUpdateManyWithoutEventTypeNestedInput
+    weekDays?: WeekDayUpdateManyWithoutEventTypeNestedInput
+    calendarSelect?: CalendarSelectUpdateOneRequiredWithoutEventTypesNestedInput
+    customer?: CustomerUpdateOneRequiredWithoutEventTypesNestedInput
+    groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
+    eventSelects?: EventSelectUpdateManyWithoutEventTypeNestedInput
   }
 
   export type EventTypeUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
+    userId?: IntFieldUpdateOperationsInput | number
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    calendarSelectId?: IntFieldUpdateOperationsInput | number
+    customerId?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    events?: EventUncheckedUpdateManyWithoutEventTypeNestedInput
+    eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
+    availabilitySchedules?: AvailabilityScheduleUncheckedUpdateManyWithoutEventTypeNestedInput
+    weekDays?: WeekDayUncheckedUpdateManyWithoutEventTypeNestedInput
+    groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
+    eventSelects?: EventSelectUncheckedUpdateManyWithoutEventTypeNestedInput
   }
 
   export type EventTypeCreateManyInput = {
     id?: number
     name: string
+    userId: number
+    description: string
+    price: number
+    timeDuration: number
+    calendarSelectId: number
+    customerId: number
+    status: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type EventTypeUpdateManyMutationInput = {
     name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -5340,64 +15979,702 @@ export namespace Prisma {
   export type EventTypeUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
+    userId?: IntFieldUpdateOperationsInput | number
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    calendarSelectId?: IntFieldUpdateOperationsInput | number
+    customerId?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type EventCreateInput = {
+  export type LocationCreateInput = {
     name: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    user: UserCreateNestedOneWithoutEventsInput
-    eventType: EventTypeCreateNestedOneWithoutEventsInput
+    eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutLocationInput
+    groupMeetings?: GroupMeetingCreateNestedManyWithoutLocationInput
   }
 
-  export type EventUncheckedCreateInput = {
+  export type LocationUncheckedCreateInput = {
     id?: number
     name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutLocationInput
+    groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutLocationInput
+  }
+
+  export type LocationUpdateInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutLocationNestedInput
+    groupMeetings?: GroupMeetingUpdateManyWithoutLocationNestedInput
+  }
+
+  export type LocationUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutLocationNestedInput
+    groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutLocationNestedInput
+  }
+
+  export type LocationCreateManyInput = {
+    id?: number
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type LocationUpdateManyMutationInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LocationUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EventTypeOnLocationCreateInput = {
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventType: EventTypeCreateNestedOneWithoutEventTypeOnLocationsInput
+    location: LocationCreateNestedOneWithoutEventTypeOnLocationsInput
+  }
+
+  export type EventTypeOnLocationUncheckedCreateInput = {
+    id?: number
+    eventTypeId: number
+    locationId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EventTypeOnLocationUpdateInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventType?: EventTypeUpdateOneRequiredWithoutEventTypeOnLocationsNestedInput
+    location?: LocationUpdateOneRequiredWithoutEventTypeOnLocationsNestedInput
+  }
+
+  export type EventTypeOnLocationUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    eventTypeId?: IntFieldUpdateOperationsInput | number
+    locationId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EventTypeOnLocationCreateManyInput = {
+    id?: number
+    eventTypeId: number
+    locationId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EventTypeOnLocationUpdateManyMutationInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EventTypeOnLocationUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    eventTypeId?: IntFieldUpdateOperationsInput | number
+    locationId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AvailabilityScheduleCreateInput = {
+    name: string
+    timezone: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventType: EventTypeCreateNestedOneWithoutAvailabilitySchedulesInput
+    weekDays?: WeekDayCreateNestedManyWithoutAvailabilityScheduleInput
+  }
+
+  export type AvailabilityScheduleUncheckedCreateInput = {
+    id?: number
+    name: string
+    eventTypeId: number
+    timezone: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    weekDays?: WeekDayUncheckedCreateNestedManyWithoutAvailabilityScheduleInput
+  }
+
+  export type AvailabilityScheduleUpdateInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    timezone?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventType?: EventTypeUpdateOneRequiredWithoutAvailabilitySchedulesNestedInput
+    weekDays?: WeekDayUpdateManyWithoutAvailabilityScheduleNestedInput
+  }
+
+  export type AvailabilityScheduleUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    eventTypeId?: IntFieldUpdateOperationsInput | number
+    timezone?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    weekDays?: WeekDayUncheckedUpdateManyWithoutAvailabilityScheduleNestedInput
+  }
+
+  export type AvailabilityScheduleCreateManyInput = {
+    id?: number
+    name: string
+    eventTypeId: number
+    timezone: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AvailabilityScheduleUpdateManyMutationInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    timezone?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AvailabilityScheduleUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    eventTypeId?: IntFieldUpdateOperationsInput | number
+    timezone?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WeekDayCreateInput = {
+    day: number
+    status: string
+    date: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutWeekDaysInput
+    timeSelect: TimeSelectCreateNestedOneWithoutWeekDaysInput
+    eventType?: EventTypeCreateNestedOneWithoutWeekDaysInput
+  }
+
+  export type WeekDayUncheckedCreateInput = {
+    id?: number
+    day: number
+    availabilityScheduleId?: number | null
+    timeSelectId: number
+    eventTypeId?: number | null
+    status: string
+    date: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WeekDayUpdateInput = {
+    day?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutWeekDaysNestedInput
+    timeSelect?: TimeSelectUpdateOneRequiredWithoutWeekDaysNestedInput
+    eventType?: EventTypeUpdateOneWithoutWeekDaysNestedInput
+  }
+
+  export type WeekDayUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    day?: IntFieldUpdateOperationsInput | number
+    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
+    timeSelectId?: IntFieldUpdateOperationsInput | number
+    eventTypeId?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WeekDayCreateManyInput = {
+    id?: number
+    day: number
+    availabilityScheduleId?: number | null
+    timeSelectId: number
+    eventTypeId?: number | null
+    status: string
+    date: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WeekDayUpdateManyMutationInput = {
+    day?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WeekDayUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    day?: IntFieldUpdateOperationsInput | number
+    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
+    timeSelectId?: IntFieldUpdateOperationsInput | number
+    eventTypeId?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TimeSelectCreateInput = {
+    startTime: Date | string
+    endTime: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    weekDays?: WeekDayCreateNestedManyWithoutTimeSelectInput
+  }
+
+  export type TimeSelectUncheckedCreateInput = {
+    id?: number
+    startTime: Date | string
+    endTime: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    weekDays?: WeekDayUncheckedCreateNestedManyWithoutTimeSelectInput
+  }
+
+  export type TimeSelectUpdateInput = {
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    weekDays?: WeekDayUpdateManyWithoutTimeSelectNestedInput
+  }
+
+  export type TimeSelectUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    weekDays?: WeekDayUncheckedUpdateManyWithoutTimeSelectNestedInput
+  }
+
+  export type TimeSelectCreateManyInput = {
+    id?: number
+    startTime: Date | string
+    endTime: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TimeSelectUpdateManyMutationInput = {
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TimeSelectUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CustomerCreateInput = {
+    name: string
+    email: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventTypes?: EventTypeCreateNestedManyWithoutCustomerInput
+    groupMeetings?: GroupMeetingCreateNestedManyWithoutCustomerInput
+    eventSelects?: EventSelectCreateNestedManyWithoutCustomerInput
+  }
+
+  export type CustomerUncheckedCreateInput = {
+    id?: number
+    name: string
+    email: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventTypes?: EventTypeUncheckedCreateNestedManyWithoutCustomerInput
+    groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutCustomerInput
+    eventSelects?: EventSelectUncheckedCreateNestedManyWithoutCustomerInput
+  }
+
+  export type CustomerUpdateInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypes?: EventTypeUpdateManyWithoutCustomerNestedInput
+    groupMeetings?: GroupMeetingUpdateManyWithoutCustomerNestedInput
+    eventSelects?: EventSelectUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type CustomerUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypes?: EventTypeUncheckedUpdateManyWithoutCustomerNestedInput
+    groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutCustomerNestedInput
+    eventSelects?: EventSelectUncheckedUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type CustomerCreateManyInput = {
+    id?: number
+    name: string
+    email: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CustomerUpdateManyMutationInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CustomerUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CalendarSelectCreateInput = {
+    startDate: Date | string
+    endDate: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventTypes?: EventTypeCreateNestedManyWithoutCalendarSelectInput
+  }
+
+  export type CalendarSelectUncheckedCreateInput = {
+    id?: number
+    startDate: Date | string
+    endDate: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventTypes?: EventTypeUncheckedCreateNestedManyWithoutCalendarSelectInput
+  }
+
+  export type CalendarSelectUpdateInput = {
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypes?: EventTypeUpdateManyWithoutCalendarSelectNestedInput
+  }
+
+  export type CalendarSelectUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypes?: EventTypeUncheckedUpdateManyWithoutCalendarSelectNestedInput
+  }
+
+  export type CalendarSelectCreateManyInput = {
+    id?: number
+    startDate: Date | string
+    endDate: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CalendarSelectUpdateManyMutationInput = {
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CalendarSelectUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BillingCreateInput = {
+    subscriptionMonth: number
+    subscriptionPrice: number
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutBillingsInput
+  }
+
+  export type BillingUncheckedCreateInput = {
+    id?: number
+    subscriptionMonth: number
+    subscriptionPrice: number
     userId: number
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BillingUpdateInput = {
+    subscriptionMonth?: IntFieldUpdateOperationsInput | number
+    subscriptionPrice?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutBillingsNestedInput
+  }
+
+  export type BillingUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    subscriptionMonth?: IntFieldUpdateOperationsInput | number
+    subscriptionPrice?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BillingCreateManyInput = {
+    id?: number
+    subscriptionMonth: number
+    subscriptionPrice: number
+    userId: number
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BillingUpdateManyMutationInput = {
+    subscriptionMonth?: IntFieldUpdateOperationsInput | number
+    subscriptionPrice?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BillingUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    subscriptionMonth?: IntFieldUpdateOperationsInput | number
+    subscriptionPrice?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GroupMeetingCreateInput = {
+    totalPrice: number
+    timezone: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    location: LocationCreateNestedOneWithoutGroupMeetingsInput
+    customer: CustomerCreateNestedOneWithoutGroupMeetingsInput
+    eventType: EventTypeCreateNestedOneWithoutGroupMeetingsInput
+    userOnGroupMeetings?: UserOnGroupMeetingCreateNestedManyWithoutGroupMeetingInput
+  }
+
+  export type GroupMeetingUncheckedCreateInput = {
+    id?: number
+    locationId: number
+    customerId: number
+    totalPrice: number
+    timezone: string
+    eventTypeId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userOnGroupMeetings?: UserOnGroupMeetingUncheckedCreateNestedManyWithoutGroupMeetingInput
+  }
+
+  export type GroupMeetingUpdateInput = {
+    totalPrice?: IntFieldUpdateOperationsInput | number
+    timezone?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: LocationUpdateOneRequiredWithoutGroupMeetingsNestedInput
+    customer?: CustomerUpdateOneRequiredWithoutGroupMeetingsNestedInput
+    eventType?: EventTypeUpdateOneRequiredWithoutGroupMeetingsNestedInput
+    userOnGroupMeetings?: UserOnGroupMeetingUpdateManyWithoutGroupMeetingNestedInput
+  }
+
+  export type GroupMeetingUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    locationId?: IntFieldUpdateOperationsInput | number
+    customerId?: IntFieldUpdateOperationsInput | number
+    totalPrice?: IntFieldUpdateOperationsInput | number
+    timezone?: StringFieldUpdateOperationsInput | string
+    eventTypeId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userOnGroupMeetings?: UserOnGroupMeetingUncheckedUpdateManyWithoutGroupMeetingNestedInput
+  }
+
+  export type GroupMeetingCreateManyInput = {
+    id?: number
+    locationId: number
+    customerId: number
+    totalPrice: number
+    timezone: string
     eventTypeId: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type EventUpdateInput = {
-    name?: StringFieldUpdateOperationsInput | string
+  export type GroupMeetingUpdateManyMutationInput = {
+    totalPrice?: IntFieldUpdateOperationsInput | number
+    timezone?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutEventsNestedInput
-    eventType?: EventTypeUpdateOneRequiredWithoutEventsNestedInput
   }
 
-  export type EventUncheckedUpdateInput = {
+  export type GroupMeetingUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    userId?: IntFieldUpdateOperationsInput | number
+    locationId?: IntFieldUpdateOperationsInput | number
+    customerId?: IntFieldUpdateOperationsInput | number
+    totalPrice?: IntFieldUpdateOperationsInput | number
+    timezone?: StringFieldUpdateOperationsInput | string
     eventTypeId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type EventCreateManyInput = {
+  export type EventSelectCreateInput = {
+    selectDate: string
+    selectTime: Date | string
+    status: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventType: EventTypeCreateNestedOneWithoutEventSelectsInput
+    customer: CustomerCreateNestedOneWithoutEventSelectsInput
+  }
+
+  export type EventSelectUncheckedCreateInput = {
     id?: number
-    name: string
-    userId: number
     eventTypeId: number
+    customerId: number
+    selectDate: string
+    selectTime: Date | string
+    status: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type EventUpdateManyMutationInput = {
-    name?: StringFieldUpdateOperationsInput | string
+  export type EventSelectUpdateInput = {
+    selectDate?: StringFieldUpdateOperationsInput | string
+    selectTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventType?: EventTypeUpdateOneRequiredWithoutEventSelectsNestedInput
+    customer?: CustomerUpdateOneRequiredWithoutEventSelectsNestedInput
+  }
+
+  export type EventSelectUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    eventTypeId?: IntFieldUpdateOperationsInput | number
+    customerId?: IntFieldUpdateOperationsInput | number
+    selectDate?: StringFieldUpdateOperationsInput | string
+    selectTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type EventUncheckedUpdateManyInput = {
+  export type EventSelectCreateManyInput = {
+    id?: number
+    eventTypeId: number
+    customerId: number
+    selectDate: string
+    selectTime: Date | string
+    status: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EventSelectUpdateManyMutationInput = {
+    selectDate?: StringFieldUpdateOperationsInput | string
+    selectTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EventSelectUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    userId?: IntFieldUpdateOperationsInput | number
     eventTypeId?: IntFieldUpdateOperationsInput | number
+    customerId?: IntFieldUpdateOperationsInput | number
+    selectDate?: StringFieldUpdateOperationsInput | string
+    selectTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserOnGroupMeetingCreateInput = {
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutUserOnGroupMeetingsInput
+    groupMeeting: GroupMeetingCreateNestedOneWithoutUserOnGroupMeetingsInput
+  }
+
+  export type UserOnGroupMeetingUncheckedCreateInput = {
+    id?: number
+    userId: number
+    groupMeetingId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UserOnGroupMeetingUpdateInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutUserOnGroupMeetingsNestedInput
+    groupMeeting?: GroupMeetingUpdateOneRequiredWithoutUserOnGroupMeetingsNestedInput
+  }
+
+  export type UserOnGroupMeetingUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    groupMeetingId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserOnGroupMeetingCreateManyInput = {
+    id?: number
+    userId: number
+    groupMeetingId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UserOnGroupMeetingUpdateManyMutationInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserOnGroupMeetingUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    groupMeetingId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -5411,6 +16688,21 @@ export namespace Prisma {
     gt?: number
     gte?: number
     not?: NestedIntFilter | number
+  }
+
+  export type StringFilter = {
+    equals?: string
+    in?: Enumerable<string>
+    notIn?: Enumerable<string>
+    lt?: string
+    lte?: string
+    gt?: string
+    gte?: string
+    contains?: string
+    startsWith?: string
+    endsWith?: string
+    mode?: QueryMode
+    not?: NestedStringFilter | string
   }
 
   export type StringNullableFilter = {
@@ -5439,30 +16731,46 @@ export namespace Prisma {
     not?: NestedDateTimeFilter | Date | string
   }
 
-  export type SessionListRelationFilter = {
-    every?: SessionWhereInput
-    some?: SessionWhereInput
-    none?: SessionWhereInput
+  export type EventTypeListRelationFilter = {
+    every?: EventTypeWhereInput
+    some?: EventTypeWhereInput
+    none?: EventTypeWhereInput
   }
 
-  export type EventListRelationFilter = {
-    every?: EventWhereInput
-    some?: EventWhereInput
-    none?: EventWhereInput
+  export type BillingListRelationFilter = {
+    every?: BillingWhereInput
+    some?: BillingWhereInput
+    none?: BillingWhereInput
   }
 
-  export type SessionOrderByRelationAggregateInput = {
+  export type UserOnGroupMeetingListRelationFilter = {
+    every?: UserOnGroupMeetingWhereInput
+    some?: UserOnGroupMeetingWhereInput
+    none?: UserOnGroupMeetingWhereInput
+  }
+
+  export type EventTypeOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
-  export type EventOrderByRelationAggregateInput = {
+  export type BillingOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type UserOnGroupMeetingOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
   export type UserCountOrderByAggregateInput = {
     id?: SortOrder
+    name?: SortOrder
     username?: SortOrder
-    password_hash?: SortOrder
+    firebaseUid?: SortOrder
+    subscription?: SortOrder
+    mobileNumber?: SortOrder
+    userLink?: SortOrder
+    job?: SortOrder
+    education?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -5473,16 +16781,28 @@ export namespace Prisma {
 
   export type UserMaxOrderByAggregateInput = {
     id?: SortOrder
+    name?: SortOrder
     username?: SortOrder
-    password_hash?: SortOrder
+    firebaseUid?: SortOrder
+    subscription?: SortOrder
+    mobileNumber?: SortOrder
+    userLink?: SortOrder
+    job?: SortOrder
+    education?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
     id?: SortOrder
+    name?: SortOrder
     username?: SortOrder
-    password_hash?: SortOrder
+    firebaseUid?: SortOrder
+    subscription?: SortOrder
+    mobileNumber?: SortOrder
+    userLink?: SortOrder
+    job?: SortOrder
+    education?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -5505,6 +16825,24 @@ export namespace Prisma {
     _sum?: NestedIntFilter
     _min?: NestedIntFilter
     _max?: NestedIntFilter
+  }
+
+  export type StringWithAggregatesFilter = {
+    equals?: string
+    in?: Enumerable<string>
+    notIn?: Enumerable<string>
+    lt?: string
+    lte?: string
+    gt?: string
+    gte?: string
+    contains?: string
+    startsWith?: string
+    endsWith?: string
+    mode?: QueryMode
+    not?: NestedStringWithAggregatesFilter | string
+    _count?: NestedIntFilter
+    _min?: NestedStringFilter
+    _max?: NestedStringFilter
   }
 
   export type StringNullableWithAggregatesFilter = {
@@ -5539,92 +16877,104 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter
   }
 
-  export type StringFilter = {
-    equals?: string
-    in?: Enumerable<string>
-    notIn?: Enumerable<string>
-    lt?: string
-    lte?: string
-    gt?: string
-    gte?: string
-    contains?: string
-    startsWith?: string
-    endsWith?: string
-    mode?: QueryMode
-    not?: NestedStringFilter | string
-  }
-
   export type UserRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
   }
 
-  export type SessionCountOrderByAggregateInput = {
-    id?: SortOrder
-    token?: SortOrder
-    userId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
+  export type EventTypeOnLocationListRelationFilter = {
+    every?: EventTypeOnLocationWhereInput
+    some?: EventTypeOnLocationWhereInput
+    none?: EventTypeOnLocationWhereInput
   }
 
-  export type SessionAvgOrderByAggregateInput = {
-    id?: SortOrder
-    userId?: SortOrder
+  export type AvailabilityScheduleListRelationFilter = {
+    every?: AvailabilityScheduleWhereInput
+    some?: AvailabilityScheduleWhereInput
+    none?: AvailabilityScheduleWhereInput
   }
 
-  export type SessionMaxOrderByAggregateInput = {
-    id?: SortOrder
-    token?: SortOrder
-    userId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
+  export type WeekDayListRelationFilter = {
+    every?: WeekDayWhereInput
+    some?: WeekDayWhereInput
+    none?: WeekDayWhereInput
   }
 
-  export type SessionMinOrderByAggregateInput = {
-    id?: SortOrder
-    token?: SortOrder
-    userId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
+  export type CalendarSelectRelationFilter = {
+    is?: CalendarSelectWhereInput
+    isNot?: CalendarSelectWhereInput
   }
 
-  export type SessionSumOrderByAggregateInput = {
-    id?: SortOrder
-    userId?: SortOrder
+  export type CustomerRelationFilter = {
+    is?: CustomerWhereInput
+    isNot?: CustomerWhereInput
   }
 
-  export type StringWithAggregatesFilter = {
-    equals?: string
-    in?: Enumerable<string>
-    notIn?: Enumerable<string>
-    lt?: string
-    lte?: string
-    gt?: string
-    gte?: string
-    contains?: string
-    startsWith?: string
-    endsWith?: string
-    mode?: QueryMode
-    not?: NestedStringWithAggregatesFilter | string
-    _count?: NestedIntFilter
-    _min?: NestedStringFilter
-    _max?: NestedStringFilter
+  export type GroupMeetingListRelationFilter = {
+    every?: GroupMeetingWhereInput
+    some?: GroupMeetingWhereInput
+    none?: GroupMeetingWhereInput
+  }
+
+  export type EventSelectListRelationFilter = {
+    every?: EventSelectWhereInput
+    some?: EventSelectWhereInput
+    none?: EventSelectWhereInput
+  }
+
+  export type EventTypeOnLocationOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AvailabilityScheduleOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type WeekDayOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type GroupMeetingOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type EventSelectOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type EventTypeCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    userId?: SortOrder
+    description?: SortOrder
+    price?: SortOrder
+    timeDuration?: SortOrder
+    calendarSelectId?: SortOrder
+    customerId?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type EventTypeAvgOrderByAggregateInput = {
     id?: SortOrder
+    userId?: SortOrder
+    price?: SortOrder
+    timeDuration?: SortOrder
+    calendarSelectId?: SortOrder
+    customerId?: SortOrder
   }
 
   export type EventTypeMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    userId?: SortOrder
+    description?: SortOrder
+    price?: SortOrder
+    timeDuration?: SortOrder
+    calendarSelectId?: SortOrder
+    customerId?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -5632,11 +16982,52 @@ export namespace Prisma {
   export type EventTypeMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    userId?: SortOrder
+    description?: SortOrder
+    price?: SortOrder
+    timeDuration?: SortOrder
+    calendarSelectId?: SortOrder
+    customerId?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type EventTypeSumOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    price?: SortOrder
+    timeDuration?: SortOrder
+    calendarSelectId?: SortOrder
+    customerId?: SortOrder
+  }
+
+  export type LocationCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type LocationAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type LocationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type LocationMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type LocationSumOrderByAggregateInput = {
     id?: SortOrder
   }
 
@@ -5645,71 +17036,492 @@ export namespace Prisma {
     isNot?: EventTypeWhereInput
   }
 
-  export type EventCountOrderByAggregateInput = {
+  export type LocationRelationFilter = {
+    is?: LocationWhereInput
+    isNot?: LocationWhereInput
+  }
+
+  export type EventTypeOnLocationCountOrderByAggregateInput = {
+    id?: SortOrder
+    eventTypeId?: SortOrder
+    locationId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EventTypeOnLocationAvgOrderByAggregateInput = {
+    id?: SortOrder
+    eventTypeId?: SortOrder
+    locationId?: SortOrder
+  }
+
+  export type EventTypeOnLocationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    eventTypeId?: SortOrder
+    locationId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EventTypeOnLocationMinOrderByAggregateInput = {
+    id?: SortOrder
+    eventTypeId?: SortOrder
+    locationId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EventTypeOnLocationSumOrderByAggregateInput = {
+    id?: SortOrder
+    eventTypeId?: SortOrder
+    locationId?: SortOrder
+  }
+
+  export type AvailabilityScheduleCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    eventTypeId?: SortOrder
+    timezone?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AvailabilityScheduleAvgOrderByAggregateInput = {
+    id?: SortOrder
+    eventTypeId?: SortOrder
+  }
+
+  export type AvailabilityScheduleMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    eventTypeId?: SortOrder
+    timezone?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AvailabilityScheduleMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    eventTypeId?: SortOrder
+    timezone?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AvailabilityScheduleSumOrderByAggregateInput = {
+    id?: SortOrder
+    eventTypeId?: SortOrder
+  }
+
+  export type IntNullableFilter = {
+    equals?: number | null
+    in?: Enumerable<number> | null
+    notIn?: Enumerable<number> | null
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntNullableFilter | number | null
+  }
+
+  export type AvailabilityScheduleRelationFilter = {
+    is?: AvailabilityScheduleWhereInput | null
+    isNot?: AvailabilityScheduleWhereInput | null
+  }
+
+  export type TimeSelectRelationFilter = {
+    is?: TimeSelectWhereInput
+    isNot?: TimeSelectWhereInput
+  }
+
+  export type WeekDayCountOrderByAggregateInput = {
+    id?: SortOrder
+    day?: SortOrder
+    availabilityScheduleId?: SortOrder
+    timeSelectId?: SortOrder
+    eventTypeId?: SortOrder
+    status?: SortOrder
+    date?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WeekDayAvgOrderByAggregateInput = {
+    id?: SortOrder
+    day?: SortOrder
+    availabilityScheduleId?: SortOrder
+    timeSelectId?: SortOrder
+    eventTypeId?: SortOrder
+  }
+
+  export type WeekDayMaxOrderByAggregateInput = {
+    id?: SortOrder
+    day?: SortOrder
+    availabilityScheduleId?: SortOrder
+    timeSelectId?: SortOrder
+    eventTypeId?: SortOrder
+    status?: SortOrder
+    date?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WeekDayMinOrderByAggregateInput = {
+    id?: SortOrder
+    day?: SortOrder
+    availabilityScheduleId?: SortOrder
+    timeSelectId?: SortOrder
+    eventTypeId?: SortOrder
+    status?: SortOrder
+    date?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WeekDaySumOrderByAggregateInput = {
+    id?: SortOrder
+    day?: SortOrder
+    availabilityScheduleId?: SortOrder
+    timeSelectId?: SortOrder
+    eventTypeId?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter = {
+    equals?: number | null
+    in?: Enumerable<number> | null
+    notIn?: Enumerable<number> | null
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntNullableWithAggregatesFilter | number | null
+    _count?: NestedIntNullableFilter
+    _avg?: NestedFloatNullableFilter
+    _sum?: NestedIntNullableFilter
+    _min?: NestedIntNullableFilter
+    _max?: NestedIntNullableFilter
+  }
+
+  export type TimeSelectCountOrderByAggregateInput = {
+    id?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TimeSelectAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type TimeSelectMaxOrderByAggregateInput = {
+    id?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TimeSelectMinOrderByAggregateInput = {
+    id?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TimeSelectSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type CustomerCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CustomerAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type CustomerMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CustomerMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CustomerSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type CalendarSelectCountOrderByAggregateInput = {
+    id?: SortOrder
+    startDate?: SortOrder
+    endDate?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CalendarSelectAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type CalendarSelectMaxOrderByAggregateInput = {
+    id?: SortOrder
+    startDate?: SortOrder
+    endDate?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CalendarSelectMinOrderByAggregateInput = {
+    id?: SortOrder
+    startDate?: SortOrder
+    endDate?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CalendarSelectSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type BillingCountOrderByAggregateInput = {
+    id?: SortOrder
+    subscriptionMonth?: SortOrder
+    subscriptionPrice?: SortOrder
     userId?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BillingAvgOrderByAggregateInput = {
+    id?: SortOrder
+    subscriptionMonth?: SortOrder
+    subscriptionPrice?: SortOrder
+    userId?: SortOrder
+  }
+
+  export type BillingMaxOrderByAggregateInput = {
+    id?: SortOrder
+    subscriptionMonth?: SortOrder
+    subscriptionPrice?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BillingMinOrderByAggregateInput = {
+    id?: SortOrder
+    subscriptionMonth?: SortOrder
+    subscriptionPrice?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BillingSumOrderByAggregateInput = {
+    id?: SortOrder
+    subscriptionMonth?: SortOrder
+    subscriptionPrice?: SortOrder
+    userId?: SortOrder
+  }
+
+  export type GroupMeetingCountOrderByAggregateInput = {
+    id?: SortOrder
+    locationId?: SortOrder
+    customerId?: SortOrder
+    totalPrice?: SortOrder
+    timezone?: SortOrder
     eventTypeId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
-  export type EventAvgOrderByAggregateInput = {
+  export type GroupMeetingAvgOrderByAggregateInput = {
     id?: SortOrder
-    userId?: SortOrder
+    locationId?: SortOrder
+    customerId?: SortOrder
+    totalPrice?: SortOrder
     eventTypeId?: SortOrder
   }
 
-  export type EventMaxOrderByAggregateInput = {
+  export type GroupMeetingMaxOrderByAggregateInput = {
     id?: SortOrder
-    name?: SortOrder
-    userId?: SortOrder
-    eventTypeId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type EventMinOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    userId?: SortOrder
+    locationId?: SortOrder
+    customerId?: SortOrder
+    totalPrice?: SortOrder
+    timezone?: SortOrder
     eventTypeId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
-  export type EventSumOrderByAggregateInput = {
+  export type GroupMeetingMinOrderByAggregateInput = {
     id?: SortOrder
-    userId?: SortOrder
+    locationId?: SortOrder
+    customerId?: SortOrder
+    totalPrice?: SortOrder
+    timezone?: SortOrder
+    eventTypeId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type GroupMeetingSumOrderByAggregateInput = {
+    id?: SortOrder
+    locationId?: SortOrder
+    customerId?: SortOrder
+    totalPrice?: SortOrder
     eventTypeId?: SortOrder
   }
 
-  export type SessionCreateNestedManyWithoutUserInput = {
-    create?: XOR<Enumerable<SessionCreateWithoutUserInput>, Enumerable<SessionUncheckedCreateWithoutUserInput>>
-    connectOrCreate?: Enumerable<SessionCreateOrConnectWithoutUserInput>
-    createMany?: SessionCreateManyUserInputEnvelope
-    connect?: Enumerable<SessionWhereUniqueInput>
+  export type EventSelectCountOrderByAggregateInput = {
+    id?: SortOrder
+    eventTypeId?: SortOrder
+    customerId?: SortOrder
+    selectDate?: SortOrder
+    selectTime?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
-  export type EventCreateNestedManyWithoutUserInput = {
-    create?: XOR<Enumerable<EventCreateWithoutUserInput>, Enumerable<EventUncheckedCreateWithoutUserInput>>
-    connectOrCreate?: Enumerable<EventCreateOrConnectWithoutUserInput>
-    createMany?: EventCreateManyUserInputEnvelope
-    connect?: Enumerable<EventWhereUniqueInput>
+  export type EventSelectAvgOrderByAggregateInput = {
+    id?: SortOrder
+    eventTypeId?: SortOrder
+    customerId?: SortOrder
   }
 
-  export type SessionUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<Enumerable<SessionCreateWithoutUserInput>, Enumerable<SessionUncheckedCreateWithoutUserInput>>
-    connectOrCreate?: Enumerable<SessionCreateOrConnectWithoutUserInput>
-    createMany?: SessionCreateManyUserInputEnvelope
-    connect?: Enumerable<SessionWhereUniqueInput>
+  export type EventSelectMaxOrderByAggregateInput = {
+    id?: SortOrder
+    eventTypeId?: SortOrder
+    customerId?: SortOrder
+    selectDate?: SortOrder
+    selectTime?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
-  export type EventUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<Enumerable<EventCreateWithoutUserInput>, Enumerable<EventUncheckedCreateWithoutUserInput>>
-    connectOrCreate?: Enumerable<EventCreateOrConnectWithoutUserInput>
-    createMany?: EventCreateManyUserInputEnvelope
-    connect?: Enumerable<EventWhereUniqueInput>
+  export type EventSelectMinOrderByAggregateInput = {
+    id?: SortOrder
+    eventTypeId?: SortOrder
+    customerId?: SortOrder
+    selectDate?: SortOrder
+    selectTime?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EventSelectSumOrderByAggregateInput = {
+    id?: SortOrder
+    eventTypeId?: SortOrder
+    customerId?: SortOrder
+  }
+
+  export type GroupMeetingRelationFilter = {
+    is?: GroupMeetingWhereInput
+    isNot?: GroupMeetingWhereInput
+  }
+
+  export type UserOnGroupMeetingCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    groupMeetingId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type UserOnGroupMeetingAvgOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    groupMeetingId?: SortOrder
+  }
+
+  export type UserOnGroupMeetingMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    groupMeetingId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type UserOnGroupMeetingMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    groupMeetingId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type UserOnGroupMeetingSumOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    groupMeetingId?: SortOrder
+  }
+
+  export type EventTypeCreateNestedManyWithoutUserInput = {
+    create?: XOR<Enumerable<EventTypeCreateWithoutUserInput>, Enumerable<EventTypeUncheckedCreateWithoutUserInput>>
+    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutUserInput>
+    createMany?: EventTypeCreateManyUserInputEnvelope
+    connect?: Enumerable<EventTypeWhereUniqueInput>
+  }
+
+  export type BillingCreateNestedManyWithoutUserInput = {
+    create?: XOR<Enumerable<BillingCreateWithoutUserInput>, Enumerable<BillingUncheckedCreateWithoutUserInput>>
+    connectOrCreate?: Enumerable<BillingCreateOrConnectWithoutUserInput>
+    createMany?: BillingCreateManyUserInputEnvelope
+    connect?: Enumerable<BillingWhereUniqueInput>
+  }
+
+  export type UserOnGroupMeetingCreateNestedManyWithoutUserInput = {
+    create?: XOR<Enumerable<UserOnGroupMeetingCreateWithoutUserInput>, Enumerable<UserOnGroupMeetingUncheckedCreateWithoutUserInput>>
+    connectOrCreate?: Enumerable<UserOnGroupMeetingCreateOrConnectWithoutUserInput>
+    createMany?: UserOnGroupMeetingCreateManyUserInputEnvelope
+    connect?: Enumerable<UserOnGroupMeetingWhereUniqueInput>
+  }
+
+  export type EventTypeUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<Enumerable<EventTypeCreateWithoutUserInput>, Enumerable<EventTypeUncheckedCreateWithoutUserInput>>
+    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutUserInput>
+    createMany?: EventTypeCreateManyUserInputEnvelope
+    connect?: Enumerable<EventTypeWhereUniqueInput>
+  }
+
+  export type BillingUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<Enumerable<BillingCreateWithoutUserInput>, Enumerable<BillingUncheckedCreateWithoutUserInput>>
+    connectOrCreate?: Enumerable<BillingCreateOrConnectWithoutUserInput>
+    createMany?: BillingCreateManyUserInputEnvelope
+    connect?: Enumerable<BillingWhereUniqueInput>
+  }
+
+  export type UserOnGroupMeetingUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<Enumerable<UserOnGroupMeetingCreateWithoutUserInput>, Enumerable<UserOnGroupMeetingUncheckedCreateWithoutUserInput>>
+    connectOrCreate?: Enumerable<UserOnGroupMeetingCreateOrConnectWithoutUserInput>
+    createMany?: UserOnGroupMeetingCreateManyUserInputEnvelope
+    connect?: Enumerable<UserOnGroupMeetingWhereUniqueInput>
+  }
+
+  export type StringFieldUpdateOperationsInput = {
+    set?: string
   }
 
   export type NullableStringFieldUpdateOperationsInput = {
@@ -5720,32 +17532,46 @@ export namespace Prisma {
     set?: Date | string
   }
 
-  export type SessionUpdateManyWithoutUserNestedInput = {
-    create?: XOR<Enumerable<SessionCreateWithoutUserInput>, Enumerable<SessionUncheckedCreateWithoutUserInput>>
-    connectOrCreate?: Enumerable<SessionCreateOrConnectWithoutUserInput>
-    upsert?: Enumerable<SessionUpsertWithWhereUniqueWithoutUserInput>
-    createMany?: SessionCreateManyUserInputEnvelope
-    set?: Enumerable<SessionWhereUniqueInput>
-    disconnect?: Enumerable<SessionWhereUniqueInput>
-    delete?: Enumerable<SessionWhereUniqueInput>
-    connect?: Enumerable<SessionWhereUniqueInput>
-    update?: Enumerable<SessionUpdateWithWhereUniqueWithoutUserInput>
-    updateMany?: Enumerable<SessionUpdateManyWithWhereWithoutUserInput>
-    deleteMany?: Enumerable<SessionScalarWhereInput>
+  export type EventTypeUpdateManyWithoutUserNestedInput = {
+    create?: XOR<Enumerable<EventTypeCreateWithoutUserInput>, Enumerable<EventTypeUncheckedCreateWithoutUserInput>>
+    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutUserInput>
+    upsert?: Enumerable<EventTypeUpsertWithWhereUniqueWithoutUserInput>
+    createMany?: EventTypeCreateManyUserInputEnvelope
+    set?: Enumerable<EventTypeWhereUniqueInput>
+    disconnect?: Enumerable<EventTypeWhereUniqueInput>
+    delete?: Enumerable<EventTypeWhereUniqueInput>
+    connect?: Enumerable<EventTypeWhereUniqueInput>
+    update?: Enumerable<EventTypeUpdateWithWhereUniqueWithoutUserInput>
+    updateMany?: Enumerable<EventTypeUpdateManyWithWhereWithoutUserInput>
+    deleteMany?: Enumerable<EventTypeScalarWhereInput>
   }
 
-  export type EventUpdateManyWithoutUserNestedInput = {
-    create?: XOR<Enumerable<EventCreateWithoutUserInput>, Enumerable<EventUncheckedCreateWithoutUserInput>>
-    connectOrCreate?: Enumerable<EventCreateOrConnectWithoutUserInput>
-    upsert?: Enumerable<EventUpsertWithWhereUniqueWithoutUserInput>
-    createMany?: EventCreateManyUserInputEnvelope
-    set?: Enumerable<EventWhereUniqueInput>
-    disconnect?: Enumerable<EventWhereUniqueInput>
-    delete?: Enumerable<EventWhereUniqueInput>
-    connect?: Enumerable<EventWhereUniqueInput>
-    update?: Enumerable<EventUpdateWithWhereUniqueWithoutUserInput>
-    updateMany?: Enumerable<EventUpdateManyWithWhereWithoutUserInput>
-    deleteMany?: Enumerable<EventScalarWhereInput>
+  export type BillingUpdateManyWithoutUserNestedInput = {
+    create?: XOR<Enumerable<BillingCreateWithoutUserInput>, Enumerable<BillingUncheckedCreateWithoutUserInput>>
+    connectOrCreate?: Enumerable<BillingCreateOrConnectWithoutUserInput>
+    upsert?: Enumerable<BillingUpsertWithWhereUniqueWithoutUserInput>
+    createMany?: BillingCreateManyUserInputEnvelope
+    set?: Enumerable<BillingWhereUniqueInput>
+    disconnect?: Enumerable<BillingWhereUniqueInput>
+    delete?: Enumerable<BillingWhereUniqueInput>
+    connect?: Enumerable<BillingWhereUniqueInput>
+    update?: Enumerable<BillingUpdateWithWhereUniqueWithoutUserInput>
+    updateMany?: Enumerable<BillingUpdateManyWithWhereWithoutUserInput>
+    deleteMany?: Enumerable<BillingScalarWhereInput>
+  }
+
+  export type UserOnGroupMeetingUpdateManyWithoutUserNestedInput = {
+    create?: XOR<Enumerable<UserOnGroupMeetingCreateWithoutUserInput>, Enumerable<UserOnGroupMeetingUncheckedCreateWithoutUserInput>>
+    connectOrCreate?: Enumerable<UserOnGroupMeetingCreateOrConnectWithoutUserInput>
+    upsert?: Enumerable<UserOnGroupMeetingUpsertWithWhereUniqueWithoutUserInput>
+    createMany?: UserOnGroupMeetingCreateManyUserInputEnvelope
+    set?: Enumerable<UserOnGroupMeetingWhereUniqueInput>
+    disconnect?: Enumerable<UserOnGroupMeetingWhereUniqueInput>
+    delete?: Enumerable<UserOnGroupMeetingWhereUniqueInput>
+    connect?: Enumerable<UserOnGroupMeetingWhereUniqueInput>
+    update?: Enumerable<UserOnGroupMeetingUpdateWithWhereUniqueWithoutUserInput>
+    updateMany?: Enumerable<UserOnGroupMeetingUpdateManyWithWhereWithoutUserInput>
+    deleteMany?: Enumerable<UserOnGroupMeetingScalarWhereInput>
   }
 
   export type IntFieldUpdateOperationsInput = {
@@ -5756,120 +17582,884 @@ export namespace Prisma {
     divide?: number
   }
 
-  export type SessionUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<Enumerable<SessionCreateWithoutUserInput>, Enumerable<SessionUncheckedCreateWithoutUserInput>>
-    connectOrCreate?: Enumerable<SessionCreateOrConnectWithoutUserInput>
-    upsert?: Enumerable<SessionUpsertWithWhereUniqueWithoutUserInput>
-    createMany?: SessionCreateManyUserInputEnvelope
-    set?: Enumerable<SessionWhereUniqueInput>
-    disconnect?: Enumerable<SessionWhereUniqueInput>
-    delete?: Enumerable<SessionWhereUniqueInput>
-    connect?: Enumerable<SessionWhereUniqueInput>
-    update?: Enumerable<SessionUpdateWithWhereUniqueWithoutUserInput>
-    updateMany?: Enumerable<SessionUpdateManyWithWhereWithoutUserInput>
-    deleteMany?: Enumerable<SessionScalarWhereInput>
+  export type EventTypeUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<Enumerable<EventTypeCreateWithoutUserInput>, Enumerable<EventTypeUncheckedCreateWithoutUserInput>>
+    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutUserInput>
+    upsert?: Enumerable<EventTypeUpsertWithWhereUniqueWithoutUserInput>
+    createMany?: EventTypeCreateManyUserInputEnvelope
+    set?: Enumerable<EventTypeWhereUniqueInput>
+    disconnect?: Enumerable<EventTypeWhereUniqueInput>
+    delete?: Enumerable<EventTypeWhereUniqueInput>
+    connect?: Enumerable<EventTypeWhereUniqueInput>
+    update?: Enumerable<EventTypeUpdateWithWhereUniqueWithoutUserInput>
+    updateMany?: Enumerable<EventTypeUpdateManyWithWhereWithoutUserInput>
+    deleteMany?: Enumerable<EventTypeScalarWhereInput>
   }
 
-  export type EventUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<Enumerable<EventCreateWithoutUserInput>, Enumerable<EventUncheckedCreateWithoutUserInput>>
-    connectOrCreate?: Enumerable<EventCreateOrConnectWithoutUserInput>
-    upsert?: Enumerable<EventUpsertWithWhereUniqueWithoutUserInput>
-    createMany?: EventCreateManyUserInputEnvelope
-    set?: Enumerable<EventWhereUniqueInput>
-    disconnect?: Enumerable<EventWhereUniqueInput>
-    delete?: Enumerable<EventWhereUniqueInput>
-    connect?: Enumerable<EventWhereUniqueInput>
-    update?: Enumerable<EventUpdateWithWhereUniqueWithoutUserInput>
-    updateMany?: Enumerable<EventUpdateManyWithWhereWithoutUserInput>
-    deleteMany?: Enumerable<EventScalarWhereInput>
+  export type BillingUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<Enumerable<BillingCreateWithoutUserInput>, Enumerable<BillingUncheckedCreateWithoutUserInput>>
+    connectOrCreate?: Enumerable<BillingCreateOrConnectWithoutUserInput>
+    upsert?: Enumerable<BillingUpsertWithWhereUniqueWithoutUserInput>
+    createMany?: BillingCreateManyUserInputEnvelope
+    set?: Enumerable<BillingWhereUniqueInput>
+    disconnect?: Enumerable<BillingWhereUniqueInput>
+    delete?: Enumerable<BillingWhereUniqueInput>
+    connect?: Enumerable<BillingWhereUniqueInput>
+    update?: Enumerable<BillingUpdateWithWhereUniqueWithoutUserInput>
+    updateMany?: Enumerable<BillingUpdateManyWithWhereWithoutUserInput>
+    deleteMany?: Enumerable<BillingScalarWhereInput>
   }
 
-  export type UserCreateNestedOneWithoutSessionsInput = {
-    create?: XOR<UserCreateWithoutSessionsInput, UserUncheckedCreateWithoutSessionsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutSessionsInput
+  export type UserOnGroupMeetingUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<Enumerable<UserOnGroupMeetingCreateWithoutUserInput>, Enumerable<UserOnGroupMeetingUncheckedCreateWithoutUserInput>>
+    connectOrCreate?: Enumerable<UserOnGroupMeetingCreateOrConnectWithoutUserInput>
+    upsert?: Enumerable<UserOnGroupMeetingUpsertWithWhereUniqueWithoutUserInput>
+    createMany?: UserOnGroupMeetingCreateManyUserInputEnvelope
+    set?: Enumerable<UserOnGroupMeetingWhereUniqueInput>
+    disconnect?: Enumerable<UserOnGroupMeetingWhereUniqueInput>
+    delete?: Enumerable<UserOnGroupMeetingWhereUniqueInput>
+    connect?: Enumerable<UserOnGroupMeetingWhereUniqueInput>
+    update?: Enumerable<UserOnGroupMeetingUpdateWithWhereUniqueWithoutUserInput>
+    updateMany?: Enumerable<UserOnGroupMeetingUpdateManyWithWhereWithoutUserInput>
+    deleteMany?: Enumerable<UserOnGroupMeetingScalarWhereInput>
+  }
+
+  export type UserCreateNestedOneWithoutEventTypesInput = {
+    create?: XOR<UserCreateWithoutEventTypesInput, UserUncheckedCreateWithoutEventTypesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutEventTypesInput
     connect?: UserWhereUniqueInput
   }
 
-  export type StringFieldUpdateOperationsInput = {
-    set?: string
+  export type EventTypeOnLocationCreateNestedManyWithoutEventTypeInput = {
+    create?: XOR<Enumerable<EventTypeOnLocationCreateWithoutEventTypeInput>, Enumerable<EventTypeOnLocationUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<EventTypeOnLocationCreateOrConnectWithoutEventTypeInput>
+    createMany?: EventTypeOnLocationCreateManyEventTypeInputEnvelope
+    connect?: Enumerable<EventTypeOnLocationWhereUniqueInput>
   }
 
-  export type UserUpdateOneRequiredWithoutSessionsNestedInput = {
-    create?: XOR<UserCreateWithoutSessionsInput, UserUncheckedCreateWithoutSessionsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutSessionsInput
-    upsert?: UserUpsertWithoutSessionsInput
+  export type AvailabilityScheduleCreateNestedManyWithoutEventTypeInput = {
+    create?: XOR<Enumerable<AvailabilityScheduleCreateWithoutEventTypeInput>, Enumerable<AvailabilityScheduleUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<AvailabilityScheduleCreateOrConnectWithoutEventTypeInput>
+    createMany?: AvailabilityScheduleCreateManyEventTypeInputEnvelope
+    connect?: Enumerable<AvailabilityScheduleWhereUniqueInput>
+  }
+
+  export type WeekDayCreateNestedManyWithoutEventTypeInput = {
+    create?: XOR<Enumerable<WeekDayCreateWithoutEventTypeInput>, Enumerable<WeekDayUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutEventTypeInput>
+    createMany?: WeekDayCreateManyEventTypeInputEnvelope
+    connect?: Enumerable<WeekDayWhereUniqueInput>
+  }
+
+  export type CalendarSelectCreateNestedOneWithoutEventTypesInput = {
+    create?: XOR<CalendarSelectCreateWithoutEventTypesInput, CalendarSelectUncheckedCreateWithoutEventTypesInput>
+    connectOrCreate?: CalendarSelectCreateOrConnectWithoutEventTypesInput
+    connect?: CalendarSelectWhereUniqueInput
+  }
+
+  export type CustomerCreateNestedOneWithoutEventTypesInput = {
+    create?: XOR<CustomerCreateWithoutEventTypesInput, CustomerUncheckedCreateWithoutEventTypesInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutEventTypesInput
+    connect?: CustomerWhereUniqueInput
+  }
+
+  export type GroupMeetingCreateNestedManyWithoutEventTypeInput = {
+    create?: XOR<Enumerable<GroupMeetingCreateWithoutEventTypeInput>, Enumerable<GroupMeetingUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<GroupMeetingCreateOrConnectWithoutEventTypeInput>
+    createMany?: GroupMeetingCreateManyEventTypeInputEnvelope
+    connect?: Enumerable<GroupMeetingWhereUniqueInput>
+  }
+
+  export type EventSelectCreateNestedManyWithoutEventTypeInput = {
+    create?: XOR<Enumerable<EventSelectCreateWithoutEventTypeInput>, Enumerable<EventSelectUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<EventSelectCreateOrConnectWithoutEventTypeInput>
+    createMany?: EventSelectCreateManyEventTypeInputEnvelope
+    connect?: Enumerable<EventSelectWhereUniqueInput>
+  }
+
+  export type EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput = {
+    create?: XOR<Enumerable<EventTypeOnLocationCreateWithoutEventTypeInput>, Enumerable<EventTypeOnLocationUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<EventTypeOnLocationCreateOrConnectWithoutEventTypeInput>
+    createMany?: EventTypeOnLocationCreateManyEventTypeInputEnvelope
+    connect?: Enumerable<EventTypeOnLocationWhereUniqueInput>
+  }
+
+  export type AvailabilityScheduleUncheckedCreateNestedManyWithoutEventTypeInput = {
+    create?: XOR<Enumerable<AvailabilityScheduleCreateWithoutEventTypeInput>, Enumerable<AvailabilityScheduleUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<AvailabilityScheduleCreateOrConnectWithoutEventTypeInput>
+    createMany?: AvailabilityScheduleCreateManyEventTypeInputEnvelope
+    connect?: Enumerable<AvailabilityScheduleWhereUniqueInput>
+  }
+
+  export type WeekDayUncheckedCreateNestedManyWithoutEventTypeInput = {
+    create?: XOR<Enumerable<WeekDayCreateWithoutEventTypeInput>, Enumerable<WeekDayUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutEventTypeInput>
+    createMany?: WeekDayCreateManyEventTypeInputEnvelope
+    connect?: Enumerable<WeekDayWhereUniqueInput>
+  }
+
+  export type GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput = {
+    create?: XOR<Enumerable<GroupMeetingCreateWithoutEventTypeInput>, Enumerable<GroupMeetingUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<GroupMeetingCreateOrConnectWithoutEventTypeInput>
+    createMany?: GroupMeetingCreateManyEventTypeInputEnvelope
+    connect?: Enumerable<GroupMeetingWhereUniqueInput>
+  }
+
+  export type EventSelectUncheckedCreateNestedManyWithoutEventTypeInput = {
+    create?: XOR<Enumerable<EventSelectCreateWithoutEventTypeInput>, Enumerable<EventSelectUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<EventSelectCreateOrConnectWithoutEventTypeInput>
+    createMany?: EventSelectCreateManyEventTypeInputEnvelope
+    connect?: Enumerable<EventSelectWhereUniqueInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutEventTypesNestedInput = {
+    create?: XOR<UserCreateWithoutEventTypesInput, UserUncheckedCreateWithoutEventTypesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutEventTypesInput
+    upsert?: UserUpsertWithoutEventTypesInput
     connect?: UserWhereUniqueInput
-    update?: XOR<UserUpdateWithoutSessionsInput, UserUncheckedUpdateWithoutSessionsInput>
+    update?: XOR<UserUpdateWithoutEventTypesInput, UserUncheckedUpdateWithoutEventTypesInput>
   }
 
-  export type EventCreateNestedManyWithoutEventTypeInput = {
-    create?: XOR<Enumerable<EventCreateWithoutEventTypeInput>, Enumerable<EventUncheckedCreateWithoutEventTypeInput>>
-    connectOrCreate?: Enumerable<EventCreateOrConnectWithoutEventTypeInput>
-    createMany?: EventCreateManyEventTypeInputEnvelope
-    connect?: Enumerable<EventWhereUniqueInput>
+  export type EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput = {
+    create?: XOR<Enumerable<EventTypeOnLocationCreateWithoutEventTypeInput>, Enumerable<EventTypeOnLocationUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<EventTypeOnLocationCreateOrConnectWithoutEventTypeInput>
+    upsert?: Enumerable<EventTypeOnLocationUpsertWithWhereUniqueWithoutEventTypeInput>
+    createMany?: EventTypeOnLocationCreateManyEventTypeInputEnvelope
+    set?: Enumerable<EventTypeOnLocationWhereUniqueInput>
+    disconnect?: Enumerable<EventTypeOnLocationWhereUniqueInput>
+    delete?: Enumerable<EventTypeOnLocationWhereUniqueInput>
+    connect?: Enumerable<EventTypeOnLocationWhereUniqueInput>
+    update?: Enumerable<EventTypeOnLocationUpdateWithWhereUniqueWithoutEventTypeInput>
+    updateMany?: Enumerable<EventTypeOnLocationUpdateManyWithWhereWithoutEventTypeInput>
+    deleteMany?: Enumerable<EventTypeOnLocationScalarWhereInput>
   }
 
-  export type EventUncheckedCreateNestedManyWithoutEventTypeInput = {
-    create?: XOR<Enumerable<EventCreateWithoutEventTypeInput>, Enumerable<EventUncheckedCreateWithoutEventTypeInput>>
-    connectOrCreate?: Enumerable<EventCreateOrConnectWithoutEventTypeInput>
-    createMany?: EventCreateManyEventTypeInputEnvelope
-    connect?: Enumerable<EventWhereUniqueInput>
+  export type AvailabilityScheduleUpdateManyWithoutEventTypeNestedInput = {
+    create?: XOR<Enumerable<AvailabilityScheduleCreateWithoutEventTypeInput>, Enumerable<AvailabilityScheduleUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<AvailabilityScheduleCreateOrConnectWithoutEventTypeInput>
+    upsert?: Enumerable<AvailabilityScheduleUpsertWithWhereUniqueWithoutEventTypeInput>
+    createMany?: AvailabilityScheduleCreateManyEventTypeInputEnvelope
+    set?: Enumerable<AvailabilityScheduleWhereUniqueInput>
+    disconnect?: Enumerable<AvailabilityScheduleWhereUniqueInput>
+    delete?: Enumerable<AvailabilityScheduleWhereUniqueInput>
+    connect?: Enumerable<AvailabilityScheduleWhereUniqueInput>
+    update?: Enumerable<AvailabilityScheduleUpdateWithWhereUniqueWithoutEventTypeInput>
+    updateMany?: Enumerable<AvailabilityScheduleUpdateManyWithWhereWithoutEventTypeInput>
+    deleteMany?: Enumerable<AvailabilityScheduleScalarWhereInput>
   }
 
-  export type EventUpdateManyWithoutEventTypeNestedInput = {
-    create?: XOR<Enumerable<EventCreateWithoutEventTypeInput>, Enumerable<EventUncheckedCreateWithoutEventTypeInput>>
-    connectOrCreate?: Enumerable<EventCreateOrConnectWithoutEventTypeInput>
-    upsert?: Enumerable<EventUpsertWithWhereUniqueWithoutEventTypeInput>
-    createMany?: EventCreateManyEventTypeInputEnvelope
-    set?: Enumerable<EventWhereUniqueInput>
-    disconnect?: Enumerable<EventWhereUniqueInput>
-    delete?: Enumerable<EventWhereUniqueInput>
-    connect?: Enumerable<EventWhereUniqueInput>
-    update?: Enumerable<EventUpdateWithWhereUniqueWithoutEventTypeInput>
-    updateMany?: Enumerable<EventUpdateManyWithWhereWithoutEventTypeInput>
-    deleteMany?: Enumerable<EventScalarWhereInput>
+  export type WeekDayUpdateManyWithoutEventTypeNestedInput = {
+    create?: XOR<Enumerable<WeekDayCreateWithoutEventTypeInput>, Enumerable<WeekDayUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutEventTypeInput>
+    upsert?: Enumerable<WeekDayUpsertWithWhereUniqueWithoutEventTypeInput>
+    createMany?: WeekDayCreateManyEventTypeInputEnvelope
+    set?: Enumerable<WeekDayWhereUniqueInput>
+    disconnect?: Enumerable<WeekDayWhereUniqueInput>
+    delete?: Enumerable<WeekDayWhereUniqueInput>
+    connect?: Enumerable<WeekDayWhereUniqueInput>
+    update?: Enumerable<WeekDayUpdateWithWhereUniqueWithoutEventTypeInput>
+    updateMany?: Enumerable<WeekDayUpdateManyWithWhereWithoutEventTypeInput>
+    deleteMany?: Enumerable<WeekDayScalarWhereInput>
   }
 
-  export type EventUncheckedUpdateManyWithoutEventTypeNestedInput = {
-    create?: XOR<Enumerable<EventCreateWithoutEventTypeInput>, Enumerable<EventUncheckedCreateWithoutEventTypeInput>>
-    connectOrCreate?: Enumerable<EventCreateOrConnectWithoutEventTypeInput>
-    upsert?: Enumerable<EventUpsertWithWhereUniqueWithoutEventTypeInput>
-    createMany?: EventCreateManyEventTypeInputEnvelope
-    set?: Enumerable<EventWhereUniqueInput>
-    disconnect?: Enumerable<EventWhereUniqueInput>
-    delete?: Enumerable<EventWhereUniqueInput>
-    connect?: Enumerable<EventWhereUniqueInput>
-    update?: Enumerable<EventUpdateWithWhereUniqueWithoutEventTypeInput>
-    updateMany?: Enumerable<EventUpdateManyWithWhereWithoutEventTypeInput>
-    deleteMany?: Enumerable<EventScalarWhereInput>
+  export type CalendarSelectUpdateOneRequiredWithoutEventTypesNestedInput = {
+    create?: XOR<CalendarSelectCreateWithoutEventTypesInput, CalendarSelectUncheckedCreateWithoutEventTypesInput>
+    connectOrCreate?: CalendarSelectCreateOrConnectWithoutEventTypesInput
+    upsert?: CalendarSelectUpsertWithoutEventTypesInput
+    connect?: CalendarSelectWhereUniqueInput
+    update?: XOR<CalendarSelectUpdateWithoutEventTypesInput, CalendarSelectUncheckedUpdateWithoutEventTypesInput>
   }
 
-  export type UserCreateNestedOneWithoutEventsInput = {
-    create?: XOR<UserCreateWithoutEventsInput, UserUncheckedCreateWithoutEventsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutEventsInput
-    connect?: UserWhereUniqueInput
+  export type CustomerUpdateOneRequiredWithoutEventTypesNestedInput = {
+    create?: XOR<CustomerCreateWithoutEventTypesInput, CustomerUncheckedCreateWithoutEventTypesInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutEventTypesInput
+    upsert?: CustomerUpsertWithoutEventTypesInput
+    connect?: CustomerWhereUniqueInput
+    update?: XOR<CustomerUpdateWithoutEventTypesInput, CustomerUncheckedUpdateWithoutEventTypesInput>
   }
 
-  export type EventTypeCreateNestedOneWithoutEventsInput = {
-    create?: XOR<EventTypeCreateWithoutEventsInput, EventTypeUncheckedCreateWithoutEventsInput>
-    connectOrCreate?: EventTypeCreateOrConnectWithoutEventsInput
+  export type GroupMeetingUpdateManyWithoutEventTypeNestedInput = {
+    create?: XOR<Enumerable<GroupMeetingCreateWithoutEventTypeInput>, Enumerable<GroupMeetingUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<GroupMeetingCreateOrConnectWithoutEventTypeInput>
+    upsert?: Enumerable<GroupMeetingUpsertWithWhereUniqueWithoutEventTypeInput>
+    createMany?: GroupMeetingCreateManyEventTypeInputEnvelope
+    set?: Enumerable<GroupMeetingWhereUniqueInput>
+    disconnect?: Enumerable<GroupMeetingWhereUniqueInput>
+    delete?: Enumerable<GroupMeetingWhereUniqueInput>
+    connect?: Enumerable<GroupMeetingWhereUniqueInput>
+    update?: Enumerable<GroupMeetingUpdateWithWhereUniqueWithoutEventTypeInput>
+    updateMany?: Enumerable<GroupMeetingUpdateManyWithWhereWithoutEventTypeInput>
+    deleteMany?: Enumerable<GroupMeetingScalarWhereInput>
+  }
+
+  export type EventSelectUpdateManyWithoutEventTypeNestedInput = {
+    create?: XOR<Enumerable<EventSelectCreateWithoutEventTypeInput>, Enumerable<EventSelectUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<EventSelectCreateOrConnectWithoutEventTypeInput>
+    upsert?: Enumerable<EventSelectUpsertWithWhereUniqueWithoutEventTypeInput>
+    createMany?: EventSelectCreateManyEventTypeInputEnvelope
+    set?: Enumerable<EventSelectWhereUniqueInput>
+    disconnect?: Enumerable<EventSelectWhereUniqueInput>
+    delete?: Enumerable<EventSelectWhereUniqueInput>
+    connect?: Enumerable<EventSelectWhereUniqueInput>
+    update?: Enumerable<EventSelectUpdateWithWhereUniqueWithoutEventTypeInput>
+    updateMany?: Enumerable<EventSelectUpdateManyWithWhereWithoutEventTypeInput>
+    deleteMany?: Enumerable<EventSelectScalarWhereInput>
+  }
+
+  export type EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput = {
+    create?: XOR<Enumerable<EventTypeOnLocationCreateWithoutEventTypeInput>, Enumerable<EventTypeOnLocationUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<EventTypeOnLocationCreateOrConnectWithoutEventTypeInput>
+    upsert?: Enumerable<EventTypeOnLocationUpsertWithWhereUniqueWithoutEventTypeInput>
+    createMany?: EventTypeOnLocationCreateManyEventTypeInputEnvelope
+    set?: Enumerable<EventTypeOnLocationWhereUniqueInput>
+    disconnect?: Enumerable<EventTypeOnLocationWhereUniqueInput>
+    delete?: Enumerable<EventTypeOnLocationWhereUniqueInput>
+    connect?: Enumerable<EventTypeOnLocationWhereUniqueInput>
+    update?: Enumerable<EventTypeOnLocationUpdateWithWhereUniqueWithoutEventTypeInput>
+    updateMany?: Enumerable<EventTypeOnLocationUpdateManyWithWhereWithoutEventTypeInput>
+    deleteMany?: Enumerable<EventTypeOnLocationScalarWhereInput>
+  }
+
+  export type AvailabilityScheduleUncheckedUpdateManyWithoutEventTypeNestedInput = {
+    create?: XOR<Enumerable<AvailabilityScheduleCreateWithoutEventTypeInput>, Enumerable<AvailabilityScheduleUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<AvailabilityScheduleCreateOrConnectWithoutEventTypeInput>
+    upsert?: Enumerable<AvailabilityScheduleUpsertWithWhereUniqueWithoutEventTypeInput>
+    createMany?: AvailabilityScheduleCreateManyEventTypeInputEnvelope
+    set?: Enumerable<AvailabilityScheduleWhereUniqueInput>
+    disconnect?: Enumerable<AvailabilityScheduleWhereUniqueInput>
+    delete?: Enumerable<AvailabilityScheduleWhereUniqueInput>
+    connect?: Enumerable<AvailabilityScheduleWhereUniqueInput>
+    update?: Enumerable<AvailabilityScheduleUpdateWithWhereUniqueWithoutEventTypeInput>
+    updateMany?: Enumerable<AvailabilityScheduleUpdateManyWithWhereWithoutEventTypeInput>
+    deleteMany?: Enumerable<AvailabilityScheduleScalarWhereInput>
+  }
+
+  export type WeekDayUncheckedUpdateManyWithoutEventTypeNestedInput = {
+    create?: XOR<Enumerable<WeekDayCreateWithoutEventTypeInput>, Enumerable<WeekDayUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutEventTypeInput>
+    upsert?: Enumerable<WeekDayUpsertWithWhereUniqueWithoutEventTypeInput>
+    createMany?: WeekDayCreateManyEventTypeInputEnvelope
+    set?: Enumerable<WeekDayWhereUniqueInput>
+    disconnect?: Enumerable<WeekDayWhereUniqueInput>
+    delete?: Enumerable<WeekDayWhereUniqueInput>
+    connect?: Enumerable<WeekDayWhereUniqueInput>
+    update?: Enumerable<WeekDayUpdateWithWhereUniqueWithoutEventTypeInput>
+    updateMany?: Enumerable<WeekDayUpdateManyWithWhereWithoutEventTypeInput>
+    deleteMany?: Enumerable<WeekDayScalarWhereInput>
+  }
+
+  export type GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput = {
+    create?: XOR<Enumerable<GroupMeetingCreateWithoutEventTypeInput>, Enumerable<GroupMeetingUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<GroupMeetingCreateOrConnectWithoutEventTypeInput>
+    upsert?: Enumerable<GroupMeetingUpsertWithWhereUniqueWithoutEventTypeInput>
+    createMany?: GroupMeetingCreateManyEventTypeInputEnvelope
+    set?: Enumerable<GroupMeetingWhereUniqueInput>
+    disconnect?: Enumerable<GroupMeetingWhereUniqueInput>
+    delete?: Enumerable<GroupMeetingWhereUniqueInput>
+    connect?: Enumerable<GroupMeetingWhereUniqueInput>
+    update?: Enumerable<GroupMeetingUpdateWithWhereUniqueWithoutEventTypeInput>
+    updateMany?: Enumerable<GroupMeetingUpdateManyWithWhereWithoutEventTypeInput>
+    deleteMany?: Enumerable<GroupMeetingScalarWhereInput>
+  }
+
+  export type EventSelectUncheckedUpdateManyWithoutEventTypeNestedInput = {
+    create?: XOR<Enumerable<EventSelectCreateWithoutEventTypeInput>, Enumerable<EventSelectUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<EventSelectCreateOrConnectWithoutEventTypeInput>
+    upsert?: Enumerable<EventSelectUpsertWithWhereUniqueWithoutEventTypeInput>
+    createMany?: EventSelectCreateManyEventTypeInputEnvelope
+    set?: Enumerable<EventSelectWhereUniqueInput>
+    disconnect?: Enumerable<EventSelectWhereUniqueInput>
+    delete?: Enumerable<EventSelectWhereUniqueInput>
+    connect?: Enumerable<EventSelectWhereUniqueInput>
+    update?: Enumerable<EventSelectUpdateWithWhereUniqueWithoutEventTypeInput>
+    updateMany?: Enumerable<EventSelectUpdateManyWithWhereWithoutEventTypeInput>
+    deleteMany?: Enumerable<EventSelectScalarWhereInput>
+  }
+
+  export type EventTypeOnLocationCreateNestedManyWithoutLocationInput = {
+    create?: XOR<Enumerable<EventTypeOnLocationCreateWithoutLocationInput>, Enumerable<EventTypeOnLocationUncheckedCreateWithoutLocationInput>>
+    connectOrCreate?: Enumerable<EventTypeOnLocationCreateOrConnectWithoutLocationInput>
+    createMany?: EventTypeOnLocationCreateManyLocationInputEnvelope
+    connect?: Enumerable<EventTypeOnLocationWhereUniqueInput>
+  }
+
+  export type GroupMeetingCreateNestedManyWithoutLocationInput = {
+    create?: XOR<Enumerable<GroupMeetingCreateWithoutLocationInput>, Enumerable<GroupMeetingUncheckedCreateWithoutLocationInput>>
+    connectOrCreate?: Enumerable<GroupMeetingCreateOrConnectWithoutLocationInput>
+    createMany?: GroupMeetingCreateManyLocationInputEnvelope
+    connect?: Enumerable<GroupMeetingWhereUniqueInput>
+  }
+
+  export type EventTypeOnLocationUncheckedCreateNestedManyWithoutLocationInput = {
+    create?: XOR<Enumerable<EventTypeOnLocationCreateWithoutLocationInput>, Enumerable<EventTypeOnLocationUncheckedCreateWithoutLocationInput>>
+    connectOrCreate?: Enumerable<EventTypeOnLocationCreateOrConnectWithoutLocationInput>
+    createMany?: EventTypeOnLocationCreateManyLocationInputEnvelope
+    connect?: Enumerable<EventTypeOnLocationWhereUniqueInput>
+  }
+
+  export type GroupMeetingUncheckedCreateNestedManyWithoutLocationInput = {
+    create?: XOR<Enumerable<GroupMeetingCreateWithoutLocationInput>, Enumerable<GroupMeetingUncheckedCreateWithoutLocationInput>>
+    connectOrCreate?: Enumerable<GroupMeetingCreateOrConnectWithoutLocationInput>
+    createMany?: GroupMeetingCreateManyLocationInputEnvelope
+    connect?: Enumerable<GroupMeetingWhereUniqueInput>
+  }
+
+  export type EventTypeOnLocationUpdateManyWithoutLocationNestedInput = {
+    create?: XOR<Enumerable<EventTypeOnLocationCreateWithoutLocationInput>, Enumerable<EventTypeOnLocationUncheckedCreateWithoutLocationInput>>
+    connectOrCreate?: Enumerable<EventTypeOnLocationCreateOrConnectWithoutLocationInput>
+    upsert?: Enumerable<EventTypeOnLocationUpsertWithWhereUniqueWithoutLocationInput>
+    createMany?: EventTypeOnLocationCreateManyLocationInputEnvelope
+    set?: Enumerable<EventTypeOnLocationWhereUniqueInput>
+    disconnect?: Enumerable<EventTypeOnLocationWhereUniqueInput>
+    delete?: Enumerable<EventTypeOnLocationWhereUniqueInput>
+    connect?: Enumerable<EventTypeOnLocationWhereUniqueInput>
+    update?: Enumerable<EventTypeOnLocationUpdateWithWhereUniqueWithoutLocationInput>
+    updateMany?: Enumerable<EventTypeOnLocationUpdateManyWithWhereWithoutLocationInput>
+    deleteMany?: Enumerable<EventTypeOnLocationScalarWhereInput>
+  }
+
+  export type GroupMeetingUpdateManyWithoutLocationNestedInput = {
+    create?: XOR<Enumerable<GroupMeetingCreateWithoutLocationInput>, Enumerable<GroupMeetingUncheckedCreateWithoutLocationInput>>
+    connectOrCreate?: Enumerable<GroupMeetingCreateOrConnectWithoutLocationInput>
+    upsert?: Enumerable<GroupMeetingUpsertWithWhereUniqueWithoutLocationInput>
+    createMany?: GroupMeetingCreateManyLocationInputEnvelope
+    set?: Enumerable<GroupMeetingWhereUniqueInput>
+    disconnect?: Enumerable<GroupMeetingWhereUniqueInput>
+    delete?: Enumerable<GroupMeetingWhereUniqueInput>
+    connect?: Enumerable<GroupMeetingWhereUniqueInput>
+    update?: Enumerable<GroupMeetingUpdateWithWhereUniqueWithoutLocationInput>
+    updateMany?: Enumerable<GroupMeetingUpdateManyWithWhereWithoutLocationInput>
+    deleteMany?: Enumerable<GroupMeetingScalarWhereInput>
+  }
+
+  export type EventTypeOnLocationUncheckedUpdateManyWithoutLocationNestedInput = {
+    create?: XOR<Enumerable<EventTypeOnLocationCreateWithoutLocationInput>, Enumerable<EventTypeOnLocationUncheckedCreateWithoutLocationInput>>
+    connectOrCreate?: Enumerable<EventTypeOnLocationCreateOrConnectWithoutLocationInput>
+    upsert?: Enumerable<EventTypeOnLocationUpsertWithWhereUniqueWithoutLocationInput>
+    createMany?: EventTypeOnLocationCreateManyLocationInputEnvelope
+    set?: Enumerable<EventTypeOnLocationWhereUniqueInput>
+    disconnect?: Enumerable<EventTypeOnLocationWhereUniqueInput>
+    delete?: Enumerable<EventTypeOnLocationWhereUniqueInput>
+    connect?: Enumerable<EventTypeOnLocationWhereUniqueInput>
+    update?: Enumerable<EventTypeOnLocationUpdateWithWhereUniqueWithoutLocationInput>
+    updateMany?: Enumerable<EventTypeOnLocationUpdateManyWithWhereWithoutLocationInput>
+    deleteMany?: Enumerable<EventTypeOnLocationScalarWhereInput>
+  }
+
+  export type GroupMeetingUncheckedUpdateManyWithoutLocationNestedInput = {
+    create?: XOR<Enumerable<GroupMeetingCreateWithoutLocationInput>, Enumerable<GroupMeetingUncheckedCreateWithoutLocationInput>>
+    connectOrCreate?: Enumerable<GroupMeetingCreateOrConnectWithoutLocationInput>
+    upsert?: Enumerable<GroupMeetingUpsertWithWhereUniqueWithoutLocationInput>
+    createMany?: GroupMeetingCreateManyLocationInputEnvelope
+    set?: Enumerable<GroupMeetingWhereUniqueInput>
+    disconnect?: Enumerable<GroupMeetingWhereUniqueInput>
+    delete?: Enumerable<GroupMeetingWhereUniqueInput>
+    connect?: Enumerable<GroupMeetingWhereUniqueInput>
+    update?: Enumerable<GroupMeetingUpdateWithWhereUniqueWithoutLocationInput>
+    updateMany?: Enumerable<GroupMeetingUpdateManyWithWhereWithoutLocationInput>
+    deleteMany?: Enumerable<GroupMeetingScalarWhereInput>
+  }
+
+  export type EventTypeCreateNestedOneWithoutEventTypeOnLocationsInput = {
+    create?: XOR<EventTypeCreateWithoutEventTypeOnLocationsInput, EventTypeUncheckedCreateWithoutEventTypeOnLocationsInput>
+    connectOrCreate?: EventTypeCreateOrConnectWithoutEventTypeOnLocationsInput
     connect?: EventTypeWhereUniqueInput
   }
 
-  export type UserUpdateOneRequiredWithoutEventsNestedInput = {
-    create?: XOR<UserCreateWithoutEventsInput, UserUncheckedCreateWithoutEventsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutEventsInput
-    upsert?: UserUpsertWithoutEventsInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<UserUpdateWithoutEventsInput, UserUncheckedUpdateWithoutEventsInput>
+  export type LocationCreateNestedOneWithoutEventTypeOnLocationsInput = {
+    create?: XOR<LocationCreateWithoutEventTypeOnLocationsInput, LocationUncheckedCreateWithoutEventTypeOnLocationsInput>
+    connectOrCreate?: LocationCreateOrConnectWithoutEventTypeOnLocationsInput
+    connect?: LocationWhereUniqueInput
   }
 
-  export type EventTypeUpdateOneRequiredWithoutEventsNestedInput = {
-    create?: XOR<EventTypeCreateWithoutEventsInput, EventTypeUncheckedCreateWithoutEventsInput>
-    connectOrCreate?: EventTypeCreateOrConnectWithoutEventsInput
-    upsert?: EventTypeUpsertWithoutEventsInput
+  export type EventTypeUpdateOneRequiredWithoutEventTypeOnLocationsNestedInput = {
+    create?: XOR<EventTypeCreateWithoutEventTypeOnLocationsInput, EventTypeUncheckedCreateWithoutEventTypeOnLocationsInput>
+    connectOrCreate?: EventTypeCreateOrConnectWithoutEventTypeOnLocationsInput
+    upsert?: EventTypeUpsertWithoutEventTypeOnLocationsInput
     connect?: EventTypeWhereUniqueInput
-    update?: XOR<EventTypeUpdateWithoutEventsInput, EventTypeUncheckedUpdateWithoutEventsInput>
+    update?: XOR<EventTypeUpdateWithoutEventTypeOnLocationsInput, EventTypeUncheckedUpdateWithoutEventTypeOnLocationsInput>
+  }
+
+  export type LocationUpdateOneRequiredWithoutEventTypeOnLocationsNestedInput = {
+    create?: XOR<LocationCreateWithoutEventTypeOnLocationsInput, LocationUncheckedCreateWithoutEventTypeOnLocationsInput>
+    connectOrCreate?: LocationCreateOrConnectWithoutEventTypeOnLocationsInput
+    upsert?: LocationUpsertWithoutEventTypeOnLocationsInput
+    connect?: LocationWhereUniqueInput
+    update?: XOR<LocationUpdateWithoutEventTypeOnLocationsInput, LocationUncheckedUpdateWithoutEventTypeOnLocationsInput>
+  }
+
+  export type EventTypeCreateNestedOneWithoutAvailabilitySchedulesInput = {
+    create?: XOR<EventTypeCreateWithoutAvailabilitySchedulesInput, EventTypeUncheckedCreateWithoutAvailabilitySchedulesInput>
+    connectOrCreate?: EventTypeCreateOrConnectWithoutAvailabilitySchedulesInput
+    connect?: EventTypeWhereUniqueInput
+  }
+
+  export type WeekDayCreateNestedManyWithoutAvailabilityScheduleInput = {
+    create?: XOR<Enumerable<WeekDayCreateWithoutAvailabilityScheduleInput>, Enumerable<WeekDayUncheckedCreateWithoutAvailabilityScheduleInput>>
+    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutAvailabilityScheduleInput>
+    createMany?: WeekDayCreateManyAvailabilityScheduleInputEnvelope
+    connect?: Enumerable<WeekDayWhereUniqueInput>
+  }
+
+  export type WeekDayUncheckedCreateNestedManyWithoutAvailabilityScheduleInput = {
+    create?: XOR<Enumerable<WeekDayCreateWithoutAvailabilityScheduleInput>, Enumerable<WeekDayUncheckedCreateWithoutAvailabilityScheduleInput>>
+    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutAvailabilityScheduleInput>
+    createMany?: WeekDayCreateManyAvailabilityScheduleInputEnvelope
+    connect?: Enumerable<WeekDayWhereUniqueInput>
+  }
+
+  export type EventTypeUpdateOneRequiredWithoutAvailabilitySchedulesNestedInput = {
+    create?: XOR<EventTypeCreateWithoutAvailabilitySchedulesInput, EventTypeUncheckedCreateWithoutAvailabilitySchedulesInput>
+    connectOrCreate?: EventTypeCreateOrConnectWithoutAvailabilitySchedulesInput
+    upsert?: EventTypeUpsertWithoutAvailabilitySchedulesInput
+    connect?: EventTypeWhereUniqueInput
+    update?: XOR<EventTypeUpdateWithoutAvailabilitySchedulesInput, EventTypeUncheckedUpdateWithoutAvailabilitySchedulesInput>
+  }
+
+  export type WeekDayUpdateManyWithoutAvailabilityScheduleNestedInput = {
+    create?: XOR<Enumerable<WeekDayCreateWithoutAvailabilityScheduleInput>, Enumerable<WeekDayUncheckedCreateWithoutAvailabilityScheduleInput>>
+    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutAvailabilityScheduleInput>
+    upsert?: Enumerable<WeekDayUpsertWithWhereUniqueWithoutAvailabilityScheduleInput>
+    createMany?: WeekDayCreateManyAvailabilityScheduleInputEnvelope
+    set?: Enumerable<WeekDayWhereUniqueInput>
+    disconnect?: Enumerable<WeekDayWhereUniqueInput>
+    delete?: Enumerable<WeekDayWhereUniqueInput>
+    connect?: Enumerable<WeekDayWhereUniqueInput>
+    update?: Enumerable<WeekDayUpdateWithWhereUniqueWithoutAvailabilityScheduleInput>
+    updateMany?: Enumerable<WeekDayUpdateManyWithWhereWithoutAvailabilityScheduleInput>
+    deleteMany?: Enumerable<WeekDayScalarWhereInput>
+  }
+
+  export type WeekDayUncheckedUpdateManyWithoutAvailabilityScheduleNestedInput = {
+    create?: XOR<Enumerable<WeekDayCreateWithoutAvailabilityScheduleInput>, Enumerable<WeekDayUncheckedCreateWithoutAvailabilityScheduleInput>>
+    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutAvailabilityScheduleInput>
+    upsert?: Enumerable<WeekDayUpsertWithWhereUniqueWithoutAvailabilityScheduleInput>
+    createMany?: WeekDayCreateManyAvailabilityScheduleInputEnvelope
+    set?: Enumerable<WeekDayWhereUniqueInput>
+    disconnect?: Enumerable<WeekDayWhereUniqueInput>
+    delete?: Enumerable<WeekDayWhereUniqueInput>
+    connect?: Enumerable<WeekDayWhereUniqueInput>
+    update?: Enumerable<WeekDayUpdateWithWhereUniqueWithoutAvailabilityScheduleInput>
+    updateMany?: Enumerable<WeekDayUpdateManyWithWhereWithoutAvailabilityScheduleInput>
+    deleteMany?: Enumerable<WeekDayScalarWhereInput>
+  }
+
+  export type AvailabilityScheduleCreateNestedOneWithoutWeekDaysInput = {
+    create?: XOR<AvailabilityScheduleCreateWithoutWeekDaysInput, AvailabilityScheduleUncheckedCreateWithoutWeekDaysInput>
+    connectOrCreate?: AvailabilityScheduleCreateOrConnectWithoutWeekDaysInput
+    connect?: AvailabilityScheduleWhereUniqueInput
+  }
+
+  export type TimeSelectCreateNestedOneWithoutWeekDaysInput = {
+    create?: XOR<TimeSelectCreateWithoutWeekDaysInput, TimeSelectUncheckedCreateWithoutWeekDaysInput>
+    connectOrCreate?: TimeSelectCreateOrConnectWithoutWeekDaysInput
+    connect?: TimeSelectWhereUniqueInput
+  }
+
+  export type EventTypeCreateNestedOneWithoutWeekDaysInput = {
+    create?: XOR<EventTypeCreateWithoutWeekDaysInput, EventTypeUncheckedCreateWithoutWeekDaysInput>
+    connectOrCreate?: EventTypeCreateOrConnectWithoutWeekDaysInput
+    connect?: EventTypeWhereUniqueInput
+  }
+
+  export type AvailabilityScheduleUpdateOneWithoutWeekDaysNestedInput = {
+    create?: XOR<AvailabilityScheduleCreateWithoutWeekDaysInput, AvailabilityScheduleUncheckedCreateWithoutWeekDaysInput>
+    connectOrCreate?: AvailabilityScheduleCreateOrConnectWithoutWeekDaysInput
+    upsert?: AvailabilityScheduleUpsertWithoutWeekDaysInput
+    disconnect?: boolean
+    delete?: boolean
+    connect?: AvailabilityScheduleWhereUniqueInput
+    update?: XOR<AvailabilityScheduleUpdateWithoutWeekDaysInput, AvailabilityScheduleUncheckedUpdateWithoutWeekDaysInput>
+  }
+
+  export type TimeSelectUpdateOneRequiredWithoutWeekDaysNestedInput = {
+    create?: XOR<TimeSelectCreateWithoutWeekDaysInput, TimeSelectUncheckedCreateWithoutWeekDaysInput>
+    connectOrCreate?: TimeSelectCreateOrConnectWithoutWeekDaysInput
+    upsert?: TimeSelectUpsertWithoutWeekDaysInput
+    connect?: TimeSelectWhereUniqueInput
+    update?: XOR<TimeSelectUpdateWithoutWeekDaysInput, TimeSelectUncheckedUpdateWithoutWeekDaysInput>
+  }
+
+  export type EventTypeUpdateOneWithoutWeekDaysNestedInput = {
+    create?: XOR<EventTypeCreateWithoutWeekDaysInput, EventTypeUncheckedCreateWithoutWeekDaysInput>
+    connectOrCreate?: EventTypeCreateOrConnectWithoutWeekDaysInput
+    upsert?: EventTypeUpsertWithoutWeekDaysInput
+    disconnect?: boolean
+    delete?: boolean
+    connect?: EventTypeWhereUniqueInput
+    update?: XOR<EventTypeUpdateWithoutWeekDaysInput, EventTypeUncheckedUpdateWithoutWeekDaysInput>
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type WeekDayCreateNestedManyWithoutTimeSelectInput = {
+    create?: XOR<Enumerable<WeekDayCreateWithoutTimeSelectInput>, Enumerable<WeekDayUncheckedCreateWithoutTimeSelectInput>>
+    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutTimeSelectInput>
+    createMany?: WeekDayCreateManyTimeSelectInputEnvelope
+    connect?: Enumerable<WeekDayWhereUniqueInput>
+  }
+
+  export type WeekDayUncheckedCreateNestedManyWithoutTimeSelectInput = {
+    create?: XOR<Enumerable<WeekDayCreateWithoutTimeSelectInput>, Enumerable<WeekDayUncheckedCreateWithoutTimeSelectInput>>
+    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutTimeSelectInput>
+    createMany?: WeekDayCreateManyTimeSelectInputEnvelope
+    connect?: Enumerable<WeekDayWhereUniqueInput>
+  }
+
+  export type WeekDayUpdateManyWithoutTimeSelectNestedInput = {
+    create?: XOR<Enumerable<WeekDayCreateWithoutTimeSelectInput>, Enumerable<WeekDayUncheckedCreateWithoutTimeSelectInput>>
+    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutTimeSelectInput>
+    upsert?: Enumerable<WeekDayUpsertWithWhereUniqueWithoutTimeSelectInput>
+    createMany?: WeekDayCreateManyTimeSelectInputEnvelope
+    set?: Enumerable<WeekDayWhereUniqueInput>
+    disconnect?: Enumerable<WeekDayWhereUniqueInput>
+    delete?: Enumerable<WeekDayWhereUniqueInput>
+    connect?: Enumerable<WeekDayWhereUniqueInput>
+    update?: Enumerable<WeekDayUpdateWithWhereUniqueWithoutTimeSelectInput>
+    updateMany?: Enumerable<WeekDayUpdateManyWithWhereWithoutTimeSelectInput>
+    deleteMany?: Enumerable<WeekDayScalarWhereInput>
+  }
+
+  export type WeekDayUncheckedUpdateManyWithoutTimeSelectNestedInput = {
+    create?: XOR<Enumerable<WeekDayCreateWithoutTimeSelectInput>, Enumerable<WeekDayUncheckedCreateWithoutTimeSelectInput>>
+    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutTimeSelectInput>
+    upsert?: Enumerable<WeekDayUpsertWithWhereUniqueWithoutTimeSelectInput>
+    createMany?: WeekDayCreateManyTimeSelectInputEnvelope
+    set?: Enumerable<WeekDayWhereUniqueInput>
+    disconnect?: Enumerable<WeekDayWhereUniqueInput>
+    delete?: Enumerable<WeekDayWhereUniqueInput>
+    connect?: Enumerable<WeekDayWhereUniqueInput>
+    update?: Enumerable<WeekDayUpdateWithWhereUniqueWithoutTimeSelectInput>
+    updateMany?: Enumerable<WeekDayUpdateManyWithWhereWithoutTimeSelectInput>
+    deleteMany?: Enumerable<WeekDayScalarWhereInput>
+  }
+
+  export type EventTypeCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<Enumerable<EventTypeCreateWithoutCustomerInput>, Enumerable<EventTypeUncheckedCreateWithoutCustomerInput>>
+    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutCustomerInput>
+    createMany?: EventTypeCreateManyCustomerInputEnvelope
+    connect?: Enumerable<EventTypeWhereUniqueInput>
+  }
+
+  export type GroupMeetingCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<Enumerable<GroupMeetingCreateWithoutCustomerInput>, Enumerable<GroupMeetingUncheckedCreateWithoutCustomerInput>>
+    connectOrCreate?: Enumerable<GroupMeetingCreateOrConnectWithoutCustomerInput>
+    createMany?: GroupMeetingCreateManyCustomerInputEnvelope
+    connect?: Enumerable<GroupMeetingWhereUniqueInput>
+  }
+
+  export type EventSelectCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<Enumerable<EventSelectCreateWithoutCustomerInput>, Enumerable<EventSelectUncheckedCreateWithoutCustomerInput>>
+    connectOrCreate?: Enumerable<EventSelectCreateOrConnectWithoutCustomerInput>
+    createMany?: EventSelectCreateManyCustomerInputEnvelope
+    connect?: Enumerable<EventSelectWhereUniqueInput>
+  }
+
+  export type EventTypeUncheckedCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<Enumerable<EventTypeCreateWithoutCustomerInput>, Enumerable<EventTypeUncheckedCreateWithoutCustomerInput>>
+    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutCustomerInput>
+    createMany?: EventTypeCreateManyCustomerInputEnvelope
+    connect?: Enumerable<EventTypeWhereUniqueInput>
+  }
+
+  export type GroupMeetingUncheckedCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<Enumerable<GroupMeetingCreateWithoutCustomerInput>, Enumerable<GroupMeetingUncheckedCreateWithoutCustomerInput>>
+    connectOrCreate?: Enumerable<GroupMeetingCreateOrConnectWithoutCustomerInput>
+    createMany?: GroupMeetingCreateManyCustomerInputEnvelope
+    connect?: Enumerable<GroupMeetingWhereUniqueInput>
+  }
+
+  export type EventSelectUncheckedCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<Enumerable<EventSelectCreateWithoutCustomerInput>, Enumerable<EventSelectUncheckedCreateWithoutCustomerInput>>
+    connectOrCreate?: Enumerable<EventSelectCreateOrConnectWithoutCustomerInput>
+    createMany?: EventSelectCreateManyCustomerInputEnvelope
+    connect?: Enumerable<EventSelectWhereUniqueInput>
+  }
+
+  export type EventTypeUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<Enumerable<EventTypeCreateWithoutCustomerInput>, Enumerable<EventTypeUncheckedCreateWithoutCustomerInput>>
+    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutCustomerInput>
+    upsert?: Enumerable<EventTypeUpsertWithWhereUniqueWithoutCustomerInput>
+    createMany?: EventTypeCreateManyCustomerInputEnvelope
+    set?: Enumerable<EventTypeWhereUniqueInput>
+    disconnect?: Enumerable<EventTypeWhereUniqueInput>
+    delete?: Enumerable<EventTypeWhereUniqueInput>
+    connect?: Enumerable<EventTypeWhereUniqueInput>
+    update?: Enumerable<EventTypeUpdateWithWhereUniqueWithoutCustomerInput>
+    updateMany?: Enumerable<EventTypeUpdateManyWithWhereWithoutCustomerInput>
+    deleteMany?: Enumerable<EventTypeScalarWhereInput>
+  }
+
+  export type GroupMeetingUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<Enumerable<GroupMeetingCreateWithoutCustomerInput>, Enumerable<GroupMeetingUncheckedCreateWithoutCustomerInput>>
+    connectOrCreate?: Enumerable<GroupMeetingCreateOrConnectWithoutCustomerInput>
+    upsert?: Enumerable<GroupMeetingUpsertWithWhereUniqueWithoutCustomerInput>
+    createMany?: GroupMeetingCreateManyCustomerInputEnvelope
+    set?: Enumerable<GroupMeetingWhereUniqueInput>
+    disconnect?: Enumerable<GroupMeetingWhereUniqueInput>
+    delete?: Enumerable<GroupMeetingWhereUniqueInput>
+    connect?: Enumerable<GroupMeetingWhereUniqueInput>
+    update?: Enumerable<GroupMeetingUpdateWithWhereUniqueWithoutCustomerInput>
+    updateMany?: Enumerable<GroupMeetingUpdateManyWithWhereWithoutCustomerInput>
+    deleteMany?: Enumerable<GroupMeetingScalarWhereInput>
+  }
+
+  export type EventSelectUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<Enumerable<EventSelectCreateWithoutCustomerInput>, Enumerable<EventSelectUncheckedCreateWithoutCustomerInput>>
+    connectOrCreate?: Enumerable<EventSelectCreateOrConnectWithoutCustomerInput>
+    upsert?: Enumerable<EventSelectUpsertWithWhereUniqueWithoutCustomerInput>
+    createMany?: EventSelectCreateManyCustomerInputEnvelope
+    set?: Enumerable<EventSelectWhereUniqueInput>
+    disconnect?: Enumerable<EventSelectWhereUniqueInput>
+    delete?: Enumerable<EventSelectWhereUniqueInput>
+    connect?: Enumerable<EventSelectWhereUniqueInput>
+    update?: Enumerable<EventSelectUpdateWithWhereUniqueWithoutCustomerInput>
+    updateMany?: Enumerable<EventSelectUpdateManyWithWhereWithoutCustomerInput>
+    deleteMany?: Enumerable<EventSelectScalarWhereInput>
+  }
+
+  export type EventTypeUncheckedUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<Enumerable<EventTypeCreateWithoutCustomerInput>, Enumerable<EventTypeUncheckedCreateWithoutCustomerInput>>
+    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutCustomerInput>
+    upsert?: Enumerable<EventTypeUpsertWithWhereUniqueWithoutCustomerInput>
+    createMany?: EventTypeCreateManyCustomerInputEnvelope
+    set?: Enumerable<EventTypeWhereUniqueInput>
+    disconnect?: Enumerable<EventTypeWhereUniqueInput>
+    delete?: Enumerable<EventTypeWhereUniqueInput>
+    connect?: Enumerable<EventTypeWhereUniqueInput>
+    update?: Enumerable<EventTypeUpdateWithWhereUniqueWithoutCustomerInput>
+    updateMany?: Enumerable<EventTypeUpdateManyWithWhereWithoutCustomerInput>
+    deleteMany?: Enumerable<EventTypeScalarWhereInput>
+  }
+
+  export type GroupMeetingUncheckedUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<Enumerable<GroupMeetingCreateWithoutCustomerInput>, Enumerable<GroupMeetingUncheckedCreateWithoutCustomerInput>>
+    connectOrCreate?: Enumerable<GroupMeetingCreateOrConnectWithoutCustomerInput>
+    upsert?: Enumerable<GroupMeetingUpsertWithWhereUniqueWithoutCustomerInput>
+    createMany?: GroupMeetingCreateManyCustomerInputEnvelope
+    set?: Enumerable<GroupMeetingWhereUniqueInput>
+    disconnect?: Enumerable<GroupMeetingWhereUniqueInput>
+    delete?: Enumerable<GroupMeetingWhereUniqueInput>
+    connect?: Enumerable<GroupMeetingWhereUniqueInput>
+    update?: Enumerable<GroupMeetingUpdateWithWhereUniqueWithoutCustomerInput>
+    updateMany?: Enumerable<GroupMeetingUpdateManyWithWhereWithoutCustomerInput>
+    deleteMany?: Enumerable<GroupMeetingScalarWhereInput>
+  }
+
+  export type EventSelectUncheckedUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<Enumerable<EventSelectCreateWithoutCustomerInput>, Enumerable<EventSelectUncheckedCreateWithoutCustomerInput>>
+    connectOrCreate?: Enumerable<EventSelectCreateOrConnectWithoutCustomerInput>
+    upsert?: Enumerable<EventSelectUpsertWithWhereUniqueWithoutCustomerInput>
+    createMany?: EventSelectCreateManyCustomerInputEnvelope
+    set?: Enumerable<EventSelectWhereUniqueInput>
+    disconnect?: Enumerable<EventSelectWhereUniqueInput>
+    delete?: Enumerable<EventSelectWhereUniqueInput>
+    connect?: Enumerable<EventSelectWhereUniqueInput>
+    update?: Enumerable<EventSelectUpdateWithWhereUniqueWithoutCustomerInput>
+    updateMany?: Enumerable<EventSelectUpdateManyWithWhereWithoutCustomerInput>
+    deleteMany?: Enumerable<EventSelectScalarWhereInput>
+  }
+
+  export type EventTypeCreateNestedManyWithoutCalendarSelectInput = {
+    create?: XOR<Enumerable<EventTypeCreateWithoutCalendarSelectInput>, Enumerable<EventTypeUncheckedCreateWithoutCalendarSelectInput>>
+    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutCalendarSelectInput>
+    createMany?: EventTypeCreateManyCalendarSelectInputEnvelope
+    connect?: Enumerable<EventTypeWhereUniqueInput>
+  }
+
+  export type EventTypeUncheckedCreateNestedManyWithoutCalendarSelectInput = {
+    create?: XOR<Enumerable<EventTypeCreateWithoutCalendarSelectInput>, Enumerable<EventTypeUncheckedCreateWithoutCalendarSelectInput>>
+    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutCalendarSelectInput>
+    createMany?: EventTypeCreateManyCalendarSelectInputEnvelope
+    connect?: Enumerable<EventTypeWhereUniqueInput>
+  }
+
+  export type EventTypeUpdateManyWithoutCalendarSelectNestedInput = {
+    create?: XOR<Enumerable<EventTypeCreateWithoutCalendarSelectInput>, Enumerable<EventTypeUncheckedCreateWithoutCalendarSelectInput>>
+    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutCalendarSelectInput>
+    upsert?: Enumerable<EventTypeUpsertWithWhereUniqueWithoutCalendarSelectInput>
+    createMany?: EventTypeCreateManyCalendarSelectInputEnvelope
+    set?: Enumerable<EventTypeWhereUniqueInput>
+    disconnect?: Enumerable<EventTypeWhereUniqueInput>
+    delete?: Enumerable<EventTypeWhereUniqueInput>
+    connect?: Enumerable<EventTypeWhereUniqueInput>
+    update?: Enumerable<EventTypeUpdateWithWhereUniqueWithoutCalendarSelectInput>
+    updateMany?: Enumerable<EventTypeUpdateManyWithWhereWithoutCalendarSelectInput>
+    deleteMany?: Enumerable<EventTypeScalarWhereInput>
+  }
+
+  export type EventTypeUncheckedUpdateManyWithoutCalendarSelectNestedInput = {
+    create?: XOR<Enumerable<EventTypeCreateWithoutCalendarSelectInput>, Enumerable<EventTypeUncheckedCreateWithoutCalendarSelectInput>>
+    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutCalendarSelectInput>
+    upsert?: Enumerable<EventTypeUpsertWithWhereUniqueWithoutCalendarSelectInput>
+    createMany?: EventTypeCreateManyCalendarSelectInputEnvelope
+    set?: Enumerable<EventTypeWhereUniqueInput>
+    disconnect?: Enumerable<EventTypeWhereUniqueInput>
+    delete?: Enumerable<EventTypeWhereUniqueInput>
+    connect?: Enumerable<EventTypeWhereUniqueInput>
+    update?: Enumerable<EventTypeUpdateWithWhereUniqueWithoutCalendarSelectInput>
+    updateMany?: Enumerable<EventTypeUpdateManyWithWhereWithoutCalendarSelectInput>
+    deleteMany?: Enumerable<EventTypeScalarWhereInput>
+  }
+
+  export type UserCreateNestedOneWithoutBillingsInput = {
+    create?: XOR<UserCreateWithoutBillingsInput, UserUncheckedCreateWithoutBillingsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutBillingsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutBillingsNestedInput = {
+    create?: XOR<UserCreateWithoutBillingsInput, UserUncheckedCreateWithoutBillingsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutBillingsInput
+    upsert?: UserUpsertWithoutBillingsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<UserUpdateWithoutBillingsInput, UserUncheckedUpdateWithoutBillingsInput>
+  }
+
+  export type LocationCreateNestedOneWithoutGroupMeetingsInput = {
+    create?: XOR<LocationCreateWithoutGroupMeetingsInput, LocationUncheckedCreateWithoutGroupMeetingsInput>
+    connectOrCreate?: LocationCreateOrConnectWithoutGroupMeetingsInput
+    connect?: LocationWhereUniqueInput
+  }
+
+  export type CustomerCreateNestedOneWithoutGroupMeetingsInput = {
+    create?: XOR<CustomerCreateWithoutGroupMeetingsInput, CustomerUncheckedCreateWithoutGroupMeetingsInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutGroupMeetingsInput
+    connect?: CustomerWhereUniqueInput
+  }
+
+  export type EventTypeCreateNestedOneWithoutGroupMeetingsInput = {
+    create?: XOR<EventTypeCreateWithoutGroupMeetingsInput, EventTypeUncheckedCreateWithoutGroupMeetingsInput>
+    connectOrCreate?: EventTypeCreateOrConnectWithoutGroupMeetingsInput
+    connect?: EventTypeWhereUniqueInput
+  }
+
+  export type UserOnGroupMeetingCreateNestedManyWithoutGroupMeetingInput = {
+    create?: XOR<Enumerable<UserOnGroupMeetingCreateWithoutGroupMeetingInput>, Enumerable<UserOnGroupMeetingUncheckedCreateWithoutGroupMeetingInput>>
+    connectOrCreate?: Enumerable<UserOnGroupMeetingCreateOrConnectWithoutGroupMeetingInput>
+    createMany?: UserOnGroupMeetingCreateManyGroupMeetingInputEnvelope
+    connect?: Enumerable<UserOnGroupMeetingWhereUniqueInput>
+  }
+
+  export type UserOnGroupMeetingUncheckedCreateNestedManyWithoutGroupMeetingInput = {
+    create?: XOR<Enumerable<UserOnGroupMeetingCreateWithoutGroupMeetingInput>, Enumerable<UserOnGroupMeetingUncheckedCreateWithoutGroupMeetingInput>>
+    connectOrCreate?: Enumerable<UserOnGroupMeetingCreateOrConnectWithoutGroupMeetingInput>
+    createMany?: UserOnGroupMeetingCreateManyGroupMeetingInputEnvelope
+    connect?: Enumerable<UserOnGroupMeetingWhereUniqueInput>
+  }
+
+  export type LocationUpdateOneRequiredWithoutGroupMeetingsNestedInput = {
+    create?: XOR<LocationCreateWithoutGroupMeetingsInput, LocationUncheckedCreateWithoutGroupMeetingsInput>
+    connectOrCreate?: LocationCreateOrConnectWithoutGroupMeetingsInput
+    upsert?: LocationUpsertWithoutGroupMeetingsInput
+    connect?: LocationWhereUniqueInput
+    update?: XOR<LocationUpdateWithoutGroupMeetingsInput, LocationUncheckedUpdateWithoutGroupMeetingsInput>
+  }
+
+  export type CustomerUpdateOneRequiredWithoutGroupMeetingsNestedInput = {
+    create?: XOR<CustomerCreateWithoutGroupMeetingsInput, CustomerUncheckedCreateWithoutGroupMeetingsInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutGroupMeetingsInput
+    upsert?: CustomerUpsertWithoutGroupMeetingsInput
+    connect?: CustomerWhereUniqueInput
+    update?: XOR<CustomerUpdateWithoutGroupMeetingsInput, CustomerUncheckedUpdateWithoutGroupMeetingsInput>
+  }
+
+  export type EventTypeUpdateOneRequiredWithoutGroupMeetingsNestedInput = {
+    create?: XOR<EventTypeCreateWithoutGroupMeetingsInput, EventTypeUncheckedCreateWithoutGroupMeetingsInput>
+    connectOrCreate?: EventTypeCreateOrConnectWithoutGroupMeetingsInput
+    upsert?: EventTypeUpsertWithoutGroupMeetingsInput
+    connect?: EventTypeWhereUniqueInput
+    update?: XOR<EventTypeUpdateWithoutGroupMeetingsInput, EventTypeUncheckedUpdateWithoutGroupMeetingsInput>
+  }
+
+  export type UserOnGroupMeetingUpdateManyWithoutGroupMeetingNestedInput = {
+    create?: XOR<Enumerable<UserOnGroupMeetingCreateWithoutGroupMeetingInput>, Enumerable<UserOnGroupMeetingUncheckedCreateWithoutGroupMeetingInput>>
+    connectOrCreate?: Enumerable<UserOnGroupMeetingCreateOrConnectWithoutGroupMeetingInput>
+    upsert?: Enumerable<UserOnGroupMeetingUpsertWithWhereUniqueWithoutGroupMeetingInput>
+    createMany?: UserOnGroupMeetingCreateManyGroupMeetingInputEnvelope
+    set?: Enumerable<UserOnGroupMeetingWhereUniqueInput>
+    disconnect?: Enumerable<UserOnGroupMeetingWhereUniqueInput>
+    delete?: Enumerable<UserOnGroupMeetingWhereUniqueInput>
+    connect?: Enumerable<UserOnGroupMeetingWhereUniqueInput>
+    update?: Enumerable<UserOnGroupMeetingUpdateWithWhereUniqueWithoutGroupMeetingInput>
+    updateMany?: Enumerable<UserOnGroupMeetingUpdateManyWithWhereWithoutGroupMeetingInput>
+    deleteMany?: Enumerable<UserOnGroupMeetingScalarWhereInput>
+  }
+
+  export type UserOnGroupMeetingUncheckedUpdateManyWithoutGroupMeetingNestedInput = {
+    create?: XOR<Enumerable<UserOnGroupMeetingCreateWithoutGroupMeetingInput>, Enumerable<UserOnGroupMeetingUncheckedCreateWithoutGroupMeetingInput>>
+    connectOrCreate?: Enumerable<UserOnGroupMeetingCreateOrConnectWithoutGroupMeetingInput>
+    upsert?: Enumerable<UserOnGroupMeetingUpsertWithWhereUniqueWithoutGroupMeetingInput>
+    createMany?: UserOnGroupMeetingCreateManyGroupMeetingInputEnvelope
+    set?: Enumerable<UserOnGroupMeetingWhereUniqueInput>
+    disconnect?: Enumerable<UserOnGroupMeetingWhereUniqueInput>
+    delete?: Enumerable<UserOnGroupMeetingWhereUniqueInput>
+    connect?: Enumerable<UserOnGroupMeetingWhereUniqueInput>
+    update?: Enumerable<UserOnGroupMeetingUpdateWithWhereUniqueWithoutGroupMeetingInput>
+    updateMany?: Enumerable<UserOnGroupMeetingUpdateManyWithWhereWithoutGroupMeetingInput>
+    deleteMany?: Enumerable<UserOnGroupMeetingScalarWhereInput>
+  }
+
+  export type EventTypeCreateNestedOneWithoutEventSelectsInput = {
+    create?: XOR<EventTypeCreateWithoutEventSelectsInput, EventTypeUncheckedCreateWithoutEventSelectsInput>
+    connectOrCreate?: EventTypeCreateOrConnectWithoutEventSelectsInput
+    connect?: EventTypeWhereUniqueInput
+  }
+
+  export type CustomerCreateNestedOneWithoutEventSelectsInput = {
+    create?: XOR<CustomerCreateWithoutEventSelectsInput, CustomerUncheckedCreateWithoutEventSelectsInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutEventSelectsInput
+    connect?: CustomerWhereUniqueInput
+  }
+
+  export type EventTypeUpdateOneRequiredWithoutEventSelectsNestedInput = {
+    create?: XOR<EventTypeCreateWithoutEventSelectsInput, EventTypeUncheckedCreateWithoutEventSelectsInput>
+    connectOrCreate?: EventTypeCreateOrConnectWithoutEventSelectsInput
+    upsert?: EventTypeUpsertWithoutEventSelectsInput
+    connect?: EventTypeWhereUniqueInput
+    update?: XOR<EventTypeUpdateWithoutEventSelectsInput, EventTypeUncheckedUpdateWithoutEventSelectsInput>
+  }
+
+  export type CustomerUpdateOneRequiredWithoutEventSelectsNestedInput = {
+    create?: XOR<CustomerCreateWithoutEventSelectsInput, CustomerUncheckedCreateWithoutEventSelectsInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutEventSelectsInput
+    upsert?: CustomerUpsertWithoutEventSelectsInput
+    connect?: CustomerWhereUniqueInput
+    update?: XOR<CustomerUpdateWithoutEventSelectsInput, CustomerUncheckedUpdateWithoutEventSelectsInput>
+  }
+
+  export type UserCreateNestedOneWithoutUserOnGroupMeetingsInput = {
+    create?: XOR<UserCreateWithoutUserOnGroupMeetingsInput, UserUncheckedCreateWithoutUserOnGroupMeetingsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutUserOnGroupMeetingsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type GroupMeetingCreateNestedOneWithoutUserOnGroupMeetingsInput = {
+    create?: XOR<GroupMeetingCreateWithoutUserOnGroupMeetingsInput, GroupMeetingUncheckedCreateWithoutUserOnGroupMeetingsInput>
+    connectOrCreate?: GroupMeetingCreateOrConnectWithoutUserOnGroupMeetingsInput
+    connect?: GroupMeetingWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutUserOnGroupMeetingsNestedInput = {
+    create?: XOR<UserCreateWithoutUserOnGroupMeetingsInput, UserUncheckedCreateWithoutUserOnGroupMeetingsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutUserOnGroupMeetingsInput
+    upsert?: UserUpsertWithoutUserOnGroupMeetingsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<UserUpdateWithoutUserOnGroupMeetingsInput, UserUncheckedUpdateWithoutUserOnGroupMeetingsInput>
+  }
+
+  export type GroupMeetingUpdateOneRequiredWithoutUserOnGroupMeetingsNestedInput = {
+    create?: XOR<GroupMeetingCreateWithoutUserOnGroupMeetingsInput, GroupMeetingUncheckedCreateWithoutUserOnGroupMeetingsInput>
+    connectOrCreate?: GroupMeetingCreateOrConnectWithoutUserOnGroupMeetingsInput
+    upsert?: GroupMeetingUpsertWithoutUserOnGroupMeetingsInput
+    connect?: GroupMeetingWhereUniqueInput
+    update?: XOR<GroupMeetingUpdateWithoutUserOnGroupMeetingsInput, GroupMeetingUncheckedUpdateWithoutUserOnGroupMeetingsInput>
   }
 
   export type NestedIntFilter = {
@@ -5881,6 +18471,20 @@ export namespace Prisma {
     gt?: number
     gte?: number
     not?: NestedIntFilter | number
+  }
+
+  export type NestedStringFilter = {
+    equals?: string
+    in?: Enumerable<string>
+    notIn?: Enumerable<string>
+    lt?: string
+    lte?: string
+    gt?: string
+    gte?: string
+    contains?: string
+    startsWith?: string
+    endsWith?: string
+    not?: NestedStringFilter | string
   }
 
   export type NestedStringNullableFilter = {
@@ -5935,6 +18539,23 @@ export namespace Prisma {
     not?: NestedFloatFilter | number
   }
 
+  export type NestedStringWithAggregatesFilter = {
+    equals?: string
+    in?: Enumerable<string>
+    notIn?: Enumerable<string>
+    lt?: string
+    lte?: string
+    gt?: string
+    gte?: string
+    contains?: string
+    startsWith?: string
+    endsWith?: string
+    not?: NestedStringWithAggregatesFilter | string
+    _count?: NestedIntFilter
+    _min?: NestedStringFilter
+    _max?: NestedStringFilter
+  }
+
   export type NestedStringNullableWithAggregatesFilter = {
     equals?: string | null
     in?: Enumerable<string> | null
@@ -5977,381 +18598,2545 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter
   }
 
-  export type NestedStringFilter = {
-    equals?: string
-    in?: Enumerable<string>
-    notIn?: Enumerable<string>
-    lt?: string
-    lte?: string
-    gt?: string
-    gte?: string
-    contains?: string
-    startsWith?: string
-    endsWith?: string
-    not?: NestedStringFilter | string
+  export type NestedIntNullableWithAggregatesFilter = {
+    equals?: number | null
+    in?: Enumerable<number> | null
+    notIn?: Enumerable<number> | null
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntNullableWithAggregatesFilter | number | null
+    _count?: NestedIntNullableFilter
+    _avg?: NestedFloatNullableFilter
+    _sum?: NestedIntNullableFilter
+    _min?: NestedIntNullableFilter
+    _max?: NestedIntNullableFilter
   }
 
-  export type NestedStringWithAggregatesFilter = {
-    equals?: string
-    in?: Enumerable<string>
-    notIn?: Enumerable<string>
-    lt?: string
-    lte?: string
-    gt?: string
-    gte?: string
-    contains?: string
-    startsWith?: string
-    endsWith?: string
-    not?: NestedStringWithAggregatesFilter | string
-    _count?: NestedIntFilter
-    _min?: NestedStringFilter
-    _max?: NestedStringFilter
+  export type NestedFloatNullableFilter = {
+    equals?: number | null
+    in?: Enumerable<number> | null
+    notIn?: Enumerable<number> | null
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedFloatNullableFilter | number | null
   }
 
-  export type SessionCreateWithoutUserInput = {
-    token: string
+  export type EventTypeCreateWithoutUserInput = {
+    name: string
+    description: string
+    price: number
+    timeDuration: number
+    status: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutEventTypeInput
+    availabilitySchedules?: AvailabilityScheduleCreateNestedManyWithoutEventTypeInput
+    weekDays?: WeekDayCreateNestedManyWithoutEventTypeInput
+    calendarSelect: CalendarSelectCreateNestedOneWithoutEventTypesInput
+    customer: CustomerCreateNestedOneWithoutEventTypesInput
+    groupMeetings?: GroupMeetingCreateNestedManyWithoutEventTypeInput
+    eventSelects?: EventSelectCreateNestedManyWithoutEventTypeInput
   }
 
-  export type SessionUncheckedCreateWithoutUserInput = {
+  export type EventTypeUncheckedCreateWithoutUserInput = {
     id?: number
-    token: string
+    name: string
+    description: string
+    price: number
+    timeDuration: number
+    calendarSelectId: number
+    customerId: number
+    status: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput
+    availabilitySchedules?: AvailabilityScheduleUncheckedCreateNestedManyWithoutEventTypeInput
+    weekDays?: WeekDayUncheckedCreateNestedManyWithoutEventTypeInput
+    groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput
+    eventSelects?: EventSelectUncheckedCreateNestedManyWithoutEventTypeInput
   }
 
-  export type SessionCreateOrConnectWithoutUserInput = {
-    where: SessionWhereUniqueInput
-    create: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput>
+  export type EventTypeCreateOrConnectWithoutUserInput = {
+    where: EventTypeWhereUniqueInput
+    create: XOR<EventTypeCreateWithoutUserInput, EventTypeUncheckedCreateWithoutUserInput>
   }
 
-  export type SessionCreateManyUserInputEnvelope = {
-    data: Enumerable<SessionCreateManyUserInput>
+  export type EventTypeCreateManyUserInputEnvelope = {
+    data: Enumerable<EventTypeCreateManyUserInput>
     skipDuplicates?: boolean
   }
 
-  export type EventCreateWithoutUserInput = {
+  export type BillingCreateWithoutUserInput = {
+    subscriptionMonth: number
+    subscriptionPrice: number
     name: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    eventType: EventTypeCreateNestedOneWithoutEventsInput
   }
 
-  export type EventUncheckedCreateWithoutUserInput = {
+  export type BillingUncheckedCreateWithoutUserInput = {
     id?: number
+    subscriptionMonth: number
+    subscriptionPrice: number
     name: string
-    eventTypeId: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type EventCreateOrConnectWithoutUserInput = {
-    where: EventWhereUniqueInput
-    create: XOR<EventCreateWithoutUserInput, EventUncheckedCreateWithoutUserInput>
+  export type BillingCreateOrConnectWithoutUserInput = {
+    where: BillingWhereUniqueInput
+    create: XOR<BillingCreateWithoutUserInput, BillingUncheckedCreateWithoutUserInput>
   }
 
-  export type EventCreateManyUserInputEnvelope = {
-    data: Enumerable<EventCreateManyUserInput>
+  export type BillingCreateManyUserInputEnvelope = {
+    data: Enumerable<BillingCreateManyUserInput>
     skipDuplicates?: boolean
   }
 
-  export type SessionUpsertWithWhereUniqueWithoutUserInput = {
-    where: SessionWhereUniqueInput
-    update: XOR<SessionUpdateWithoutUserInput, SessionUncheckedUpdateWithoutUserInput>
-    create: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput>
+  export type UserOnGroupMeetingCreateWithoutUserInput = {
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    groupMeeting: GroupMeetingCreateNestedOneWithoutUserOnGroupMeetingsInput
   }
 
-  export type SessionUpdateWithWhereUniqueWithoutUserInput = {
-    where: SessionWhereUniqueInput
-    data: XOR<SessionUpdateWithoutUserInput, SessionUncheckedUpdateWithoutUserInput>
+  export type UserOnGroupMeetingUncheckedCreateWithoutUserInput = {
+    id?: number
+    groupMeetingId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
-  export type SessionUpdateManyWithWhereWithoutUserInput = {
-    where: SessionScalarWhereInput
-    data: XOR<SessionUpdateManyMutationInput, SessionUncheckedUpdateManyWithoutSessionsInput>
+  export type UserOnGroupMeetingCreateOrConnectWithoutUserInput = {
+    where: UserOnGroupMeetingWhereUniqueInput
+    create: XOR<UserOnGroupMeetingCreateWithoutUserInput, UserOnGroupMeetingUncheckedCreateWithoutUserInput>
   }
 
-  export type SessionScalarWhereInput = {
-    AND?: Enumerable<SessionScalarWhereInput>
-    OR?: Enumerable<SessionScalarWhereInput>
-    NOT?: Enumerable<SessionScalarWhereInput>
+  export type UserOnGroupMeetingCreateManyUserInputEnvelope = {
+    data: Enumerable<UserOnGroupMeetingCreateManyUserInput>
+    skipDuplicates?: boolean
+  }
+
+  export type EventTypeUpsertWithWhereUniqueWithoutUserInput = {
+    where: EventTypeWhereUniqueInput
+    update: XOR<EventTypeUpdateWithoutUserInput, EventTypeUncheckedUpdateWithoutUserInput>
+    create: XOR<EventTypeCreateWithoutUserInput, EventTypeUncheckedCreateWithoutUserInput>
+  }
+
+  export type EventTypeUpdateWithWhereUniqueWithoutUserInput = {
+    where: EventTypeWhereUniqueInput
+    data: XOR<EventTypeUpdateWithoutUserInput, EventTypeUncheckedUpdateWithoutUserInput>
+  }
+
+  export type EventTypeUpdateManyWithWhereWithoutUserInput = {
+    where: EventTypeScalarWhereInput
+    data: XOR<EventTypeUpdateManyMutationInput, EventTypeUncheckedUpdateManyWithoutEventTypesInput>
+  }
+
+  export type EventTypeScalarWhereInput = {
+    AND?: Enumerable<EventTypeScalarWhereInput>
+    OR?: Enumerable<EventTypeScalarWhereInput>
+    NOT?: Enumerable<EventTypeScalarWhereInput>
     id?: IntFilter | number
-    token?: StringFilter | string
+    name?: StringFilter | string
     userId?: IntFilter | number
+    description?: StringFilter | string
+    price?: IntFilter | number
+    timeDuration?: IntFilter | number
+    calendarSelectId?: IntFilter | number
+    customerId?: IntFilter | number
+    status?: StringFilter | string
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
   }
 
-  export type EventUpsertWithWhereUniqueWithoutUserInput = {
-    where: EventWhereUniqueInput
-    update: XOR<EventUpdateWithoutUserInput, EventUncheckedUpdateWithoutUserInput>
-    create: XOR<EventCreateWithoutUserInput, EventUncheckedCreateWithoutUserInput>
+  export type BillingUpsertWithWhereUniqueWithoutUserInput = {
+    where: BillingWhereUniqueInput
+    update: XOR<BillingUpdateWithoutUserInput, BillingUncheckedUpdateWithoutUserInput>
+    create: XOR<BillingCreateWithoutUserInput, BillingUncheckedCreateWithoutUserInput>
   }
 
-  export type EventUpdateWithWhereUniqueWithoutUserInput = {
-    where: EventWhereUniqueInput
-    data: XOR<EventUpdateWithoutUserInput, EventUncheckedUpdateWithoutUserInput>
+  export type BillingUpdateWithWhereUniqueWithoutUserInput = {
+    where: BillingWhereUniqueInput
+    data: XOR<BillingUpdateWithoutUserInput, BillingUncheckedUpdateWithoutUserInput>
   }
 
-  export type EventUpdateManyWithWhereWithoutUserInput = {
-    where: EventScalarWhereInput
-    data: XOR<EventUpdateManyMutationInput, EventUncheckedUpdateManyWithoutEventsInput>
+  export type BillingUpdateManyWithWhereWithoutUserInput = {
+    where: BillingScalarWhereInput
+    data: XOR<BillingUpdateManyMutationInput, BillingUncheckedUpdateManyWithoutBillingsInput>
   }
 
-  export type EventScalarWhereInput = {
-    AND?: Enumerable<EventScalarWhereInput>
-    OR?: Enumerable<EventScalarWhereInput>
-    NOT?: Enumerable<EventScalarWhereInput>
+  export type BillingScalarWhereInput = {
+    AND?: Enumerable<BillingScalarWhereInput>
+    OR?: Enumerable<BillingScalarWhereInput>
+    NOT?: Enumerable<BillingScalarWhereInput>
+    id?: IntFilter | number
+    subscriptionMonth?: IntFilter | number
+    subscriptionPrice?: IntFilter | number
+    userId?: IntFilter | number
+    name?: StringFilter | string
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+  }
+
+  export type UserOnGroupMeetingUpsertWithWhereUniqueWithoutUserInput = {
+    where: UserOnGroupMeetingWhereUniqueInput
+    update: XOR<UserOnGroupMeetingUpdateWithoutUserInput, UserOnGroupMeetingUncheckedUpdateWithoutUserInput>
+    create: XOR<UserOnGroupMeetingCreateWithoutUserInput, UserOnGroupMeetingUncheckedCreateWithoutUserInput>
+  }
+
+  export type UserOnGroupMeetingUpdateWithWhereUniqueWithoutUserInput = {
+    where: UserOnGroupMeetingWhereUniqueInput
+    data: XOR<UserOnGroupMeetingUpdateWithoutUserInput, UserOnGroupMeetingUncheckedUpdateWithoutUserInput>
+  }
+
+  export type UserOnGroupMeetingUpdateManyWithWhereWithoutUserInput = {
+    where: UserOnGroupMeetingScalarWhereInput
+    data: XOR<UserOnGroupMeetingUpdateManyMutationInput, UserOnGroupMeetingUncheckedUpdateManyWithoutUserOnGroupMeetingsInput>
+  }
+
+  export type UserOnGroupMeetingScalarWhereInput = {
+    AND?: Enumerable<UserOnGroupMeetingScalarWhereInput>
+    OR?: Enumerable<UserOnGroupMeetingScalarWhereInput>
+    NOT?: Enumerable<UserOnGroupMeetingScalarWhereInput>
+    id?: IntFilter | number
+    userId?: IntFilter | number
+    groupMeetingId?: IntFilter | number
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+  }
+
+  export type UserCreateWithoutEventTypesInput = {
+    name: string
+    username: string
+    firebaseUid: string
+    subscription?: string | null
+    mobileNumber?: string | null
+    userLink?: string | null
+    job?: string | null
+    education?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    billings?: BillingCreateNestedManyWithoutUserInput
+    userOnGroupMeetings?: UserOnGroupMeetingCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutEventTypesInput = {
+    id?: number
+    name: string
+    username: string
+    firebaseUid: string
+    subscription?: string | null
+    mobileNumber?: string | null
+    userLink?: string | null
+    job?: string | null
+    education?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    billings?: BillingUncheckedCreateNestedManyWithoutUserInput
+    userOnGroupMeetings?: UserOnGroupMeetingUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutEventTypesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutEventTypesInput, UserUncheckedCreateWithoutEventTypesInput>
+  }
+
+  export type EventTypeOnLocationCreateWithoutEventTypeInput = {
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    location: LocationCreateNestedOneWithoutEventTypeOnLocationsInput
+  }
+
+  export type EventTypeOnLocationUncheckedCreateWithoutEventTypeInput = {
+    id?: number
+    locationId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EventTypeOnLocationCreateOrConnectWithoutEventTypeInput = {
+    where: EventTypeOnLocationWhereUniqueInput
+    create: XOR<EventTypeOnLocationCreateWithoutEventTypeInput, EventTypeOnLocationUncheckedCreateWithoutEventTypeInput>
+  }
+
+  export type EventTypeOnLocationCreateManyEventTypeInputEnvelope = {
+    data: Enumerable<EventTypeOnLocationCreateManyEventTypeInput>
+    skipDuplicates?: boolean
+  }
+
+  export type AvailabilityScheduleCreateWithoutEventTypeInput = {
+    name: string
+    timezone: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    weekDays?: WeekDayCreateNestedManyWithoutAvailabilityScheduleInput
+  }
+
+  export type AvailabilityScheduleUncheckedCreateWithoutEventTypeInput = {
+    id?: number
+    name: string
+    timezone: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    weekDays?: WeekDayUncheckedCreateNestedManyWithoutAvailabilityScheduleInput
+  }
+
+  export type AvailabilityScheduleCreateOrConnectWithoutEventTypeInput = {
+    where: AvailabilityScheduleWhereUniqueInput
+    create: XOR<AvailabilityScheduleCreateWithoutEventTypeInput, AvailabilityScheduleUncheckedCreateWithoutEventTypeInput>
+  }
+
+  export type AvailabilityScheduleCreateManyEventTypeInputEnvelope = {
+    data: Enumerable<AvailabilityScheduleCreateManyEventTypeInput>
+    skipDuplicates?: boolean
+  }
+
+  export type WeekDayCreateWithoutEventTypeInput = {
+    day: number
+    status: string
+    date: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutWeekDaysInput
+    timeSelect: TimeSelectCreateNestedOneWithoutWeekDaysInput
+  }
+
+  export type WeekDayUncheckedCreateWithoutEventTypeInput = {
+    id?: number
+    day: number
+    availabilityScheduleId?: number | null
+    timeSelectId: number
+    status: string
+    date: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WeekDayCreateOrConnectWithoutEventTypeInput = {
+    where: WeekDayWhereUniqueInput
+    create: XOR<WeekDayCreateWithoutEventTypeInput, WeekDayUncheckedCreateWithoutEventTypeInput>
+  }
+
+  export type WeekDayCreateManyEventTypeInputEnvelope = {
+    data: Enumerable<WeekDayCreateManyEventTypeInput>
+    skipDuplicates?: boolean
+  }
+
+  export type CalendarSelectCreateWithoutEventTypesInput = {
+    startDate: Date | string
+    endDate: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CalendarSelectUncheckedCreateWithoutEventTypesInput = {
+    id?: number
+    startDate: Date | string
+    endDate: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CalendarSelectCreateOrConnectWithoutEventTypesInput = {
+    where: CalendarSelectWhereUniqueInput
+    create: XOR<CalendarSelectCreateWithoutEventTypesInput, CalendarSelectUncheckedCreateWithoutEventTypesInput>
+  }
+
+  export type CustomerCreateWithoutEventTypesInput = {
+    name: string
+    email: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    groupMeetings?: GroupMeetingCreateNestedManyWithoutCustomerInput
+    eventSelects?: EventSelectCreateNestedManyWithoutCustomerInput
+  }
+
+  export type CustomerUncheckedCreateWithoutEventTypesInput = {
+    id?: number
+    name: string
+    email: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutCustomerInput
+    eventSelects?: EventSelectUncheckedCreateNestedManyWithoutCustomerInput
+  }
+
+  export type CustomerCreateOrConnectWithoutEventTypesInput = {
+    where: CustomerWhereUniqueInput
+    create: XOR<CustomerCreateWithoutEventTypesInput, CustomerUncheckedCreateWithoutEventTypesInput>
+  }
+
+  export type GroupMeetingCreateWithoutEventTypeInput = {
+    totalPrice: number
+    timezone: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    location: LocationCreateNestedOneWithoutGroupMeetingsInput
+    customer: CustomerCreateNestedOneWithoutGroupMeetingsInput
+    userOnGroupMeetings?: UserOnGroupMeetingCreateNestedManyWithoutGroupMeetingInput
+  }
+
+  export type GroupMeetingUncheckedCreateWithoutEventTypeInput = {
+    id?: number
+    locationId: number
+    customerId: number
+    totalPrice: number
+    timezone: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userOnGroupMeetings?: UserOnGroupMeetingUncheckedCreateNestedManyWithoutGroupMeetingInput
+  }
+
+  export type GroupMeetingCreateOrConnectWithoutEventTypeInput = {
+    where: GroupMeetingWhereUniqueInput
+    create: XOR<GroupMeetingCreateWithoutEventTypeInput, GroupMeetingUncheckedCreateWithoutEventTypeInput>
+  }
+
+  export type GroupMeetingCreateManyEventTypeInputEnvelope = {
+    data: Enumerable<GroupMeetingCreateManyEventTypeInput>
+    skipDuplicates?: boolean
+  }
+
+  export type EventSelectCreateWithoutEventTypeInput = {
+    selectDate: string
+    selectTime: Date | string
+    status: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customer: CustomerCreateNestedOneWithoutEventSelectsInput
+  }
+
+  export type EventSelectUncheckedCreateWithoutEventTypeInput = {
+    id?: number
+    customerId: number
+    selectDate: string
+    selectTime: Date | string
+    status: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EventSelectCreateOrConnectWithoutEventTypeInput = {
+    where: EventSelectWhereUniqueInput
+    create: XOR<EventSelectCreateWithoutEventTypeInput, EventSelectUncheckedCreateWithoutEventTypeInput>
+  }
+
+  export type EventSelectCreateManyEventTypeInputEnvelope = {
+    data: Enumerable<EventSelectCreateManyEventTypeInput>
+    skipDuplicates?: boolean
+  }
+
+  export type UserUpsertWithoutEventTypesInput = {
+    update: XOR<UserUpdateWithoutEventTypesInput, UserUncheckedUpdateWithoutEventTypesInput>
+    create: XOR<UserCreateWithoutEventTypesInput, UserUncheckedCreateWithoutEventTypesInput>
+  }
+
+  export type UserUpdateWithoutEventTypesInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    firebaseUid?: StringFieldUpdateOperationsInput | string
+    subscription?: NullableStringFieldUpdateOperationsInput | string | null
+    mobileNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    userLink?: NullableStringFieldUpdateOperationsInput | string | null
+    job?: NullableStringFieldUpdateOperationsInput | string | null
+    education?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    billings?: BillingUpdateManyWithoutUserNestedInput
+    userOnGroupMeetings?: UserOnGroupMeetingUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutEventTypesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    firebaseUid?: StringFieldUpdateOperationsInput | string
+    subscription?: NullableStringFieldUpdateOperationsInput | string | null
+    mobileNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    userLink?: NullableStringFieldUpdateOperationsInput | string | null
+    job?: NullableStringFieldUpdateOperationsInput | string | null
+    education?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    billings?: BillingUncheckedUpdateManyWithoutUserNestedInput
+    userOnGroupMeetings?: UserOnGroupMeetingUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type EventTypeOnLocationUpsertWithWhereUniqueWithoutEventTypeInput = {
+    where: EventTypeOnLocationWhereUniqueInput
+    update: XOR<EventTypeOnLocationUpdateWithoutEventTypeInput, EventTypeOnLocationUncheckedUpdateWithoutEventTypeInput>
+    create: XOR<EventTypeOnLocationCreateWithoutEventTypeInput, EventTypeOnLocationUncheckedCreateWithoutEventTypeInput>
+  }
+
+  export type EventTypeOnLocationUpdateWithWhereUniqueWithoutEventTypeInput = {
+    where: EventTypeOnLocationWhereUniqueInput
+    data: XOR<EventTypeOnLocationUpdateWithoutEventTypeInput, EventTypeOnLocationUncheckedUpdateWithoutEventTypeInput>
+  }
+
+  export type EventTypeOnLocationUpdateManyWithWhereWithoutEventTypeInput = {
+    where: EventTypeOnLocationScalarWhereInput
+    data: XOR<EventTypeOnLocationUpdateManyMutationInput, EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeOnLocationsInput>
+  }
+
+  export type EventTypeOnLocationScalarWhereInput = {
+    AND?: Enumerable<EventTypeOnLocationScalarWhereInput>
+    OR?: Enumerable<EventTypeOnLocationScalarWhereInput>
+    NOT?: Enumerable<EventTypeOnLocationScalarWhereInput>
+    id?: IntFilter | number
+    eventTypeId?: IntFilter | number
+    locationId?: IntFilter | number
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+  }
+
+  export type AvailabilityScheduleUpsertWithWhereUniqueWithoutEventTypeInput = {
+    where: AvailabilityScheduleWhereUniqueInput
+    update: XOR<AvailabilityScheduleUpdateWithoutEventTypeInput, AvailabilityScheduleUncheckedUpdateWithoutEventTypeInput>
+    create: XOR<AvailabilityScheduleCreateWithoutEventTypeInput, AvailabilityScheduleUncheckedCreateWithoutEventTypeInput>
+  }
+
+  export type AvailabilityScheduleUpdateWithWhereUniqueWithoutEventTypeInput = {
+    where: AvailabilityScheduleWhereUniqueInput
+    data: XOR<AvailabilityScheduleUpdateWithoutEventTypeInput, AvailabilityScheduleUncheckedUpdateWithoutEventTypeInput>
+  }
+
+  export type AvailabilityScheduleUpdateManyWithWhereWithoutEventTypeInput = {
+    where: AvailabilityScheduleScalarWhereInput
+    data: XOR<AvailabilityScheduleUpdateManyMutationInput, AvailabilityScheduleUncheckedUpdateManyWithoutAvailabilitySchedulesInput>
+  }
+
+  export type AvailabilityScheduleScalarWhereInput = {
+    AND?: Enumerable<AvailabilityScheduleScalarWhereInput>
+    OR?: Enumerable<AvailabilityScheduleScalarWhereInput>
+    NOT?: Enumerable<AvailabilityScheduleScalarWhereInput>
     id?: IntFilter | number
     name?: StringFilter | string
-    userId?: IntFilter | number
+    eventTypeId?: IntFilter | number
+    timezone?: StringFilter | string
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+  }
+
+  export type WeekDayUpsertWithWhereUniqueWithoutEventTypeInput = {
+    where: WeekDayWhereUniqueInput
+    update: XOR<WeekDayUpdateWithoutEventTypeInput, WeekDayUncheckedUpdateWithoutEventTypeInput>
+    create: XOR<WeekDayCreateWithoutEventTypeInput, WeekDayUncheckedCreateWithoutEventTypeInput>
+  }
+
+  export type WeekDayUpdateWithWhereUniqueWithoutEventTypeInput = {
+    where: WeekDayWhereUniqueInput
+    data: XOR<WeekDayUpdateWithoutEventTypeInput, WeekDayUncheckedUpdateWithoutEventTypeInput>
+  }
+
+  export type WeekDayUpdateManyWithWhereWithoutEventTypeInput = {
+    where: WeekDayScalarWhereInput
+    data: XOR<WeekDayUpdateManyMutationInput, WeekDayUncheckedUpdateManyWithoutWeekDaysInput>
+  }
+
+  export type WeekDayScalarWhereInput = {
+    AND?: Enumerable<WeekDayScalarWhereInput>
+    OR?: Enumerable<WeekDayScalarWhereInput>
+    NOT?: Enumerable<WeekDayScalarWhereInput>
+    id?: IntFilter | number
+    day?: IntFilter | number
+    availabilityScheduleId?: IntNullableFilter | number | null
+    timeSelectId?: IntFilter | number
+    eventTypeId?: IntNullableFilter | number | null
+    status?: StringFilter | string
+    date?: DateTimeFilter | Date | string
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+  }
+
+  export type CalendarSelectUpsertWithoutEventTypesInput = {
+    update: XOR<CalendarSelectUpdateWithoutEventTypesInput, CalendarSelectUncheckedUpdateWithoutEventTypesInput>
+    create: XOR<CalendarSelectCreateWithoutEventTypesInput, CalendarSelectUncheckedCreateWithoutEventTypesInput>
+  }
+
+  export type CalendarSelectUpdateWithoutEventTypesInput = {
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CalendarSelectUncheckedUpdateWithoutEventTypesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CustomerUpsertWithoutEventTypesInput = {
+    update: XOR<CustomerUpdateWithoutEventTypesInput, CustomerUncheckedUpdateWithoutEventTypesInput>
+    create: XOR<CustomerCreateWithoutEventTypesInput, CustomerUncheckedCreateWithoutEventTypesInput>
+  }
+
+  export type CustomerUpdateWithoutEventTypesInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    groupMeetings?: GroupMeetingUpdateManyWithoutCustomerNestedInput
+    eventSelects?: EventSelectUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type CustomerUncheckedUpdateWithoutEventTypesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutCustomerNestedInput
+    eventSelects?: EventSelectUncheckedUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type GroupMeetingUpsertWithWhereUniqueWithoutEventTypeInput = {
+    where: GroupMeetingWhereUniqueInput
+    update: XOR<GroupMeetingUpdateWithoutEventTypeInput, GroupMeetingUncheckedUpdateWithoutEventTypeInput>
+    create: XOR<GroupMeetingCreateWithoutEventTypeInput, GroupMeetingUncheckedCreateWithoutEventTypeInput>
+  }
+
+  export type GroupMeetingUpdateWithWhereUniqueWithoutEventTypeInput = {
+    where: GroupMeetingWhereUniqueInput
+    data: XOR<GroupMeetingUpdateWithoutEventTypeInput, GroupMeetingUncheckedUpdateWithoutEventTypeInput>
+  }
+
+  export type GroupMeetingUpdateManyWithWhereWithoutEventTypeInput = {
+    where: GroupMeetingScalarWhereInput
+    data: XOR<GroupMeetingUpdateManyMutationInput, GroupMeetingUncheckedUpdateManyWithoutGroupMeetingsInput>
+  }
+
+  export type GroupMeetingScalarWhereInput = {
+    AND?: Enumerable<GroupMeetingScalarWhereInput>
+    OR?: Enumerable<GroupMeetingScalarWhereInput>
+    NOT?: Enumerable<GroupMeetingScalarWhereInput>
+    id?: IntFilter | number
+    locationId?: IntFilter | number
+    customerId?: IntFilter | number
+    totalPrice?: IntFilter | number
+    timezone?: StringFilter | string
     eventTypeId?: IntFilter | number
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
   }
 
-  export type UserCreateWithoutSessionsInput = {
-    username?: string | null
-    password_hash?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    events?: EventCreateNestedManyWithoutUserInput
+  export type EventSelectUpsertWithWhereUniqueWithoutEventTypeInput = {
+    where: EventSelectWhereUniqueInput
+    update: XOR<EventSelectUpdateWithoutEventTypeInput, EventSelectUncheckedUpdateWithoutEventTypeInput>
+    create: XOR<EventSelectCreateWithoutEventTypeInput, EventSelectUncheckedCreateWithoutEventTypeInput>
   }
 
-  export type UserUncheckedCreateWithoutSessionsInput = {
+  export type EventSelectUpdateWithWhereUniqueWithoutEventTypeInput = {
+    where: EventSelectWhereUniqueInput
+    data: XOR<EventSelectUpdateWithoutEventTypeInput, EventSelectUncheckedUpdateWithoutEventTypeInput>
+  }
+
+  export type EventSelectUpdateManyWithWhereWithoutEventTypeInput = {
+    where: EventSelectScalarWhereInput
+    data: XOR<EventSelectUpdateManyMutationInput, EventSelectUncheckedUpdateManyWithoutEventSelectsInput>
+  }
+
+  export type EventSelectScalarWhereInput = {
+    AND?: Enumerable<EventSelectScalarWhereInput>
+    OR?: Enumerable<EventSelectScalarWhereInput>
+    NOT?: Enumerable<EventSelectScalarWhereInput>
+    id?: IntFilter | number
+    eventTypeId?: IntFilter | number
+    customerId?: IntFilter | number
+    selectDate?: StringFilter | string
+    selectTime?: DateTimeFilter | Date | string
+    status?: StringFilter | string
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+  }
+
+  export type EventTypeOnLocationCreateWithoutLocationInput = {
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventType: EventTypeCreateNestedOneWithoutEventTypeOnLocationsInput
+  }
+
+  export type EventTypeOnLocationUncheckedCreateWithoutLocationInput = {
     id?: number
-    username?: string | null
-    password_hash?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    events?: EventUncheckedCreateNestedManyWithoutUserInput
-  }
-
-  export type UserCreateOrConnectWithoutSessionsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutSessionsInput, UserUncheckedCreateWithoutSessionsInput>
-  }
-
-  export type UserUpsertWithoutSessionsInput = {
-    update: XOR<UserUpdateWithoutSessionsInput, UserUncheckedUpdateWithoutSessionsInput>
-    create: XOR<UserCreateWithoutSessionsInput, UserUncheckedCreateWithoutSessionsInput>
-  }
-
-  export type UserUpdateWithoutSessionsInput = {
-    username?: NullableStringFieldUpdateOperationsInput | string | null
-    password_hash?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    events?: EventUpdateManyWithoutUserNestedInput
-  }
-
-  export type UserUncheckedUpdateWithoutSessionsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    username?: NullableStringFieldUpdateOperationsInput | string | null
-    password_hash?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    events?: EventUncheckedUpdateManyWithoutUserNestedInput
-  }
-
-  export type EventCreateWithoutEventTypeInput = {
-    name: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    user: UserCreateNestedOneWithoutEventsInput
-  }
-
-  export type EventUncheckedCreateWithoutEventTypeInput = {
-    id?: number
-    name: string
-    userId: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type EventCreateOrConnectWithoutEventTypeInput = {
-    where: EventWhereUniqueInput
-    create: XOR<EventCreateWithoutEventTypeInput, EventUncheckedCreateWithoutEventTypeInput>
-  }
-
-  export type EventCreateManyEventTypeInputEnvelope = {
-    data: Enumerable<EventCreateManyEventTypeInput>
-    skipDuplicates?: boolean
-  }
-
-  export type EventUpsertWithWhereUniqueWithoutEventTypeInput = {
-    where: EventWhereUniqueInput
-    update: XOR<EventUpdateWithoutEventTypeInput, EventUncheckedUpdateWithoutEventTypeInput>
-    create: XOR<EventCreateWithoutEventTypeInput, EventUncheckedCreateWithoutEventTypeInput>
-  }
-
-  export type EventUpdateWithWhereUniqueWithoutEventTypeInput = {
-    where: EventWhereUniqueInput
-    data: XOR<EventUpdateWithoutEventTypeInput, EventUncheckedUpdateWithoutEventTypeInput>
-  }
-
-  export type EventUpdateManyWithWhereWithoutEventTypeInput = {
-    where: EventScalarWhereInput
-    data: XOR<EventUpdateManyMutationInput, EventUncheckedUpdateManyWithoutEventsInput>
-  }
-
-  export type UserCreateWithoutEventsInput = {
-    username?: string | null
-    password_hash?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    sessions?: SessionCreateNestedManyWithoutUserInput
-  }
-
-  export type UserUncheckedCreateWithoutEventsInput = {
-    id?: number
-    username?: string | null
-    password_hash?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
-  }
-
-  export type UserCreateOrConnectWithoutEventsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutEventsInput, UserUncheckedCreateWithoutEventsInput>
-  }
-
-  export type EventTypeCreateWithoutEventsInput = {
-    name: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type EventTypeUncheckedCreateWithoutEventsInput = {
-    id?: number
-    name: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type EventTypeCreateOrConnectWithoutEventsInput = {
-    where: EventTypeWhereUniqueInput
-    create: XOR<EventTypeCreateWithoutEventsInput, EventTypeUncheckedCreateWithoutEventsInput>
-  }
-
-  export type UserUpsertWithoutEventsInput = {
-    update: XOR<UserUpdateWithoutEventsInput, UserUncheckedUpdateWithoutEventsInput>
-    create: XOR<UserCreateWithoutEventsInput, UserUncheckedCreateWithoutEventsInput>
-  }
-
-  export type UserUpdateWithoutEventsInput = {
-    username?: NullableStringFieldUpdateOperationsInput | string | null
-    password_hash?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sessions?: SessionUpdateManyWithoutUserNestedInput
-  }
-
-  export type UserUncheckedUpdateWithoutEventsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    username?: NullableStringFieldUpdateOperationsInput | string | null
-    password_hash?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
-  }
-
-  export type EventTypeUpsertWithoutEventsInput = {
-    update: XOR<EventTypeUpdateWithoutEventsInput, EventTypeUncheckedUpdateWithoutEventsInput>
-    create: XOR<EventTypeCreateWithoutEventsInput, EventTypeUncheckedCreateWithoutEventsInput>
-  }
-
-  export type EventTypeUpdateWithoutEventsInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type EventTypeUncheckedUpdateWithoutEventsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type SessionCreateManyUserInput = {
-    id?: number
-    token: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type EventCreateManyUserInput = {
-    id?: number
-    name: string
     eventTypeId: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type SessionUpdateWithoutUserInput = {
-    token?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  export type EventTypeOnLocationCreateOrConnectWithoutLocationInput = {
+    where: EventTypeOnLocationWhereUniqueInput
+    create: XOR<EventTypeOnLocationCreateWithoutLocationInput, EventTypeOnLocationUncheckedCreateWithoutLocationInput>
   }
 
-  export type SessionUncheckedUpdateWithoutUserInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    token?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  export type EventTypeOnLocationCreateManyLocationInputEnvelope = {
+    data: Enumerable<EventTypeOnLocationCreateManyLocationInput>
+    skipDuplicates?: boolean
   }
 
-  export type SessionUncheckedUpdateManyWithoutSessionsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    token?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  export type GroupMeetingCreateWithoutLocationInput = {
+    totalPrice: number
+    timezone: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customer: CustomerCreateNestedOneWithoutGroupMeetingsInput
+    eventType: EventTypeCreateNestedOneWithoutGroupMeetingsInput
+    userOnGroupMeetings?: UserOnGroupMeetingCreateNestedManyWithoutGroupMeetingInput
   }
 
-  export type EventUpdateWithoutUserInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    eventType?: EventTypeUpdateOneRequiredWithoutEventsNestedInput
+  export type GroupMeetingUncheckedCreateWithoutLocationInput = {
+    id?: number
+    customerId: number
+    totalPrice: number
+    timezone: string
+    eventTypeId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userOnGroupMeetings?: UserOnGroupMeetingUncheckedCreateNestedManyWithoutGroupMeetingInput
   }
 
-  export type EventUncheckedUpdateWithoutUserInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    eventTypeId?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  export type GroupMeetingCreateOrConnectWithoutLocationInput = {
+    where: GroupMeetingWhereUniqueInput
+    create: XOR<GroupMeetingCreateWithoutLocationInput, GroupMeetingUncheckedCreateWithoutLocationInput>
   }
 
-  export type EventUncheckedUpdateManyWithoutEventsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    eventTypeId?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  export type GroupMeetingCreateManyLocationInputEnvelope = {
+    data: Enumerable<GroupMeetingCreateManyLocationInput>
+    skipDuplicates?: boolean
   }
 
-  export type EventCreateManyEventTypeInput = {
+  export type EventTypeOnLocationUpsertWithWhereUniqueWithoutLocationInput = {
+    where: EventTypeOnLocationWhereUniqueInput
+    update: XOR<EventTypeOnLocationUpdateWithoutLocationInput, EventTypeOnLocationUncheckedUpdateWithoutLocationInput>
+    create: XOR<EventTypeOnLocationCreateWithoutLocationInput, EventTypeOnLocationUncheckedCreateWithoutLocationInput>
+  }
+
+  export type EventTypeOnLocationUpdateWithWhereUniqueWithoutLocationInput = {
+    where: EventTypeOnLocationWhereUniqueInput
+    data: XOR<EventTypeOnLocationUpdateWithoutLocationInput, EventTypeOnLocationUncheckedUpdateWithoutLocationInput>
+  }
+
+  export type EventTypeOnLocationUpdateManyWithWhereWithoutLocationInput = {
+    where: EventTypeOnLocationScalarWhereInput
+    data: XOR<EventTypeOnLocationUpdateManyMutationInput, EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeOnLocationsInput>
+  }
+
+  export type GroupMeetingUpsertWithWhereUniqueWithoutLocationInput = {
+    where: GroupMeetingWhereUniqueInput
+    update: XOR<GroupMeetingUpdateWithoutLocationInput, GroupMeetingUncheckedUpdateWithoutLocationInput>
+    create: XOR<GroupMeetingCreateWithoutLocationInput, GroupMeetingUncheckedCreateWithoutLocationInput>
+  }
+
+  export type GroupMeetingUpdateWithWhereUniqueWithoutLocationInput = {
+    where: GroupMeetingWhereUniqueInput
+    data: XOR<GroupMeetingUpdateWithoutLocationInput, GroupMeetingUncheckedUpdateWithoutLocationInput>
+  }
+
+  export type GroupMeetingUpdateManyWithWhereWithoutLocationInput = {
+    where: GroupMeetingScalarWhereInput
+    data: XOR<GroupMeetingUpdateManyMutationInput, GroupMeetingUncheckedUpdateManyWithoutGroupMeetingsInput>
+  }
+
+  export type EventTypeCreateWithoutEventTypeOnLocationsInput = {
+    name: string
+    description: string
+    price: number
+    timeDuration: number
+    status: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutEventTypesInput
+    availabilitySchedules?: AvailabilityScheduleCreateNestedManyWithoutEventTypeInput
+    weekDays?: WeekDayCreateNestedManyWithoutEventTypeInput
+    calendarSelect: CalendarSelectCreateNestedOneWithoutEventTypesInput
+    customer: CustomerCreateNestedOneWithoutEventTypesInput
+    groupMeetings?: GroupMeetingCreateNestedManyWithoutEventTypeInput
+    eventSelects?: EventSelectCreateNestedManyWithoutEventTypeInput
+  }
+
+  export type EventTypeUncheckedCreateWithoutEventTypeOnLocationsInput = {
     id?: number
     name: string
+    userId: number
+    description: string
+    price: number
+    timeDuration: number
+    calendarSelectId: number
+    customerId: number
+    status: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    availabilitySchedules?: AvailabilityScheduleUncheckedCreateNestedManyWithoutEventTypeInput
+    weekDays?: WeekDayUncheckedCreateNestedManyWithoutEventTypeInput
+    groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput
+    eventSelects?: EventSelectUncheckedCreateNestedManyWithoutEventTypeInput
+  }
+
+  export type EventTypeCreateOrConnectWithoutEventTypeOnLocationsInput = {
+    where: EventTypeWhereUniqueInput
+    create: XOR<EventTypeCreateWithoutEventTypeOnLocationsInput, EventTypeUncheckedCreateWithoutEventTypeOnLocationsInput>
+  }
+
+  export type LocationCreateWithoutEventTypeOnLocationsInput = {
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    groupMeetings?: GroupMeetingCreateNestedManyWithoutLocationInput
+  }
+
+  export type LocationUncheckedCreateWithoutEventTypeOnLocationsInput = {
+    id?: number
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutLocationInput
+  }
+
+  export type LocationCreateOrConnectWithoutEventTypeOnLocationsInput = {
+    where: LocationWhereUniqueInput
+    create: XOR<LocationCreateWithoutEventTypeOnLocationsInput, LocationUncheckedCreateWithoutEventTypeOnLocationsInput>
+  }
+
+  export type EventTypeUpsertWithoutEventTypeOnLocationsInput = {
+    update: XOR<EventTypeUpdateWithoutEventTypeOnLocationsInput, EventTypeUncheckedUpdateWithoutEventTypeOnLocationsInput>
+    create: XOR<EventTypeCreateWithoutEventTypeOnLocationsInput, EventTypeUncheckedCreateWithoutEventTypeOnLocationsInput>
+  }
+
+  export type EventTypeUpdateWithoutEventTypeOnLocationsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
+    availabilitySchedules?: AvailabilityScheduleUpdateManyWithoutEventTypeNestedInput
+    weekDays?: WeekDayUpdateManyWithoutEventTypeNestedInput
+    calendarSelect?: CalendarSelectUpdateOneRequiredWithoutEventTypesNestedInput
+    customer?: CustomerUpdateOneRequiredWithoutEventTypesNestedInput
+    groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
+    eventSelects?: EventSelectUpdateManyWithoutEventTypeNestedInput
+  }
+
+  export type EventTypeUncheckedUpdateWithoutEventTypeOnLocationsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    userId?: IntFieldUpdateOperationsInput | number
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    calendarSelectId?: IntFieldUpdateOperationsInput | number
+    customerId?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    availabilitySchedules?: AvailabilityScheduleUncheckedUpdateManyWithoutEventTypeNestedInput
+    weekDays?: WeekDayUncheckedUpdateManyWithoutEventTypeNestedInput
+    groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
+    eventSelects?: EventSelectUncheckedUpdateManyWithoutEventTypeNestedInput
+  }
+
+  export type LocationUpsertWithoutEventTypeOnLocationsInput = {
+    update: XOR<LocationUpdateWithoutEventTypeOnLocationsInput, LocationUncheckedUpdateWithoutEventTypeOnLocationsInput>
+    create: XOR<LocationCreateWithoutEventTypeOnLocationsInput, LocationUncheckedCreateWithoutEventTypeOnLocationsInput>
+  }
+
+  export type LocationUpdateWithoutEventTypeOnLocationsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    groupMeetings?: GroupMeetingUpdateManyWithoutLocationNestedInput
+  }
+
+  export type LocationUncheckedUpdateWithoutEventTypeOnLocationsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutLocationNestedInput
+  }
+
+  export type EventTypeCreateWithoutAvailabilitySchedulesInput = {
+    name: string
+    description: string
+    price: number
+    timeDuration: number
+    status: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutEventTypesInput
+    eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutEventTypeInput
+    weekDays?: WeekDayCreateNestedManyWithoutEventTypeInput
+    calendarSelect: CalendarSelectCreateNestedOneWithoutEventTypesInput
+    customer: CustomerCreateNestedOneWithoutEventTypesInput
+    groupMeetings?: GroupMeetingCreateNestedManyWithoutEventTypeInput
+    eventSelects?: EventSelectCreateNestedManyWithoutEventTypeInput
+  }
+
+  export type EventTypeUncheckedCreateWithoutAvailabilitySchedulesInput = {
+    id?: number
+    name: string
+    userId: number
+    description: string
+    price: number
+    timeDuration: number
+    calendarSelectId: number
+    customerId: number
+    status: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput
+    weekDays?: WeekDayUncheckedCreateNestedManyWithoutEventTypeInput
+    groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput
+    eventSelects?: EventSelectUncheckedCreateNestedManyWithoutEventTypeInput
+  }
+
+  export type EventTypeCreateOrConnectWithoutAvailabilitySchedulesInput = {
+    where: EventTypeWhereUniqueInput
+    create: XOR<EventTypeCreateWithoutAvailabilitySchedulesInput, EventTypeUncheckedCreateWithoutAvailabilitySchedulesInput>
+  }
+
+  export type WeekDayCreateWithoutAvailabilityScheduleInput = {
+    day: number
+    status: string
+    date: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    timeSelect: TimeSelectCreateNestedOneWithoutWeekDaysInput
+    eventType?: EventTypeCreateNestedOneWithoutWeekDaysInput
+  }
+
+  export type WeekDayUncheckedCreateWithoutAvailabilityScheduleInput = {
+    id?: number
+    day: number
+    timeSelectId: number
+    eventTypeId?: number | null
+    status: string
+    date: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WeekDayCreateOrConnectWithoutAvailabilityScheduleInput = {
+    where: WeekDayWhereUniqueInput
+    create: XOR<WeekDayCreateWithoutAvailabilityScheduleInput, WeekDayUncheckedCreateWithoutAvailabilityScheduleInput>
+  }
+
+  export type WeekDayCreateManyAvailabilityScheduleInputEnvelope = {
+    data: Enumerable<WeekDayCreateManyAvailabilityScheduleInput>
+    skipDuplicates?: boolean
+  }
+
+  export type EventTypeUpsertWithoutAvailabilitySchedulesInput = {
+    update: XOR<EventTypeUpdateWithoutAvailabilitySchedulesInput, EventTypeUncheckedUpdateWithoutAvailabilitySchedulesInput>
+    create: XOR<EventTypeCreateWithoutAvailabilitySchedulesInput, EventTypeUncheckedCreateWithoutAvailabilitySchedulesInput>
+  }
+
+  export type EventTypeUpdateWithoutAvailabilitySchedulesInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
+    eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
+    weekDays?: WeekDayUpdateManyWithoutEventTypeNestedInput
+    calendarSelect?: CalendarSelectUpdateOneRequiredWithoutEventTypesNestedInput
+    customer?: CustomerUpdateOneRequiredWithoutEventTypesNestedInput
+    groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
+    eventSelects?: EventSelectUpdateManyWithoutEventTypeNestedInput
+  }
+
+  export type EventTypeUncheckedUpdateWithoutAvailabilitySchedulesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    userId?: IntFieldUpdateOperationsInput | number
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    calendarSelectId?: IntFieldUpdateOperationsInput | number
+    customerId?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
+    weekDays?: WeekDayUncheckedUpdateManyWithoutEventTypeNestedInput
+    groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
+    eventSelects?: EventSelectUncheckedUpdateManyWithoutEventTypeNestedInput
+  }
+
+  export type WeekDayUpsertWithWhereUniqueWithoutAvailabilityScheduleInput = {
+    where: WeekDayWhereUniqueInput
+    update: XOR<WeekDayUpdateWithoutAvailabilityScheduleInput, WeekDayUncheckedUpdateWithoutAvailabilityScheduleInput>
+    create: XOR<WeekDayCreateWithoutAvailabilityScheduleInput, WeekDayUncheckedCreateWithoutAvailabilityScheduleInput>
+  }
+
+  export type WeekDayUpdateWithWhereUniqueWithoutAvailabilityScheduleInput = {
+    where: WeekDayWhereUniqueInput
+    data: XOR<WeekDayUpdateWithoutAvailabilityScheduleInput, WeekDayUncheckedUpdateWithoutAvailabilityScheduleInput>
+  }
+
+  export type WeekDayUpdateManyWithWhereWithoutAvailabilityScheduleInput = {
+    where: WeekDayScalarWhereInput
+    data: XOR<WeekDayUpdateManyMutationInput, WeekDayUncheckedUpdateManyWithoutWeekDaysInput>
+  }
+
+  export type AvailabilityScheduleCreateWithoutWeekDaysInput = {
+    name: string
+    timezone: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventType: EventTypeCreateNestedOneWithoutAvailabilitySchedulesInput
+  }
+
+  export type AvailabilityScheduleUncheckedCreateWithoutWeekDaysInput = {
+    id?: number
+    name: string
+    eventTypeId: number
+    timezone: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AvailabilityScheduleCreateOrConnectWithoutWeekDaysInput = {
+    where: AvailabilityScheduleWhereUniqueInput
+    create: XOR<AvailabilityScheduleCreateWithoutWeekDaysInput, AvailabilityScheduleUncheckedCreateWithoutWeekDaysInput>
+  }
+
+  export type TimeSelectCreateWithoutWeekDaysInput = {
+    startTime: Date | string
+    endTime: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TimeSelectUncheckedCreateWithoutWeekDaysInput = {
+    id?: number
+    startTime: Date | string
+    endTime: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TimeSelectCreateOrConnectWithoutWeekDaysInput = {
+    where: TimeSelectWhereUniqueInput
+    create: XOR<TimeSelectCreateWithoutWeekDaysInput, TimeSelectUncheckedCreateWithoutWeekDaysInput>
+  }
+
+  export type EventTypeCreateWithoutWeekDaysInput = {
+    name: string
+    description: string
+    price: number
+    timeDuration: number
+    status: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutEventTypesInput
+    eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutEventTypeInput
+    availabilitySchedules?: AvailabilityScheduleCreateNestedManyWithoutEventTypeInput
+    calendarSelect: CalendarSelectCreateNestedOneWithoutEventTypesInput
+    customer: CustomerCreateNestedOneWithoutEventTypesInput
+    groupMeetings?: GroupMeetingCreateNestedManyWithoutEventTypeInput
+    eventSelects?: EventSelectCreateNestedManyWithoutEventTypeInput
+  }
+
+  export type EventTypeUncheckedCreateWithoutWeekDaysInput = {
+    id?: number
+    name: string
+    userId: number
+    description: string
+    price: number
+    timeDuration: number
+    calendarSelectId: number
+    customerId: number
+    status: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput
+    availabilitySchedules?: AvailabilityScheduleUncheckedCreateNestedManyWithoutEventTypeInput
+    groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput
+    eventSelects?: EventSelectUncheckedCreateNestedManyWithoutEventTypeInput
+  }
+
+  export type EventTypeCreateOrConnectWithoutWeekDaysInput = {
+    where: EventTypeWhereUniqueInput
+    create: XOR<EventTypeCreateWithoutWeekDaysInput, EventTypeUncheckedCreateWithoutWeekDaysInput>
+  }
+
+  export type AvailabilityScheduleUpsertWithoutWeekDaysInput = {
+    update: XOR<AvailabilityScheduleUpdateWithoutWeekDaysInput, AvailabilityScheduleUncheckedUpdateWithoutWeekDaysInput>
+    create: XOR<AvailabilityScheduleCreateWithoutWeekDaysInput, AvailabilityScheduleUncheckedCreateWithoutWeekDaysInput>
+  }
+
+  export type AvailabilityScheduleUpdateWithoutWeekDaysInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    timezone?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventType?: EventTypeUpdateOneRequiredWithoutAvailabilitySchedulesNestedInput
+  }
+
+  export type AvailabilityScheduleUncheckedUpdateWithoutWeekDaysInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    eventTypeId?: IntFieldUpdateOperationsInput | number
+    timezone?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TimeSelectUpsertWithoutWeekDaysInput = {
+    update: XOR<TimeSelectUpdateWithoutWeekDaysInput, TimeSelectUncheckedUpdateWithoutWeekDaysInput>
+    create: XOR<TimeSelectCreateWithoutWeekDaysInput, TimeSelectUncheckedCreateWithoutWeekDaysInput>
+  }
+
+  export type TimeSelectUpdateWithoutWeekDaysInput = {
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TimeSelectUncheckedUpdateWithoutWeekDaysInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EventTypeUpsertWithoutWeekDaysInput = {
+    update: XOR<EventTypeUpdateWithoutWeekDaysInput, EventTypeUncheckedUpdateWithoutWeekDaysInput>
+    create: XOR<EventTypeCreateWithoutWeekDaysInput, EventTypeUncheckedCreateWithoutWeekDaysInput>
+  }
+
+  export type EventTypeUpdateWithoutWeekDaysInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
+    eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
+    availabilitySchedules?: AvailabilityScheduleUpdateManyWithoutEventTypeNestedInput
+    calendarSelect?: CalendarSelectUpdateOneRequiredWithoutEventTypesNestedInput
+    customer?: CustomerUpdateOneRequiredWithoutEventTypesNestedInput
+    groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
+    eventSelects?: EventSelectUpdateManyWithoutEventTypeNestedInput
+  }
+
+  export type EventTypeUncheckedUpdateWithoutWeekDaysInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    userId?: IntFieldUpdateOperationsInput | number
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    calendarSelectId?: IntFieldUpdateOperationsInput | number
+    customerId?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
+    availabilitySchedules?: AvailabilityScheduleUncheckedUpdateManyWithoutEventTypeNestedInput
+    groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
+    eventSelects?: EventSelectUncheckedUpdateManyWithoutEventTypeNestedInput
+  }
+
+  export type WeekDayCreateWithoutTimeSelectInput = {
+    day: number
+    status: string
+    date: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutWeekDaysInput
+    eventType?: EventTypeCreateNestedOneWithoutWeekDaysInput
+  }
+
+  export type WeekDayUncheckedCreateWithoutTimeSelectInput = {
+    id?: number
+    day: number
+    availabilityScheduleId?: number | null
+    eventTypeId?: number | null
+    status: string
+    date: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WeekDayCreateOrConnectWithoutTimeSelectInput = {
+    where: WeekDayWhereUniqueInput
+    create: XOR<WeekDayCreateWithoutTimeSelectInput, WeekDayUncheckedCreateWithoutTimeSelectInput>
+  }
+
+  export type WeekDayCreateManyTimeSelectInputEnvelope = {
+    data: Enumerable<WeekDayCreateManyTimeSelectInput>
+    skipDuplicates?: boolean
+  }
+
+  export type WeekDayUpsertWithWhereUniqueWithoutTimeSelectInput = {
+    where: WeekDayWhereUniqueInput
+    update: XOR<WeekDayUpdateWithoutTimeSelectInput, WeekDayUncheckedUpdateWithoutTimeSelectInput>
+    create: XOR<WeekDayCreateWithoutTimeSelectInput, WeekDayUncheckedCreateWithoutTimeSelectInput>
+  }
+
+  export type WeekDayUpdateWithWhereUniqueWithoutTimeSelectInput = {
+    where: WeekDayWhereUniqueInput
+    data: XOR<WeekDayUpdateWithoutTimeSelectInput, WeekDayUncheckedUpdateWithoutTimeSelectInput>
+  }
+
+  export type WeekDayUpdateManyWithWhereWithoutTimeSelectInput = {
+    where: WeekDayScalarWhereInput
+    data: XOR<WeekDayUpdateManyMutationInput, WeekDayUncheckedUpdateManyWithoutWeekDaysInput>
+  }
+
+  export type EventTypeCreateWithoutCustomerInput = {
+    name: string
+    description: string
+    price: number
+    timeDuration: number
+    status: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutEventTypesInput
+    eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutEventTypeInput
+    availabilitySchedules?: AvailabilityScheduleCreateNestedManyWithoutEventTypeInput
+    weekDays?: WeekDayCreateNestedManyWithoutEventTypeInput
+    calendarSelect: CalendarSelectCreateNestedOneWithoutEventTypesInput
+    groupMeetings?: GroupMeetingCreateNestedManyWithoutEventTypeInput
+    eventSelects?: EventSelectCreateNestedManyWithoutEventTypeInput
+  }
+
+  export type EventTypeUncheckedCreateWithoutCustomerInput = {
+    id?: number
+    name: string
+    userId: number
+    description: string
+    price: number
+    timeDuration: number
+    calendarSelectId: number
+    status: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput
+    availabilitySchedules?: AvailabilityScheduleUncheckedCreateNestedManyWithoutEventTypeInput
+    weekDays?: WeekDayUncheckedCreateNestedManyWithoutEventTypeInput
+    groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput
+    eventSelects?: EventSelectUncheckedCreateNestedManyWithoutEventTypeInput
+  }
+
+  export type EventTypeCreateOrConnectWithoutCustomerInput = {
+    where: EventTypeWhereUniqueInput
+    create: XOR<EventTypeCreateWithoutCustomerInput, EventTypeUncheckedCreateWithoutCustomerInput>
+  }
+
+  export type EventTypeCreateManyCustomerInputEnvelope = {
+    data: Enumerable<EventTypeCreateManyCustomerInput>
+    skipDuplicates?: boolean
+  }
+
+  export type GroupMeetingCreateWithoutCustomerInput = {
+    totalPrice: number
+    timezone: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    location: LocationCreateNestedOneWithoutGroupMeetingsInput
+    eventType: EventTypeCreateNestedOneWithoutGroupMeetingsInput
+    userOnGroupMeetings?: UserOnGroupMeetingCreateNestedManyWithoutGroupMeetingInput
+  }
+
+  export type GroupMeetingUncheckedCreateWithoutCustomerInput = {
+    id?: number
+    locationId: number
+    totalPrice: number
+    timezone: string
+    eventTypeId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userOnGroupMeetings?: UserOnGroupMeetingUncheckedCreateNestedManyWithoutGroupMeetingInput
+  }
+
+  export type GroupMeetingCreateOrConnectWithoutCustomerInput = {
+    where: GroupMeetingWhereUniqueInput
+    create: XOR<GroupMeetingCreateWithoutCustomerInput, GroupMeetingUncheckedCreateWithoutCustomerInput>
+  }
+
+  export type GroupMeetingCreateManyCustomerInputEnvelope = {
+    data: Enumerable<GroupMeetingCreateManyCustomerInput>
+    skipDuplicates?: boolean
+  }
+
+  export type EventSelectCreateWithoutCustomerInput = {
+    selectDate: string
+    selectTime: Date | string
+    status: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventType: EventTypeCreateNestedOneWithoutEventSelectsInput
+  }
+
+  export type EventSelectUncheckedCreateWithoutCustomerInput = {
+    id?: number
+    eventTypeId: number
+    selectDate: string
+    selectTime: Date | string
+    status: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EventSelectCreateOrConnectWithoutCustomerInput = {
+    where: EventSelectWhereUniqueInput
+    create: XOR<EventSelectCreateWithoutCustomerInput, EventSelectUncheckedCreateWithoutCustomerInput>
+  }
+
+  export type EventSelectCreateManyCustomerInputEnvelope = {
+    data: Enumerable<EventSelectCreateManyCustomerInput>
+    skipDuplicates?: boolean
+  }
+
+  export type EventTypeUpsertWithWhereUniqueWithoutCustomerInput = {
+    where: EventTypeWhereUniqueInput
+    update: XOR<EventTypeUpdateWithoutCustomerInput, EventTypeUncheckedUpdateWithoutCustomerInput>
+    create: XOR<EventTypeCreateWithoutCustomerInput, EventTypeUncheckedCreateWithoutCustomerInput>
+  }
+
+  export type EventTypeUpdateWithWhereUniqueWithoutCustomerInput = {
+    where: EventTypeWhereUniqueInput
+    data: XOR<EventTypeUpdateWithoutCustomerInput, EventTypeUncheckedUpdateWithoutCustomerInput>
+  }
+
+  export type EventTypeUpdateManyWithWhereWithoutCustomerInput = {
+    where: EventTypeScalarWhereInput
+    data: XOR<EventTypeUpdateManyMutationInput, EventTypeUncheckedUpdateManyWithoutEventTypesInput>
+  }
+
+  export type GroupMeetingUpsertWithWhereUniqueWithoutCustomerInput = {
+    where: GroupMeetingWhereUniqueInput
+    update: XOR<GroupMeetingUpdateWithoutCustomerInput, GroupMeetingUncheckedUpdateWithoutCustomerInput>
+    create: XOR<GroupMeetingCreateWithoutCustomerInput, GroupMeetingUncheckedCreateWithoutCustomerInput>
+  }
+
+  export type GroupMeetingUpdateWithWhereUniqueWithoutCustomerInput = {
+    where: GroupMeetingWhereUniqueInput
+    data: XOR<GroupMeetingUpdateWithoutCustomerInput, GroupMeetingUncheckedUpdateWithoutCustomerInput>
+  }
+
+  export type GroupMeetingUpdateManyWithWhereWithoutCustomerInput = {
+    where: GroupMeetingScalarWhereInput
+    data: XOR<GroupMeetingUpdateManyMutationInput, GroupMeetingUncheckedUpdateManyWithoutGroupMeetingsInput>
+  }
+
+  export type EventSelectUpsertWithWhereUniqueWithoutCustomerInput = {
+    where: EventSelectWhereUniqueInput
+    update: XOR<EventSelectUpdateWithoutCustomerInput, EventSelectUncheckedUpdateWithoutCustomerInput>
+    create: XOR<EventSelectCreateWithoutCustomerInput, EventSelectUncheckedCreateWithoutCustomerInput>
+  }
+
+  export type EventSelectUpdateWithWhereUniqueWithoutCustomerInput = {
+    where: EventSelectWhereUniqueInput
+    data: XOR<EventSelectUpdateWithoutCustomerInput, EventSelectUncheckedUpdateWithoutCustomerInput>
+  }
+
+  export type EventSelectUpdateManyWithWhereWithoutCustomerInput = {
+    where: EventSelectScalarWhereInput
+    data: XOR<EventSelectUpdateManyMutationInput, EventSelectUncheckedUpdateManyWithoutEventSelectsInput>
+  }
+
+  export type EventTypeCreateWithoutCalendarSelectInput = {
+    name: string
+    description: string
+    price: number
+    timeDuration: number
+    status: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutEventTypesInput
+    eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutEventTypeInput
+    availabilitySchedules?: AvailabilityScheduleCreateNestedManyWithoutEventTypeInput
+    weekDays?: WeekDayCreateNestedManyWithoutEventTypeInput
+    customer: CustomerCreateNestedOneWithoutEventTypesInput
+    groupMeetings?: GroupMeetingCreateNestedManyWithoutEventTypeInput
+    eventSelects?: EventSelectCreateNestedManyWithoutEventTypeInput
+  }
+
+  export type EventTypeUncheckedCreateWithoutCalendarSelectInput = {
+    id?: number
+    name: string
+    userId: number
+    description: string
+    price: number
+    timeDuration: number
+    customerId: number
+    status: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput
+    availabilitySchedules?: AvailabilityScheduleUncheckedCreateNestedManyWithoutEventTypeInput
+    weekDays?: WeekDayUncheckedCreateNestedManyWithoutEventTypeInput
+    groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput
+    eventSelects?: EventSelectUncheckedCreateNestedManyWithoutEventTypeInput
+  }
+
+  export type EventTypeCreateOrConnectWithoutCalendarSelectInput = {
+    where: EventTypeWhereUniqueInput
+    create: XOR<EventTypeCreateWithoutCalendarSelectInput, EventTypeUncheckedCreateWithoutCalendarSelectInput>
+  }
+
+  export type EventTypeCreateManyCalendarSelectInputEnvelope = {
+    data: Enumerable<EventTypeCreateManyCalendarSelectInput>
+    skipDuplicates?: boolean
+  }
+
+  export type EventTypeUpsertWithWhereUniqueWithoutCalendarSelectInput = {
+    where: EventTypeWhereUniqueInput
+    update: XOR<EventTypeUpdateWithoutCalendarSelectInput, EventTypeUncheckedUpdateWithoutCalendarSelectInput>
+    create: XOR<EventTypeCreateWithoutCalendarSelectInput, EventTypeUncheckedCreateWithoutCalendarSelectInput>
+  }
+
+  export type EventTypeUpdateWithWhereUniqueWithoutCalendarSelectInput = {
+    where: EventTypeWhereUniqueInput
+    data: XOR<EventTypeUpdateWithoutCalendarSelectInput, EventTypeUncheckedUpdateWithoutCalendarSelectInput>
+  }
+
+  export type EventTypeUpdateManyWithWhereWithoutCalendarSelectInput = {
+    where: EventTypeScalarWhereInput
+    data: XOR<EventTypeUpdateManyMutationInput, EventTypeUncheckedUpdateManyWithoutEventTypesInput>
+  }
+
+  export type UserCreateWithoutBillingsInput = {
+    name: string
+    username: string
+    firebaseUid: string
+    subscription?: string | null
+    mobileNumber?: string | null
+    userLink?: string | null
+    job?: string | null
+    education?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventTypes?: EventTypeCreateNestedManyWithoutUserInput
+    userOnGroupMeetings?: UserOnGroupMeetingCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutBillingsInput = {
+    id?: number
+    name: string
+    username: string
+    firebaseUid: string
+    subscription?: string | null
+    mobileNumber?: string | null
+    userLink?: string | null
+    job?: string | null
+    education?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventTypes?: EventTypeUncheckedCreateNestedManyWithoutUserInput
+    userOnGroupMeetings?: UserOnGroupMeetingUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutBillingsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutBillingsInput, UserUncheckedCreateWithoutBillingsInput>
+  }
+
+  export type UserUpsertWithoutBillingsInput = {
+    update: XOR<UserUpdateWithoutBillingsInput, UserUncheckedUpdateWithoutBillingsInput>
+    create: XOR<UserCreateWithoutBillingsInput, UserUncheckedCreateWithoutBillingsInput>
+  }
+
+  export type UserUpdateWithoutBillingsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    firebaseUid?: StringFieldUpdateOperationsInput | string
+    subscription?: NullableStringFieldUpdateOperationsInput | string | null
+    mobileNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    userLink?: NullableStringFieldUpdateOperationsInput | string | null
+    job?: NullableStringFieldUpdateOperationsInput | string | null
+    education?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypes?: EventTypeUpdateManyWithoutUserNestedInput
+    userOnGroupMeetings?: UserOnGroupMeetingUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutBillingsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    firebaseUid?: StringFieldUpdateOperationsInput | string
+    subscription?: NullableStringFieldUpdateOperationsInput | string | null
+    mobileNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    userLink?: NullableStringFieldUpdateOperationsInput | string | null
+    job?: NullableStringFieldUpdateOperationsInput | string | null
+    education?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypes?: EventTypeUncheckedUpdateManyWithoutUserNestedInput
+    userOnGroupMeetings?: UserOnGroupMeetingUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type LocationCreateWithoutGroupMeetingsInput = {
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutLocationInput
+  }
+
+  export type LocationUncheckedCreateWithoutGroupMeetingsInput = {
+    id?: number
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutLocationInput
+  }
+
+  export type LocationCreateOrConnectWithoutGroupMeetingsInput = {
+    where: LocationWhereUniqueInput
+    create: XOR<LocationCreateWithoutGroupMeetingsInput, LocationUncheckedCreateWithoutGroupMeetingsInput>
+  }
+
+  export type CustomerCreateWithoutGroupMeetingsInput = {
+    name: string
+    email: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventTypes?: EventTypeCreateNestedManyWithoutCustomerInput
+    eventSelects?: EventSelectCreateNestedManyWithoutCustomerInput
+  }
+
+  export type CustomerUncheckedCreateWithoutGroupMeetingsInput = {
+    id?: number
+    name: string
+    email: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventTypes?: EventTypeUncheckedCreateNestedManyWithoutCustomerInput
+    eventSelects?: EventSelectUncheckedCreateNestedManyWithoutCustomerInput
+  }
+
+  export type CustomerCreateOrConnectWithoutGroupMeetingsInput = {
+    where: CustomerWhereUniqueInput
+    create: XOR<CustomerCreateWithoutGroupMeetingsInput, CustomerUncheckedCreateWithoutGroupMeetingsInput>
+  }
+
+  export type EventTypeCreateWithoutGroupMeetingsInput = {
+    name: string
+    description: string
+    price: number
+    timeDuration: number
+    status: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutEventTypesInput
+    eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutEventTypeInput
+    availabilitySchedules?: AvailabilityScheduleCreateNestedManyWithoutEventTypeInput
+    weekDays?: WeekDayCreateNestedManyWithoutEventTypeInput
+    calendarSelect: CalendarSelectCreateNestedOneWithoutEventTypesInput
+    customer: CustomerCreateNestedOneWithoutEventTypesInput
+    eventSelects?: EventSelectCreateNestedManyWithoutEventTypeInput
+  }
+
+  export type EventTypeUncheckedCreateWithoutGroupMeetingsInput = {
+    id?: number
+    name: string
+    userId: number
+    description: string
+    price: number
+    timeDuration: number
+    calendarSelectId: number
+    customerId: number
+    status: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput
+    availabilitySchedules?: AvailabilityScheduleUncheckedCreateNestedManyWithoutEventTypeInput
+    weekDays?: WeekDayUncheckedCreateNestedManyWithoutEventTypeInput
+    eventSelects?: EventSelectUncheckedCreateNestedManyWithoutEventTypeInput
+  }
+
+  export type EventTypeCreateOrConnectWithoutGroupMeetingsInput = {
+    where: EventTypeWhereUniqueInput
+    create: XOR<EventTypeCreateWithoutGroupMeetingsInput, EventTypeUncheckedCreateWithoutGroupMeetingsInput>
+  }
+
+  export type UserOnGroupMeetingCreateWithoutGroupMeetingInput = {
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutUserOnGroupMeetingsInput
+  }
+
+  export type UserOnGroupMeetingUncheckedCreateWithoutGroupMeetingInput = {
+    id?: number
     userId: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type EventUpdateWithoutEventTypeInput = {
+  export type UserOnGroupMeetingCreateOrConnectWithoutGroupMeetingInput = {
+    where: UserOnGroupMeetingWhereUniqueInput
+    create: XOR<UserOnGroupMeetingCreateWithoutGroupMeetingInput, UserOnGroupMeetingUncheckedCreateWithoutGroupMeetingInput>
+  }
+
+  export type UserOnGroupMeetingCreateManyGroupMeetingInputEnvelope = {
+    data: Enumerable<UserOnGroupMeetingCreateManyGroupMeetingInput>
+    skipDuplicates?: boolean
+  }
+
+  export type LocationUpsertWithoutGroupMeetingsInput = {
+    update: XOR<LocationUpdateWithoutGroupMeetingsInput, LocationUncheckedUpdateWithoutGroupMeetingsInput>
+    create: XOR<LocationCreateWithoutGroupMeetingsInput, LocationUncheckedCreateWithoutGroupMeetingsInput>
+  }
+
+  export type LocationUpdateWithoutGroupMeetingsInput = {
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutEventsNestedInput
+    eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutLocationNestedInput
   }
 
-  export type EventUncheckedUpdateWithoutEventTypeInput = {
+  export type LocationUncheckedUpdateWithoutGroupMeetingsInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutLocationNestedInput
+  }
+
+  export type CustomerUpsertWithoutGroupMeetingsInput = {
+    update: XOR<CustomerUpdateWithoutGroupMeetingsInput, CustomerUncheckedUpdateWithoutGroupMeetingsInput>
+    create: XOR<CustomerCreateWithoutGroupMeetingsInput, CustomerUncheckedCreateWithoutGroupMeetingsInput>
+  }
+
+  export type CustomerUpdateWithoutGroupMeetingsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypes?: EventTypeUpdateManyWithoutCustomerNestedInput
+    eventSelects?: EventSelectUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type CustomerUncheckedUpdateWithoutGroupMeetingsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypes?: EventTypeUncheckedUpdateManyWithoutCustomerNestedInput
+    eventSelects?: EventSelectUncheckedUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type EventTypeUpsertWithoutGroupMeetingsInput = {
+    update: XOR<EventTypeUpdateWithoutGroupMeetingsInput, EventTypeUncheckedUpdateWithoutGroupMeetingsInput>
+    create: XOR<EventTypeCreateWithoutGroupMeetingsInput, EventTypeUncheckedCreateWithoutGroupMeetingsInput>
+  }
+
+  export type EventTypeUpdateWithoutGroupMeetingsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
+    eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
+    availabilitySchedules?: AvailabilityScheduleUpdateManyWithoutEventTypeNestedInput
+    weekDays?: WeekDayUpdateManyWithoutEventTypeNestedInput
+    calendarSelect?: CalendarSelectUpdateOneRequiredWithoutEventTypesNestedInput
+    customer?: CustomerUpdateOneRequiredWithoutEventTypesNestedInput
+    eventSelects?: EventSelectUpdateManyWithoutEventTypeNestedInput
+  }
+
+  export type EventTypeUncheckedUpdateWithoutGroupMeetingsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    userId?: IntFieldUpdateOperationsInput | number
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    calendarSelectId?: IntFieldUpdateOperationsInput | number
+    customerId?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
+    availabilitySchedules?: AvailabilityScheduleUncheckedUpdateManyWithoutEventTypeNestedInput
+    weekDays?: WeekDayUncheckedUpdateManyWithoutEventTypeNestedInput
+    eventSelects?: EventSelectUncheckedUpdateManyWithoutEventTypeNestedInput
+  }
+
+  export type UserOnGroupMeetingUpsertWithWhereUniqueWithoutGroupMeetingInput = {
+    where: UserOnGroupMeetingWhereUniqueInput
+    update: XOR<UserOnGroupMeetingUpdateWithoutGroupMeetingInput, UserOnGroupMeetingUncheckedUpdateWithoutGroupMeetingInput>
+    create: XOR<UserOnGroupMeetingCreateWithoutGroupMeetingInput, UserOnGroupMeetingUncheckedCreateWithoutGroupMeetingInput>
+  }
+
+  export type UserOnGroupMeetingUpdateWithWhereUniqueWithoutGroupMeetingInput = {
+    where: UserOnGroupMeetingWhereUniqueInput
+    data: XOR<UserOnGroupMeetingUpdateWithoutGroupMeetingInput, UserOnGroupMeetingUncheckedUpdateWithoutGroupMeetingInput>
+  }
+
+  export type UserOnGroupMeetingUpdateManyWithWhereWithoutGroupMeetingInput = {
+    where: UserOnGroupMeetingScalarWhereInput
+    data: XOR<UserOnGroupMeetingUpdateManyMutationInput, UserOnGroupMeetingUncheckedUpdateManyWithoutUserOnGroupMeetingsInput>
+  }
+
+  export type EventTypeCreateWithoutEventSelectsInput = {
+    name: string
+    description: string
+    price: number
+    timeDuration: number
+    status: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutEventTypesInput
+    eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutEventTypeInput
+    availabilitySchedules?: AvailabilityScheduleCreateNestedManyWithoutEventTypeInput
+    weekDays?: WeekDayCreateNestedManyWithoutEventTypeInput
+    calendarSelect: CalendarSelectCreateNestedOneWithoutEventTypesInput
+    customer: CustomerCreateNestedOneWithoutEventTypesInput
+    groupMeetings?: GroupMeetingCreateNestedManyWithoutEventTypeInput
+  }
+
+  export type EventTypeUncheckedCreateWithoutEventSelectsInput = {
+    id?: number
+    name: string
+    userId: number
+    description: string
+    price: number
+    timeDuration: number
+    calendarSelectId: number
+    customerId: number
+    status: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput
+    availabilitySchedules?: AvailabilityScheduleUncheckedCreateNestedManyWithoutEventTypeInput
+    weekDays?: WeekDayUncheckedCreateNestedManyWithoutEventTypeInput
+    groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput
+  }
+
+  export type EventTypeCreateOrConnectWithoutEventSelectsInput = {
+    where: EventTypeWhereUniqueInput
+    create: XOR<EventTypeCreateWithoutEventSelectsInput, EventTypeUncheckedCreateWithoutEventSelectsInput>
+  }
+
+  export type CustomerCreateWithoutEventSelectsInput = {
+    name: string
+    email: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventTypes?: EventTypeCreateNestedManyWithoutCustomerInput
+    groupMeetings?: GroupMeetingCreateNestedManyWithoutCustomerInput
+  }
+
+  export type CustomerUncheckedCreateWithoutEventSelectsInput = {
+    id?: number
+    name: string
+    email: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventTypes?: EventTypeUncheckedCreateNestedManyWithoutCustomerInput
+    groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutCustomerInput
+  }
+
+  export type CustomerCreateOrConnectWithoutEventSelectsInput = {
+    where: CustomerWhereUniqueInput
+    create: XOR<CustomerCreateWithoutEventSelectsInput, CustomerUncheckedCreateWithoutEventSelectsInput>
+  }
+
+  export type EventTypeUpsertWithoutEventSelectsInput = {
+    update: XOR<EventTypeUpdateWithoutEventSelectsInput, EventTypeUncheckedUpdateWithoutEventSelectsInput>
+    create: XOR<EventTypeCreateWithoutEventSelectsInput, EventTypeUncheckedCreateWithoutEventSelectsInput>
+  }
+
+  export type EventTypeUpdateWithoutEventSelectsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
+    eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
+    availabilitySchedules?: AvailabilityScheduleUpdateManyWithoutEventTypeNestedInput
+    weekDays?: WeekDayUpdateManyWithoutEventTypeNestedInput
+    calendarSelect?: CalendarSelectUpdateOneRequiredWithoutEventTypesNestedInput
+    customer?: CustomerUpdateOneRequiredWithoutEventTypesNestedInput
+    groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
+  }
+
+  export type EventTypeUncheckedUpdateWithoutEventSelectsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    userId?: IntFieldUpdateOperationsInput | number
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    calendarSelectId?: IntFieldUpdateOperationsInput | number
+    customerId?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
+    availabilitySchedules?: AvailabilityScheduleUncheckedUpdateManyWithoutEventTypeNestedInput
+    weekDays?: WeekDayUncheckedUpdateManyWithoutEventTypeNestedInput
+    groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
+  }
+
+  export type CustomerUpsertWithoutEventSelectsInput = {
+    update: XOR<CustomerUpdateWithoutEventSelectsInput, CustomerUncheckedUpdateWithoutEventSelectsInput>
+    create: XOR<CustomerCreateWithoutEventSelectsInput, CustomerUncheckedCreateWithoutEventSelectsInput>
+  }
+
+  export type CustomerUpdateWithoutEventSelectsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypes?: EventTypeUpdateManyWithoutCustomerNestedInput
+    groupMeetings?: GroupMeetingUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type CustomerUncheckedUpdateWithoutEventSelectsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypes?: EventTypeUncheckedUpdateManyWithoutCustomerNestedInput
+    groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type UserCreateWithoutUserOnGroupMeetingsInput = {
+    name: string
+    username: string
+    firebaseUid: string
+    subscription?: string | null
+    mobileNumber?: string | null
+    userLink?: string | null
+    job?: string | null
+    education?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventTypes?: EventTypeCreateNestedManyWithoutUserInput
+    billings?: BillingCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutUserOnGroupMeetingsInput = {
+    id?: number
+    name: string
+    username: string
+    firebaseUid: string
+    subscription?: string | null
+    mobileNumber?: string | null
+    userLink?: string | null
+    job?: string | null
+    education?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventTypes?: EventTypeUncheckedCreateNestedManyWithoutUserInput
+    billings?: BillingUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutUserOnGroupMeetingsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutUserOnGroupMeetingsInput, UserUncheckedCreateWithoutUserOnGroupMeetingsInput>
+  }
+
+  export type GroupMeetingCreateWithoutUserOnGroupMeetingsInput = {
+    totalPrice: number
+    timezone: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    location: LocationCreateNestedOneWithoutGroupMeetingsInput
+    customer: CustomerCreateNestedOneWithoutGroupMeetingsInput
+    eventType: EventTypeCreateNestedOneWithoutGroupMeetingsInput
+  }
+
+  export type GroupMeetingUncheckedCreateWithoutUserOnGroupMeetingsInput = {
+    id?: number
+    locationId: number
+    customerId: number
+    totalPrice: number
+    timezone: string
+    eventTypeId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GroupMeetingCreateOrConnectWithoutUserOnGroupMeetingsInput = {
+    where: GroupMeetingWhereUniqueInput
+    create: XOR<GroupMeetingCreateWithoutUserOnGroupMeetingsInput, GroupMeetingUncheckedCreateWithoutUserOnGroupMeetingsInput>
+  }
+
+  export type UserUpsertWithoutUserOnGroupMeetingsInput = {
+    update: XOR<UserUpdateWithoutUserOnGroupMeetingsInput, UserUncheckedUpdateWithoutUserOnGroupMeetingsInput>
+    create: XOR<UserCreateWithoutUserOnGroupMeetingsInput, UserUncheckedCreateWithoutUserOnGroupMeetingsInput>
+  }
+
+  export type UserUpdateWithoutUserOnGroupMeetingsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    firebaseUid?: StringFieldUpdateOperationsInput | string
+    subscription?: NullableStringFieldUpdateOperationsInput | string | null
+    mobileNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    userLink?: NullableStringFieldUpdateOperationsInput | string | null
+    job?: NullableStringFieldUpdateOperationsInput | string | null
+    education?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypes?: EventTypeUpdateManyWithoutUserNestedInput
+    billings?: BillingUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutUserOnGroupMeetingsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    firebaseUid?: StringFieldUpdateOperationsInput | string
+    subscription?: NullableStringFieldUpdateOperationsInput | string | null
+    mobileNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    userLink?: NullableStringFieldUpdateOperationsInput | string | null
+    job?: NullableStringFieldUpdateOperationsInput | string | null
+    education?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypes?: EventTypeUncheckedUpdateManyWithoutUserNestedInput
+    billings?: BillingUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type GroupMeetingUpsertWithoutUserOnGroupMeetingsInput = {
+    update: XOR<GroupMeetingUpdateWithoutUserOnGroupMeetingsInput, GroupMeetingUncheckedUpdateWithoutUserOnGroupMeetingsInput>
+    create: XOR<GroupMeetingCreateWithoutUserOnGroupMeetingsInput, GroupMeetingUncheckedCreateWithoutUserOnGroupMeetingsInput>
+  }
+
+  export type GroupMeetingUpdateWithoutUserOnGroupMeetingsInput = {
+    totalPrice?: IntFieldUpdateOperationsInput | number
+    timezone?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: LocationUpdateOneRequiredWithoutGroupMeetingsNestedInput
+    customer?: CustomerUpdateOneRequiredWithoutGroupMeetingsNestedInput
+    eventType?: EventTypeUpdateOneRequiredWithoutGroupMeetingsNestedInput
+  }
+
+  export type GroupMeetingUncheckedUpdateWithoutUserOnGroupMeetingsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    locationId?: IntFieldUpdateOperationsInput | number
+    customerId?: IntFieldUpdateOperationsInput | number
+    totalPrice?: IntFieldUpdateOperationsInput | number
+    timezone?: StringFieldUpdateOperationsInput | string
+    eventTypeId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EventTypeCreateManyUserInput = {
+    id?: number
+    name: string
+    description: string
+    price: number
+    timeDuration: number
+    calendarSelectId: number
+    customerId: number
+    status: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BillingCreateManyUserInput = {
+    id?: number
+    subscriptionMonth: number
+    subscriptionPrice: number
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UserOnGroupMeetingCreateManyUserInput = {
+    id?: number
+    groupMeetingId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EventTypeUpdateWithoutUserInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
+    availabilitySchedules?: AvailabilityScheduleUpdateManyWithoutEventTypeNestedInput
+    weekDays?: WeekDayUpdateManyWithoutEventTypeNestedInput
+    calendarSelect?: CalendarSelectUpdateOneRequiredWithoutEventTypesNestedInput
+    customer?: CustomerUpdateOneRequiredWithoutEventTypesNestedInput
+    groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
+    eventSelects?: EventSelectUpdateManyWithoutEventTypeNestedInput
+  }
+
+  export type EventTypeUncheckedUpdateWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    calendarSelectId?: IntFieldUpdateOperationsInput | number
+    customerId?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
+    availabilitySchedules?: AvailabilityScheduleUncheckedUpdateManyWithoutEventTypeNestedInput
+    weekDays?: WeekDayUncheckedUpdateManyWithoutEventTypeNestedInput
+    groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
+    eventSelects?: EventSelectUncheckedUpdateManyWithoutEventTypeNestedInput
+  }
+
+  export type EventTypeUncheckedUpdateManyWithoutEventTypesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    calendarSelectId?: IntFieldUpdateOperationsInput | number
+    customerId?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BillingUpdateWithoutUserInput = {
+    subscriptionMonth?: IntFieldUpdateOperationsInput | number
+    subscriptionPrice?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BillingUncheckedUpdateWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    subscriptionMonth?: IntFieldUpdateOperationsInput | number
+    subscriptionPrice?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BillingUncheckedUpdateManyWithoutBillingsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    subscriptionMonth?: IntFieldUpdateOperationsInput | number
+    subscriptionPrice?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserOnGroupMeetingUpdateWithoutUserInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    groupMeeting?: GroupMeetingUpdateOneRequiredWithoutUserOnGroupMeetingsNestedInput
+  }
+
+  export type UserOnGroupMeetingUncheckedUpdateWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    groupMeetingId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserOnGroupMeetingUncheckedUpdateManyWithoutUserOnGroupMeetingsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    groupMeetingId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EventTypeOnLocationCreateManyEventTypeInput = {
+    id?: number
+    locationId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AvailabilityScheduleCreateManyEventTypeInput = {
+    id?: number
+    name: string
+    timezone: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WeekDayCreateManyEventTypeInput = {
+    id?: number
+    day: number
+    availabilityScheduleId?: number | null
+    timeSelectId: number
+    status: string
+    date: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GroupMeetingCreateManyEventTypeInput = {
+    id?: number
+    locationId: number
+    customerId: number
+    totalPrice: number
+    timezone: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EventSelectCreateManyEventTypeInput = {
+    id?: number
+    customerId: number
+    selectDate: string
+    selectTime: Date | string
+    status: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EventTypeOnLocationUpdateWithoutEventTypeInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: LocationUpdateOneRequiredWithoutEventTypeOnLocationsNestedInput
+  }
+
+  export type EventTypeOnLocationUncheckedUpdateWithoutEventTypeInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    locationId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeOnLocationsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    locationId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AvailabilityScheduleUpdateWithoutEventTypeInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    timezone?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    weekDays?: WeekDayUpdateManyWithoutAvailabilityScheduleNestedInput
+  }
+
+  export type AvailabilityScheduleUncheckedUpdateWithoutEventTypeInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    timezone?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    weekDays?: WeekDayUncheckedUpdateManyWithoutAvailabilityScheduleNestedInput
+  }
+
+  export type AvailabilityScheduleUncheckedUpdateManyWithoutAvailabilitySchedulesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    timezone?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WeekDayUpdateWithoutEventTypeInput = {
+    day?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutWeekDaysNestedInput
+    timeSelect?: TimeSelectUpdateOneRequiredWithoutWeekDaysNestedInput
+  }
+
+  export type WeekDayUncheckedUpdateWithoutEventTypeInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    day?: IntFieldUpdateOperationsInput | number
+    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
+    timeSelectId?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WeekDayUncheckedUpdateManyWithoutWeekDaysInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    day?: IntFieldUpdateOperationsInput | number
+    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
+    timeSelectId?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GroupMeetingUpdateWithoutEventTypeInput = {
+    totalPrice?: IntFieldUpdateOperationsInput | number
+    timezone?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: LocationUpdateOneRequiredWithoutGroupMeetingsNestedInput
+    customer?: CustomerUpdateOneRequiredWithoutGroupMeetingsNestedInput
+    userOnGroupMeetings?: UserOnGroupMeetingUpdateManyWithoutGroupMeetingNestedInput
+  }
+
+  export type GroupMeetingUncheckedUpdateWithoutEventTypeInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    locationId?: IntFieldUpdateOperationsInput | number
+    customerId?: IntFieldUpdateOperationsInput | number
+    totalPrice?: IntFieldUpdateOperationsInput | number
+    timezone?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userOnGroupMeetings?: UserOnGroupMeetingUncheckedUpdateManyWithoutGroupMeetingNestedInput
+  }
+
+  export type GroupMeetingUncheckedUpdateManyWithoutGroupMeetingsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    locationId?: IntFieldUpdateOperationsInput | number
+    customerId?: IntFieldUpdateOperationsInput | number
+    totalPrice?: IntFieldUpdateOperationsInput | number
+    timezone?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EventSelectUpdateWithoutEventTypeInput = {
+    selectDate?: StringFieldUpdateOperationsInput | string
+    selectTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: CustomerUpdateOneRequiredWithoutEventSelectsNestedInput
+  }
+
+  export type EventSelectUncheckedUpdateWithoutEventTypeInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    customerId?: IntFieldUpdateOperationsInput | number
+    selectDate?: StringFieldUpdateOperationsInput | string
+    selectTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EventSelectUncheckedUpdateManyWithoutEventSelectsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    customerId?: IntFieldUpdateOperationsInput | number
+    selectDate?: StringFieldUpdateOperationsInput | string
+    selectTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EventTypeOnLocationCreateManyLocationInput = {
+    id?: number
+    eventTypeId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GroupMeetingCreateManyLocationInput = {
+    id?: number
+    customerId: number
+    totalPrice: number
+    timezone: string
+    eventTypeId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EventTypeOnLocationUpdateWithoutLocationInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventType?: EventTypeUpdateOneRequiredWithoutEventTypeOnLocationsNestedInput
+  }
+
+  export type EventTypeOnLocationUncheckedUpdateWithoutLocationInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    eventTypeId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GroupMeetingUpdateWithoutLocationInput = {
+    totalPrice?: IntFieldUpdateOperationsInput | number
+    timezone?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: CustomerUpdateOneRequiredWithoutGroupMeetingsNestedInput
+    eventType?: EventTypeUpdateOneRequiredWithoutGroupMeetingsNestedInput
+    userOnGroupMeetings?: UserOnGroupMeetingUpdateManyWithoutGroupMeetingNestedInput
+  }
+
+  export type GroupMeetingUncheckedUpdateWithoutLocationInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    customerId?: IntFieldUpdateOperationsInput | number
+    totalPrice?: IntFieldUpdateOperationsInput | number
+    timezone?: StringFieldUpdateOperationsInput | string
+    eventTypeId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userOnGroupMeetings?: UserOnGroupMeetingUncheckedUpdateManyWithoutGroupMeetingNestedInput
+  }
+
+  export type WeekDayCreateManyAvailabilityScheduleInput = {
+    id?: number
+    day: number
+    timeSelectId: number
+    eventTypeId?: number | null
+    status: string
+    date: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WeekDayUpdateWithoutAvailabilityScheduleInput = {
+    day?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeSelect?: TimeSelectUpdateOneRequiredWithoutWeekDaysNestedInput
+    eventType?: EventTypeUpdateOneWithoutWeekDaysNestedInput
+  }
+
+  export type WeekDayUncheckedUpdateWithoutAvailabilityScheduleInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    day?: IntFieldUpdateOperationsInput | number
+    timeSelectId?: IntFieldUpdateOperationsInput | number
+    eventTypeId?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WeekDayCreateManyTimeSelectInput = {
+    id?: number
+    day: number
+    availabilityScheduleId?: number | null
+    eventTypeId?: number | null
+    status: string
+    date: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WeekDayUpdateWithoutTimeSelectInput = {
+    day?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutWeekDaysNestedInput
+    eventType?: EventTypeUpdateOneWithoutWeekDaysNestedInput
+  }
+
+  export type WeekDayUncheckedUpdateWithoutTimeSelectInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    day?: IntFieldUpdateOperationsInput | number
+    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
+    eventTypeId?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EventTypeCreateManyCustomerInput = {
+    id?: number
+    name: string
+    userId: number
+    description: string
+    price: number
+    timeDuration: number
+    calendarSelectId: number
+    status: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GroupMeetingCreateManyCustomerInput = {
+    id?: number
+    locationId: number
+    totalPrice: number
+    timezone: string
+    eventTypeId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EventSelectCreateManyCustomerInput = {
+    id?: number
+    eventTypeId: number
+    selectDate: string
+    selectTime: Date | string
+    status: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EventTypeUpdateWithoutCustomerInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
+    eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
+    availabilitySchedules?: AvailabilityScheduleUpdateManyWithoutEventTypeNestedInput
+    weekDays?: WeekDayUpdateManyWithoutEventTypeNestedInput
+    calendarSelect?: CalendarSelectUpdateOneRequiredWithoutEventTypesNestedInput
+    groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
+    eventSelects?: EventSelectUpdateManyWithoutEventTypeNestedInput
+  }
+
+  export type EventTypeUncheckedUpdateWithoutCustomerInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    userId?: IntFieldUpdateOperationsInput | number
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    calendarSelectId?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
+    availabilitySchedules?: AvailabilityScheduleUncheckedUpdateManyWithoutEventTypeNestedInput
+    weekDays?: WeekDayUncheckedUpdateManyWithoutEventTypeNestedInput
+    groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
+    eventSelects?: EventSelectUncheckedUpdateManyWithoutEventTypeNestedInput
+  }
+
+  export type GroupMeetingUpdateWithoutCustomerInput = {
+    totalPrice?: IntFieldUpdateOperationsInput | number
+    timezone?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: LocationUpdateOneRequiredWithoutGroupMeetingsNestedInput
+    eventType?: EventTypeUpdateOneRequiredWithoutGroupMeetingsNestedInput
+    userOnGroupMeetings?: UserOnGroupMeetingUpdateManyWithoutGroupMeetingNestedInput
+  }
+
+  export type GroupMeetingUncheckedUpdateWithoutCustomerInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    locationId?: IntFieldUpdateOperationsInput | number
+    totalPrice?: IntFieldUpdateOperationsInput | number
+    timezone?: StringFieldUpdateOperationsInput | string
+    eventTypeId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userOnGroupMeetings?: UserOnGroupMeetingUncheckedUpdateManyWithoutGroupMeetingNestedInput
+  }
+
+  export type EventSelectUpdateWithoutCustomerInput = {
+    selectDate?: StringFieldUpdateOperationsInput | string
+    selectTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventType?: EventTypeUpdateOneRequiredWithoutEventSelectsNestedInput
+  }
+
+  export type EventSelectUncheckedUpdateWithoutCustomerInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    eventTypeId?: IntFieldUpdateOperationsInput | number
+    selectDate?: StringFieldUpdateOperationsInput | string
+    selectTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EventTypeCreateManyCalendarSelectInput = {
+    id?: number
+    name: string
+    userId: number
+    description: string
+    price: number
+    timeDuration: number
+    customerId: number
+    status: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EventTypeUpdateWithoutCalendarSelectInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
+    eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
+    availabilitySchedules?: AvailabilityScheduleUpdateManyWithoutEventTypeNestedInput
+    weekDays?: WeekDayUpdateManyWithoutEventTypeNestedInput
+    customer?: CustomerUpdateOneRequiredWithoutEventTypesNestedInput
+    groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
+    eventSelects?: EventSelectUpdateManyWithoutEventTypeNestedInput
+  }
+
+  export type EventTypeUncheckedUpdateWithoutCalendarSelectInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    userId?: IntFieldUpdateOperationsInput | number
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    customerId?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
+    availabilitySchedules?: AvailabilityScheduleUncheckedUpdateManyWithoutEventTypeNestedInput
+    weekDays?: WeekDayUncheckedUpdateManyWithoutEventTypeNestedInput
+    groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
+    eventSelects?: EventSelectUncheckedUpdateManyWithoutEventTypeNestedInput
+  }
+
+  export type UserOnGroupMeetingCreateManyGroupMeetingInput = {
+    id?: number
+    userId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UserOnGroupMeetingUpdateWithoutGroupMeetingInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutUserOnGroupMeetingsNestedInput
+  }
+
+  export type UserOnGroupMeetingUncheckedUpdateWithoutGroupMeetingInput = {
+    id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

@@ -89,16 +89,86 @@ Prisma.NullTypes = {
 // https://github.com/microsoft/TypeScript/issues/3192#issuecomment-261720275
 function makeEnum(x) { return x; }
 
-exports.Prisma.EventScalarFieldEnum = makeEnum({
+exports.Prisma.AvailabilityScheduleScalarFieldEnum = makeEnum({
   id: 'id',
   name: 'name',
-  userId: 'userId',
   eventTypeId: 'eventTypeId',
+  timezone: 'timezone',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+});
+
+exports.Prisma.BillingScalarFieldEnum = makeEnum({
+  id: 'id',
+  subscriptionMonth: 'subscriptionMonth',
+  subscriptionPrice: 'subscriptionPrice',
+  userId: 'userId',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+});
+
+exports.Prisma.CalendarSelectScalarFieldEnum = makeEnum({
+  id: 'id',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+});
+
+exports.Prisma.CustomerScalarFieldEnum = makeEnum({
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+});
+
+exports.Prisma.EventSelectScalarFieldEnum = makeEnum({
+  id: 'id',
+  eventTypeId: 'eventTypeId',
+  customerId: 'customerId',
+  selectDate: 'selectDate',
+  selectTime: 'selectTime',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+});
+
+exports.Prisma.EventTypeOnLocationScalarFieldEnum = makeEnum({
+  id: 'id',
+  eventTypeId: 'eventTypeId',
+  locationId: 'locationId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 });
 
 exports.Prisma.EventTypeScalarFieldEnum = makeEnum({
+  id: 'id',
+  name: 'name',
+  userId: 'userId',
+  description: 'description',
+  price: 'price',
+  timeDuration: 'timeDuration',
+  calendarSelectId: 'calendarSelectId',
+  customerId: 'customerId',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+});
+
+exports.Prisma.GroupMeetingScalarFieldEnum = makeEnum({
+  id: 'id',
+  locationId: 'locationId',
+  customerId: 'customerId',
+  totalPrice: 'totalPrice',
+  timezone: 'timezone',
+  eventTypeId: 'eventTypeId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+});
+
+exports.Prisma.LocationScalarFieldEnum = makeEnum({
   id: 'id',
   name: 'name',
   createdAt: 'createdAt',
@@ -110,17 +180,17 @@ exports.Prisma.QueryMode = makeEnum({
   insensitive: 'insensitive'
 });
 
-exports.Prisma.SessionScalarFieldEnum = makeEnum({
-  id: 'id',
-  token: 'token',
-  userId: 'userId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-});
-
 exports.Prisma.SortOrder = makeEnum({
   asc: 'asc',
   desc: 'desc'
+});
+
+exports.Prisma.TimeSelectScalarFieldEnum = makeEnum({
+  id: 'id',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 });
 
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
@@ -130,10 +200,36 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
+exports.Prisma.UserOnGroupMeetingScalarFieldEnum = makeEnum({
+  id: 'id',
+  userId: 'userId',
+  groupMeetingId: 'groupMeetingId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+});
+
 exports.Prisma.UserScalarFieldEnum = makeEnum({
   id: 'id',
+  name: 'name',
   username: 'username',
-  password_hash: 'password_hash',
+  firebaseUid: 'firebaseUid',
+  subscription: 'subscription',
+  mobileNumber: 'mobileNumber',
+  userLink: 'userLink',
+  job: 'job',
+  education: 'education',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+});
+
+exports.Prisma.WeekDayScalarFieldEnum = makeEnum({
+  id: 'id',
+  day: 'day',
+  availabilityScheduleId: 'availabilityScheduleId',
+  timeSelectId: 'timeSelectId',
+  eventTypeId: 'eventTypeId',
+  status: 'status',
+  date: 'date',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 });
@@ -141,9 +237,18 @@ exports.Prisma.UserScalarFieldEnum = makeEnum({
 
 exports.Prisma.ModelName = makeEnum({
   User: 'User',
-  Session: 'Session',
   EventType: 'EventType',
-  Event: 'Event'
+  Location: 'Location',
+  EventTypeOnLocation: 'EventTypeOnLocation',
+  AvailabilitySchedule: 'AvailabilitySchedule',
+  WeekDay: 'WeekDay',
+  TimeSelect: 'TimeSelect',
+  Customer: 'Customer',
+  CalendarSelect: 'CalendarSelect',
+  Billing: 'Billing',
+  GroupMeeting: 'GroupMeeting',
+  EventSelect: 'EventSelect',
+  UserOnGroupMeeting: 'UserOnGroupMeeting'
 });
 
 /**

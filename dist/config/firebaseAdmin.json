@@ -1,0 +1,12 @@
+{
+    "type": "service_account",
+    "project_id": "sprinttech-keng",
+    "private_key_id": "a22de649bb9f6996194a199fc908885b7fefeeec",
+    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCdnXr4HhmKSk1q\nwo94APhzSuQoAcDRACv3oD5JoBdTPjIzrMf85NCH1T1ZV1cwaUDQSO4t5/d1KRC+\nC2N5RJICC5He/4uQ4nPEGqew7uy+YmfNNDTOQQI69melvp9KTDuBj8Nsz3G3Ummf\nTz3yLOj4s8aLhwxBnHBSEThfPJ/4QWKA7fRjiHNbqmIyty7/8ptTTNFQgZxYUMnq\nklsu2rUEVH2/moADvJKUF+n/kDIz15mx8Rgw4ExYy/q+5dIxXK4KIQapTkNTBF1m\ntqodgI6MARm3SinDU7hYOpLIulAXyBX/B0y1ZiBDx/z6TyjMH6VDYlbRjq6fnamM\n6TUBk/BHAgMBAAECggEAGVcOxKJON+IPRUlHeKMrTpntSZNSlSeCahrsuLiQ13TJ\n7G3sbze4YQZDCUCWB3X8kiAPjvja247BHtTE5uPD16lVh/Us0pvdwdsJN9SJ4mf+\nyUqJ7Nkdyy3/ZvHZOUA9VuyunilR3ofU7GR4kJ1wzT9V/eu16DyHAGK9Xe5ox6g2\n22sr1hibnp1ahZMrAhhl2sBYAHvWvjj+Efih8IiNRaN80rx7jVjDL4QWyo4wqG0J\nYcJjtfXwiMoi7oRN1LV2qPjouX6Ze/6azn4kFqpSdxw/il/PjNDnM20JfN4pp221\nfIFFN8rPDvbwjCr8kk0vdi8MmKOwBaon5Bl58rloeQKBgQDNXq3KoazJLlGhLyk/\nvtA6/hEkviezREJe+tPA1DO7V7cSf5nMvHmsxEs83kbyKfSncz3kuSepGP/Tkxpw\npmuzTk0E3Rz+WAZ39KWnvzR9NlZGZSBRcFJ4V7dmX24UXWH6P0AgxAlC7RzTywLu\nlzcmn64bjEJ29bmf9AeIHa/rSQKBgQDEeOdEqLyiBS9sHI0ImfbsWZoF/KoVWFX8\n8nkUqJuVwBUOSUOw3XFES0SC4xZqrRft7++zNcn/ZnYQrlJW79+7aymAaLPdFhrA\n0PUp2tfXnrWiPTL+lo/6tmoaAlA94Erl/On1dNey+62jig51ueBr/r4jP8BQdjhO\n+1WLTrzvDwKBgFBbKm8twXjaadBCrsYleD6M6NJSoSAQplOZmz9JCJDWKmjPirNE\nT+ucxr+jTWk1p2fZvK8BD5anlHoJhf/r7hozmgk8JzsR4D4ReLvhIb2YhDt5GCMl\nau9xiu5AisbnHw4Wr5Xifqk0M+Je/d+zRT4UnsBiqiL31NDUYBoPW6UZAoGAbAy5\n006g/tGvNNu2zEYwP+c/B4/e0gJUt9l5sVzQw9hxO/wa2AfQpOhn8zuENoKfKGHO\nB1bLkkP9JktYSSt+dYoHtvDeCfaAHA5O5gfOsGw+I81YYB7Za94qF8ex7XWOe1FO\nMYlinrI+2jOwpBnnTD06wBPtZdK+QOGEOCrDSQ0CgYEAlr3reZcw42fDWdzOR5MJ\n42c5d+2ZxJwvxvbPe37ePs0fKUx1YlBAFVpKsfWks5Tou0RBQvastTgCR+b27ql3\nApKdj7SmOTSszwUT2xuf8Kqi9WT2JcYkPKSoY0dJy/ikg7yLIfX397hNIAVVJzPm\nXg2eyIA4gQ5A7LC0u3q2Xpo=\n-----END PRIVATE KEY-----\n",
+    "client_email": "firebase-adminsdk-3686q@sprinttech-keng.iam.gserviceaccount.com",
+    "client_id": "109215321423340969036",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-3686q%40sprinttech-keng.iam.gserviceaccount.com"
+}

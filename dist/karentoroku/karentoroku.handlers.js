@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserHandler = exports.getUsersHandler = exports.createUserHandler = exports.getIndexHandler = void 0;
+exports.getUserByIdHandler = exports.getUsersHandler = exports.createUserHandler = exports.getIndexHandler = void 0;
 const karentoroku_interfaces_1 = require("./karentoroku.interfaces");
 const karentoroku_resolvers_1 = require("./karentoroku.resolvers");
 const getIndexHandler = (req, res) => {
@@ -22,8 +22,10 @@ const createUserHandler = (req, res) => __awaiter(void 0, void 0, void 0, functi
     const args = req === null || req === void 0 ? void 0 : req.body;
     if (karentoroku_interfaces_1.CreateUserCodec.decode(args)._tag === "Right") {
         try {
-            const result = yield (0, karentoroku_resolvers_1.createUser)({
+            const result = (0, karentoroku_resolvers_1.createUser)({
+                name: args.name,
                 username: args.username,
+                idToken: args.idToken,
             });
             res.status(200).json(result);
         }
@@ -50,11 +52,11 @@ const getUsersHandler = (req, res) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.getUsersHandler = getUsersHandler;
-const getUserHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getUserByIdHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const args = req === null || req === void 0 ? void 0 : req.body;
     if (typeof args.id === "number") {
         try {
-            const result = yield (0, karentoroku_resolvers_1.getUser)({
+            const result = yield (0, karentoroku_resolvers_1.getUserById)({
                 id: args.id,
             });
             res.status(200).json(result);
@@ -69,4 +71,4 @@ const getUserHandler = (req, res) => __awaiter(void 0, void 0, void 0, function*
         res.status(500).json({ error: "ERROR: invalid request (getUser)" });
     }
 });
-exports.getUserHandler = getUserHandler;
+exports.getUserByIdHandler = getUserByIdHandler;
