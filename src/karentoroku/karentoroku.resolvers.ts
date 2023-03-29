@@ -4,6 +4,7 @@ import { credential } from "firebase-admin";
 import { initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import serviceAccount from "../config/firebaseAdmin.json";
+import { date } from "fp-ts";
 
 const firebaseApp = initializeApp({
   credential: credential.cert({
@@ -56,3 +57,56 @@ export const getUserById = (args: { id: number }) => {
     },
   });
 };
+
+// export const createEventType = (args: {
+//   name: string;
+//   description: string;
+//   price: number;
+//   timeDuration: number;
+//   status: string;
+//   username: string;
+//   user_Name: string;
+//   firebaseId: string;
+//   startDate: string;
+//   endDate: string;
+//   customer_name: string;
+//   email: string;
+// }) => {
+//   return prisma.eventType.create({
+//     data: {
+//       name: args.name,
+//       user: {
+//         create: {
+//           name: args.user_Name,
+//           username: args.username,
+//           firebaseUid: args.firebaseId,
+//         },
+//       },
+//       description: args.description,
+//       price: args.price,
+//       timeDuration: args.timeDuration,
+//       status: args.status,
+//       customer:{
+//         create:{
+//           name: args.customer_name,
+//           email: args.email,
+//         },
+//       },
+//       calendarSelect: {
+//         create: {
+//           startDate: args.startDate,
+//           endDate: args.endDate,
+//         },
+//       },
+//     },
+//   });
+// };
+
+export const createCalendarSelect = (args: { startDate: string, endDate: string}) => {
+  return prisma.calendarSelect.create({
+    data:{
+      startDate: args.startDate,
+      endDate: args.endDate,
+    }
+  })
+}

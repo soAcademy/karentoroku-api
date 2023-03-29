@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { CreateUserCodec } from "./karentoroku.interfaces";
-import { createUser, getUserById, getUsers } from "./karentoroku.resolvers";
+import { createCalendarSelect, createUser, getUserById, getUsers } from "./karentoroku.resolvers";
 
 export const getIndexHandler = (req: Request, res: Response) => {
   res.setHeader("Content-Type", "text/html");
@@ -59,3 +59,27 @@ export const getUserByIdHandler = async (req: Request, res: Response) => {
     res.status(500).json({ error: "ERROR: invalid request (getUser)" });
   }
 };
+
+// export const createEventTypeHandler = async(req: Request, res: Response) => {
+//   const body = req.body;
+//   try {
+//     const result = await createEventType(body);
+//     res.status(200).json(result);
+//   } catch (e) {
+//     res.status(500).json({
+//       error: String(e),
+//     });
+//   }
+// }
+
+export const createCalendarSelectHandler = async(req: Request, res: Response) => {
+  const body = req.body;
+  try {
+    const result = await createCalendarSelect(body)
+    res.status(200).json(result);
+  } catch (e) {
+    res.status(500).json({
+      error: String(e),
+    })
+  }
+}

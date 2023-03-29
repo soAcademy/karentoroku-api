@@ -23,4 +23,14 @@ exports.AppRoutes = [
         method: "post",
         action: karentoroku_handlers_1.getUserByIdHandler,
     },
+    // {
+    //   path: "/createEventType",
+    //   method: "post",
+    //   action: createEventTypeHandler,
+    // }
+    {
+        path: "/createCalendarSelect",
+        method: "post",
+        action: karentoroku_handlers_1.createCalendarSelectHandler,
+    }
 ];

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserByIdHandler = exports.getUsersHandler = exports.createUserHandler = exports.getIndexHandler = void 0;
+exports.createCalendarSelectHandler = exports.getUserByIdHandler = exports.getUsersHandler = exports.createUserHandler = exports.getIndexHandler = void 0;
 const karentoroku_interfaces_1 = require("./karentoroku.interfaces");
 const karentoroku_resolvers_1 = require("./karentoroku.resolvers");
 const getIndexHandler = (req, res) => {
@@ -72,3 +72,27 @@ const getUserByIdHandler = (req, res) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.getUserByIdHandler = getUserByIdHandler;
+// export const createEventTypeHandler = async(req: Request, res: Response) => {
+//   const body = req.body;
+//   try {
+//     const result = await createEventType(body);
+//     res.status(200).json(result);
+//   } catch (e) {
+//     res.status(500).json({
+//       error: String(e),
+//     });
+//   }
+// }
+const createCalendarSelectHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const body = req.body;
+    try {
+        const result = yield (0, karentoroku_resolvers_1.createCalendarSelect)(body);
+        res.status(200).json(result);
+    }
+    catch (e) {
+        res.status(500).json({
+            error: String(e),
+        });
+    }
+});
+exports.createCalendarSelectHandler = createCalendarSelectHandler;
