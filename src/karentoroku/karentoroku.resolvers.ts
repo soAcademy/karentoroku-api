@@ -56,3 +56,25 @@ export const getUserById = (args: { id: number }) => {
     },
   });
 };
+
+export const getUserByFirebaseIdToken = async (args: { idToken: string }) => {
+  getAuth(firebaseApp)
+    .verifyIdToken(args.idToken)
+    .then((decodedToken) => {
+      const uid = decodedToken.uid;
+      // ...
+      console.log(uid);
+      return prisma.user.findUniqueOrThrow({
+        select: {
+          username: true,
+        },
+        where: {
+          firebaseUid: uid,
+        },
+      });
+    })
+    .catch((error) => {
+      // Handle error
+      console.log(error);
+    });
+};

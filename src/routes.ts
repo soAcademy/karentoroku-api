@@ -1,6 +1,7 @@
 import {
   createUserHandler,
   getIndexHandler,
+  getUserByFirebaseIdTokenHandler,
   getUserByIdHandler,
   getUsersHandler,
 } from "./karentoroku/karentoroku.handlers";
@@ -25,5 +26,10 @@ export const AppRoutes = [
     path: "/getUserById",
     method: "post",
     action: getUserByIdHandler,
+  },
+  {
+    path: "/getUserByToken",
+    method: "post",
+    action: getUserByFirebaseIdTokenHandler,
   },
 ];
