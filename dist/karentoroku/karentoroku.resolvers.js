@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createCalendarSelect = exports.getUserById = exports.getUsers = exports.createUser = exports.prisma = void 0;
+exports.createEventType = exports.getUserById = exports.getUsers = exports.createUser = exports.prisma = void 0;
 const client_1 = require("../../prisma/client");
 const firebase_admin_1 = require("firebase-admin");
 const app_1 = require("firebase-admin/app");
@@ -34,7 +34,7 @@ const createUser = (args) => {
     })
         .catch((error) => {
         // Handle error
-        console.log(error);
+        console.log("Error:", error);
     });
 };
 exports.createUser = createUser;
@@ -59,55 +59,40 @@ const getUserById = (args) => {
     });
 };
 exports.getUserById = getUserById;
-// export const createEventType = (args: {
-//   name: string;
-//   description: string;
-//   price: number;
-//   timeDuration: number;
-//   status: string;
-//   username: string;
-//   user_Name: string;
-//   firebaseId: string;
-//   startDate: string;
-//   endDate: string;
-//   customer_name: string;
-//   email: string;
-// }) => {
-//   return prisma.eventType.create({
-//     data: {
-//       name: args.name,
-//       user: {
-//         create: {
-//           name: args.user_Name,
-//           username: args.username,
-//           firebaseUid: args.firebaseId,
-//         },
-//       },
-//       description: args.description,
-//       price: args.price,
-//       timeDuration: args.timeDuration,
-//       status: args.status,
-//       customer:{
-//         create:{
-//           name: args.customer_name,
-//           email: args.email,
-//         },
-//       },
-//       calendarSelect: {
-//         create: {
-//           startDate: args.startDate,
-//           endDate: args.endDate,
-//         },
-//       },
-//     },
-//   });
-// };
-const createCalendarSelect = (args) => {
-    return exports.prisma.calendarSelect.create({
+const createEventType = (args) => {
+    //   {
+    //   name: string;
+    //   description: string;
+    //   price: number;
+    //   timeDuration: number;
+    //   userId: number;
+    //   date: string;
+    //   startTime: string;
+    //   endTime: string;
+    // }) 
+    return exports.prisma.eventType.create({
         data: {
-            startDate: args.startDate,
-            endDate: args.endDate,
+            name: args.name,
+            description: args.description,
+            price: args.price,
+            timeDuration: args.timeDuration,
+            user: {
+                connect: {
+                    id: args.userId
+                }
+            },
+            weekday: {
+                create: {
+                    date: new Date(args.date),
+                    timeSelect: {
+                        create: {
+                            startTime: new Date(args.startTime),
+                            endTime: new Date(args.endTime)
+                        }
+                    }
+                }
+            }
         }
     });
 };
-exports.createCalendarSelect = createCalendarSelect;
+exports.createEventType = createEventType;

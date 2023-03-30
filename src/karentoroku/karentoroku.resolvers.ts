@@ -1,5 +1,5 @@
 import { PrismaClient } from "../../prisma/client";
-import { ICreateUser } from "./karentoroku.interfaces";
+import { ICreateEventType, ICreateUser } from "./karentoroku.interfaces";
 import { credential } from "firebase-admin";
 import { initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
@@ -33,7 +33,7 @@ export const createUser = (args: ICreateUser) => {
     })
     .catch((error) => {
       // Handle error
-      console.log(error);
+      console.log("Error:", error);
     });
 };
 
@@ -58,55 +58,42 @@ export const getUserById = (args: { id: number }) => {
   });
 };
 
-// export const createEventType = (args: {
+export const createEventType = (args: ICreateEventType) => {
+//   {
 //   name: string;
 //   description: string;
 //   price: number;
 //   timeDuration: number;
-//   status: string;
-//   username: string;
-//   user_Name: string;
-//   firebaseId: string;
-//   startDate: string;
-//   endDate: string;
-//   customer_name: string;
-//   email: string;
-// }) => {
-//   return prisma.eventType.create({
-//     data: {
-//       name: args.name,
-//       user: {
-//         create: {
-//           name: args.user_Name,
-//           username: args.username,
-//           firebaseUid: args.firebaseId,
-//         },
-//       },
-//       description: args.description,
-//       price: args.price,
-//       timeDuration: args.timeDuration,
-//       status: args.status,
-//       customer:{
-//         create:{
-//           name: args.customer_name,
-//           email: args.email,
-//         },
-//       },
-//       calendarSelect: {
-//         create: {
-//           startDate: args.startDate,
-//           endDate: args.endDate,
-//         },
-//       },
-//     },
-//   });
-// };
+//   userId: number;
+//   date: string;
+//   startTime: string;
+//   endTime: string;
+// }) 
 
-export const createCalendarSelect = (args: { startDate: string, endDate: string}) => {
-  return prisma.calendarSelect.create({
+  return prisma.eventType.create({
     data:{
-      startDate: args.startDate,
-      endDate: args.endDate,
+      name: args.name,
+      description: args.description,
+      price: args.price,
+      timeDuration: args.timeDuration,
+      user:{
+        connect:{
+          id: args.userId
+        }
+      },
+      weekday:{
+        create:{
+          date: new Date(args.date),
+          timeSelect:{
+            create:{
+              startTime: new Date(args.startTime),
+              endTime: new Date(args.endTime)
+            }
+          }
+        }
+      }
     }
-  })
-}
+  });
+};
+
+

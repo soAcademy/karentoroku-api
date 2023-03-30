@@ -1,6 +1,5 @@
 import {
-  createCalendarSelectHandler,
-  // createEventTypeHandler,
+  createEventTypeHandler,
   createUserHandler,
   getIndexHandler,
   getUserByIdHandler,
@@ -28,14 +27,9 @@ export const AppRoutes = [
     method: "post",
     action: getUserByIdHandler,
   },
-  // {
-  //   path: "/createEventType",
-  //   method: "post",
-  //   action: createEventTypeHandler,
-  // }
   {
-    path: "/createCalendarSelect",
+    path: "/createEventType",
     method: "post",
-    action: createCalendarSelectHandler,
-  }
+    action: createEventTypeHandler,
+  },
 ];

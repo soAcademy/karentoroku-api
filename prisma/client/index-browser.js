@@ -92,7 +92,6 @@ function makeEnum(x) { return x; }
 exports.Prisma.AvailabilityScheduleScalarFieldEnum = makeEnum({
   id: 'id',
   name: 'name',
-  eventTypeId: 'eventTypeId',
   timezone: 'timezone',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -108,29 +107,10 @@ exports.Prisma.BillingScalarFieldEnum = makeEnum({
   updatedAt: 'updatedAt'
 });
 
-exports.Prisma.CalendarSelectScalarFieldEnum = makeEnum({
-  id: 'id',
-  startDate: 'startDate',
-  endDate: 'endDate',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-});
-
 exports.Prisma.CustomerScalarFieldEnum = makeEnum({
   id: 'id',
   name: 'name',
   email: 'email',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-});
-
-exports.Prisma.EventSelectScalarFieldEnum = makeEnum({
-  id: 'id',
-  eventTypeId: 'eventTypeId',
-  customerId: 'customerId',
-  selectDate: 'selectDate',
-  selectTime: 'selectTime',
-  status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 });
@@ -150,9 +130,8 @@ exports.Prisma.EventTypeScalarFieldEnum = makeEnum({
   description: 'description',
   price: 'price',
   timeDuration: 'timeDuration',
-  calendarSelectId: 'calendarSelectId',
-  customerId: 'customerId',
-  status: 'status',
+  availabilityScheduleId: 'availabilityScheduleId',
+  weekdayId: 'weekdayId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 });
@@ -227,9 +206,9 @@ exports.Prisma.WeekDayScalarFieldEnum = makeEnum({
   day: 'day',
   availabilityScheduleId: 'availabilityScheduleId',
   timeSelectId: 'timeSelectId',
-  eventTypeId: 'eventTypeId',
   status: 'status',
   date: 'date',
+  custormerId: 'custormerId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 });
@@ -244,10 +223,8 @@ exports.Prisma.ModelName = makeEnum({
   WeekDay: 'WeekDay',
   TimeSelect: 'TimeSelect',
   Customer: 'Customer',
-  CalendarSelect: 'CalendarSelect',
   Billing: 'Billing',
   GroupMeeting: 'GroupMeeting',
-  EventSelect: 'EventSelect',
   UserOnGroupMeeting: 'UserOnGroupMeeting'
 });
 

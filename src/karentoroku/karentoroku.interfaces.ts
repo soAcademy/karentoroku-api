@@ -7,3 +7,16 @@ export const CreateUserCodec = t.type({
 });
 
 export interface ICreateUser extends t.TypeOf<typeof CreateUserCodec> {}
+
+export const CreateEventTypeCodec = t.type({
+  name: t.string,
+  description: t.string,
+  price: t.number,
+  timeDuration: t.number,
+  userId: t.number,
+  date: t.string,
+  startTime: t.string,
+  endTime: t.string,
+});
+
+export interface ICreateEventType extends t.TypeOf<typeof CreateEventTypeCodec>{}
