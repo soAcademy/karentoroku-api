@@ -1,8 +1,14 @@
 import { Request, Response } from "express";
-import { CreateUserCodec } from "./karentoroku.interfaces";
 import {
-  createUser,
+  CreateEventTypeCodec,
+  CreateTimeSelectCodec,
+  CreateUserCodec,
+} from "./karentoroku.interfaces";
+import {
+  createEventType,
+  createTimeSelect,
   getUserByFirebaseIdToken,
+  createUser,
   getUserById,
   getUsers,
 } from "./karentoroku.resolvers";
@@ -88,3 +94,42 @@ export const getUserByFirebaseIdTokenHandler = async (
     });
   }
 };
+
+export const createEventTypeHandler = (req: Request, res: Response) => {
+  const body = req.body;
+  console.log(body);
+  console.log(CreateEventTypeCodec.decode(body));
+  if (CreateEventTypeCodec.decode(body)._tag === "Right") {
+    return createEventType(body)
+      .then((response) => res.status(200).send(response))
+      .catch((error) => res.status(500).send(error));
+  } else {
+    res.status(500).send("Failed to validate codec");
+  }
+};
+
+export const createTimeSelectHandler = (req: Request, res: Response) => {
+  const body = req.body;
+  // console.log(body)
+  // console.log(CreateTimeSelectCodec.decode(body));
+  if (CreateTimeSelectCodec.decode(body)._tag === "Right") {
+    return createTimeSelect(body)
+      .then((response) => res.status(200).send(response))
+      .catch((error) => res.status(500).send(error));
+  } else {
+    res.status(500).send("Failed to validate codec");
+  }
+};
+
+// export const createLocationHandler = (req: Request, res: Response) => {
+//   const body = req.body;
+//   console.log(body)
+//   console.log(CreateLocationCodec.decode(body));
+//   if (CreateEventTypeCodec.decode(body)._tag === "Right") {
+//     return createTimeSelect(body)
+//       .then((response) => res.status(200).send(response))
+//       .catch((error) => res.status(500).send(error));
+//   } else {
+//     res.status(500).send("Failed to validate codec");
+//   }
+// };

@@ -1,9 +1,14 @@
 import { PrismaClient } from "../../prisma/client";
-import { ICreateUser } from "./karentoroku.interfaces";
+import {
+  ICreateEventType,
+  ICreateTimeSelect,
+  ICreateUser,
+} from "./karentoroku.interfaces";
 import { credential } from "firebase-admin";
 import { initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import serviceAccount from "../config/firebaseAdmin.json";
+import { date } from "fp-ts";
 
 const firebaseApp = initializeApp({
   credential: credential.cert({
@@ -32,7 +37,7 @@ export const createUser = (args: ICreateUser) => {
     })
     .catch((error) => {
       // Handle error
-      console.log(error);
+      console.log("Error:", error);
     });
 };
 
@@ -77,4 +82,72 @@ export const getUserByFirebaseIdToken = async (args: { idToken: string }) => {
       // Handle error
       console.log(error);
     });
+};
+
+export const createTimeSelect = (args: ICreateTimeSelect) => {
+  //   {
+  //   startTime: number;
+  //   endTime: number;
+  // }) => {
+  return prisma.timeSelect.create({
+    data: {
+      startTime: args.startTime,
+      endTime: args.endTime,
+    },
+  });
+};
+
+export const createLocation = (args: { name: string }) => {
+  return prisma.location.create({
+    data: {
+      name: args.name,
+    },
+  });
+};
+
+export const createEventType = (args: ICreateEventType) => {
+  return prisma.eventType.create({
+    data: {
+      name: args.name,
+      description: args.description,
+      price: args.price,
+      timeDuration: args.timeDuration,
+      user: {
+        connect: {
+          id: args.userId,
+        },
+      },
+      weekDays: {
+        create: args.dates.map((d) => {
+          return {
+            date: new Date(d.date),
+            weekDayOnTimeSelects: {
+              create: args.timeSlots.map((t) => {
+                return {
+                  timeSelect: {
+                    create: {
+                      startTime: t.startTime,
+                      endTime: t.endTime,
+                    },
+                  },
+                };
+              }),
+            },
+          };
+        }),
+      },
+      eventTypeOnLocations: {
+        create: args.locations.map((l) => {
+          return {
+            location: {
+              connectOrCreate: {
+                where: { name: l.locationName },
+                create: { name: l.locationName },
+              },
+            },
+          };
+        }),
+      },
+    },
+  });
 };

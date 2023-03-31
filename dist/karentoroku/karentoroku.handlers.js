@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserByFirebaseIdTokenHandler = exports.getUserByIdHandler = exports.getUsersHandler = exports.createUserHandler = exports.getIndexHandler = void 0;
+exports.createTimeSelectHandler = exports.createEventTypeHandler = exports.getUserByFirebaseIdTokenHandler = exports.getUserByIdHandler = exports.getUsersHandler = exports.createUserHandler = exports.getIndexHandler = void 0;
 const karentoroku_interfaces_1 = require("./karentoroku.interfaces");
 const karentoroku_resolvers_1 = require("./karentoroku.resolvers");
 const getIndexHandler = (req, res) => {
@@ -94,3 +94,43 @@ const getUserByFirebaseIdTokenHandler = (req, res) => __awaiter(void 0, void 0, 
     }
 });
 exports.getUserByFirebaseIdTokenHandler = getUserByFirebaseIdTokenHandler;
+const createEventTypeHandler = (req, res) => {
+    const body = req.body;
+    console.log(body);
+    console.log(karentoroku_interfaces_1.CreateEventTypeCodec.decode(body));
+    if (karentoroku_interfaces_1.CreateEventTypeCodec.decode(body)._tag === "Right") {
+        return (0, karentoroku_resolvers_1.createEventType)(body)
+            .then((response) => res.status(200).send(response))
+            .catch((error) => res.status(500).send(error));
+    }
+    else {
+        res.status(500).send("Failed to validate codec");
+    }
+};
+exports.createEventTypeHandler = createEventTypeHandler;
+const createTimeSelectHandler = (req, res) => {
+    const body = req.body;
+    // console.log(body)
+    // console.log(CreateTimeSelectCodec.decode(body));
+    if (karentoroku_interfaces_1.CreateTimeSelectCodec.decode(body)._tag === "Right") {
+        return (0, karentoroku_resolvers_1.createTimeSelect)(body)
+            .then((response) => res.status(200).send(response))
+            .catch((error) => res.status(500).send(error));
+    }
+    else {
+        res.status(500).send("Failed to validate codec");
+    }
+};
+exports.createTimeSelectHandler = createTimeSelectHandler;
+// export const createLocationHandler = (req: Request, res: Response) => {
+//   const body = req.body;
+//   console.log(body)
+//   console.log(CreateLocationCodec.decode(body));
+//   if (CreateEventTypeCodec.decode(body)._tag === "Right") {
+//     return createTimeSelect(body)
+//       .then((response) => res.status(200).send(response))
+//       .catch((error) => res.status(500).send(error));
+//   } else {
+//     res.status(500).send("Failed to validate codec");
+//   }
+// };

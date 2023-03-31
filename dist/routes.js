@@ -28,4 +28,14 @@ exports.AppRoutes = [
         method: "post",
         action: karentoroku_handlers_1.getUserByFirebaseIdTokenHandler,
     },
+    {
+        path: "/createEventType",
+        method: "post",
+        action: karentoroku_handlers_1.createEventTypeHandler,
+    },
+    {
+        path: "/createTimeSelect",
+        method: "post",
+        action: karentoroku_handlers_1.createTimeSelectHandler,
+    },
 ];

@@ -1,4 +1,6 @@
 import {
+  createEventTypeHandler,
+  createTimeSelectHandler,
   createUserHandler,
   getIndexHandler,
   getUserByFirebaseIdTokenHandler,
@@ -31,5 +33,15 @@ export const AppRoutes = [
     path: "/getUserByToken",
     method: "post",
     action: getUserByFirebaseIdTokenHandler,
+  },
+  {
+    path: "/createEventType",
+    method: "post",
+    action: createEventTypeHandler,
+  },
+  {
+    path: "/createTimeSelect",
+    method: "post",
+    action: createTimeSelectHandler,
   },
 ];
