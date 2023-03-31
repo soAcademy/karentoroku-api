@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createEventType = exports.getUserById = exports.getUsers = exports.createUser = exports.prisma = void 0;
+exports.createEventType = exports.createLocation = exports.createTimeSelect = exports.getUserById = exports.getUsers = exports.createUser = exports.prisma = void 0;
 const client_1 = require("../../prisma/client");
 const firebase_admin_1 = require("firebase-admin");
 const app_1 = require("firebase-admin/app");
@@ -59,17 +59,28 @@ const getUserById = (args) => {
     });
 };
 exports.getUserById = getUserById;
-const createEventType = (args) => {
+const createTimeSelect = (args) => {
     //   {
-    //   name: string;
-    //   description: string;
-    //   price: number;
-    //   timeDuration: number;
-    //   userId: number;
-    //   date: string;
-    //   startTime: string;
-    //   endTime: string;
-    // }) 
+    //   startTime: number;
+    //   endTime: number;
+    // }) => {
+    return exports.prisma.timeSelect.create({
+        data: {
+            startTime: args.startTime,
+            endTime: args.endTime,
+        },
+    });
+};
+exports.createTimeSelect = createTimeSelect;
+const createLocation = (args) => {
+    return exports.prisma.location.create({
+        data: {
+            name: args.name,
+        },
+    });
+};
+exports.createLocation = createLocation;
+const createEventType = (args) => {
     return exports.prisma.eventType.create({
         data: {
             name: args.name,
@@ -78,21 +89,41 @@ const createEventType = (args) => {
             timeDuration: args.timeDuration,
             user: {
                 connect: {
-                    id: args.userId
-                }
+                    id: args.userId,
+                },
             },
-            weekday: {
-                create: {
-                    date: new Date(args.date),
-                    timeSelect: {
-                        create: {
-                            startTime: new Date(args.startTime),
-                            endTime: new Date(args.endTime)
-                        }
-                    }
-                }
-            }
-        }
+            weekDays: {
+                create: args.dates.map((d) => {
+                    return {
+                        date: new Date(d.date),
+                        weekDayOnTimeSelects: {
+                            create: args.timeSlots.map((t) => {
+                                return {
+                                    timeSelect: {
+                                        create: {
+                                            startTime: t.startTime,
+                                            endTime: t.endTime,
+                                        },
+                                    },
+                                };
+                            }),
+                        },
+                    };
+                }),
+            },
+            eventTypeOnLocations: {
+                create: args.locations.map((l) => {
+                    return {
+                        location: {
+                            connectOrCreate: {
+                                where: { name: l.locationName },
+                                create: { name: l.locationName },
+                            },
+                        },
+                    };
+                }),
+            },
+        },
     });
 };
 exports.createEventType = createEventType;

@@ -21,8 +21,8 @@ model User {
   firebaseUid         String               @unique
   eventTypes          EventType[]
   subscription        String?
-  mobileNumber        String?
-  userLink            String?
+  mobileNumber        String?              @unique
+  userLink            String?              @unique
   billings            Billing[]
   job                 String?
   education           String?
@@ -51,8 +51,7 @@ model EventType {
   timeDuration           Int
   availabilitySchedule   AvailabilitySchedule? @relation(fields: [availabilityScheduleId], references: [id])
   availabilityScheduleId Int?
-  weekday                WeekDay               @relation(fields: [weekdayId], references: [id])
-  weekdayId              Int
+  weekDays               WeekDay[]
   groupMeetings          GroupMeeting[]
   createdAt              DateTime              @default(now())
   updatedAt              DateTime              @updatedAt
@@ -60,7 +59,7 @@ model EventType {
 
 model Location {
   id                   Int                   @id @default(autoincrement())
-  name                 String
+  name                 String                @unique
   eventTypeOnLocations EventTypeOnLocation[]
   groupMeetings        GroupMeeting[]
   createdAt            DateTime              @default(now())
@@ -78,46 +77,45 @@ model EventTypeOnLocation {
 }
 
 model AvailabilitySchedule {
-  id        Int         @id @default(autoincrement())
-  name      String
-  EventType EventType[]
-  timezone  String
-  weekDays  WeekDay[]
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  id         Int         @id @default(autoincrement())
+  name       String      @unique
+  eventTypes EventType[]
+  timezone   String
+  weekDays   WeekDay[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 }
 
 model WeekDay {
   id                     Int                   @id @default(autoincrement())
-  day                    Int? // day of the week from 0 (Sunday) to 6 (Saturday)
   availabilitySchedule   AvailabilitySchedule? @relation(fields: [availabilityScheduleId], references: [id])
   availabilityScheduleId Int?
-  timeSelect             TimeSelect            @relation(fields: [timeSelectId], references: [id])
-  timeSelectId           Int
-  EventType              EventType[]
+  eventType              EventType             @relation(fields: [eventTypeId], references: [id])
+  eventTypeId            Int
   status                 String                @default("available")
   date                   DateTime
   custormer              Customer?             @relation(fields: [custormerId], references: [id])
   custormerId            Int?
   createdAt              DateTime              @default(now())
   updatedAt              DateTime              @updatedAt
+  weekDayOnTimeSelects   WeekDayOnTimeSelect[]
 }
 
 model TimeSelect {
-  id        Int       @id @default(autoincrement())
-  startTime DateTime
-  endTime   DateTime
-  weekDays  WeekDay[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id                  Int                   @id @default(autoincrement())
+  startTime           Int
+  endTime             Int
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  WeekDayOnTimeSelect WeekDayOnTimeSelect[]
 }
 
 model Customer {
   id            Int            @id @default(autoincrement())
   name          String
-  email         String
+  email         String         @unique
   groupMeetings GroupMeeting[]
-  WeekDay       WeekDay[]
+  weekDays      WeekDay[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 }
@@ -156,4 +154,14 @@ model UserOnGroupMeeting {
   groupMeetingId Int
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
+}
+
+model WeekDayOnTimeSelect {
+  id           Int        @id @default(autoincrement())
+  weekday      WeekDay    @relation(fields: [weekdayId], references: [id])
+  weekdayId    Int
+  timeSelect   TimeSelect @relation(fields: [timeSelectId], references: [id])
+  timeSelectId Int
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 }

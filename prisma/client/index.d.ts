@@ -40,7 +40,6 @@ export type EventType = {
   price: number
   timeDuration: number
   availabilityScheduleId: number | null
-  weekdayId: number
   createdAt: Date
   updatedAt: Date
 }
@@ -86,9 +85,8 @@ export type AvailabilitySchedule = {
  */
 export type WeekDay = {
   id: number
-  day: number | null
   availabilityScheduleId: number | null
-  timeSelectId: number
+  eventTypeId: number
   status: string
   date: Date
   custormerId: number | null
@@ -102,8 +100,8 @@ export type WeekDay = {
  */
 export type TimeSelect = {
   id: number
-  startTime: Date
-  endTime: Date
+  startTime: number
+  endTime: number
   createdAt: Date
   updatedAt: Date
 }
@@ -157,6 +155,18 @@ export type UserOnGroupMeeting = {
   id: number
   userId: number
   groupMeetingId: number
+  createdAt: Date
+  updatedAt: Date
+}
+
+/**
+ * Model WeekDayOnTimeSelect
+ * 
+ */
+export type WeekDayOnTimeSelect = {
+  id: number
+  weekdayId: number
+  timeSelectId: number
   createdAt: Date
   updatedAt: Date
 }
@@ -388,6 +398,16 @@ export class PrismaClient<
     * ```
     */
   get userOnGroupMeeting(): Prisma.UserOnGroupMeetingDelegate<GlobalReject>;
+
+  /**
+   * `prisma.weekDayOnTimeSelect`: Exposes CRUD operations for the **WeekDayOnTimeSelect** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more WeekDayOnTimeSelects
+    * const weekDayOnTimeSelects = await prisma.weekDayOnTimeSelect.findMany()
+    * ```
+    */
+  get weekDayOnTimeSelect(): Prisma.WeekDayOnTimeSelectDelegate<GlobalReject>;
 }
 
 export namespace Prisma {
@@ -867,7 +887,8 @@ export namespace Prisma {
     Customer: 'Customer',
     Billing: 'Billing',
     GroupMeeting: 'GroupMeeting',
-    UserOnGroupMeeting: 'UserOnGroupMeeting'
+    UserOnGroupMeeting: 'UserOnGroupMeeting',
+    WeekDayOnTimeSelect: 'WeekDayOnTimeSelect'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1082,11 +1103,13 @@ export namespace Prisma {
 
   export type EventTypeCountOutputType = {
     eventTypeOnLocations: number
+    weekDays: number
     groupMeetings: number
   }
 
   export type EventTypeCountOutputTypeSelect = {
     eventTypeOnLocations?: boolean
+    weekDays?: boolean
     groupMeetings?: boolean
   }
 
@@ -1171,12 +1194,12 @@ export namespace Prisma {
 
 
   export type AvailabilityScheduleCountOutputType = {
-    EventType: number
+    eventTypes: number
     weekDays: number
   }
 
   export type AvailabilityScheduleCountOutputTypeSelect = {
-    EventType?: boolean
+    eventTypes?: boolean
     weekDays?: boolean
   }
 
@@ -1216,11 +1239,11 @@ export namespace Prisma {
 
 
   export type WeekDayCountOutputType = {
-    EventType: number
+    weekDayOnTimeSelects: number
   }
 
   export type WeekDayCountOutputTypeSelect = {
-    EventType?: boolean
+    weekDayOnTimeSelects?: boolean
   }
 
   export type WeekDayCountOutputTypeGetPayload<S extends boolean | null | undefined | WeekDayCountOutputTypeArgs> =
@@ -1259,11 +1282,11 @@ export namespace Prisma {
 
 
   export type TimeSelectCountOutputType = {
-    weekDays: number
+    WeekDayOnTimeSelect: number
   }
 
   export type TimeSelectCountOutputTypeSelect = {
-    weekDays?: boolean
+    WeekDayOnTimeSelect?: boolean
   }
 
   export type TimeSelectCountOutputTypeGetPayload<S extends boolean | null | undefined | TimeSelectCountOutputTypeArgs> =
@@ -1303,12 +1326,12 @@ export namespace Prisma {
 
   export type CustomerCountOutputType = {
     groupMeetings: number
-    WeekDay: number
+    weekDays: number
   }
 
   export type CustomerCountOutputTypeSelect = {
     groupMeetings?: boolean
-    WeekDay?: boolean
+    weekDays?: boolean
   }
 
   export type CustomerCountOutputTypeGetPayload<S extends boolean | null | undefined | CustomerCountOutputTypeArgs> =
@@ -2499,7 +2522,6 @@ export namespace Prisma {
     price: number | null
     timeDuration: number | null
     availabilityScheduleId: number | null
-    weekdayId: number | null
   }
 
   export type EventTypeSumAggregateOutputType = {
@@ -2508,7 +2530,6 @@ export namespace Prisma {
     price: number | null
     timeDuration: number | null
     availabilityScheduleId: number | null
-    weekdayId: number | null
   }
 
   export type EventTypeMinAggregateOutputType = {
@@ -2519,7 +2540,6 @@ export namespace Prisma {
     price: number | null
     timeDuration: number | null
     availabilityScheduleId: number | null
-    weekdayId: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2532,7 +2552,6 @@ export namespace Prisma {
     price: number | null
     timeDuration: number | null
     availabilityScheduleId: number | null
-    weekdayId: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2545,7 +2564,6 @@ export namespace Prisma {
     price: number
     timeDuration: number
     availabilityScheduleId: number
-    weekdayId: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -2558,7 +2576,6 @@ export namespace Prisma {
     price?: true
     timeDuration?: true
     availabilityScheduleId?: true
-    weekdayId?: true
   }
 
   export type EventTypeSumAggregateInputType = {
@@ -2567,7 +2584,6 @@ export namespace Prisma {
     price?: true
     timeDuration?: true
     availabilityScheduleId?: true
-    weekdayId?: true
   }
 
   export type EventTypeMinAggregateInputType = {
@@ -2578,7 +2594,6 @@ export namespace Prisma {
     price?: true
     timeDuration?: true
     availabilityScheduleId?: true
-    weekdayId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2591,7 +2606,6 @@ export namespace Prisma {
     price?: true
     timeDuration?: true
     availabilityScheduleId?: true
-    weekdayId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2604,7 +2618,6 @@ export namespace Prisma {
     price?: true
     timeDuration?: true
     availabilityScheduleId?: true
-    weekdayId?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -2705,7 +2718,6 @@ export namespace Prisma {
     price: number
     timeDuration: number
     availabilityScheduleId: number | null
-    weekdayId: number
     createdAt: Date
     updatedAt: Date
     _count: EventTypeCountAggregateOutputType | null
@@ -2737,13 +2749,12 @@ export namespace Prisma {
     price?: boolean
     timeDuration?: boolean
     availabilityScheduleId?: boolean
-    weekdayId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserArgs
     eventTypeOnLocations?: boolean | EventType$eventTypeOnLocationsArgs
     availabilitySchedule?: boolean | AvailabilityScheduleArgs
-    weekday?: boolean | WeekDayArgs
+    weekDays?: boolean | EventType$weekDaysArgs
     groupMeetings?: boolean | EventType$groupMeetingsArgs
     _count?: boolean | EventTypeCountOutputTypeArgs
   }
@@ -2753,7 +2764,7 @@ export namespace Prisma {
     user?: boolean | UserArgs
     eventTypeOnLocations?: boolean | EventType$eventTypeOnLocationsArgs
     availabilitySchedule?: boolean | AvailabilityScheduleArgs
-    weekday?: boolean | WeekDayArgs
+    weekDays?: boolean | EventType$weekDaysArgs
     groupMeetings?: boolean | EventType$groupMeetingsArgs
     _count?: boolean | EventTypeCountOutputTypeArgs
   }
@@ -2768,7 +2779,7 @@ export namespace Prisma {
         P extends 'user' ? UserGetPayload<S['include'][P]> :
         P extends 'eventTypeOnLocations' ? Array < EventTypeOnLocationGetPayload<S['include'][P]>>  :
         P extends 'availabilitySchedule' ? AvailabilityScheduleGetPayload<S['include'][P]> | null :
-        P extends 'weekday' ? WeekDayGetPayload<S['include'][P]> :
+        P extends 'weekDays' ? Array < WeekDayGetPayload<S['include'][P]>>  :
         P extends 'groupMeetings' ? Array < GroupMeetingGetPayload<S['include'][P]>>  :
         P extends '_count' ? EventTypeCountOutputTypeGetPayload<S['include'][P]> :  never
   } 
@@ -2778,7 +2789,7 @@ export namespace Prisma {
         P extends 'user' ? UserGetPayload<S['select'][P]> :
         P extends 'eventTypeOnLocations' ? Array < EventTypeOnLocationGetPayload<S['select'][P]>>  :
         P extends 'availabilitySchedule' ? AvailabilityScheduleGetPayload<S['select'][P]> | null :
-        P extends 'weekday' ? WeekDayGetPayload<S['select'][P]> :
+        P extends 'weekDays' ? Array < WeekDayGetPayload<S['select'][P]>>  :
         P extends 'groupMeetings' ? Array < GroupMeetingGetPayload<S['select'][P]>>  :
         P extends '_count' ? EventTypeCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof EventType ? EventType[P] : never
   } 
@@ -3158,7 +3169,7 @@ export namespace Prisma {
 
     availabilitySchedule<T extends AvailabilityScheduleArgs= {}>(args?: Subset<T, AvailabilityScheduleArgs>): Prisma__AvailabilityScheduleClient<AvailabilityScheduleGetPayload<T> | Null>;
 
-    weekday<T extends WeekDayArgs= {}>(args?: Subset<T, WeekDayArgs>): Prisma__WeekDayClient<WeekDayGetPayload<T> | Null>;
+    weekDays<T extends EventType$weekDaysArgs= {}>(args?: Subset<T, EventType$weekDaysArgs>): Prisma.PrismaPromise<Array<WeekDayGetPayload<T>>| Null>;
 
     groupMeetings<T extends EventType$groupMeetingsArgs= {}>(args?: Subset<T, EventType$groupMeetingsArgs>): Prisma.PrismaPromise<Array<GroupMeetingGetPayload<T>>| Null>;
 
@@ -3535,6 +3546,27 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: Enumerable<EventTypeOnLocationScalarFieldEnum>
+  }
+
+
+  /**
+   * EventType.weekDays
+   */
+  export type EventType$weekDaysArgs = {
+    /**
+     * Select specific fields to fetch from the WeekDay
+     */
+    select?: WeekDaySelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: WeekDayInclude | null
+    where?: WeekDayWhereInput
+    orderBy?: Enumerable<WeekDayOrderByWithRelationInput>
+    cursor?: WeekDayWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Enumerable<WeekDayScalarFieldEnum>
   }
 
 
@@ -5763,14 +5795,14 @@ export namespace Prisma {
     timezone?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    EventType?: boolean | AvailabilitySchedule$EventTypeArgs
+    eventTypes?: boolean | AvailabilitySchedule$eventTypesArgs
     weekDays?: boolean | AvailabilitySchedule$weekDaysArgs
     _count?: boolean | AvailabilityScheduleCountOutputTypeArgs
   }
 
 
   export type AvailabilityScheduleInclude = {
-    EventType?: boolean | AvailabilitySchedule$EventTypeArgs
+    eventTypes?: boolean | AvailabilitySchedule$eventTypesArgs
     weekDays?: boolean | AvailabilitySchedule$weekDaysArgs
     _count?: boolean | AvailabilityScheduleCountOutputTypeArgs
   }
@@ -5782,14 +5814,14 @@ export namespace Prisma {
     S extends { include: any } & (AvailabilityScheduleArgs | AvailabilityScheduleFindManyArgs)
     ? AvailabilitySchedule  & {
     [P in TruthyKeys<S['include']>]:
-        P extends 'EventType' ? Array < EventTypeGetPayload<S['include'][P]>>  :
+        P extends 'eventTypes' ? Array < EventTypeGetPayload<S['include'][P]>>  :
         P extends 'weekDays' ? Array < WeekDayGetPayload<S['include'][P]>>  :
         P extends '_count' ? AvailabilityScheduleCountOutputTypeGetPayload<S['include'][P]> :  never
   } 
     : S extends { select: any } & (AvailabilityScheduleArgs | AvailabilityScheduleFindManyArgs)
       ? {
     [P in TruthyKeys<S['select']>]:
-        P extends 'EventType' ? Array < EventTypeGetPayload<S['select'][P]>>  :
+        P extends 'eventTypes' ? Array < EventTypeGetPayload<S['select'][P]>>  :
         P extends 'weekDays' ? Array < WeekDayGetPayload<S['select'][P]>>  :
         P extends '_count' ? AvailabilityScheduleCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof AvailabilitySchedule ? AvailabilitySchedule[P] : never
   } 
@@ -6163,7 +6195,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
     constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
 
-    EventType<T extends AvailabilitySchedule$EventTypeArgs= {}>(args?: Subset<T, AvailabilitySchedule$EventTypeArgs>): Prisma.PrismaPromise<Array<EventTypeGetPayload<T>>| Null>;
+    eventTypes<T extends AvailabilitySchedule$eventTypesArgs= {}>(args?: Subset<T, AvailabilitySchedule$eventTypesArgs>): Prisma.PrismaPromise<Array<EventTypeGetPayload<T>>| Null>;
 
     weekDays<T extends AvailabilitySchedule$weekDaysArgs= {}>(args?: Subset<T, AvailabilitySchedule$weekDaysArgs>): Prisma.PrismaPromise<Array<WeekDayGetPayload<T>>| Null>;
 
@@ -6523,9 +6555,9 @@ export namespace Prisma {
 
 
   /**
-   * AvailabilitySchedule.EventType
+   * AvailabilitySchedule.eventTypes
    */
-  export type AvailabilitySchedule$EventTypeArgs = {
+  export type AvailabilitySchedule$eventTypesArgs = {
     /**
      * Select specific fields to fetch from the EventType
      */
@@ -6595,25 +6627,22 @@ export namespace Prisma {
 
   export type WeekDayAvgAggregateOutputType = {
     id: number | null
-    day: number | null
     availabilityScheduleId: number | null
-    timeSelectId: number | null
+    eventTypeId: number | null
     custormerId: number | null
   }
 
   export type WeekDaySumAggregateOutputType = {
     id: number | null
-    day: number | null
     availabilityScheduleId: number | null
-    timeSelectId: number | null
+    eventTypeId: number | null
     custormerId: number | null
   }
 
   export type WeekDayMinAggregateOutputType = {
     id: number | null
-    day: number | null
     availabilityScheduleId: number | null
-    timeSelectId: number | null
+    eventTypeId: number | null
     status: string | null
     date: Date | null
     custormerId: number | null
@@ -6623,9 +6652,8 @@ export namespace Prisma {
 
   export type WeekDayMaxAggregateOutputType = {
     id: number | null
-    day: number | null
     availabilityScheduleId: number | null
-    timeSelectId: number | null
+    eventTypeId: number | null
     status: string | null
     date: Date | null
     custormerId: number | null
@@ -6635,9 +6663,8 @@ export namespace Prisma {
 
   export type WeekDayCountAggregateOutputType = {
     id: number
-    day: number
     availabilityScheduleId: number
-    timeSelectId: number
+    eventTypeId: number
     status: number
     date: number
     custormerId: number
@@ -6649,25 +6676,22 @@ export namespace Prisma {
 
   export type WeekDayAvgAggregateInputType = {
     id?: true
-    day?: true
     availabilityScheduleId?: true
-    timeSelectId?: true
+    eventTypeId?: true
     custormerId?: true
   }
 
   export type WeekDaySumAggregateInputType = {
     id?: true
-    day?: true
     availabilityScheduleId?: true
-    timeSelectId?: true
+    eventTypeId?: true
     custormerId?: true
   }
 
   export type WeekDayMinAggregateInputType = {
     id?: true
-    day?: true
     availabilityScheduleId?: true
-    timeSelectId?: true
+    eventTypeId?: true
     status?: true
     date?: true
     custormerId?: true
@@ -6677,9 +6701,8 @@ export namespace Prisma {
 
   export type WeekDayMaxAggregateInputType = {
     id?: true
-    day?: true
     availabilityScheduleId?: true
-    timeSelectId?: true
+    eventTypeId?: true
     status?: true
     date?: true
     custormerId?: true
@@ -6689,9 +6712,8 @@ export namespace Prisma {
 
   export type WeekDayCountAggregateInputType = {
     id?: true
-    day?: true
     availabilityScheduleId?: true
-    timeSelectId?: true
+    eventTypeId?: true
     status?: true
     date?: true
     custormerId?: true
@@ -6789,9 +6811,8 @@ export namespace Prisma {
 
   export type WeekDayGroupByOutputType = {
     id: number
-    day: number | null
     availabilityScheduleId: number | null
-    timeSelectId: number
+    eventTypeId: number
     status: string
     date: Date
     custormerId: number | null
@@ -6820,27 +6841,26 @@ export namespace Prisma {
 
   export type WeekDaySelect = {
     id?: boolean
-    day?: boolean
     availabilityScheduleId?: boolean
-    timeSelectId?: boolean
+    eventTypeId?: boolean
     status?: boolean
     date?: boolean
     custormerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     availabilitySchedule?: boolean | AvailabilityScheduleArgs
-    timeSelect?: boolean | TimeSelectArgs
-    EventType?: boolean | WeekDay$EventTypeArgs
+    eventType?: boolean | EventTypeArgs
     custormer?: boolean | CustomerArgs
+    weekDayOnTimeSelects?: boolean | WeekDay$weekDayOnTimeSelectsArgs
     _count?: boolean | WeekDayCountOutputTypeArgs
   }
 
 
   export type WeekDayInclude = {
     availabilitySchedule?: boolean | AvailabilityScheduleArgs
-    timeSelect?: boolean | TimeSelectArgs
-    EventType?: boolean | WeekDay$EventTypeArgs
+    eventType?: boolean | EventTypeArgs
     custormer?: boolean | CustomerArgs
+    weekDayOnTimeSelects?: boolean | WeekDay$weekDayOnTimeSelectsArgs
     _count?: boolean | WeekDayCountOutputTypeArgs
   }
 
@@ -6852,18 +6872,18 @@ export namespace Prisma {
     ? WeekDay  & {
     [P in TruthyKeys<S['include']>]:
         P extends 'availabilitySchedule' ? AvailabilityScheduleGetPayload<S['include'][P]> | null :
-        P extends 'timeSelect' ? TimeSelectGetPayload<S['include'][P]> :
-        P extends 'EventType' ? Array < EventTypeGetPayload<S['include'][P]>>  :
+        P extends 'eventType' ? EventTypeGetPayload<S['include'][P]> :
         P extends 'custormer' ? CustomerGetPayload<S['include'][P]> | null :
+        P extends 'weekDayOnTimeSelects' ? Array < WeekDayOnTimeSelectGetPayload<S['include'][P]>>  :
         P extends '_count' ? WeekDayCountOutputTypeGetPayload<S['include'][P]> :  never
   } 
     : S extends { select: any } & (WeekDayArgs | WeekDayFindManyArgs)
       ? {
     [P in TruthyKeys<S['select']>]:
         P extends 'availabilitySchedule' ? AvailabilityScheduleGetPayload<S['select'][P]> | null :
-        P extends 'timeSelect' ? TimeSelectGetPayload<S['select'][P]> :
-        P extends 'EventType' ? Array < EventTypeGetPayload<S['select'][P]>>  :
+        P extends 'eventType' ? EventTypeGetPayload<S['select'][P]> :
         P extends 'custormer' ? CustomerGetPayload<S['select'][P]> | null :
+        P extends 'weekDayOnTimeSelects' ? Array < WeekDayOnTimeSelectGetPayload<S['select'][P]>>  :
         P extends '_count' ? WeekDayCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof WeekDay ? WeekDay[P] : never
   } 
       : WeekDay
@@ -7238,11 +7258,11 @@ export namespace Prisma {
 
     availabilitySchedule<T extends AvailabilityScheduleArgs= {}>(args?: Subset<T, AvailabilityScheduleArgs>): Prisma__AvailabilityScheduleClient<AvailabilityScheduleGetPayload<T> | Null>;
 
-    timeSelect<T extends TimeSelectArgs= {}>(args?: Subset<T, TimeSelectArgs>): Prisma__TimeSelectClient<TimeSelectGetPayload<T> | Null>;
-
-    EventType<T extends WeekDay$EventTypeArgs= {}>(args?: Subset<T, WeekDay$EventTypeArgs>): Prisma.PrismaPromise<Array<EventTypeGetPayload<T>>| Null>;
+    eventType<T extends EventTypeArgs= {}>(args?: Subset<T, EventTypeArgs>): Prisma__EventTypeClient<EventTypeGetPayload<T> | Null>;
 
     custormer<T extends CustomerArgs= {}>(args?: Subset<T, CustomerArgs>): Prisma__CustomerClient<CustomerGetPayload<T> | Null>;
+
+    weekDayOnTimeSelects<T extends WeekDay$weekDayOnTimeSelectsArgs= {}>(args?: Subset<T, WeekDay$weekDayOnTimeSelectsArgs>): Prisma.PrismaPromise<Array<WeekDayOnTimeSelectGetPayload<T>>| Null>;
 
     private get _document();
     /**
@@ -7600,23 +7620,23 @@ export namespace Prisma {
 
 
   /**
-   * WeekDay.EventType
+   * WeekDay.weekDayOnTimeSelects
    */
-  export type WeekDay$EventTypeArgs = {
+  export type WeekDay$weekDayOnTimeSelectsArgs = {
     /**
-     * Select specific fields to fetch from the EventType
+     * Select specific fields to fetch from the WeekDayOnTimeSelect
      */
-    select?: EventTypeSelect | null
+    select?: WeekDayOnTimeSelectSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: EventTypeInclude | null
-    where?: EventTypeWhereInput
-    orderBy?: Enumerable<EventTypeOrderByWithRelationInput>
-    cursor?: EventTypeWhereUniqueInput
+    include?: WeekDayOnTimeSelectInclude | null
+    where?: WeekDayOnTimeSelectWhereInput
+    orderBy?: Enumerable<WeekDayOnTimeSelectOrderByWithRelationInput>
+    cursor?: WeekDayOnTimeSelectWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: Enumerable<EventTypeScalarFieldEnum>
+    distinct?: Enumerable<WeekDayOnTimeSelectScalarFieldEnum>
   }
 
 
@@ -7651,24 +7671,28 @@ export namespace Prisma {
 
   export type TimeSelectAvgAggregateOutputType = {
     id: number | null
+    startTime: number | null
+    endTime: number | null
   }
 
   export type TimeSelectSumAggregateOutputType = {
     id: number | null
+    startTime: number | null
+    endTime: number | null
   }
 
   export type TimeSelectMinAggregateOutputType = {
     id: number | null
-    startTime: Date | null
-    endTime: Date | null
+    startTime: number | null
+    endTime: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
   export type TimeSelectMaxAggregateOutputType = {
     id: number | null
-    startTime: Date | null
-    endTime: Date | null
+    startTime: number | null
+    endTime: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -7685,10 +7709,14 @@ export namespace Prisma {
 
   export type TimeSelectAvgAggregateInputType = {
     id?: true
+    startTime?: true
+    endTime?: true
   }
 
   export type TimeSelectSumAggregateInputType = {
     id?: true
+    startTime?: true
+    endTime?: true
   }
 
   export type TimeSelectMinAggregateInputType = {
@@ -7805,8 +7833,8 @@ export namespace Prisma {
 
   export type TimeSelectGroupByOutputType = {
     id: number
-    startTime: Date
-    endTime: Date
+    startTime: number
+    endTime: number
     createdAt: Date
     updatedAt: Date
     _count: TimeSelectCountAggregateOutputType | null
@@ -7836,13 +7864,13 @@ export namespace Prisma {
     endTime?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    weekDays?: boolean | TimeSelect$weekDaysArgs
+    WeekDayOnTimeSelect?: boolean | TimeSelect$WeekDayOnTimeSelectArgs
     _count?: boolean | TimeSelectCountOutputTypeArgs
   }
 
 
   export type TimeSelectInclude = {
-    weekDays?: boolean | TimeSelect$weekDaysArgs
+    WeekDayOnTimeSelect?: boolean | TimeSelect$WeekDayOnTimeSelectArgs
     _count?: boolean | TimeSelectCountOutputTypeArgs
   }
 
@@ -7853,13 +7881,13 @@ export namespace Prisma {
     S extends { include: any } & (TimeSelectArgs | TimeSelectFindManyArgs)
     ? TimeSelect  & {
     [P in TruthyKeys<S['include']>]:
-        P extends 'weekDays' ? Array < WeekDayGetPayload<S['include'][P]>>  :
+        P extends 'WeekDayOnTimeSelect' ? Array < WeekDayOnTimeSelectGetPayload<S['include'][P]>>  :
         P extends '_count' ? TimeSelectCountOutputTypeGetPayload<S['include'][P]> :  never
   } 
     : S extends { select: any } & (TimeSelectArgs | TimeSelectFindManyArgs)
       ? {
     [P in TruthyKeys<S['select']>]:
-        P extends 'weekDays' ? Array < WeekDayGetPayload<S['select'][P]>>  :
+        P extends 'WeekDayOnTimeSelect' ? Array < WeekDayOnTimeSelectGetPayload<S['select'][P]>>  :
         P extends '_count' ? TimeSelectCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof TimeSelect ? TimeSelect[P] : never
   } 
       : TimeSelect
@@ -8232,7 +8260,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
     constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
 
-    weekDays<T extends TimeSelect$weekDaysArgs= {}>(args?: Subset<T, TimeSelect$weekDaysArgs>): Prisma.PrismaPromise<Array<WeekDayGetPayload<T>>| Null>;
+    WeekDayOnTimeSelect<T extends TimeSelect$WeekDayOnTimeSelectArgs= {}>(args?: Subset<T, TimeSelect$WeekDayOnTimeSelectArgs>): Prisma.PrismaPromise<Array<WeekDayOnTimeSelectGetPayload<T>>| Null>;
 
     private get _document();
     /**
@@ -8590,23 +8618,23 @@ export namespace Prisma {
 
 
   /**
-   * TimeSelect.weekDays
+   * TimeSelect.WeekDayOnTimeSelect
    */
-  export type TimeSelect$weekDaysArgs = {
+  export type TimeSelect$WeekDayOnTimeSelectArgs = {
     /**
-     * Select specific fields to fetch from the WeekDay
+     * Select specific fields to fetch from the WeekDayOnTimeSelect
      */
-    select?: WeekDaySelect | null
+    select?: WeekDayOnTimeSelectSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: WeekDayInclude | null
-    where?: WeekDayWhereInput
-    orderBy?: Enumerable<WeekDayOrderByWithRelationInput>
-    cursor?: WeekDayWhereUniqueInput
+    include?: WeekDayOnTimeSelectInclude | null
+    where?: WeekDayOnTimeSelectWhereInput
+    orderBy?: Enumerable<WeekDayOnTimeSelectOrderByWithRelationInput>
+    cursor?: WeekDayOnTimeSelectWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: Enumerable<WeekDayScalarFieldEnum>
+    distinct?: Enumerable<WeekDayOnTimeSelectScalarFieldEnum>
   }
 
 
@@ -8827,14 +8855,14 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     groupMeetings?: boolean | Customer$groupMeetingsArgs
-    WeekDay?: boolean | Customer$WeekDayArgs
+    weekDays?: boolean | Customer$weekDaysArgs
     _count?: boolean | CustomerCountOutputTypeArgs
   }
 
 
   export type CustomerInclude = {
     groupMeetings?: boolean | Customer$groupMeetingsArgs
-    WeekDay?: boolean | Customer$WeekDayArgs
+    weekDays?: boolean | Customer$weekDaysArgs
     _count?: boolean | CustomerCountOutputTypeArgs
   }
 
@@ -8846,14 +8874,14 @@ export namespace Prisma {
     ? Customer  & {
     [P in TruthyKeys<S['include']>]:
         P extends 'groupMeetings' ? Array < GroupMeetingGetPayload<S['include'][P]>>  :
-        P extends 'WeekDay' ? Array < WeekDayGetPayload<S['include'][P]>>  :
+        P extends 'weekDays' ? Array < WeekDayGetPayload<S['include'][P]>>  :
         P extends '_count' ? CustomerCountOutputTypeGetPayload<S['include'][P]> :  never
   } 
     : S extends { select: any } & (CustomerArgs | CustomerFindManyArgs)
       ? {
     [P in TruthyKeys<S['select']>]:
         P extends 'groupMeetings' ? Array < GroupMeetingGetPayload<S['select'][P]>>  :
-        P extends 'WeekDay' ? Array < WeekDayGetPayload<S['select'][P]>>  :
+        P extends 'weekDays' ? Array < WeekDayGetPayload<S['select'][P]>>  :
         P extends '_count' ? CustomerCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof Customer ? Customer[P] : never
   } 
       : Customer
@@ -9228,7 +9256,7 @@ export namespace Prisma {
 
     groupMeetings<T extends Customer$groupMeetingsArgs= {}>(args?: Subset<T, Customer$groupMeetingsArgs>): Prisma.PrismaPromise<Array<GroupMeetingGetPayload<T>>| Null>;
 
-    WeekDay<T extends Customer$WeekDayArgs= {}>(args?: Subset<T, Customer$WeekDayArgs>): Prisma.PrismaPromise<Array<WeekDayGetPayload<T>>| Null>;
+    weekDays<T extends Customer$weekDaysArgs= {}>(args?: Subset<T, Customer$weekDaysArgs>): Prisma.PrismaPromise<Array<WeekDayGetPayload<T>>| Null>;
 
     private get _document();
     /**
@@ -9607,9 +9635,9 @@ export namespace Prisma {
 
 
   /**
-   * Customer.WeekDay
+   * Customer.weekDays
    */
-  export type Customer$WeekDayArgs = {
+  export type Customer$weekDaysArgs = {
     /**
      * Select specific fields to fetch from the WeekDay
      */
@@ -12664,6 +12692,985 @@ export namespace Prisma {
 
 
   /**
+   * Model WeekDayOnTimeSelect
+   */
+
+
+  export type AggregateWeekDayOnTimeSelect = {
+    _count: WeekDayOnTimeSelectCountAggregateOutputType | null
+    _avg: WeekDayOnTimeSelectAvgAggregateOutputType | null
+    _sum: WeekDayOnTimeSelectSumAggregateOutputType | null
+    _min: WeekDayOnTimeSelectMinAggregateOutputType | null
+    _max: WeekDayOnTimeSelectMaxAggregateOutputType | null
+  }
+
+  export type WeekDayOnTimeSelectAvgAggregateOutputType = {
+    id: number | null
+    weekdayId: number | null
+    timeSelectId: number | null
+  }
+
+  export type WeekDayOnTimeSelectSumAggregateOutputType = {
+    id: number | null
+    weekdayId: number | null
+    timeSelectId: number | null
+  }
+
+  export type WeekDayOnTimeSelectMinAggregateOutputType = {
+    id: number | null
+    weekdayId: number | null
+    timeSelectId: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type WeekDayOnTimeSelectMaxAggregateOutputType = {
+    id: number | null
+    weekdayId: number | null
+    timeSelectId: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type WeekDayOnTimeSelectCountAggregateOutputType = {
+    id: number
+    weekdayId: number
+    timeSelectId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type WeekDayOnTimeSelectAvgAggregateInputType = {
+    id?: true
+    weekdayId?: true
+    timeSelectId?: true
+  }
+
+  export type WeekDayOnTimeSelectSumAggregateInputType = {
+    id?: true
+    weekdayId?: true
+    timeSelectId?: true
+  }
+
+  export type WeekDayOnTimeSelectMinAggregateInputType = {
+    id?: true
+    weekdayId?: true
+    timeSelectId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type WeekDayOnTimeSelectMaxAggregateInputType = {
+    id?: true
+    weekdayId?: true
+    timeSelectId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type WeekDayOnTimeSelectCountAggregateInputType = {
+    id?: true
+    weekdayId?: true
+    timeSelectId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type WeekDayOnTimeSelectAggregateArgs = {
+    /**
+     * Filter which WeekDayOnTimeSelect to aggregate.
+     */
+    where?: WeekDayOnTimeSelectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WeekDayOnTimeSelects to fetch.
+     */
+    orderBy?: Enumerable<WeekDayOnTimeSelectOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: WeekDayOnTimeSelectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WeekDayOnTimeSelects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WeekDayOnTimeSelects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned WeekDayOnTimeSelects
+    **/
+    _count?: true | WeekDayOnTimeSelectCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: WeekDayOnTimeSelectAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: WeekDayOnTimeSelectSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: WeekDayOnTimeSelectMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: WeekDayOnTimeSelectMaxAggregateInputType
+  }
+
+  export type GetWeekDayOnTimeSelectAggregateType<T extends WeekDayOnTimeSelectAggregateArgs> = {
+        [P in keyof T & keyof AggregateWeekDayOnTimeSelect]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateWeekDayOnTimeSelect[P]>
+      : GetScalarType<T[P], AggregateWeekDayOnTimeSelect[P]>
+  }
+
+
+
+
+  export type WeekDayOnTimeSelectGroupByArgs = {
+    where?: WeekDayOnTimeSelectWhereInput
+    orderBy?: Enumerable<WeekDayOnTimeSelectOrderByWithAggregationInput>
+    by: WeekDayOnTimeSelectScalarFieldEnum[]
+    having?: WeekDayOnTimeSelectScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: WeekDayOnTimeSelectCountAggregateInputType | true
+    _avg?: WeekDayOnTimeSelectAvgAggregateInputType
+    _sum?: WeekDayOnTimeSelectSumAggregateInputType
+    _min?: WeekDayOnTimeSelectMinAggregateInputType
+    _max?: WeekDayOnTimeSelectMaxAggregateInputType
+  }
+
+
+  export type WeekDayOnTimeSelectGroupByOutputType = {
+    id: number
+    weekdayId: number
+    timeSelectId: number
+    createdAt: Date
+    updatedAt: Date
+    _count: WeekDayOnTimeSelectCountAggregateOutputType | null
+    _avg: WeekDayOnTimeSelectAvgAggregateOutputType | null
+    _sum: WeekDayOnTimeSelectSumAggregateOutputType | null
+    _min: WeekDayOnTimeSelectMinAggregateOutputType | null
+    _max: WeekDayOnTimeSelectMaxAggregateOutputType | null
+  }
+
+  type GetWeekDayOnTimeSelectGroupByPayload<T extends WeekDayOnTimeSelectGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickArray<WeekDayOnTimeSelectGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof WeekDayOnTimeSelectGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], WeekDayOnTimeSelectGroupByOutputType[P]>
+            : GetScalarType<T[P], WeekDayOnTimeSelectGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type WeekDayOnTimeSelectSelect = {
+    id?: boolean
+    weekdayId?: boolean
+    timeSelectId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    weekday?: boolean | WeekDayArgs
+    timeSelect?: boolean | TimeSelectArgs
+  }
+
+
+  export type WeekDayOnTimeSelectInclude = {
+    weekday?: boolean | WeekDayArgs
+    timeSelect?: boolean | TimeSelectArgs
+  }
+
+  export type WeekDayOnTimeSelectGetPayload<S extends boolean | null | undefined | WeekDayOnTimeSelectArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? WeekDayOnTimeSelect :
+    S extends undefined ? never :
+    S extends { include: any } & (WeekDayOnTimeSelectArgs | WeekDayOnTimeSelectFindManyArgs)
+    ? WeekDayOnTimeSelect  & {
+    [P in TruthyKeys<S['include']>]:
+        P extends 'weekday' ? WeekDayGetPayload<S['include'][P]> :
+        P extends 'timeSelect' ? TimeSelectGetPayload<S['include'][P]> :  never
+  } 
+    : S extends { select: any } & (WeekDayOnTimeSelectArgs | WeekDayOnTimeSelectFindManyArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+        P extends 'weekday' ? WeekDayGetPayload<S['select'][P]> :
+        P extends 'timeSelect' ? TimeSelectGetPayload<S['select'][P]> :  P extends keyof WeekDayOnTimeSelect ? WeekDayOnTimeSelect[P] : never
+  } 
+      : WeekDayOnTimeSelect
+
+
+  type WeekDayOnTimeSelectCountArgs = 
+    Omit<WeekDayOnTimeSelectFindManyArgs, 'select' | 'include'> & {
+      select?: WeekDayOnTimeSelectCountAggregateInputType | true
+    }
+
+  export interface WeekDayOnTimeSelectDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+
+    /**
+     * Find zero or one WeekDayOnTimeSelect that matches the filter.
+     * @param {WeekDayOnTimeSelectFindUniqueArgs} args - Arguments to find a WeekDayOnTimeSelect
+     * @example
+     * // Get one WeekDayOnTimeSelect
+     * const weekDayOnTimeSelect = await prisma.weekDayOnTimeSelect.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends WeekDayOnTimeSelectFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, WeekDayOnTimeSelectFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'WeekDayOnTimeSelect'> extends True ? Prisma__WeekDayOnTimeSelectClient<WeekDayOnTimeSelectGetPayload<T>> : Prisma__WeekDayOnTimeSelectClient<WeekDayOnTimeSelectGetPayload<T> | null, null>
+
+    /**
+     * Find one WeekDayOnTimeSelect that matches the filter or throw an error  with `error.code='P2025'` 
+     *     if no matches were found.
+     * @param {WeekDayOnTimeSelectFindUniqueOrThrowArgs} args - Arguments to find a WeekDayOnTimeSelect
+     * @example
+     * // Get one WeekDayOnTimeSelect
+     * const weekDayOnTimeSelect = await prisma.weekDayOnTimeSelect.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends WeekDayOnTimeSelectFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, WeekDayOnTimeSelectFindUniqueOrThrowArgs>
+    ): Prisma__WeekDayOnTimeSelectClient<WeekDayOnTimeSelectGetPayload<T>>
+
+    /**
+     * Find the first WeekDayOnTimeSelect that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WeekDayOnTimeSelectFindFirstArgs} args - Arguments to find a WeekDayOnTimeSelect
+     * @example
+     * // Get one WeekDayOnTimeSelect
+     * const weekDayOnTimeSelect = await prisma.weekDayOnTimeSelect.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends WeekDayOnTimeSelectFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, WeekDayOnTimeSelectFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'WeekDayOnTimeSelect'> extends True ? Prisma__WeekDayOnTimeSelectClient<WeekDayOnTimeSelectGetPayload<T>> : Prisma__WeekDayOnTimeSelectClient<WeekDayOnTimeSelectGetPayload<T> | null, null>
+
+    /**
+     * Find the first WeekDayOnTimeSelect that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WeekDayOnTimeSelectFindFirstOrThrowArgs} args - Arguments to find a WeekDayOnTimeSelect
+     * @example
+     * // Get one WeekDayOnTimeSelect
+     * const weekDayOnTimeSelect = await prisma.weekDayOnTimeSelect.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends WeekDayOnTimeSelectFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, WeekDayOnTimeSelectFindFirstOrThrowArgs>
+    ): Prisma__WeekDayOnTimeSelectClient<WeekDayOnTimeSelectGetPayload<T>>
+
+    /**
+     * Find zero or more WeekDayOnTimeSelects that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WeekDayOnTimeSelectFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all WeekDayOnTimeSelects
+     * const weekDayOnTimeSelects = await prisma.weekDayOnTimeSelect.findMany()
+     * 
+     * // Get first 10 WeekDayOnTimeSelects
+     * const weekDayOnTimeSelects = await prisma.weekDayOnTimeSelect.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const weekDayOnTimeSelectWithIdOnly = await prisma.weekDayOnTimeSelect.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends WeekDayOnTimeSelectFindManyArgs>(
+      args?: SelectSubset<T, WeekDayOnTimeSelectFindManyArgs>
+    ): Prisma.PrismaPromise<Array<WeekDayOnTimeSelectGetPayload<T>>>
+
+    /**
+     * Create a WeekDayOnTimeSelect.
+     * @param {WeekDayOnTimeSelectCreateArgs} args - Arguments to create a WeekDayOnTimeSelect.
+     * @example
+     * // Create one WeekDayOnTimeSelect
+     * const WeekDayOnTimeSelect = await prisma.weekDayOnTimeSelect.create({
+     *   data: {
+     *     // ... data to create a WeekDayOnTimeSelect
+     *   }
+     * })
+     * 
+    **/
+    create<T extends WeekDayOnTimeSelectCreateArgs>(
+      args: SelectSubset<T, WeekDayOnTimeSelectCreateArgs>
+    ): Prisma__WeekDayOnTimeSelectClient<WeekDayOnTimeSelectGetPayload<T>>
+
+    /**
+     * Create many WeekDayOnTimeSelects.
+     *     @param {WeekDayOnTimeSelectCreateManyArgs} args - Arguments to create many WeekDayOnTimeSelects.
+     *     @example
+     *     // Create many WeekDayOnTimeSelects
+     *     const weekDayOnTimeSelect = await prisma.weekDayOnTimeSelect.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends WeekDayOnTimeSelectCreateManyArgs>(
+      args?: SelectSubset<T, WeekDayOnTimeSelectCreateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a WeekDayOnTimeSelect.
+     * @param {WeekDayOnTimeSelectDeleteArgs} args - Arguments to delete one WeekDayOnTimeSelect.
+     * @example
+     * // Delete one WeekDayOnTimeSelect
+     * const WeekDayOnTimeSelect = await prisma.weekDayOnTimeSelect.delete({
+     *   where: {
+     *     // ... filter to delete one WeekDayOnTimeSelect
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends WeekDayOnTimeSelectDeleteArgs>(
+      args: SelectSubset<T, WeekDayOnTimeSelectDeleteArgs>
+    ): Prisma__WeekDayOnTimeSelectClient<WeekDayOnTimeSelectGetPayload<T>>
+
+    /**
+     * Update one WeekDayOnTimeSelect.
+     * @param {WeekDayOnTimeSelectUpdateArgs} args - Arguments to update one WeekDayOnTimeSelect.
+     * @example
+     * // Update one WeekDayOnTimeSelect
+     * const weekDayOnTimeSelect = await prisma.weekDayOnTimeSelect.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends WeekDayOnTimeSelectUpdateArgs>(
+      args: SelectSubset<T, WeekDayOnTimeSelectUpdateArgs>
+    ): Prisma__WeekDayOnTimeSelectClient<WeekDayOnTimeSelectGetPayload<T>>
+
+    /**
+     * Delete zero or more WeekDayOnTimeSelects.
+     * @param {WeekDayOnTimeSelectDeleteManyArgs} args - Arguments to filter WeekDayOnTimeSelects to delete.
+     * @example
+     * // Delete a few WeekDayOnTimeSelects
+     * const { count } = await prisma.weekDayOnTimeSelect.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends WeekDayOnTimeSelectDeleteManyArgs>(
+      args?: SelectSubset<T, WeekDayOnTimeSelectDeleteManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more WeekDayOnTimeSelects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WeekDayOnTimeSelectUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many WeekDayOnTimeSelects
+     * const weekDayOnTimeSelect = await prisma.weekDayOnTimeSelect.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends WeekDayOnTimeSelectUpdateManyArgs>(
+      args: SelectSubset<T, WeekDayOnTimeSelectUpdateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one WeekDayOnTimeSelect.
+     * @param {WeekDayOnTimeSelectUpsertArgs} args - Arguments to update or create a WeekDayOnTimeSelect.
+     * @example
+     * // Update or create a WeekDayOnTimeSelect
+     * const weekDayOnTimeSelect = await prisma.weekDayOnTimeSelect.upsert({
+     *   create: {
+     *     // ... data to create a WeekDayOnTimeSelect
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the WeekDayOnTimeSelect we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends WeekDayOnTimeSelectUpsertArgs>(
+      args: SelectSubset<T, WeekDayOnTimeSelectUpsertArgs>
+    ): Prisma__WeekDayOnTimeSelectClient<WeekDayOnTimeSelectGetPayload<T>>
+
+    /**
+     * Count the number of WeekDayOnTimeSelects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WeekDayOnTimeSelectCountArgs} args - Arguments to filter WeekDayOnTimeSelects to count.
+     * @example
+     * // Count the number of WeekDayOnTimeSelects
+     * const count = await prisma.weekDayOnTimeSelect.count({
+     *   where: {
+     *     // ... the filter for the WeekDayOnTimeSelects we want to count
+     *   }
+     * })
+    **/
+    count<T extends WeekDayOnTimeSelectCountArgs>(
+      args?: Subset<T, WeekDayOnTimeSelectCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], WeekDayOnTimeSelectCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a WeekDayOnTimeSelect.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WeekDayOnTimeSelectAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends WeekDayOnTimeSelectAggregateArgs>(args: Subset<T, WeekDayOnTimeSelectAggregateArgs>): Prisma.PrismaPromise<GetWeekDayOnTimeSelectAggregateType<T>>
+
+    /**
+     * Group by WeekDayOnTimeSelect.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WeekDayOnTimeSelectGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends WeekDayOnTimeSelectGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: WeekDayOnTimeSelectGroupByArgs['orderBy'] }
+        : { orderBy?: WeekDayOnTimeSelectGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, WeekDayOnTimeSelectGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetWeekDayOnTimeSelectGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for WeekDayOnTimeSelect.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__WeekDayOnTimeSelectClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+    private readonly _dmmf;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+
+    weekday<T extends WeekDayArgs= {}>(args?: Subset<T, WeekDayArgs>): Prisma__WeekDayClient<WeekDayGetPayload<T> | Null>;
+
+    timeSelect<T extends TimeSelectArgs= {}>(args?: Subset<T, TimeSelectArgs>): Prisma__TimeSelectClient<TimeSelectGetPayload<T> | Null>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+
+
+  // Custom InputTypes
+
+  /**
+   * WeekDayOnTimeSelect base type for findUnique actions
+   */
+  export type WeekDayOnTimeSelectFindUniqueArgsBase = {
+    /**
+     * Select specific fields to fetch from the WeekDayOnTimeSelect
+     */
+    select?: WeekDayOnTimeSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: WeekDayOnTimeSelectInclude | null
+    /**
+     * Filter, which WeekDayOnTimeSelect to fetch.
+     */
+    where: WeekDayOnTimeSelectWhereUniqueInput
+  }
+
+  /**
+   * WeekDayOnTimeSelect findUnique
+   */
+  export interface WeekDayOnTimeSelectFindUniqueArgs extends WeekDayOnTimeSelectFindUniqueArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * WeekDayOnTimeSelect findUniqueOrThrow
+   */
+  export type WeekDayOnTimeSelectFindUniqueOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the WeekDayOnTimeSelect
+     */
+    select?: WeekDayOnTimeSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: WeekDayOnTimeSelectInclude | null
+    /**
+     * Filter, which WeekDayOnTimeSelect to fetch.
+     */
+    where: WeekDayOnTimeSelectWhereUniqueInput
+  }
+
+
+  /**
+   * WeekDayOnTimeSelect base type for findFirst actions
+   */
+  export type WeekDayOnTimeSelectFindFirstArgsBase = {
+    /**
+     * Select specific fields to fetch from the WeekDayOnTimeSelect
+     */
+    select?: WeekDayOnTimeSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: WeekDayOnTimeSelectInclude | null
+    /**
+     * Filter, which WeekDayOnTimeSelect to fetch.
+     */
+    where?: WeekDayOnTimeSelectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WeekDayOnTimeSelects to fetch.
+     */
+    orderBy?: Enumerable<WeekDayOnTimeSelectOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for WeekDayOnTimeSelects.
+     */
+    cursor?: WeekDayOnTimeSelectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WeekDayOnTimeSelects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WeekDayOnTimeSelects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WeekDayOnTimeSelects.
+     */
+    distinct?: Enumerable<WeekDayOnTimeSelectScalarFieldEnum>
+  }
+
+  /**
+   * WeekDayOnTimeSelect findFirst
+   */
+  export interface WeekDayOnTimeSelectFindFirstArgs extends WeekDayOnTimeSelectFindFirstArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * WeekDayOnTimeSelect findFirstOrThrow
+   */
+  export type WeekDayOnTimeSelectFindFirstOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the WeekDayOnTimeSelect
+     */
+    select?: WeekDayOnTimeSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: WeekDayOnTimeSelectInclude | null
+    /**
+     * Filter, which WeekDayOnTimeSelect to fetch.
+     */
+    where?: WeekDayOnTimeSelectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WeekDayOnTimeSelects to fetch.
+     */
+    orderBy?: Enumerable<WeekDayOnTimeSelectOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for WeekDayOnTimeSelects.
+     */
+    cursor?: WeekDayOnTimeSelectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WeekDayOnTimeSelects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WeekDayOnTimeSelects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WeekDayOnTimeSelects.
+     */
+    distinct?: Enumerable<WeekDayOnTimeSelectScalarFieldEnum>
+  }
+
+
+  /**
+   * WeekDayOnTimeSelect findMany
+   */
+  export type WeekDayOnTimeSelectFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the WeekDayOnTimeSelect
+     */
+    select?: WeekDayOnTimeSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: WeekDayOnTimeSelectInclude | null
+    /**
+     * Filter, which WeekDayOnTimeSelects to fetch.
+     */
+    where?: WeekDayOnTimeSelectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WeekDayOnTimeSelects to fetch.
+     */
+    orderBy?: Enumerable<WeekDayOnTimeSelectOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing WeekDayOnTimeSelects.
+     */
+    cursor?: WeekDayOnTimeSelectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WeekDayOnTimeSelects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WeekDayOnTimeSelects.
+     */
+    skip?: number
+    distinct?: Enumerable<WeekDayOnTimeSelectScalarFieldEnum>
+  }
+
+
+  /**
+   * WeekDayOnTimeSelect create
+   */
+  export type WeekDayOnTimeSelectCreateArgs = {
+    /**
+     * Select specific fields to fetch from the WeekDayOnTimeSelect
+     */
+    select?: WeekDayOnTimeSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: WeekDayOnTimeSelectInclude | null
+    /**
+     * The data needed to create a WeekDayOnTimeSelect.
+     */
+    data: XOR<WeekDayOnTimeSelectCreateInput, WeekDayOnTimeSelectUncheckedCreateInput>
+  }
+
+
+  /**
+   * WeekDayOnTimeSelect createMany
+   */
+  export type WeekDayOnTimeSelectCreateManyArgs = {
+    /**
+     * The data used to create many WeekDayOnTimeSelects.
+     */
+    data: Enumerable<WeekDayOnTimeSelectCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * WeekDayOnTimeSelect update
+   */
+  export type WeekDayOnTimeSelectUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the WeekDayOnTimeSelect
+     */
+    select?: WeekDayOnTimeSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: WeekDayOnTimeSelectInclude | null
+    /**
+     * The data needed to update a WeekDayOnTimeSelect.
+     */
+    data: XOR<WeekDayOnTimeSelectUpdateInput, WeekDayOnTimeSelectUncheckedUpdateInput>
+    /**
+     * Choose, which WeekDayOnTimeSelect to update.
+     */
+    where: WeekDayOnTimeSelectWhereUniqueInput
+  }
+
+
+  /**
+   * WeekDayOnTimeSelect updateMany
+   */
+  export type WeekDayOnTimeSelectUpdateManyArgs = {
+    /**
+     * The data used to update WeekDayOnTimeSelects.
+     */
+    data: XOR<WeekDayOnTimeSelectUpdateManyMutationInput, WeekDayOnTimeSelectUncheckedUpdateManyInput>
+    /**
+     * Filter which WeekDayOnTimeSelects to update
+     */
+    where?: WeekDayOnTimeSelectWhereInput
+  }
+
+
+  /**
+   * WeekDayOnTimeSelect upsert
+   */
+  export type WeekDayOnTimeSelectUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the WeekDayOnTimeSelect
+     */
+    select?: WeekDayOnTimeSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: WeekDayOnTimeSelectInclude | null
+    /**
+     * The filter to search for the WeekDayOnTimeSelect to update in case it exists.
+     */
+    where: WeekDayOnTimeSelectWhereUniqueInput
+    /**
+     * In case the WeekDayOnTimeSelect found by the `where` argument doesn't exist, create a new WeekDayOnTimeSelect with this data.
+     */
+    create: XOR<WeekDayOnTimeSelectCreateInput, WeekDayOnTimeSelectUncheckedCreateInput>
+    /**
+     * In case the WeekDayOnTimeSelect was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<WeekDayOnTimeSelectUpdateInput, WeekDayOnTimeSelectUncheckedUpdateInput>
+  }
+
+
+  /**
+   * WeekDayOnTimeSelect delete
+   */
+  export type WeekDayOnTimeSelectDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the WeekDayOnTimeSelect
+     */
+    select?: WeekDayOnTimeSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: WeekDayOnTimeSelectInclude | null
+    /**
+     * Filter which WeekDayOnTimeSelect to delete.
+     */
+    where: WeekDayOnTimeSelectWhereUniqueInput
+  }
+
+
+  /**
+   * WeekDayOnTimeSelect deleteMany
+   */
+  export type WeekDayOnTimeSelectDeleteManyArgs = {
+    /**
+     * Filter which WeekDayOnTimeSelects to delete
+     */
+    where?: WeekDayOnTimeSelectWhereInput
+  }
+
+
+  /**
+   * WeekDayOnTimeSelect without action
+   */
+  export type WeekDayOnTimeSelectArgs = {
+    /**
+     * Select specific fields to fetch from the WeekDayOnTimeSelect
+     */
+    select?: WeekDayOnTimeSelectSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: WeekDayOnTimeSelectInclude | null
+  }
+
+
+
+  /**
    * Enums
    */
 
@@ -12724,7 +13731,6 @@ export namespace Prisma {
     price: 'price',
     timeDuration: 'timeDuration',
     availabilityScheduleId: 'availabilityScheduleId',
-    weekdayId: 'weekdayId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -12821,11 +13827,21 @@ export namespace Prisma {
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
+  export const WeekDayOnTimeSelectScalarFieldEnum: {
+    id: 'id',
+    weekdayId: 'weekdayId',
+    timeSelectId: 'timeSelectId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type WeekDayOnTimeSelectScalarFieldEnum = (typeof WeekDayOnTimeSelectScalarFieldEnum)[keyof typeof WeekDayOnTimeSelectScalarFieldEnum]
+
+
   export const WeekDayScalarFieldEnum: {
     id: 'id',
-    day: 'day',
     availabilityScheduleId: 'availabilityScheduleId',
-    timeSelectId: 'timeSelectId',
+    eventTypeId: 'eventTypeId',
     status: 'status',
     date: 'date',
     custormerId: 'custormerId',
@@ -12882,6 +13898,8 @@ export namespace Prisma {
     id?: number
     username?: string
     firebaseUid?: string
+    mobileNumber?: string
+    userLink?: string
   }
 
   export type UserOrderByWithAggregationInput = {
@@ -12931,13 +13949,12 @@ export namespace Prisma {
     price?: IntFilter | number
     timeDuration?: IntFilter | number
     availabilityScheduleId?: IntNullableFilter | number | null
-    weekdayId?: IntFilter | number
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
     user?: XOR<UserRelationFilter, UserWhereInput>
     eventTypeOnLocations?: EventTypeOnLocationListRelationFilter
     availabilitySchedule?: XOR<AvailabilityScheduleRelationFilter, AvailabilityScheduleWhereInput> | null
-    weekday?: XOR<WeekDayRelationFilter, WeekDayWhereInput>
+    weekDays?: WeekDayListRelationFilter
     groupMeetings?: GroupMeetingListRelationFilter
   }
 
@@ -12949,13 +13966,12 @@ export namespace Prisma {
     price?: SortOrder
     timeDuration?: SortOrder
     availabilityScheduleId?: SortOrder
-    weekdayId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
     eventTypeOnLocations?: EventTypeOnLocationOrderByRelationAggregateInput
     availabilitySchedule?: AvailabilityScheduleOrderByWithRelationInput
-    weekday?: WeekDayOrderByWithRelationInput
+    weekDays?: WeekDayOrderByRelationAggregateInput
     groupMeetings?: GroupMeetingOrderByRelationAggregateInput
   }
 
@@ -12971,7 +13987,6 @@ export namespace Prisma {
     price?: SortOrder
     timeDuration?: SortOrder
     availabilityScheduleId?: SortOrder
-    weekdayId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: EventTypeCountOrderByAggregateInput
@@ -12992,7 +14007,6 @@ export namespace Prisma {
     price?: IntWithAggregatesFilter | number
     timeDuration?: IntWithAggregatesFilter | number
     availabilityScheduleId?: IntNullableWithAggregatesFilter | number | null
-    weekdayId?: IntWithAggregatesFilter | number
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
   }
@@ -13020,6 +14034,7 @@ export namespace Prisma {
 
   export type LocationWhereUniqueInput = {
     id?: number
+    name?: string
   }
 
   export type LocationOrderByWithAggregationInput = {
@@ -13104,7 +14119,7 @@ export namespace Prisma {
     timezone?: StringFilter | string
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
-    EventType?: EventTypeListRelationFilter
+    eventTypes?: EventTypeListRelationFilter
     weekDays?: WeekDayListRelationFilter
   }
 
@@ -13114,12 +14129,13 @@ export namespace Prisma {
     timezone?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    EventType?: EventTypeOrderByRelationAggregateInput
+    eventTypes?: EventTypeOrderByRelationAggregateInput
     weekDays?: WeekDayOrderByRelationAggregateInput
   }
 
   export type AvailabilityScheduleWhereUniqueInput = {
     id?: number
+    name?: string
   }
 
   export type AvailabilityScheduleOrderByWithAggregationInput = {
@@ -13151,34 +14167,32 @@ export namespace Prisma {
     OR?: Enumerable<WeekDayWhereInput>
     NOT?: Enumerable<WeekDayWhereInput>
     id?: IntFilter | number
-    day?: IntNullableFilter | number | null
     availabilityScheduleId?: IntNullableFilter | number | null
-    timeSelectId?: IntFilter | number
+    eventTypeId?: IntFilter | number
     status?: StringFilter | string
     date?: DateTimeFilter | Date | string
     custormerId?: IntNullableFilter | number | null
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
     availabilitySchedule?: XOR<AvailabilityScheduleRelationFilter, AvailabilityScheduleWhereInput> | null
-    timeSelect?: XOR<TimeSelectRelationFilter, TimeSelectWhereInput>
-    EventType?: EventTypeListRelationFilter
+    eventType?: XOR<EventTypeRelationFilter, EventTypeWhereInput>
     custormer?: XOR<CustomerRelationFilter, CustomerWhereInput> | null
+    weekDayOnTimeSelects?: WeekDayOnTimeSelectListRelationFilter
   }
 
   export type WeekDayOrderByWithRelationInput = {
     id?: SortOrder
-    day?: SortOrder
     availabilityScheduleId?: SortOrder
-    timeSelectId?: SortOrder
+    eventTypeId?: SortOrder
     status?: SortOrder
     date?: SortOrder
     custormerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     availabilitySchedule?: AvailabilityScheduleOrderByWithRelationInput
-    timeSelect?: TimeSelectOrderByWithRelationInput
-    EventType?: EventTypeOrderByRelationAggregateInput
+    eventType?: EventTypeOrderByWithRelationInput
     custormer?: CustomerOrderByWithRelationInput
+    weekDayOnTimeSelects?: WeekDayOnTimeSelectOrderByRelationAggregateInput
   }
 
   export type WeekDayWhereUniqueInput = {
@@ -13187,9 +14201,8 @@ export namespace Prisma {
 
   export type WeekDayOrderByWithAggregationInput = {
     id?: SortOrder
-    day?: SortOrder
     availabilityScheduleId?: SortOrder
-    timeSelectId?: SortOrder
+    eventTypeId?: SortOrder
     status?: SortOrder
     date?: SortOrder
     custormerId?: SortOrder
@@ -13207,9 +14220,8 @@ export namespace Prisma {
     OR?: Enumerable<WeekDayScalarWhereWithAggregatesInput>
     NOT?: Enumerable<WeekDayScalarWhereWithAggregatesInput>
     id?: IntWithAggregatesFilter | number
-    day?: IntNullableWithAggregatesFilter | number | null
     availabilityScheduleId?: IntNullableWithAggregatesFilter | number | null
-    timeSelectId?: IntWithAggregatesFilter | number
+    eventTypeId?: IntWithAggregatesFilter | number
     status?: StringWithAggregatesFilter | string
     date?: DateTimeWithAggregatesFilter | Date | string
     custormerId?: IntNullableWithAggregatesFilter | number | null
@@ -13222,11 +14234,11 @@ export namespace Prisma {
     OR?: Enumerable<TimeSelectWhereInput>
     NOT?: Enumerable<TimeSelectWhereInput>
     id?: IntFilter | number
-    startTime?: DateTimeFilter | Date | string
-    endTime?: DateTimeFilter | Date | string
+    startTime?: IntFilter | number
+    endTime?: IntFilter | number
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
-    weekDays?: WeekDayListRelationFilter
+    WeekDayOnTimeSelect?: WeekDayOnTimeSelectListRelationFilter
   }
 
   export type TimeSelectOrderByWithRelationInput = {
@@ -13235,7 +14247,7 @@ export namespace Prisma {
     endTime?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    weekDays?: WeekDayOrderByRelationAggregateInput
+    WeekDayOnTimeSelect?: WeekDayOnTimeSelectOrderByRelationAggregateInput
   }
 
   export type TimeSelectWhereUniqueInput = {
@@ -13260,8 +14272,8 @@ export namespace Prisma {
     OR?: Enumerable<TimeSelectScalarWhereWithAggregatesInput>
     NOT?: Enumerable<TimeSelectScalarWhereWithAggregatesInput>
     id?: IntWithAggregatesFilter | number
-    startTime?: DateTimeWithAggregatesFilter | Date | string
-    endTime?: DateTimeWithAggregatesFilter | Date | string
+    startTime?: IntWithAggregatesFilter | number
+    endTime?: IntWithAggregatesFilter | number
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
   }
@@ -13276,7 +14288,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
     groupMeetings?: GroupMeetingListRelationFilter
-    WeekDay?: WeekDayListRelationFilter
+    weekDays?: WeekDayListRelationFilter
   }
 
   export type CustomerOrderByWithRelationInput = {
@@ -13286,11 +14298,12 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     groupMeetings?: GroupMeetingOrderByRelationAggregateInput
-    WeekDay?: WeekDayOrderByRelationAggregateInput
+    weekDays?: WeekDayOrderByRelationAggregateInput
   }
 
   export type CustomerWhereUniqueInput = {
     id?: number
+    email?: string
   }
 
   export type CustomerOrderByWithAggregationInput = {
@@ -13492,6 +14505,57 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
   }
 
+  export type WeekDayOnTimeSelectWhereInput = {
+    AND?: Enumerable<WeekDayOnTimeSelectWhereInput>
+    OR?: Enumerable<WeekDayOnTimeSelectWhereInput>
+    NOT?: Enumerable<WeekDayOnTimeSelectWhereInput>
+    id?: IntFilter | number
+    weekdayId?: IntFilter | number
+    timeSelectId?: IntFilter | number
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+    weekday?: XOR<WeekDayRelationFilter, WeekDayWhereInput>
+    timeSelect?: XOR<TimeSelectRelationFilter, TimeSelectWhereInput>
+  }
+
+  export type WeekDayOnTimeSelectOrderByWithRelationInput = {
+    id?: SortOrder
+    weekdayId?: SortOrder
+    timeSelectId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    weekday?: WeekDayOrderByWithRelationInput
+    timeSelect?: TimeSelectOrderByWithRelationInput
+  }
+
+  export type WeekDayOnTimeSelectWhereUniqueInput = {
+    id?: number
+  }
+
+  export type WeekDayOnTimeSelectOrderByWithAggregationInput = {
+    id?: SortOrder
+    weekdayId?: SortOrder
+    timeSelectId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: WeekDayOnTimeSelectCountOrderByAggregateInput
+    _avg?: WeekDayOnTimeSelectAvgOrderByAggregateInput
+    _max?: WeekDayOnTimeSelectMaxOrderByAggregateInput
+    _min?: WeekDayOnTimeSelectMinOrderByAggregateInput
+    _sum?: WeekDayOnTimeSelectSumOrderByAggregateInput
+  }
+
+  export type WeekDayOnTimeSelectScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<WeekDayOnTimeSelectScalarWhereWithAggregatesInput>
+    OR?: Enumerable<WeekDayOnTimeSelectScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<WeekDayOnTimeSelectScalarWhereWithAggregatesInput>
+    id?: IntWithAggregatesFilter | number
+    weekdayId?: IntWithAggregatesFilter | number
+    timeSelectId?: IntWithAggregatesFilter | number
+    createdAt?: DateTimeWithAggregatesFilter | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter | Date | string
+  }
+
   export type UserCreateInput = {
     name: string
     username: string
@@ -13608,8 +14672,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutEventTypesInput
     eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutEventTypeInput
-    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutEventTypeInput
-    weekday: WeekDayCreateNestedOneWithoutEventTypeInput
+    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutEventTypesInput
+    weekDays?: WeekDayCreateNestedManyWithoutEventTypeInput
     groupMeetings?: GroupMeetingCreateNestedManyWithoutEventTypeInput
   }
 
@@ -13621,10 +14685,10 @@ export namespace Prisma {
     price: number
     timeDuration: number
     availabilityScheduleId?: number | null
-    weekdayId: number
     createdAt?: Date | string
     updatedAt?: Date | string
     eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput
+    weekDays?: WeekDayUncheckedCreateNestedManyWithoutEventTypeInput
     groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput
   }
 
@@ -13637,8 +14701,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
     eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
-    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutEventTypeNestedInput
-    weekday?: WeekDayUpdateOneRequiredWithoutEventTypeNestedInput
+    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutEventTypesNestedInput
+    weekDays?: WeekDayUpdateManyWithoutEventTypeNestedInput
     groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
   }
 
@@ -13650,10 +14714,10 @@ export namespace Prisma {
     price?: IntFieldUpdateOperationsInput | number
     timeDuration?: IntFieldUpdateOperationsInput | number
     availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    weekdayId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
+    weekDays?: WeekDayUncheckedUpdateManyWithoutEventTypeNestedInput
     groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
   }
 
@@ -13665,7 +14729,6 @@ export namespace Prisma {
     price: number
     timeDuration: number
     availabilityScheduleId?: number | null
-    weekdayId: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -13687,7 +14750,6 @@ export namespace Prisma {
     price?: IntFieldUpdateOperationsInput | number
     timeDuration?: IntFieldUpdateOperationsInput | number
     availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    weekdayId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -13802,7 +14864,7 @@ export namespace Prisma {
     timezone: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    EventType?: EventTypeCreateNestedManyWithoutAvailabilityScheduleInput
+    eventTypes?: EventTypeCreateNestedManyWithoutAvailabilityScheduleInput
     weekDays?: WeekDayCreateNestedManyWithoutAvailabilityScheduleInput
   }
 
@@ -13812,7 +14874,7 @@ export namespace Prisma {
     timezone: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    EventType?: EventTypeUncheckedCreateNestedManyWithoutAvailabilityScheduleInput
+    eventTypes?: EventTypeUncheckedCreateNestedManyWithoutAvailabilityScheduleInput
     weekDays?: WeekDayUncheckedCreateNestedManyWithoutAvailabilityScheduleInput
   }
 
@@ -13821,7 +14883,7 @@ export namespace Prisma {
     timezone?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    EventType?: EventTypeUpdateManyWithoutAvailabilityScheduleNestedInput
+    eventTypes?: EventTypeUpdateManyWithoutAvailabilityScheduleNestedInput
     weekDays?: WeekDayUpdateManyWithoutAvailabilityScheduleNestedInput
   }
 
@@ -13831,7 +14893,7 @@ export namespace Prisma {
     timezone?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    EventType?: EventTypeUncheckedUpdateManyWithoutAvailabilityScheduleNestedInput
+    eventTypes?: EventTypeUncheckedUpdateManyWithoutAvailabilityScheduleNestedInput
     weekDays?: WeekDayUncheckedUpdateManyWithoutAvailabilityScheduleNestedInput
   }
 
@@ -13859,60 +14921,55 @@ export namespace Prisma {
   }
 
   export type WeekDayCreateInput = {
-    day?: number | null
     status?: string
     date: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
     availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutWeekDaysInput
-    timeSelect: TimeSelectCreateNestedOneWithoutWeekDaysInput
-    EventType?: EventTypeCreateNestedManyWithoutWeekdayInput
-    custormer?: CustomerCreateNestedOneWithoutWeekDayInput
+    eventType: EventTypeCreateNestedOneWithoutWeekDaysInput
+    custormer?: CustomerCreateNestedOneWithoutWeekDaysInput
+    weekDayOnTimeSelects?: WeekDayOnTimeSelectCreateNestedManyWithoutWeekdayInput
   }
 
   export type WeekDayUncheckedCreateInput = {
     id?: number
-    day?: number | null
     availabilityScheduleId?: number | null
-    timeSelectId: number
+    eventTypeId: number
     status?: string
     date: Date | string
     custormerId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    EventType?: EventTypeUncheckedCreateNestedManyWithoutWeekdayInput
+    weekDayOnTimeSelects?: WeekDayOnTimeSelectUncheckedCreateNestedManyWithoutWeekdayInput
   }
 
   export type WeekDayUpdateInput = {
-    day?: NullableIntFieldUpdateOperationsInput | number | null
     status?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutWeekDaysNestedInput
-    timeSelect?: TimeSelectUpdateOneRequiredWithoutWeekDaysNestedInput
-    EventType?: EventTypeUpdateManyWithoutWeekdayNestedInput
-    custormer?: CustomerUpdateOneWithoutWeekDayNestedInput
+    eventType?: EventTypeUpdateOneRequiredWithoutWeekDaysNestedInput
+    custormer?: CustomerUpdateOneWithoutWeekDaysNestedInput
+    weekDayOnTimeSelects?: WeekDayOnTimeSelectUpdateManyWithoutWeekdayNestedInput
   }
 
   export type WeekDayUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
-    day?: NullableIntFieldUpdateOperationsInput | number | null
     availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    timeSelectId?: IntFieldUpdateOperationsInput | number
+    eventTypeId?: IntFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     custormerId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    EventType?: EventTypeUncheckedUpdateManyWithoutWeekdayNestedInput
+    weekDayOnTimeSelects?: WeekDayOnTimeSelectUncheckedUpdateManyWithoutWeekdayNestedInput
   }
 
   export type WeekDayCreateManyInput = {
     id?: number
-    day?: number | null
     availabilityScheduleId?: number | null
-    timeSelectId: number
+    eventTypeId: number
     status?: string
     date: Date | string
     custormerId?: number | null
@@ -13921,7 +14978,6 @@ export namespace Prisma {
   }
 
   export type WeekDayUpdateManyMutationInput = {
-    day?: NullableIntFieldUpdateOperationsInput | number | null
     status?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13930,9 +14986,8 @@ export namespace Prisma {
 
   export type WeekDayUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
-    day?: NullableIntFieldUpdateOperationsInput | number | null
     availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    timeSelectId?: IntFieldUpdateOperationsInput | number
+    eventTypeId?: IntFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     custormerId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -13941,58 +14996,58 @@ export namespace Prisma {
   }
 
   export type TimeSelectCreateInput = {
-    startTime: Date | string
-    endTime: Date | string
+    startTime: number
+    endTime: number
     createdAt?: Date | string
     updatedAt?: Date | string
-    weekDays?: WeekDayCreateNestedManyWithoutTimeSelectInput
+    WeekDayOnTimeSelect?: WeekDayOnTimeSelectCreateNestedManyWithoutTimeSelectInput
   }
 
   export type TimeSelectUncheckedCreateInput = {
     id?: number
-    startTime: Date | string
-    endTime: Date | string
+    startTime: number
+    endTime: number
     createdAt?: Date | string
     updatedAt?: Date | string
-    weekDays?: WeekDayUncheckedCreateNestedManyWithoutTimeSelectInput
+    WeekDayOnTimeSelect?: WeekDayOnTimeSelectUncheckedCreateNestedManyWithoutTimeSelectInput
   }
 
   export type TimeSelectUpdateInput = {
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    startTime?: IntFieldUpdateOperationsInput | number
+    endTime?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    weekDays?: WeekDayUpdateManyWithoutTimeSelectNestedInput
+    WeekDayOnTimeSelect?: WeekDayOnTimeSelectUpdateManyWithoutTimeSelectNestedInput
   }
 
   export type TimeSelectUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    startTime?: IntFieldUpdateOperationsInput | number
+    endTime?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    weekDays?: WeekDayUncheckedUpdateManyWithoutTimeSelectNestedInput
+    WeekDayOnTimeSelect?: WeekDayOnTimeSelectUncheckedUpdateManyWithoutTimeSelectNestedInput
   }
 
   export type TimeSelectCreateManyInput = {
     id?: number
-    startTime: Date | string
-    endTime: Date | string
+    startTime: number
+    endTime: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type TimeSelectUpdateManyMutationInput = {
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    startTime?: IntFieldUpdateOperationsInput | number
+    endTime?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type TimeSelectUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    startTime?: IntFieldUpdateOperationsInput | number
+    endTime?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14003,7 +15058,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     groupMeetings?: GroupMeetingCreateNestedManyWithoutCustomerInput
-    WeekDay?: WeekDayCreateNestedManyWithoutCustormerInput
+    weekDays?: WeekDayCreateNestedManyWithoutCustormerInput
   }
 
   export type CustomerUncheckedCreateInput = {
@@ -14013,7 +15068,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutCustomerInput
-    WeekDay?: WeekDayUncheckedCreateNestedManyWithoutCustormerInput
+    weekDays?: WeekDayUncheckedCreateNestedManyWithoutCustormerInput
   }
 
   export type CustomerUpdateInput = {
@@ -14022,7 +15077,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     groupMeetings?: GroupMeetingUpdateManyWithoutCustomerNestedInput
-    WeekDay?: WeekDayUpdateManyWithoutCustormerNestedInput
+    weekDays?: WeekDayUpdateManyWithoutCustormerNestedInput
   }
 
   export type CustomerUncheckedUpdateInput = {
@@ -14032,7 +15087,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutCustomerNestedInput
-    WeekDay?: WeekDayUncheckedUpdateManyWithoutCustormerNestedInput
+    weekDays?: WeekDayUncheckedUpdateManyWithoutCustormerNestedInput
   }
 
   export type CustomerCreateManyInput = {
@@ -14246,6 +15301,57 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
     groupMeetingId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WeekDayOnTimeSelectCreateInput = {
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    weekday: WeekDayCreateNestedOneWithoutWeekDayOnTimeSelectsInput
+    timeSelect: TimeSelectCreateNestedOneWithoutWeekDayOnTimeSelectInput
+  }
+
+  export type WeekDayOnTimeSelectUncheckedCreateInput = {
+    id?: number
+    weekdayId: number
+    timeSelectId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WeekDayOnTimeSelectUpdateInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    weekday?: WeekDayUpdateOneRequiredWithoutWeekDayOnTimeSelectsNestedInput
+    timeSelect?: TimeSelectUpdateOneRequiredWithoutWeekDayOnTimeSelectNestedInput
+  }
+
+  export type WeekDayOnTimeSelectUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    weekdayId?: IntFieldUpdateOperationsInput | number
+    timeSelectId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WeekDayOnTimeSelectCreateManyInput = {
+    id?: number
+    weekdayId: number
+    timeSelectId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WeekDayOnTimeSelectUpdateManyMutationInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WeekDayOnTimeSelectUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    weekdayId?: IntFieldUpdateOperationsInput | number
+    timeSelectId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14475,9 +15581,10 @@ export namespace Prisma {
     isNot?: AvailabilityScheduleWhereInput | null
   }
 
-  export type WeekDayRelationFilter = {
-    is?: WeekDayWhereInput
-    isNot?: WeekDayWhereInput
+  export type WeekDayListRelationFilter = {
+    every?: WeekDayWhereInput
+    some?: WeekDayWhereInput
+    none?: WeekDayWhereInput
   }
 
   export type GroupMeetingListRelationFilter = {
@@ -14487,6 +15594,10 @@ export namespace Prisma {
   }
 
   export type EventTypeOnLocationOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type WeekDayOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -14502,7 +15613,6 @@ export namespace Prisma {
     price?: SortOrder
     timeDuration?: SortOrder
     availabilityScheduleId?: SortOrder
-    weekdayId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -14513,7 +15623,6 @@ export namespace Prisma {
     price?: SortOrder
     timeDuration?: SortOrder
     availabilityScheduleId?: SortOrder
-    weekdayId?: SortOrder
   }
 
   export type EventTypeMaxOrderByAggregateInput = {
@@ -14524,7 +15633,6 @@ export namespace Prisma {
     price?: SortOrder
     timeDuration?: SortOrder
     availabilityScheduleId?: SortOrder
-    weekdayId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -14537,7 +15645,6 @@ export namespace Prisma {
     price?: SortOrder
     timeDuration?: SortOrder
     availabilityScheduleId?: SortOrder
-    weekdayId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -14548,7 +15655,6 @@ export namespace Prisma {
     price?: SortOrder
     timeDuration?: SortOrder
     availabilityScheduleId?: SortOrder
-    weekdayId?: SortOrder
   }
 
   export type IntNullableWithAggregatesFilter = {
@@ -14642,16 +15748,6 @@ export namespace Prisma {
     locationId?: SortOrder
   }
 
-  export type WeekDayListRelationFilter = {
-    every?: WeekDayWhereInput
-    some?: WeekDayWhereInput
-    none?: WeekDayWhereInput
-  }
-
-  export type WeekDayOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
   export type AvailabilityScheduleCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -14684,21 +15780,25 @@ export namespace Prisma {
     id?: SortOrder
   }
 
-  export type TimeSelectRelationFilter = {
-    is?: TimeSelectWhereInput
-    isNot?: TimeSelectWhereInput
-  }
-
   export type CustomerRelationFilter = {
     is?: CustomerWhereInput | null
     isNot?: CustomerWhereInput | null
   }
 
+  export type WeekDayOnTimeSelectListRelationFilter = {
+    every?: WeekDayOnTimeSelectWhereInput
+    some?: WeekDayOnTimeSelectWhereInput
+    none?: WeekDayOnTimeSelectWhereInput
+  }
+
+  export type WeekDayOnTimeSelectOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type WeekDayCountOrderByAggregateInput = {
     id?: SortOrder
-    day?: SortOrder
     availabilityScheduleId?: SortOrder
-    timeSelectId?: SortOrder
+    eventTypeId?: SortOrder
     status?: SortOrder
     date?: SortOrder
     custormerId?: SortOrder
@@ -14708,17 +15808,15 @@ export namespace Prisma {
 
   export type WeekDayAvgOrderByAggregateInput = {
     id?: SortOrder
-    day?: SortOrder
     availabilityScheduleId?: SortOrder
-    timeSelectId?: SortOrder
+    eventTypeId?: SortOrder
     custormerId?: SortOrder
   }
 
   export type WeekDayMaxOrderByAggregateInput = {
     id?: SortOrder
-    day?: SortOrder
     availabilityScheduleId?: SortOrder
-    timeSelectId?: SortOrder
+    eventTypeId?: SortOrder
     status?: SortOrder
     date?: SortOrder
     custormerId?: SortOrder
@@ -14728,9 +15826,8 @@ export namespace Prisma {
 
   export type WeekDayMinOrderByAggregateInput = {
     id?: SortOrder
-    day?: SortOrder
     availabilityScheduleId?: SortOrder
-    timeSelectId?: SortOrder
+    eventTypeId?: SortOrder
     status?: SortOrder
     date?: SortOrder
     custormerId?: SortOrder
@@ -14740,9 +15837,8 @@ export namespace Prisma {
 
   export type WeekDaySumOrderByAggregateInput = {
     id?: SortOrder
-    day?: SortOrder
     availabilityScheduleId?: SortOrder
-    timeSelectId?: SortOrder
+    eventTypeId?: SortOrder
     custormerId?: SortOrder
   }
 
@@ -14756,6 +15852,8 @@ export namespace Prisma {
 
   export type TimeSelectAvgOrderByAggregateInput = {
     id?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
   }
 
   export type TimeSelectMaxOrderByAggregateInput = {
@@ -14776,6 +15874,8 @@ export namespace Prisma {
 
   export type TimeSelectSumOrderByAggregateInput = {
     id?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
   }
 
   export type CustomerCountOrderByAggregateInput = {
@@ -14944,6 +16044,52 @@ export namespace Prisma {
     groupMeetingId?: SortOrder
   }
 
+  export type WeekDayRelationFilter = {
+    is?: WeekDayWhereInput
+    isNot?: WeekDayWhereInput
+  }
+
+  export type TimeSelectRelationFilter = {
+    is?: TimeSelectWhereInput
+    isNot?: TimeSelectWhereInput
+  }
+
+  export type WeekDayOnTimeSelectCountOrderByAggregateInput = {
+    id?: SortOrder
+    weekdayId?: SortOrder
+    timeSelectId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WeekDayOnTimeSelectAvgOrderByAggregateInput = {
+    id?: SortOrder
+    weekdayId?: SortOrder
+    timeSelectId?: SortOrder
+  }
+
+  export type WeekDayOnTimeSelectMaxOrderByAggregateInput = {
+    id?: SortOrder
+    weekdayId?: SortOrder
+    timeSelectId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WeekDayOnTimeSelectMinOrderByAggregateInput = {
+    id?: SortOrder
+    weekdayId?: SortOrder
+    timeSelectId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WeekDayOnTimeSelectSumOrderByAggregateInput = {
+    id?: SortOrder
+    weekdayId?: SortOrder
+    timeSelectId?: SortOrder
+  }
+
   export type EventTypeCreateNestedManyWithoutUserInput = {
     create?: XOR<Enumerable<EventTypeCreateWithoutUserInput>, Enumerable<EventTypeUncheckedCreateWithoutUserInput>>
     connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutUserInput>
@@ -15103,16 +16249,17 @@ export namespace Prisma {
     connect?: Enumerable<EventTypeOnLocationWhereUniqueInput>
   }
 
-  export type AvailabilityScheduleCreateNestedOneWithoutEventTypeInput = {
-    create?: XOR<AvailabilityScheduleCreateWithoutEventTypeInput, AvailabilityScheduleUncheckedCreateWithoutEventTypeInput>
-    connectOrCreate?: AvailabilityScheduleCreateOrConnectWithoutEventTypeInput
+  export type AvailabilityScheduleCreateNestedOneWithoutEventTypesInput = {
+    create?: XOR<AvailabilityScheduleCreateWithoutEventTypesInput, AvailabilityScheduleUncheckedCreateWithoutEventTypesInput>
+    connectOrCreate?: AvailabilityScheduleCreateOrConnectWithoutEventTypesInput
     connect?: AvailabilityScheduleWhereUniqueInput
   }
 
-  export type WeekDayCreateNestedOneWithoutEventTypeInput = {
-    create?: XOR<WeekDayCreateWithoutEventTypeInput, WeekDayUncheckedCreateWithoutEventTypeInput>
-    connectOrCreate?: WeekDayCreateOrConnectWithoutEventTypeInput
-    connect?: WeekDayWhereUniqueInput
+  export type WeekDayCreateNestedManyWithoutEventTypeInput = {
+    create?: XOR<Enumerable<WeekDayCreateWithoutEventTypeInput>, Enumerable<WeekDayUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutEventTypeInput>
+    createMany?: WeekDayCreateManyEventTypeInputEnvelope
+    connect?: Enumerable<WeekDayWhereUniqueInput>
   }
 
   export type GroupMeetingCreateNestedManyWithoutEventTypeInput = {
@@ -15127,6 +16274,13 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<EventTypeOnLocationCreateOrConnectWithoutEventTypeInput>
     createMany?: EventTypeOnLocationCreateManyEventTypeInputEnvelope
     connect?: Enumerable<EventTypeOnLocationWhereUniqueInput>
+  }
+
+  export type WeekDayUncheckedCreateNestedManyWithoutEventTypeInput = {
+    create?: XOR<Enumerable<WeekDayCreateWithoutEventTypeInput>, Enumerable<WeekDayUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutEventTypeInput>
+    createMany?: WeekDayCreateManyEventTypeInputEnvelope
+    connect?: Enumerable<WeekDayWhereUniqueInput>
   }
 
   export type GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput = {
@@ -15158,22 +16312,28 @@ export namespace Prisma {
     deleteMany?: Enumerable<EventTypeOnLocationScalarWhereInput>
   }
 
-  export type AvailabilityScheduleUpdateOneWithoutEventTypeNestedInput = {
-    create?: XOR<AvailabilityScheduleCreateWithoutEventTypeInput, AvailabilityScheduleUncheckedCreateWithoutEventTypeInput>
-    connectOrCreate?: AvailabilityScheduleCreateOrConnectWithoutEventTypeInput
-    upsert?: AvailabilityScheduleUpsertWithoutEventTypeInput
+  export type AvailabilityScheduleUpdateOneWithoutEventTypesNestedInput = {
+    create?: XOR<AvailabilityScheduleCreateWithoutEventTypesInput, AvailabilityScheduleUncheckedCreateWithoutEventTypesInput>
+    connectOrCreate?: AvailabilityScheduleCreateOrConnectWithoutEventTypesInput
+    upsert?: AvailabilityScheduleUpsertWithoutEventTypesInput
     disconnect?: boolean
     delete?: boolean
     connect?: AvailabilityScheduleWhereUniqueInput
-    update?: XOR<AvailabilityScheduleUpdateWithoutEventTypeInput, AvailabilityScheduleUncheckedUpdateWithoutEventTypeInput>
+    update?: XOR<AvailabilityScheduleUpdateWithoutEventTypesInput, AvailabilityScheduleUncheckedUpdateWithoutEventTypesInput>
   }
 
-  export type WeekDayUpdateOneRequiredWithoutEventTypeNestedInput = {
-    create?: XOR<WeekDayCreateWithoutEventTypeInput, WeekDayUncheckedCreateWithoutEventTypeInput>
-    connectOrCreate?: WeekDayCreateOrConnectWithoutEventTypeInput
-    upsert?: WeekDayUpsertWithoutEventTypeInput
-    connect?: WeekDayWhereUniqueInput
-    update?: XOR<WeekDayUpdateWithoutEventTypeInput, WeekDayUncheckedUpdateWithoutEventTypeInput>
+  export type WeekDayUpdateManyWithoutEventTypeNestedInput = {
+    create?: XOR<Enumerable<WeekDayCreateWithoutEventTypeInput>, Enumerable<WeekDayUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutEventTypeInput>
+    upsert?: Enumerable<WeekDayUpsertWithWhereUniqueWithoutEventTypeInput>
+    createMany?: WeekDayCreateManyEventTypeInputEnvelope
+    set?: Enumerable<WeekDayWhereUniqueInput>
+    disconnect?: Enumerable<WeekDayWhereUniqueInput>
+    delete?: Enumerable<WeekDayWhereUniqueInput>
+    connect?: Enumerable<WeekDayWhereUniqueInput>
+    update?: Enumerable<WeekDayUpdateWithWhereUniqueWithoutEventTypeInput>
+    updateMany?: Enumerable<WeekDayUpdateManyWithWhereWithoutEventTypeInput>
+    deleteMany?: Enumerable<WeekDayScalarWhereInput>
   }
 
   export type GroupMeetingUpdateManyWithoutEventTypeNestedInput = {
@@ -15210,6 +16370,20 @@ export namespace Prisma {
     update?: Enumerable<EventTypeOnLocationUpdateWithWhereUniqueWithoutEventTypeInput>
     updateMany?: Enumerable<EventTypeOnLocationUpdateManyWithWhereWithoutEventTypeInput>
     deleteMany?: Enumerable<EventTypeOnLocationScalarWhereInput>
+  }
+
+  export type WeekDayUncheckedUpdateManyWithoutEventTypeNestedInput = {
+    create?: XOR<Enumerable<WeekDayCreateWithoutEventTypeInput>, Enumerable<WeekDayUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutEventTypeInput>
+    upsert?: Enumerable<WeekDayUpsertWithWhereUniqueWithoutEventTypeInput>
+    createMany?: WeekDayCreateManyEventTypeInputEnvelope
+    set?: Enumerable<WeekDayWhereUniqueInput>
+    disconnect?: Enumerable<WeekDayWhereUniqueInput>
+    delete?: Enumerable<WeekDayWhereUniqueInput>
+    connect?: Enumerable<WeekDayWhereUniqueInput>
+    update?: Enumerable<WeekDayUpdateWithWhereUniqueWithoutEventTypeInput>
+    updateMany?: Enumerable<WeekDayUpdateManyWithWhereWithoutEventTypeInput>
+    deleteMany?: Enumerable<WeekDayScalarWhereInput>
   }
 
   export type GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput = {
@@ -15428,30 +16602,30 @@ export namespace Prisma {
     connect?: AvailabilityScheduleWhereUniqueInput
   }
 
-  export type TimeSelectCreateNestedOneWithoutWeekDaysInput = {
-    create?: XOR<TimeSelectCreateWithoutWeekDaysInput, TimeSelectUncheckedCreateWithoutWeekDaysInput>
-    connectOrCreate?: TimeSelectCreateOrConnectWithoutWeekDaysInput
-    connect?: TimeSelectWhereUniqueInput
+  export type EventTypeCreateNestedOneWithoutWeekDaysInput = {
+    create?: XOR<EventTypeCreateWithoutWeekDaysInput, EventTypeUncheckedCreateWithoutWeekDaysInput>
+    connectOrCreate?: EventTypeCreateOrConnectWithoutWeekDaysInput
+    connect?: EventTypeWhereUniqueInput
   }
 
-  export type EventTypeCreateNestedManyWithoutWeekdayInput = {
-    create?: XOR<Enumerable<EventTypeCreateWithoutWeekdayInput>, Enumerable<EventTypeUncheckedCreateWithoutWeekdayInput>>
-    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutWeekdayInput>
-    createMany?: EventTypeCreateManyWeekdayInputEnvelope
-    connect?: Enumerable<EventTypeWhereUniqueInput>
-  }
-
-  export type CustomerCreateNestedOneWithoutWeekDayInput = {
-    create?: XOR<CustomerCreateWithoutWeekDayInput, CustomerUncheckedCreateWithoutWeekDayInput>
-    connectOrCreate?: CustomerCreateOrConnectWithoutWeekDayInput
+  export type CustomerCreateNestedOneWithoutWeekDaysInput = {
+    create?: XOR<CustomerCreateWithoutWeekDaysInput, CustomerUncheckedCreateWithoutWeekDaysInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutWeekDaysInput
     connect?: CustomerWhereUniqueInput
   }
 
-  export type EventTypeUncheckedCreateNestedManyWithoutWeekdayInput = {
-    create?: XOR<Enumerable<EventTypeCreateWithoutWeekdayInput>, Enumerable<EventTypeUncheckedCreateWithoutWeekdayInput>>
-    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutWeekdayInput>
-    createMany?: EventTypeCreateManyWeekdayInputEnvelope
-    connect?: Enumerable<EventTypeWhereUniqueInput>
+  export type WeekDayOnTimeSelectCreateNestedManyWithoutWeekdayInput = {
+    create?: XOR<Enumerable<WeekDayOnTimeSelectCreateWithoutWeekdayInput>, Enumerable<WeekDayOnTimeSelectUncheckedCreateWithoutWeekdayInput>>
+    connectOrCreate?: Enumerable<WeekDayOnTimeSelectCreateOrConnectWithoutWeekdayInput>
+    createMany?: WeekDayOnTimeSelectCreateManyWeekdayInputEnvelope
+    connect?: Enumerable<WeekDayOnTimeSelectWhereUniqueInput>
+  }
+
+  export type WeekDayOnTimeSelectUncheckedCreateNestedManyWithoutWeekdayInput = {
+    create?: XOR<Enumerable<WeekDayOnTimeSelectCreateWithoutWeekdayInput>, Enumerable<WeekDayOnTimeSelectUncheckedCreateWithoutWeekdayInput>>
+    connectOrCreate?: Enumerable<WeekDayOnTimeSelectCreateOrConnectWithoutWeekdayInput>
+    createMany?: WeekDayOnTimeSelectCreateManyWeekdayInputEnvelope
+    connect?: Enumerable<WeekDayOnTimeSelectWhereUniqueInput>
   }
 
   export type AvailabilityScheduleUpdateOneWithoutWeekDaysNestedInput = {
@@ -15464,92 +16638,92 @@ export namespace Prisma {
     update?: XOR<AvailabilityScheduleUpdateWithoutWeekDaysInput, AvailabilityScheduleUncheckedUpdateWithoutWeekDaysInput>
   }
 
-  export type TimeSelectUpdateOneRequiredWithoutWeekDaysNestedInput = {
-    create?: XOR<TimeSelectCreateWithoutWeekDaysInput, TimeSelectUncheckedCreateWithoutWeekDaysInput>
-    connectOrCreate?: TimeSelectCreateOrConnectWithoutWeekDaysInput
-    upsert?: TimeSelectUpsertWithoutWeekDaysInput
-    connect?: TimeSelectWhereUniqueInput
-    update?: XOR<TimeSelectUpdateWithoutWeekDaysInput, TimeSelectUncheckedUpdateWithoutWeekDaysInput>
+  export type EventTypeUpdateOneRequiredWithoutWeekDaysNestedInput = {
+    create?: XOR<EventTypeCreateWithoutWeekDaysInput, EventTypeUncheckedCreateWithoutWeekDaysInput>
+    connectOrCreate?: EventTypeCreateOrConnectWithoutWeekDaysInput
+    upsert?: EventTypeUpsertWithoutWeekDaysInput
+    connect?: EventTypeWhereUniqueInput
+    update?: XOR<EventTypeUpdateWithoutWeekDaysInput, EventTypeUncheckedUpdateWithoutWeekDaysInput>
   }
 
-  export type EventTypeUpdateManyWithoutWeekdayNestedInput = {
-    create?: XOR<Enumerable<EventTypeCreateWithoutWeekdayInput>, Enumerable<EventTypeUncheckedCreateWithoutWeekdayInput>>
-    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutWeekdayInput>
-    upsert?: Enumerable<EventTypeUpsertWithWhereUniqueWithoutWeekdayInput>
-    createMany?: EventTypeCreateManyWeekdayInputEnvelope
-    set?: Enumerable<EventTypeWhereUniqueInput>
-    disconnect?: Enumerable<EventTypeWhereUniqueInput>
-    delete?: Enumerable<EventTypeWhereUniqueInput>
-    connect?: Enumerable<EventTypeWhereUniqueInput>
-    update?: Enumerable<EventTypeUpdateWithWhereUniqueWithoutWeekdayInput>
-    updateMany?: Enumerable<EventTypeUpdateManyWithWhereWithoutWeekdayInput>
-    deleteMany?: Enumerable<EventTypeScalarWhereInput>
-  }
-
-  export type CustomerUpdateOneWithoutWeekDayNestedInput = {
-    create?: XOR<CustomerCreateWithoutWeekDayInput, CustomerUncheckedCreateWithoutWeekDayInput>
-    connectOrCreate?: CustomerCreateOrConnectWithoutWeekDayInput
-    upsert?: CustomerUpsertWithoutWeekDayInput
+  export type CustomerUpdateOneWithoutWeekDaysNestedInput = {
+    create?: XOR<CustomerCreateWithoutWeekDaysInput, CustomerUncheckedCreateWithoutWeekDaysInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutWeekDaysInput
+    upsert?: CustomerUpsertWithoutWeekDaysInput
     disconnect?: boolean
     delete?: boolean
     connect?: CustomerWhereUniqueInput
-    update?: XOR<CustomerUpdateWithoutWeekDayInput, CustomerUncheckedUpdateWithoutWeekDayInput>
+    update?: XOR<CustomerUpdateWithoutWeekDaysInput, CustomerUncheckedUpdateWithoutWeekDaysInput>
   }
 
-  export type EventTypeUncheckedUpdateManyWithoutWeekdayNestedInput = {
-    create?: XOR<Enumerable<EventTypeCreateWithoutWeekdayInput>, Enumerable<EventTypeUncheckedCreateWithoutWeekdayInput>>
-    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutWeekdayInput>
-    upsert?: Enumerable<EventTypeUpsertWithWhereUniqueWithoutWeekdayInput>
-    createMany?: EventTypeCreateManyWeekdayInputEnvelope
-    set?: Enumerable<EventTypeWhereUniqueInput>
-    disconnect?: Enumerable<EventTypeWhereUniqueInput>
-    delete?: Enumerable<EventTypeWhereUniqueInput>
-    connect?: Enumerable<EventTypeWhereUniqueInput>
-    update?: Enumerable<EventTypeUpdateWithWhereUniqueWithoutWeekdayInput>
-    updateMany?: Enumerable<EventTypeUpdateManyWithWhereWithoutWeekdayInput>
-    deleteMany?: Enumerable<EventTypeScalarWhereInput>
+  export type WeekDayOnTimeSelectUpdateManyWithoutWeekdayNestedInput = {
+    create?: XOR<Enumerable<WeekDayOnTimeSelectCreateWithoutWeekdayInput>, Enumerable<WeekDayOnTimeSelectUncheckedCreateWithoutWeekdayInput>>
+    connectOrCreate?: Enumerable<WeekDayOnTimeSelectCreateOrConnectWithoutWeekdayInput>
+    upsert?: Enumerable<WeekDayOnTimeSelectUpsertWithWhereUniqueWithoutWeekdayInput>
+    createMany?: WeekDayOnTimeSelectCreateManyWeekdayInputEnvelope
+    set?: Enumerable<WeekDayOnTimeSelectWhereUniqueInput>
+    disconnect?: Enumerable<WeekDayOnTimeSelectWhereUniqueInput>
+    delete?: Enumerable<WeekDayOnTimeSelectWhereUniqueInput>
+    connect?: Enumerable<WeekDayOnTimeSelectWhereUniqueInput>
+    update?: Enumerable<WeekDayOnTimeSelectUpdateWithWhereUniqueWithoutWeekdayInput>
+    updateMany?: Enumerable<WeekDayOnTimeSelectUpdateManyWithWhereWithoutWeekdayInput>
+    deleteMany?: Enumerable<WeekDayOnTimeSelectScalarWhereInput>
   }
 
-  export type WeekDayCreateNestedManyWithoutTimeSelectInput = {
-    create?: XOR<Enumerable<WeekDayCreateWithoutTimeSelectInput>, Enumerable<WeekDayUncheckedCreateWithoutTimeSelectInput>>
-    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutTimeSelectInput>
-    createMany?: WeekDayCreateManyTimeSelectInputEnvelope
-    connect?: Enumerable<WeekDayWhereUniqueInput>
+  export type WeekDayOnTimeSelectUncheckedUpdateManyWithoutWeekdayNestedInput = {
+    create?: XOR<Enumerable<WeekDayOnTimeSelectCreateWithoutWeekdayInput>, Enumerable<WeekDayOnTimeSelectUncheckedCreateWithoutWeekdayInput>>
+    connectOrCreate?: Enumerable<WeekDayOnTimeSelectCreateOrConnectWithoutWeekdayInput>
+    upsert?: Enumerable<WeekDayOnTimeSelectUpsertWithWhereUniqueWithoutWeekdayInput>
+    createMany?: WeekDayOnTimeSelectCreateManyWeekdayInputEnvelope
+    set?: Enumerable<WeekDayOnTimeSelectWhereUniqueInput>
+    disconnect?: Enumerable<WeekDayOnTimeSelectWhereUniqueInput>
+    delete?: Enumerable<WeekDayOnTimeSelectWhereUniqueInput>
+    connect?: Enumerable<WeekDayOnTimeSelectWhereUniqueInput>
+    update?: Enumerable<WeekDayOnTimeSelectUpdateWithWhereUniqueWithoutWeekdayInput>
+    updateMany?: Enumerable<WeekDayOnTimeSelectUpdateManyWithWhereWithoutWeekdayInput>
+    deleteMany?: Enumerable<WeekDayOnTimeSelectScalarWhereInput>
   }
 
-  export type WeekDayUncheckedCreateNestedManyWithoutTimeSelectInput = {
-    create?: XOR<Enumerable<WeekDayCreateWithoutTimeSelectInput>, Enumerable<WeekDayUncheckedCreateWithoutTimeSelectInput>>
-    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutTimeSelectInput>
-    createMany?: WeekDayCreateManyTimeSelectInputEnvelope
-    connect?: Enumerable<WeekDayWhereUniqueInput>
+  export type WeekDayOnTimeSelectCreateNestedManyWithoutTimeSelectInput = {
+    create?: XOR<Enumerable<WeekDayOnTimeSelectCreateWithoutTimeSelectInput>, Enumerable<WeekDayOnTimeSelectUncheckedCreateWithoutTimeSelectInput>>
+    connectOrCreate?: Enumerable<WeekDayOnTimeSelectCreateOrConnectWithoutTimeSelectInput>
+    createMany?: WeekDayOnTimeSelectCreateManyTimeSelectInputEnvelope
+    connect?: Enumerable<WeekDayOnTimeSelectWhereUniqueInput>
   }
 
-  export type WeekDayUpdateManyWithoutTimeSelectNestedInput = {
-    create?: XOR<Enumerable<WeekDayCreateWithoutTimeSelectInput>, Enumerable<WeekDayUncheckedCreateWithoutTimeSelectInput>>
-    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutTimeSelectInput>
-    upsert?: Enumerable<WeekDayUpsertWithWhereUniqueWithoutTimeSelectInput>
-    createMany?: WeekDayCreateManyTimeSelectInputEnvelope
-    set?: Enumerable<WeekDayWhereUniqueInput>
-    disconnect?: Enumerable<WeekDayWhereUniqueInput>
-    delete?: Enumerable<WeekDayWhereUniqueInput>
-    connect?: Enumerable<WeekDayWhereUniqueInput>
-    update?: Enumerable<WeekDayUpdateWithWhereUniqueWithoutTimeSelectInput>
-    updateMany?: Enumerable<WeekDayUpdateManyWithWhereWithoutTimeSelectInput>
-    deleteMany?: Enumerable<WeekDayScalarWhereInput>
+  export type WeekDayOnTimeSelectUncheckedCreateNestedManyWithoutTimeSelectInput = {
+    create?: XOR<Enumerable<WeekDayOnTimeSelectCreateWithoutTimeSelectInput>, Enumerable<WeekDayOnTimeSelectUncheckedCreateWithoutTimeSelectInput>>
+    connectOrCreate?: Enumerable<WeekDayOnTimeSelectCreateOrConnectWithoutTimeSelectInput>
+    createMany?: WeekDayOnTimeSelectCreateManyTimeSelectInputEnvelope
+    connect?: Enumerable<WeekDayOnTimeSelectWhereUniqueInput>
   }
 
-  export type WeekDayUncheckedUpdateManyWithoutTimeSelectNestedInput = {
-    create?: XOR<Enumerable<WeekDayCreateWithoutTimeSelectInput>, Enumerable<WeekDayUncheckedCreateWithoutTimeSelectInput>>
-    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutTimeSelectInput>
-    upsert?: Enumerable<WeekDayUpsertWithWhereUniqueWithoutTimeSelectInput>
-    createMany?: WeekDayCreateManyTimeSelectInputEnvelope
-    set?: Enumerable<WeekDayWhereUniqueInput>
-    disconnect?: Enumerable<WeekDayWhereUniqueInput>
-    delete?: Enumerable<WeekDayWhereUniqueInput>
-    connect?: Enumerable<WeekDayWhereUniqueInput>
-    update?: Enumerable<WeekDayUpdateWithWhereUniqueWithoutTimeSelectInput>
-    updateMany?: Enumerable<WeekDayUpdateManyWithWhereWithoutTimeSelectInput>
-    deleteMany?: Enumerable<WeekDayScalarWhereInput>
+  export type WeekDayOnTimeSelectUpdateManyWithoutTimeSelectNestedInput = {
+    create?: XOR<Enumerable<WeekDayOnTimeSelectCreateWithoutTimeSelectInput>, Enumerable<WeekDayOnTimeSelectUncheckedCreateWithoutTimeSelectInput>>
+    connectOrCreate?: Enumerable<WeekDayOnTimeSelectCreateOrConnectWithoutTimeSelectInput>
+    upsert?: Enumerable<WeekDayOnTimeSelectUpsertWithWhereUniqueWithoutTimeSelectInput>
+    createMany?: WeekDayOnTimeSelectCreateManyTimeSelectInputEnvelope
+    set?: Enumerable<WeekDayOnTimeSelectWhereUniqueInput>
+    disconnect?: Enumerable<WeekDayOnTimeSelectWhereUniqueInput>
+    delete?: Enumerable<WeekDayOnTimeSelectWhereUniqueInput>
+    connect?: Enumerable<WeekDayOnTimeSelectWhereUniqueInput>
+    update?: Enumerable<WeekDayOnTimeSelectUpdateWithWhereUniqueWithoutTimeSelectInput>
+    updateMany?: Enumerable<WeekDayOnTimeSelectUpdateManyWithWhereWithoutTimeSelectInput>
+    deleteMany?: Enumerable<WeekDayOnTimeSelectScalarWhereInput>
+  }
+
+  export type WeekDayOnTimeSelectUncheckedUpdateManyWithoutTimeSelectNestedInput = {
+    create?: XOR<Enumerable<WeekDayOnTimeSelectCreateWithoutTimeSelectInput>, Enumerable<WeekDayOnTimeSelectUncheckedCreateWithoutTimeSelectInput>>
+    connectOrCreate?: Enumerable<WeekDayOnTimeSelectCreateOrConnectWithoutTimeSelectInput>
+    upsert?: Enumerable<WeekDayOnTimeSelectUpsertWithWhereUniqueWithoutTimeSelectInput>
+    createMany?: WeekDayOnTimeSelectCreateManyTimeSelectInputEnvelope
+    set?: Enumerable<WeekDayOnTimeSelectWhereUniqueInput>
+    disconnect?: Enumerable<WeekDayOnTimeSelectWhereUniqueInput>
+    delete?: Enumerable<WeekDayOnTimeSelectWhereUniqueInput>
+    connect?: Enumerable<WeekDayOnTimeSelectWhereUniqueInput>
+    update?: Enumerable<WeekDayOnTimeSelectUpdateWithWhereUniqueWithoutTimeSelectInput>
+    updateMany?: Enumerable<WeekDayOnTimeSelectUpdateManyWithWhereWithoutTimeSelectInput>
+    deleteMany?: Enumerable<WeekDayOnTimeSelectScalarWhereInput>
   }
 
   export type GroupMeetingCreateNestedManyWithoutCustomerInput = {
@@ -15762,6 +16936,34 @@ export namespace Prisma {
     update?: XOR<GroupMeetingUpdateWithoutUserOnGroupMeetingsInput, GroupMeetingUncheckedUpdateWithoutUserOnGroupMeetingsInput>
   }
 
+  export type WeekDayCreateNestedOneWithoutWeekDayOnTimeSelectsInput = {
+    create?: XOR<WeekDayCreateWithoutWeekDayOnTimeSelectsInput, WeekDayUncheckedCreateWithoutWeekDayOnTimeSelectsInput>
+    connectOrCreate?: WeekDayCreateOrConnectWithoutWeekDayOnTimeSelectsInput
+    connect?: WeekDayWhereUniqueInput
+  }
+
+  export type TimeSelectCreateNestedOneWithoutWeekDayOnTimeSelectInput = {
+    create?: XOR<TimeSelectCreateWithoutWeekDayOnTimeSelectInput, TimeSelectUncheckedCreateWithoutWeekDayOnTimeSelectInput>
+    connectOrCreate?: TimeSelectCreateOrConnectWithoutWeekDayOnTimeSelectInput
+    connect?: TimeSelectWhereUniqueInput
+  }
+
+  export type WeekDayUpdateOneRequiredWithoutWeekDayOnTimeSelectsNestedInput = {
+    create?: XOR<WeekDayCreateWithoutWeekDayOnTimeSelectsInput, WeekDayUncheckedCreateWithoutWeekDayOnTimeSelectsInput>
+    connectOrCreate?: WeekDayCreateOrConnectWithoutWeekDayOnTimeSelectsInput
+    upsert?: WeekDayUpsertWithoutWeekDayOnTimeSelectsInput
+    connect?: WeekDayWhereUniqueInput
+    update?: XOR<WeekDayUpdateWithoutWeekDayOnTimeSelectsInput, WeekDayUncheckedUpdateWithoutWeekDayOnTimeSelectsInput>
+  }
+
+  export type TimeSelectUpdateOneRequiredWithoutWeekDayOnTimeSelectNestedInput = {
+    create?: XOR<TimeSelectCreateWithoutWeekDayOnTimeSelectInput, TimeSelectUncheckedCreateWithoutWeekDayOnTimeSelectInput>
+    connectOrCreate?: TimeSelectCreateOrConnectWithoutWeekDayOnTimeSelectInput
+    upsert?: TimeSelectUpsertWithoutWeekDayOnTimeSelectInput
+    connect?: TimeSelectWhereUniqueInput
+    update?: XOR<TimeSelectUpdateWithoutWeekDayOnTimeSelectInput, TimeSelectUncheckedUpdateWithoutWeekDayOnTimeSelectInput>
+  }
+
   export type NestedIntFilter = {
     equals?: number
     in?: Enumerable<number>
@@ -15933,8 +17135,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutEventTypeInput
-    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutEventTypeInput
-    weekday: WeekDayCreateNestedOneWithoutEventTypeInput
+    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutEventTypesInput
+    weekDays?: WeekDayCreateNestedManyWithoutEventTypeInput
     groupMeetings?: GroupMeetingCreateNestedManyWithoutEventTypeInput
   }
 
@@ -15945,10 +17147,10 @@ export namespace Prisma {
     price: number
     timeDuration: number
     availabilityScheduleId?: number | null
-    weekdayId: number
     createdAt?: Date | string
     updatedAt?: Date | string
     eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput
+    weekDays?: WeekDayUncheckedCreateNestedManyWithoutEventTypeInput
     groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput
   }
 
@@ -16039,7 +17241,6 @@ export namespace Prisma {
     price?: IntFilter | number
     timeDuration?: IntFilter | number
     availabilityScheduleId?: IntNullableFilter | number | null
-    weekdayId?: IntFilter | number
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
   }
@@ -16159,7 +17360,7 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type AvailabilityScheduleCreateWithoutEventTypeInput = {
+  export type AvailabilityScheduleCreateWithoutEventTypesInput = {
     name: string
     timezone: string
     createdAt?: Date | string
@@ -16167,7 +17368,7 @@ export namespace Prisma {
     weekDays?: WeekDayCreateNestedManyWithoutAvailabilityScheduleInput
   }
 
-  export type AvailabilityScheduleUncheckedCreateWithoutEventTypeInput = {
+  export type AvailabilityScheduleUncheckedCreateWithoutEventTypesInput = {
     id?: number
     name: string
     timezone: string
@@ -16176,37 +17377,40 @@ export namespace Prisma {
     weekDays?: WeekDayUncheckedCreateNestedManyWithoutAvailabilityScheduleInput
   }
 
-  export type AvailabilityScheduleCreateOrConnectWithoutEventTypeInput = {
+  export type AvailabilityScheduleCreateOrConnectWithoutEventTypesInput = {
     where: AvailabilityScheduleWhereUniqueInput
-    create: XOR<AvailabilityScheduleCreateWithoutEventTypeInput, AvailabilityScheduleUncheckedCreateWithoutEventTypeInput>
+    create: XOR<AvailabilityScheduleCreateWithoutEventTypesInput, AvailabilityScheduleUncheckedCreateWithoutEventTypesInput>
   }
 
   export type WeekDayCreateWithoutEventTypeInput = {
-    day?: number | null
     status?: string
     date: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
     availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutWeekDaysInput
-    timeSelect: TimeSelectCreateNestedOneWithoutWeekDaysInput
-    custormer?: CustomerCreateNestedOneWithoutWeekDayInput
+    custormer?: CustomerCreateNestedOneWithoutWeekDaysInput
+    weekDayOnTimeSelects?: WeekDayOnTimeSelectCreateNestedManyWithoutWeekdayInput
   }
 
   export type WeekDayUncheckedCreateWithoutEventTypeInput = {
     id?: number
-    day?: number | null
     availabilityScheduleId?: number | null
-    timeSelectId: number
     status?: string
     date: Date | string
     custormerId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    weekDayOnTimeSelects?: WeekDayOnTimeSelectUncheckedCreateNestedManyWithoutWeekdayInput
   }
 
   export type WeekDayCreateOrConnectWithoutEventTypeInput = {
     where: WeekDayWhereUniqueInput
     create: XOR<WeekDayCreateWithoutEventTypeInput, WeekDayUncheckedCreateWithoutEventTypeInput>
+  }
+
+  export type WeekDayCreateManyEventTypeInputEnvelope = {
+    data: Enumerable<WeekDayCreateManyEventTypeInput>
+    skipDuplicates?: boolean
   }
 
   export type GroupMeetingCreateWithoutEventTypeInput = {
@@ -16303,12 +17507,12 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter | Date | string
   }
 
-  export type AvailabilityScheduleUpsertWithoutEventTypeInput = {
-    update: XOR<AvailabilityScheduleUpdateWithoutEventTypeInput, AvailabilityScheduleUncheckedUpdateWithoutEventTypeInput>
-    create: XOR<AvailabilityScheduleCreateWithoutEventTypeInput, AvailabilityScheduleUncheckedCreateWithoutEventTypeInput>
+  export type AvailabilityScheduleUpsertWithoutEventTypesInput = {
+    update: XOR<AvailabilityScheduleUpdateWithoutEventTypesInput, AvailabilityScheduleUncheckedUpdateWithoutEventTypesInput>
+    create: XOR<AvailabilityScheduleCreateWithoutEventTypesInput, AvailabilityScheduleUncheckedCreateWithoutEventTypesInput>
   }
 
-  export type AvailabilityScheduleUpdateWithoutEventTypeInput = {
+  export type AvailabilityScheduleUpdateWithoutEventTypesInput = {
     name?: StringFieldUpdateOperationsInput | string
     timezone?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16316,7 +17520,7 @@ export namespace Prisma {
     weekDays?: WeekDayUpdateManyWithoutAvailabilityScheduleNestedInput
   }
 
-  export type AvailabilityScheduleUncheckedUpdateWithoutEventTypeInput = {
+  export type AvailabilityScheduleUncheckedUpdateWithoutEventTypesInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     timezone?: StringFieldUpdateOperationsInput | string
@@ -16325,32 +17529,34 @@ export namespace Prisma {
     weekDays?: WeekDayUncheckedUpdateManyWithoutAvailabilityScheduleNestedInput
   }
 
-  export type WeekDayUpsertWithoutEventTypeInput = {
+  export type WeekDayUpsertWithWhereUniqueWithoutEventTypeInput = {
+    where: WeekDayWhereUniqueInput
     update: XOR<WeekDayUpdateWithoutEventTypeInput, WeekDayUncheckedUpdateWithoutEventTypeInput>
     create: XOR<WeekDayCreateWithoutEventTypeInput, WeekDayUncheckedCreateWithoutEventTypeInput>
   }
 
-  export type WeekDayUpdateWithoutEventTypeInput = {
-    day?: NullableIntFieldUpdateOperationsInput | number | null
-    status?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutWeekDaysNestedInput
-    timeSelect?: TimeSelectUpdateOneRequiredWithoutWeekDaysNestedInput
-    custormer?: CustomerUpdateOneWithoutWeekDayNestedInput
+  export type WeekDayUpdateWithWhereUniqueWithoutEventTypeInput = {
+    where: WeekDayWhereUniqueInput
+    data: XOR<WeekDayUpdateWithoutEventTypeInput, WeekDayUncheckedUpdateWithoutEventTypeInput>
   }
 
-  export type WeekDayUncheckedUpdateWithoutEventTypeInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    day?: NullableIntFieldUpdateOperationsInput | number | null
-    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    timeSelectId?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    custormerId?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  export type WeekDayUpdateManyWithWhereWithoutEventTypeInput = {
+    where: WeekDayScalarWhereInput
+    data: XOR<WeekDayUpdateManyMutationInput, WeekDayUncheckedUpdateManyWithoutWeekDaysInput>
+  }
+
+  export type WeekDayScalarWhereInput = {
+    AND?: Enumerable<WeekDayScalarWhereInput>
+    OR?: Enumerable<WeekDayScalarWhereInput>
+    NOT?: Enumerable<WeekDayScalarWhereInput>
+    id?: IntFilter | number
+    availabilityScheduleId?: IntNullableFilter | number | null
+    eventTypeId?: IntFilter | number
+    status?: StringFilter | string
+    date?: DateTimeFilter | Date | string
+    custormerId?: IntNullableFilter | number | null
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
   }
 
   export type GroupMeetingUpsertWithWhereUniqueWithoutEventTypeInput = {
@@ -16477,8 +17683,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutEventTypesInput
-    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutEventTypeInput
-    weekday: WeekDayCreateNestedOneWithoutEventTypeInput
+    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutEventTypesInput
+    weekDays?: WeekDayCreateNestedManyWithoutEventTypeInput
     groupMeetings?: GroupMeetingCreateNestedManyWithoutEventTypeInput
   }
 
@@ -16490,9 +17696,9 @@ export namespace Prisma {
     price: number
     timeDuration: number
     availabilityScheduleId?: number | null
-    weekdayId: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    weekDays?: WeekDayUncheckedCreateNestedManyWithoutEventTypeInput
     groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput
   }
 
@@ -16534,8 +17740,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
-    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutEventTypeNestedInput
-    weekday?: WeekDayUpdateOneRequiredWithoutEventTypeNestedInput
+    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutEventTypesNestedInput
+    weekDays?: WeekDayUpdateManyWithoutEventTypeNestedInput
     groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
   }
 
@@ -16547,9 +17753,9 @@ export namespace Prisma {
     price?: IntFieldUpdateOperationsInput | number
     timeDuration?: IntFieldUpdateOperationsInput | number
     availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    weekdayId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    weekDays?: WeekDayUncheckedUpdateManyWithoutEventTypeNestedInput
     groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
   }
 
@@ -16582,7 +17788,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutEventTypesInput
     eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutEventTypeInput
-    weekday: WeekDayCreateNestedOneWithoutEventTypeInput
+    weekDays?: WeekDayCreateNestedManyWithoutEventTypeInput
     groupMeetings?: GroupMeetingCreateNestedManyWithoutEventTypeInput
   }
 
@@ -16593,10 +17799,10 @@ export namespace Prisma {
     description: string
     price: number
     timeDuration: number
-    weekdayId: number
     createdAt?: Date | string
     updatedAt?: Date | string
     eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput
+    weekDays?: WeekDayUncheckedCreateNestedManyWithoutEventTypeInput
     groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput
   }
 
@@ -16611,26 +17817,24 @@ export namespace Prisma {
   }
 
   export type WeekDayCreateWithoutAvailabilityScheduleInput = {
-    day?: number | null
     status?: string
     date: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
-    timeSelect: TimeSelectCreateNestedOneWithoutWeekDaysInput
-    EventType?: EventTypeCreateNestedManyWithoutWeekdayInput
-    custormer?: CustomerCreateNestedOneWithoutWeekDayInput
+    eventType: EventTypeCreateNestedOneWithoutWeekDaysInput
+    custormer?: CustomerCreateNestedOneWithoutWeekDaysInput
+    weekDayOnTimeSelects?: WeekDayOnTimeSelectCreateNestedManyWithoutWeekdayInput
   }
 
   export type WeekDayUncheckedCreateWithoutAvailabilityScheduleInput = {
     id?: number
-    day?: number | null
-    timeSelectId: number
+    eventTypeId: number
     status?: string
     date: Date | string
     custormerId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    EventType?: EventTypeUncheckedCreateNestedManyWithoutWeekdayInput
+    weekDayOnTimeSelects?: WeekDayOnTimeSelectUncheckedCreateNestedManyWithoutWeekdayInput
   }
 
   export type WeekDayCreateOrConnectWithoutAvailabilityScheduleInput = {
@@ -16656,7 +17860,7 @@ export namespace Prisma {
 
   export type EventTypeUpdateManyWithWhereWithoutAvailabilityScheduleInput = {
     where: EventTypeScalarWhereInput
-    data: XOR<EventTypeUpdateManyMutationInput, EventTypeUncheckedUpdateManyWithoutEventTypeInput>
+    data: XOR<EventTypeUpdateManyMutationInput, EventTypeUncheckedUpdateManyWithoutEventTypesInput>
   }
 
   export type WeekDayUpsertWithWhereUniqueWithoutAvailabilityScheduleInput = {
@@ -16675,27 +17879,12 @@ export namespace Prisma {
     data: XOR<WeekDayUpdateManyMutationInput, WeekDayUncheckedUpdateManyWithoutWeekDaysInput>
   }
 
-  export type WeekDayScalarWhereInput = {
-    AND?: Enumerable<WeekDayScalarWhereInput>
-    OR?: Enumerable<WeekDayScalarWhereInput>
-    NOT?: Enumerable<WeekDayScalarWhereInput>
-    id?: IntFilter | number
-    day?: IntNullableFilter | number | null
-    availabilityScheduleId?: IntNullableFilter | number | null
-    timeSelectId?: IntFilter | number
-    status?: StringFilter | string
-    date?: DateTimeFilter | Date | string
-    custormerId?: IntNullableFilter | number | null
-    createdAt?: DateTimeFilter | Date | string
-    updatedAt?: DateTimeFilter | Date | string
-  }
-
   export type AvailabilityScheduleCreateWithoutWeekDaysInput = {
     name: string
     timezone: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    EventType?: EventTypeCreateNestedManyWithoutAvailabilityScheduleInput
+    eventTypes?: EventTypeCreateNestedManyWithoutAvailabilityScheduleInput
   }
 
   export type AvailabilityScheduleUncheckedCreateWithoutWeekDaysInput = {
@@ -16704,7 +17893,7 @@ export namespace Prisma {
     timezone: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    EventType?: EventTypeUncheckedCreateNestedManyWithoutAvailabilityScheduleInput
+    eventTypes?: EventTypeUncheckedCreateNestedManyWithoutAvailabilityScheduleInput
   }
 
   export type AvailabilityScheduleCreateOrConnectWithoutWeekDaysInput = {
@@ -16712,27 +17901,7 @@ export namespace Prisma {
     create: XOR<AvailabilityScheduleCreateWithoutWeekDaysInput, AvailabilityScheduleUncheckedCreateWithoutWeekDaysInput>
   }
 
-  export type TimeSelectCreateWithoutWeekDaysInput = {
-    startTime: Date | string
-    endTime: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type TimeSelectUncheckedCreateWithoutWeekDaysInput = {
-    id?: number
-    startTime: Date | string
-    endTime: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type TimeSelectCreateOrConnectWithoutWeekDaysInput = {
-    where: TimeSelectWhereUniqueInput
-    create: XOR<TimeSelectCreateWithoutWeekDaysInput, TimeSelectUncheckedCreateWithoutWeekDaysInput>
-  }
-
-  export type EventTypeCreateWithoutWeekdayInput = {
+  export type EventTypeCreateWithoutWeekDaysInput = {
     name: string
     description: string
     price: number
@@ -16741,11 +17910,11 @@ export namespace Prisma {
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutEventTypesInput
     eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutEventTypeInput
-    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutEventTypeInput
+    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutEventTypesInput
     groupMeetings?: GroupMeetingCreateNestedManyWithoutEventTypeInput
   }
 
-  export type EventTypeUncheckedCreateWithoutWeekdayInput = {
+  export type EventTypeUncheckedCreateWithoutWeekDaysInput = {
     id?: number
     name: string
     userId: number
@@ -16759,17 +17928,12 @@ export namespace Prisma {
     groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput
   }
 
-  export type EventTypeCreateOrConnectWithoutWeekdayInput = {
+  export type EventTypeCreateOrConnectWithoutWeekDaysInput = {
     where: EventTypeWhereUniqueInput
-    create: XOR<EventTypeCreateWithoutWeekdayInput, EventTypeUncheckedCreateWithoutWeekdayInput>
+    create: XOR<EventTypeCreateWithoutWeekDaysInput, EventTypeUncheckedCreateWithoutWeekDaysInput>
   }
 
-  export type EventTypeCreateManyWeekdayInputEnvelope = {
-    data: Enumerable<EventTypeCreateManyWeekdayInput>
-    skipDuplicates?: boolean
-  }
-
-  export type CustomerCreateWithoutWeekDayInput = {
+  export type CustomerCreateWithoutWeekDaysInput = {
     name: string
     email: string
     createdAt?: Date | string
@@ -16777,7 +17941,7 @@ export namespace Prisma {
     groupMeetings?: GroupMeetingCreateNestedManyWithoutCustomerInput
   }
 
-  export type CustomerUncheckedCreateWithoutWeekDayInput = {
+  export type CustomerUncheckedCreateWithoutWeekDaysInput = {
     id?: number
     name: string
     email: string
@@ -16786,9 +17950,32 @@ export namespace Prisma {
     groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutCustomerInput
   }
 
-  export type CustomerCreateOrConnectWithoutWeekDayInput = {
+  export type CustomerCreateOrConnectWithoutWeekDaysInput = {
     where: CustomerWhereUniqueInput
-    create: XOR<CustomerCreateWithoutWeekDayInput, CustomerUncheckedCreateWithoutWeekDayInput>
+    create: XOR<CustomerCreateWithoutWeekDaysInput, CustomerUncheckedCreateWithoutWeekDaysInput>
+  }
+
+  export type WeekDayOnTimeSelectCreateWithoutWeekdayInput = {
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    timeSelect: TimeSelectCreateNestedOneWithoutWeekDayOnTimeSelectInput
+  }
+
+  export type WeekDayOnTimeSelectUncheckedCreateWithoutWeekdayInput = {
+    id?: number
+    timeSelectId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WeekDayOnTimeSelectCreateOrConnectWithoutWeekdayInput = {
+    where: WeekDayOnTimeSelectWhereUniqueInput
+    create: XOR<WeekDayOnTimeSelectCreateWithoutWeekdayInput, WeekDayOnTimeSelectUncheckedCreateWithoutWeekdayInput>
+  }
+
+  export type WeekDayOnTimeSelectCreateManyWeekdayInputEnvelope = {
+    data: Enumerable<WeekDayOnTimeSelectCreateManyWeekdayInput>
+    skipDuplicates?: boolean
   }
 
   export type AvailabilityScheduleUpsertWithoutWeekDaysInput = {
@@ -16801,7 +17988,7 @@ export namespace Prisma {
     timezone?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    EventType?: EventTypeUpdateManyWithoutAvailabilityScheduleNestedInput
+    eventTypes?: EventTypeUpdateManyWithoutAvailabilityScheduleNestedInput
   }
 
   export type AvailabilityScheduleUncheckedUpdateWithoutWeekDaysInput = {
@@ -16810,51 +17997,47 @@ export namespace Prisma {
     timezone?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    EventType?: EventTypeUncheckedUpdateManyWithoutAvailabilityScheduleNestedInput
+    eventTypes?: EventTypeUncheckedUpdateManyWithoutAvailabilityScheduleNestedInput
   }
 
-  export type TimeSelectUpsertWithoutWeekDaysInput = {
-    update: XOR<TimeSelectUpdateWithoutWeekDaysInput, TimeSelectUncheckedUpdateWithoutWeekDaysInput>
-    create: XOR<TimeSelectCreateWithoutWeekDaysInput, TimeSelectUncheckedCreateWithoutWeekDaysInput>
+  export type EventTypeUpsertWithoutWeekDaysInput = {
+    update: XOR<EventTypeUpdateWithoutWeekDaysInput, EventTypeUncheckedUpdateWithoutWeekDaysInput>
+    create: XOR<EventTypeCreateWithoutWeekDaysInput, EventTypeUncheckedCreateWithoutWeekDaysInput>
   }
 
-  export type TimeSelectUpdateWithoutWeekDaysInput = {
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+  export type EventTypeUpdateWithoutWeekDaysInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
+    eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
+    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutEventTypesNestedInput
+    groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
   }
 
-  export type TimeSelectUncheckedUpdateWithoutWeekDaysInput = {
+  export type EventTypeUncheckedUpdateWithoutWeekDaysInput = {
     id?: IntFieldUpdateOperationsInput | number
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    userId?: IntFieldUpdateOperationsInput | number
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
+    groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
   }
 
-  export type EventTypeUpsertWithWhereUniqueWithoutWeekdayInput = {
-    where: EventTypeWhereUniqueInput
-    update: XOR<EventTypeUpdateWithoutWeekdayInput, EventTypeUncheckedUpdateWithoutWeekdayInput>
-    create: XOR<EventTypeCreateWithoutWeekdayInput, EventTypeUncheckedCreateWithoutWeekdayInput>
+  export type CustomerUpsertWithoutWeekDaysInput = {
+    update: XOR<CustomerUpdateWithoutWeekDaysInput, CustomerUncheckedUpdateWithoutWeekDaysInput>
+    create: XOR<CustomerCreateWithoutWeekDaysInput, CustomerUncheckedCreateWithoutWeekDaysInput>
   }
 
-  export type EventTypeUpdateWithWhereUniqueWithoutWeekdayInput = {
-    where: EventTypeWhereUniqueInput
-    data: XOR<EventTypeUpdateWithoutWeekdayInput, EventTypeUncheckedUpdateWithoutWeekdayInput>
-  }
-
-  export type EventTypeUpdateManyWithWhereWithoutWeekdayInput = {
-    where: EventTypeScalarWhereInput
-    data: XOR<EventTypeUpdateManyMutationInput, EventTypeUncheckedUpdateManyWithoutEventTypeInput>
-  }
-
-  export type CustomerUpsertWithoutWeekDayInput = {
-    update: XOR<CustomerUpdateWithoutWeekDayInput, CustomerUncheckedUpdateWithoutWeekDayInput>
-    create: XOR<CustomerCreateWithoutWeekDayInput, CustomerUncheckedCreateWithoutWeekDayInput>
-  }
-
-  export type CustomerUpdateWithoutWeekDayInput = {
+  export type CustomerUpdateWithoutWeekDaysInput = {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16862,7 +18045,7 @@ export namespace Prisma {
     groupMeetings?: GroupMeetingUpdateManyWithoutCustomerNestedInput
   }
 
-  export type CustomerUncheckedUpdateWithoutWeekDayInput = {
+  export type CustomerUncheckedUpdateWithoutWeekDaysInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
@@ -16871,53 +18054,70 @@ export namespace Prisma {
     groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
-  export type WeekDayCreateWithoutTimeSelectInput = {
-    day?: number | null
-    status?: string
-    date: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutWeekDaysInput
-    EventType?: EventTypeCreateNestedManyWithoutWeekdayInput
-    custormer?: CustomerCreateNestedOneWithoutWeekDayInput
+  export type WeekDayOnTimeSelectUpsertWithWhereUniqueWithoutWeekdayInput = {
+    where: WeekDayOnTimeSelectWhereUniqueInput
+    update: XOR<WeekDayOnTimeSelectUpdateWithoutWeekdayInput, WeekDayOnTimeSelectUncheckedUpdateWithoutWeekdayInput>
+    create: XOR<WeekDayOnTimeSelectCreateWithoutWeekdayInput, WeekDayOnTimeSelectUncheckedCreateWithoutWeekdayInput>
   }
 
-  export type WeekDayUncheckedCreateWithoutTimeSelectInput = {
+  export type WeekDayOnTimeSelectUpdateWithWhereUniqueWithoutWeekdayInput = {
+    where: WeekDayOnTimeSelectWhereUniqueInput
+    data: XOR<WeekDayOnTimeSelectUpdateWithoutWeekdayInput, WeekDayOnTimeSelectUncheckedUpdateWithoutWeekdayInput>
+  }
+
+  export type WeekDayOnTimeSelectUpdateManyWithWhereWithoutWeekdayInput = {
+    where: WeekDayOnTimeSelectScalarWhereInput
+    data: XOR<WeekDayOnTimeSelectUpdateManyMutationInput, WeekDayOnTimeSelectUncheckedUpdateManyWithoutWeekDayOnTimeSelectsInput>
+  }
+
+  export type WeekDayOnTimeSelectScalarWhereInput = {
+    AND?: Enumerable<WeekDayOnTimeSelectScalarWhereInput>
+    OR?: Enumerable<WeekDayOnTimeSelectScalarWhereInput>
+    NOT?: Enumerable<WeekDayOnTimeSelectScalarWhereInput>
+    id?: IntFilter | number
+    weekdayId?: IntFilter | number
+    timeSelectId?: IntFilter | number
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+  }
+
+  export type WeekDayOnTimeSelectCreateWithoutTimeSelectInput = {
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    weekday: WeekDayCreateNestedOneWithoutWeekDayOnTimeSelectsInput
+  }
+
+  export type WeekDayOnTimeSelectUncheckedCreateWithoutTimeSelectInput = {
     id?: number
-    day?: number | null
-    availabilityScheduleId?: number | null
-    status?: string
-    date: Date | string
-    custormerId?: number | null
+    weekdayId: number
     createdAt?: Date | string
     updatedAt?: Date | string
-    EventType?: EventTypeUncheckedCreateNestedManyWithoutWeekdayInput
   }
 
-  export type WeekDayCreateOrConnectWithoutTimeSelectInput = {
-    where: WeekDayWhereUniqueInput
-    create: XOR<WeekDayCreateWithoutTimeSelectInput, WeekDayUncheckedCreateWithoutTimeSelectInput>
+  export type WeekDayOnTimeSelectCreateOrConnectWithoutTimeSelectInput = {
+    where: WeekDayOnTimeSelectWhereUniqueInput
+    create: XOR<WeekDayOnTimeSelectCreateWithoutTimeSelectInput, WeekDayOnTimeSelectUncheckedCreateWithoutTimeSelectInput>
   }
 
-  export type WeekDayCreateManyTimeSelectInputEnvelope = {
-    data: Enumerable<WeekDayCreateManyTimeSelectInput>
+  export type WeekDayOnTimeSelectCreateManyTimeSelectInputEnvelope = {
+    data: Enumerable<WeekDayOnTimeSelectCreateManyTimeSelectInput>
     skipDuplicates?: boolean
   }
 
-  export type WeekDayUpsertWithWhereUniqueWithoutTimeSelectInput = {
-    where: WeekDayWhereUniqueInput
-    update: XOR<WeekDayUpdateWithoutTimeSelectInput, WeekDayUncheckedUpdateWithoutTimeSelectInput>
-    create: XOR<WeekDayCreateWithoutTimeSelectInput, WeekDayUncheckedCreateWithoutTimeSelectInput>
+  export type WeekDayOnTimeSelectUpsertWithWhereUniqueWithoutTimeSelectInput = {
+    where: WeekDayOnTimeSelectWhereUniqueInput
+    update: XOR<WeekDayOnTimeSelectUpdateWithoutTimeSelectInput, WeekDayOnTimeSelectUncheckedUpdateWithoutTimeSelectInput>
+    create: XOR<WeekDayOnTimeSelectCreateWithoutTimeSelectInput, WeekDayOnTimeSelectUncheckedCreateWithoutTimeSelectInput>
   }
 
-  export type WeekDayUpdateWithWhereUniqueWithoutTimeSelectInput = {
-    where: WeekDayWhereUniqueInput
-    data: XOR<WeekDayUpdateWithoutTimeSelectInput, WeekDayUncheckedUpdateWithoutTimeSelectInput>
+  export type WeekDayOnTimeSelectUpdateWithWhereUniqueWithoutTimeSelectInput = {
+    where: WeekDayOnTimeSelectWhereUniqueInput
+    data: XOR<WeekDayOnTimeSelectUpdateWithoutTimeSelectInput, WeekDayOnTimeSelectUncheckedUpdateWithoutTimeSelectInput>
   }
 
-  export type WeekDayUpdateManyWithWhereWithoutTimeSelectInput = {
-    where: WeekDayScalarWhereInput
-    data: XOR<WeekDayUpdateManyMutationInput, WeekDayUncheckedUpdateManyWithoutWeekDaysInput>
+  export type WeekDayOnTimeSelectUpdateManyWithWhereWithoutTimeSelectInput = {
+    where: WeekDayOnTimeSelectScalarWhereInput
+    data: XOR<WeekDayOnTimeSelectUpdateManyMutationInput, WeekDayOnTimeSelectUncheckedUpdateManyWithoutWeekDayOnTimeSelectInput>
   }
 
   export type GroupMeetingCreateWithoutCustomerInput = {
@@ -16952,26 +18152,24 @@ export namespace Prisma {
   }
 
   export type WeekDayCreateWithoutCustormerInput = {
-    day?: number | null
     status?: string
     date: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
     availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutWeekDaysInput
-    timeSelect: TimeSelectCreateNestedOneWithoutWeekDaysInput
-    EventType?: EventTypeCreateNestedManyWithoutWeekdayInput
+    eventType: EventTypeCreateNestedOneWithoutWeekDaysInput
+    weekDayOnTimeSelects?: WeekDayOnTimeSelectCreateNestedManyWithoutWeekdayInput
   }
 
   export type WeekDayUncheckedCreateWithoutCustormerInput = {
     id?: number
-    day?: number | null
     availabilityScheduleId?: number | null
-    timeSelectId: number
+    eventTypeId: number
     status?: string
     date: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
-    EventType?: EventTypeUncheckedCreateNestedManyWithoutWeekdayInput
+    weekDayOnTimeSelects?: WeekDayOnTimeSelectUncheckedCreateNestedManyWithoutWeekdayInput
   }
 
   export type WeekDayCreateOrConnectWithoutCustormerInput = {
@@ -17013,7 +18211,7 @@ export namespace Prisma {
 
   export type WeekDayUpdateManyWithWhereWithoutCustormerInput = {
     where: WeekDayScalarWhereInput
-    data: XOR<WeekDayUpdateManyMutationInput, WeekDayUncheckedUpdateManyWithoutWeekDayInput>
+    data: XOR<WeekDayUpdateManyMutationInput, WeekDayUncheckedUpdateManyWithoutWeekDaysInput>
   }
 
   export type UserCreateWithoutBillingsInput = {
@@ -17113,7 +18311,7 @@ export namespace Prisma {
     email: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    WeekDay?: WeekDayCreateNestedManyWithoutCustormerInput
+    weekDays?: WeekDayCreateNestedManyWithoutCustormerInput
   }
 
   export type CustomerUncheckedCreateWithoutGroupMeetingsInput = {
@@ -17122,7 +18320,7 @@ export namespace Prisma {
     email: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    WeekDay?: WeekDayUncheckedCreateNestedManyWithoutCustormerInput
+    weekDays?: WeekDayUncheckedCreateNestedManyWithoutCustormerInput
   }
 
   export type CustomerCreateOrConnectWithoutGroupMeetingsInput = {
@@ -17139,8 +18337,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutEventTypesInput
     eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutEventTypeInput
-    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutEventTypeInput
-    weekday: WeekDayCreateNestedOneWithoutEventTypeInput
+    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutEventTypesInput
+    weekDays?: WeekDayCreateNestedManyWithoutEventTypeInput
   }
 
   export type EventTypeUncheckedCreateWithoutGroupMeetingsInput = {
@@ -17151,10 +18349,10 @@ export namespace Prisma {
     price: number
     timeDuration: number
     availabilityScheduleId?: number | null
-    weekdayId: number
     createdAt?: Date | string
     updatedAt?: Date | string
     eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput
+    weekDays?: WeekDayUncheckedCreateNestedManyWithoutEventTypeInput
   }
 
   export type EventTypeCreateOrConnectWithoutGroupMeetingsInput = {
@@ -17215,7 +18413,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    WeekDay?: WeekDayUpdateManyWithoutCustormerNestedInput
+    weekDays?: WeekDayUpdateManyWithoutCustormerNestedInput
   }
 
   export type CustomerUncheckedUpdateWithoutGroupMeetingsInput = {
@@ -17224,7 +18422,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    WeekDay?: WeekDayUncheckedUpdateManyWithoutCustormerNestedInput
+    weekDays?: WeekDayUncheckedUpdateManyWithoutCustormerNestedInput
   }
 
   export type EventTypeUpsertWithoutGroupMeetingsInput = {
@@ -17241,8 +18439,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
     eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
-    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutEventTypeNestedInput
-    weekday?: WeekDayUpdateOneRequiredWithoutEventTypeNestedInput
+    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutEventTypesNestedInput
+    weekDays?: WeekDayUpdateManyWithoutEventTypeNestedInput
   }
 
   export type EventTypeUncheckedUpdateWithoutGroupMeetingsInput = {
@@ -17253,10 +18451,10 @@ export namespace Prisma {
     price?: IntFieldUpdateOperationsInput | number
     timeDuration?: IntFieldUpdateOperationsInput | number
     availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    weekdayId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
+    weekDays?: WeekDayUncheckedUpdateManyWithoutEventTypeNestedInput
   }
 
   export type UserOnGroupMeetingUpsertWithWhereUniqueWithoutGroupMeetingInput = {
@@ -17399,6 +18597,98 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type WeekDayCreateWithoutWeekDayOnTimeSelectsInput = {
+    status?: string
+    date: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutWeekDaysInput
+    eventType: EventTypeCreateNestedOneWithoutWeekDaysInput
+    custormer?: CustomerCreateNestedOneWithoutWeekDaysInput
+  }
+
+  export type WeekDayUncheckedCreateWithoutWeekDayOnTimeSelectsInput = {
+    id?: number
+    availabilityScheduleId?: number | null
+    eventTypeId: number
+    status?: string
+    date: Date | string
+    custormerId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WeekDayCreateOrConnectWithoutWeekDayOnTimeSelectsInput = {
+    where: WeekDayWhereUniqueInput
+    create: XOR<WeekDayCreateWithoutWeekDayOnTimeSelectsInput, WeekDayUncheckedCreateWithoutWeekDayOnTimeSelectsInput>
+  }
+
+  export type TimeSelectCreateWithoutWeekDayOnTimeSelectInput = {
+    startTime: number
+    endTime: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TimeSelectUncheckedCreateWithoutWeekDayOnTimeSelectInput = {
+    id?: number
+    startTime: number
+    endTime: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TimeSelectCreateOrConnectWithoutWeekDayOnTimeSelectInput = {
+    where: TimeSelectWhereUniqueInput
+    create: XOR<TimeSelectCreateWithoutWeekDayOnTimeSelectInput, TimeSelectUncheckedCreateWithoutWeekDayOnTimeSelectInput>
+  }
+
+  export type WeekDayUpsertWithoutWeekDayOnTimeSelectsInput = {
+    update: XOR<WeekDayUpdateWithoutWeekDayOnTimeSelectsInput, WeekDayUncheckedUpdateWithoutWeekDayOnTimeSelectsInput>
+    create: XOR<WeekDayCreateWithoutWeekDayOnTimeSelectsInput, WeekDayUncheckedCreateWithoutWeekDayOnTimeSelectsInput>
+  }
+
+  export type WeekDayUpdateWithoutWeekDayOnTimeSelectsInput = {
+    status?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutWeekDaysNestedInput
+    eventType?: EventTypeUpdateOneRequiredWithoutWeekDaysNestedInput
+    custormer?: CustomerUpdateOneWithoutWeekDaysNestedInput
+  }
+
+  export type WeekDayUncheckedUpdateWithoutWeekDayOnTimeSelectsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
+    eventTypeId?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    custormerId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TimeSelectUpsertWithoutWeekDayOnTimeSelectInput = {
+    update: XOR<TimeSelectUpdateWithoutWeekDayOnTimeSelectInput, TimeSelectUncheckedUpdateWithoutWeekDayOnTimeSelectInput>
+    create: XOR<TimeSelectCreateWithoutWeekDayOnTimeSelectInput, TimeSelectUncheckedCreateWithoutWeekDayOnTimeSelectInput>
+  }
+
+  export type TimeSelectUpdateWithoutWeekDayOnTimeSelectInput = {
+    startTime?: IntFieldUpdateOperationsInput | number
+    endTime?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TimeSelectUncheckedUpdateWithoutWeekDayOnTimeSelectInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    startTime?: IntFieldUpdateOperationsInput | number
+    endTime?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type EventTypeCreateManyUserInput = {
     id?: number
     name: string
@@ -17406,7 +18696,6 @@ export namespace Prisma {
     price: number
     timeDuration: number
     availabilityScheduleId?: number | null
-    weekdayId: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -17435,8 +18724,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
-    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutEventTypeNestedInput
-    weekday?: WeekDayUpdateOneRequiredWithoutEventTypeNestedInput
+    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutEventTypesNestedInput
+    weekDays?: WeekDayUpdateManyWithoutEventTypeNestedInput
     groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
   }
 
@@ -17447,10 +18736,10 @@ export namespace Prisma {
     price?: IntFieldUpdateOperationsInput | number
     timeDuration?: IntFieldUpdateOperationsInput | number
     availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    weekdayId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
+    weekDays?: WeekDayUncheckedUpdateManyWithoutEventTypeNestedInput
     groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
   }
 
@@ -17461,7 +18750,6 @@ export namespace Prisma {
     price?: IntFieldUpdateOperationsInput | number
     timeDuration?: IntFieldUpdateOperationsInput | number
     availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    weekdayId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -17519,6 +18807,16 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type WeekDayCreateManyEventTypeInput = {
+    id?: number
+    availabilityScheduleId?: number | null
+    status?: string
+    date: Date | string
+    custormerId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type GroupMeetingCreateManyEventTypeInput = {
     id?: number
     locationId: number
@@ -17545,6 +18843,37 @@ export namespace Prisma {
   export type EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeOnLocationsInput = {
     id?: IntFieldUpdateOperationsInput | number
     locationId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WeekDayUpdateWithoutEventTypeInput = {
+    status?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutWeekDaysNestedInput
+    custormer?: CustomerUpdateOneWithoutWeekDaysNestedInput
+    weekDayOnTimeSelects?: WeekDayOnTimeSelectUpdateManyWithoutWeekdayNestedInput
+  }
+
+  export type WeekDayUncheckedUpdateWithoutEventTypeInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    custormerId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    weekDayOnTimeSelects?: WeekDayOnTimeSelectUncheckedUpdateManyWithoutWeekdayNestedInput
+  }
+
+  export type WeekDayUncheckedUpdateManyWithoutWeekDaysInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    custormerId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -17638,15 +18967,13 @@ export namespace Prisma {
     description: string
     price: number
     timeDuration: number
-    weekdayId: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type WeekDayCreateManyAvailabilityScheduleInput = {
     id?: number
-    day?: number | null
-    timeSelectId: number
+    eventTypeId: number
     status?: string
     date: Date | string
     custormerId?: number | null
@@ -17663,7 +18990,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
     eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
-    weekday?: WeekDayUpdateOneRequiredWithoutEventTypeNestedInput
+    weekDays?: WeekDayUpdateManyWithoutEventTypeNestedInput
     groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
   }
 
@@ -17674,130 +19001,86 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     price?: IntFieldUpdateOperationsInput | number
     timeDuration?: IntFieldUpdateOperationsInput | number
-    weekdayId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
+    weekDays?: WeekDayUncheckedUpdateManyWithoutEventTypeNestedInput
     groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
   }
 
-  export type EventTypeUncheckedUpdateManyWithoutEventTypeInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    userId?: IntFieldUpdateOperationsInput | number
-    description?: StringFieldUpdateOperationsInput | string
-    price?: IntFieldUpdateOperationsInput | number
-    timeDuration?: IntFieldUpdateOperationsInput | number
-    weekdayId?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
   export type WeekDayUpdateWithoutAvailabilityScheduleInput = {
-    day?: NullableIntFieldUpdateOperationsInput | number | null
     status?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    timeSelect?: TimeSelectUpdateOneRequiredWithoutWeekDaysNestedInput
-    EventType?: EventTypeUpdateManyWithoutWeekdayNestedInput
-    custormer?: CustomerUpdateOneWithoutWeekDayNestedInput
+    eventType?: EventTypeUpdateOneRequiredWithoutWeekDaysNestedInput
+    custormer?: CustomerUpdateOneWithoutWeekDaysNestedInput
+    weekDayOnTimeSelects?: WeekDayOnTimeSelectUpdateManyWithoutWeekdayNestedInput
   }
 
   export type WeekDayUncheckedUpdateWithoutAvailabilityScheduleInput = {
     id?: IntFieldUpdateOperationsInput | number
-    day?: NullableIntFieldUpdateOperationsInput | number | null
-    timeSelectId?: IntFieldUpdateOperationsInput | number
+    eventTypeId?: IntFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     custormerId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    EventType?: EventTypeUncheckedUpdateManyWithoutWeekdayNestedInput
+    weekDayOnTimeSelects?: WeekDayOnTimeSelectUncheckedUpdateManyWithoutWeekdayNestedInput
   }
 
-  export type WeekDayUncheckedUpdateManyWithoutWeekDaysInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    day?: NullableIntFieldUpdateOperationsInput | number | null
-    timeSelectId?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    custormerId?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type EventTypeCreateManyWeekdayInput = {
+  export type WeekDayOnTimeSelectCreateManyWeekdayInput = {
     id?: number
-    name: string
-    userId: number
-    description: string
-    price: number
-    timeDuration: number
-    availabilityScheduleId?: number | null
+    timeSelectId: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type EventTypeUpdateWithoutWeekdayInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
-    price?: IntFieldUpdateOperationsInput | number
-    timeDuration?: IntFieldUpdateOperationsInput | number
+  export type WeekDayOnTimeSelectUpdateWithoutWeekdayInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
-    eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
-    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutEventTypeNestedInput
-    groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
+    timeSelect?: TimeSelectUpdateOneRequiredWithoutWeekDayOnTimeSelectNestedInput
   }
 
-  export type EventTypeUncheckedUpdateWithoutWeekdayInput = {
+  export type WeekDayOnTimeSelectUncheckedUpdateWithoutWeekdayInput = {
     id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    userId?: IntFieldUpdateOperationsInput | number
-    description?: StringFieldUpdateOperationsInput | string
-    price?: IntFieldUpdateOperationsInput | number
-    timeDuration?: IntFieldUpdateOperationsInput | number
-    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
+    timeSelectId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
-    groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
   }
 
-  export type WeekDayCreateManyTimeSelectInput = {
+  export type WeekDayOnTimeSelectUncheckedUpdateManyWithoutWeekDayOnTimeSelectsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    timeSelectId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WeekDayOnTimeSelectCreateManyTimeSelectInput = {
     id?: number
-    day?: number | null
-    availabilityScheduleId?: number | null
-    status?: string
-    date: Date | string
-    custormerId?: number | null
+    weekdayId: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type WeekDayUpdateWithoutTimeSelectInput = {
-    day?: NullableIntFieldUpdateOperationsInput | number | null
-    status?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
+  export type WeekDayOnTimeSelectUpdateWithoutTimeSelectInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutWeekDaysNestedInput
-    EventType?: EventTypeUpdateManyWithoutWeekdayNestedInput
-    custormer?: CustomerUpdateOneWithoutWeekDayNestedInput
+    weekday?: WeekDayUpdateOneRequiredWithoutWeekDayOnTimeSelectsNestedInput
   }
 
-  export type WeekDayUncheckedUpdateWithoutTimeSelectInput = {
+  export type WeekDayOnTimeSelectUncheckedUpdateWithoutTimeSelectInput = {
     id?: IntFieldUpdateOperationsInput | number
-    day?: NullableIntFieldUpdateOperationsInput | number | null
-    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    status?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    custormerId?: NullableIntFieldUpdateOperationsInput | number | null
+    weekdayId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    EventType?: EventTypeUncheckedUpdateManyWithoutWeekdayNestedInput
+  }
+
+  export type WeekDayOnTimeSelectUncheckedUpdateManyWithoutWeekDayOnTimeSelectInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    weekdayId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type GroupMeetingCreateManyCustomerInput = {
@@ -17812,9 +19095,8 @@ export namespace Prisma {
 
   export type WeekDayCreateManyCustormerInput = {
     id?: number
-    day?: number | null
     availabilityScheduleId?: number | null
-    timeSelectId: number
+    eventTypeId: number
     status?: string
     date: Date | string
     createdAt?: Date | string
@@ -17843,37 +19125,24 @@ export namespace Prisma {
   }
 
   export type WeekDayUpdateWithoutCustormerInput = {
-    day?: NullableIntFieldUpdateOperationsInput | number | null
     status?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutWeekDaysNestedInput
-    timeSelect?: TimeSelectUpdateOneRequiredWithoutWeekDaysNestedInput
-    EventType?: EventTypeUpdateManyWithoutWeekdayNestedInput
+    eventType?: EventTypeUpdateOneRequiredWithoutWeekDaysNestedInput
+    weekDayOnTimeSelects?: WeekDayOnTimeSelectUpdateManyWithoutWeekdayNestedInput
   }
 
   export type WeekDayUncheckedUpdateWithoutCustormerInput = {
     id?: IntFieldUpdateOperationsInput | number
-    day?: NullableIntFieldUpdateOperationsInput | number | null
     availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    timeSelectId?: IntFieldUpdateOperationsInput | number
+    eventTypeId?: IntFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    EventType?: EventTypeUncheckedUpdateManyWithoutWeekdayNestedInput
-  }
-
-  export type WeekDayUncheckedUpdateManyWithoutWeekDayInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    day?: NullableIntFieldUpdateOperationsInput | number | null
-    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    timeSelectId?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    weekDayOnTimeSelects?: WeekDayOnTimeSelectUncheckedUpdateManyWithoutWeekdayNestedInput
   }
 
   export type UserOnGroupMeetingCreateManyGroupMeetingInput = {
