@@ -1,4 +1,5 @@
 import * as t from "io-ts";
+import { optional, strict } from "io-ts-extra";
 
 export const CreateUserCodec = t.type({
   name: t.string,
@@ -8,7 +9,7 @@ export const CreateUserCodec = t.type({
 
 export interface ICreateUser extends t.TypeOf<typeof CreateUserCodec> {}
 
-export const CreateEventTypeCodec = t.type({
+export const CreateEventTypeCodec = t.strict({
   name: t.string,
   description: t.string,
   price: t.number,
@@ -21,18 +22,15 @@ export const CreateEventTypeCodec = t.type({
       endTime: t.number,
     })
   ),
-locations: t.array(t.type({
-  locationName: t.string,
-})),
+  locations: t.array(
+    t.type({
+      locationName: t.string,
+    })
+  ),
+  days: t.array(t.type({
+    dayName: t.string,
+  }))
 });
 
 export interface ICreateEventType
   extends t.TypeOf<typeof CreateEventTypeCodec> {}
-
-export const CreateTimeSelectCodec = t.type({
-  startTime: t.number,
-  endTime: t.number,
-});
-
-export interface ICreateTimeSelect
-  extends t.TypeOf<typeof CreateTimeSelectCodec> {}

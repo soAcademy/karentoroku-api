@@ -29,8 +29,8 @@ exports.AppRoutes = [
         action: karentoroku_handlers_1.createEventTypeHandler,
     },
     {
-        path: "/createTimeSelect",
+        path: "/getEventType",
         method: "post",
-        action: karentoroku_handlers_1.createTimeSelectHandler,
+        action: karentoroku_handlers_1.getEventTypeHandler,
     }
 ];

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { CreateEventTypeCodec, CreateTimeSelectCodec, CreateUserCodec } from "./karentoroku.interfaces";
-import { createEventType, createTimeSelect, createUser, getUserById, getUsers } from "./karentoroku.resolvers";
+import { CreateEventTypeCodec, CreateUserCodec } from "./karentoroku.interfaces";
+import { createEventType, createUser, getEventTypes, getUserById, getUsers } from "./karentoroku.resolvers";
 
 export const getIndexHandler = (req: Request, res: Response) => {
   res.setHeader("Content-Type", "text/html");
@@ -73,19 +73,6 @@ export const createEventTypeHandler = (req: Request, res: Response) => {
   }
 };
 
-export const createTimeSelectHandler = (req: Request, res: Response) => {
-  const body = req.body;
-  // console.log(body)
-  // console.log(CreateTimeSelectCodec.decode(body));
-  if (CreateTimeSelectCodec.decode(body)._tag === "Right") {
-    return createTimeSelect(body)
-      .then((response) => res.status(200).send(response))
-      .catch((error) => res.status(500).send(error));
-  } else {
-    res.status(500).send("Failed to validate codec");
-  }
-};
-
 // export const createLocationHandler = (req: Request, res: Response) => {
 //   const body = req.body;
 //   console.log(body)
@@ -98,3 +85,15 @@ export const createTimeSelectHandler = (req: Request, res: Response) => {
 //     res.status(500).send("Failed to validate codec");
 //   }
 // };
+
+export const getEventTypeHandler = async (req: Request, res: Response) => {
+  const body = req?.body;
+  try {
+    const result = await getEventTypes();
+    res.status(200).json(result);
+  } catch (e) {
+    res.status(500).json({
+      error: String(e),
+    });
+  }
+};

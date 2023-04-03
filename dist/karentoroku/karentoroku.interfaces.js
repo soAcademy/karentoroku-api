@@ -23,14 +23,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateTimeSelectCodec = exports.CreateEventTypeCodec = exports.CreateUserCodec = void 0;
+exports.CreateEventTypeCodec = exports.CreateUserCodec = void 0;
 const t = __importStar(require("io-ts"));
 exports.CreateUserCodec = t.type({
     name: t.string,
     username: t.string,
     idToken: t.string,
 });
-exports.CreateEventTypeCodec = t.type({
+exports.CreateEventTypeCodec = t.strict({
     name: t.string,
     description: t.string,
     price: t.number,
@@ -44,8 +44,7 @@ exports.CreateEventTypeCodec = t.type({
     locations: t.array(t.type({
         locationName: t.string,
     })),
-});
-exports.CreateTimeSelectCodec = t.type({
-    startTime: t.number,
-    endTime: t.number,
+    days: t.array(t.type({
+        dayName: t.string,
+    }))
 });

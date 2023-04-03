@@ -1,14 +1,13 @@
 import { PrismaClient } from "../../prisma/client";
 import {
   ICreateEventType,
-  ICreateTimeSelect,
   ICreateUser,
 } from "./karentoroku.interfaces";
 import { credential } from "firebase-admin";
 import { initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import serviceAccount from "../config/firebaseAdmin.json";
-import { date } from "fp-ts";
+
 
 const firebaseApp = initializeApp({
   credential: credential.cert({
@@ -62,19 +61,6 @@ export const getUserById = (args: { id: number }) => {
   });
 };
 
-export const createTimeSelect = (args: ICreateTimeSelect) => {
-  //   {
-  //   startTime: number;
-  //   endTime: number;
-  // }) => {
-  return prisma.timeSelect.create({
-    data: {
-      startTime: args.startTime,
-      endTime: args.endTime,
-    },
-  });
-};
-
 export const createLocation = (args: { name: string }) => {
   return prisma.location.create({
     data: {
@@ -95,25 +81,40 @@ export const createEventType = (args: ICreateEventType) => {
           id: args.userId,
         },
       },
-      weekDays: {
-        create: args.dates.map((d) => {
-          return {
-            date: new Date(d.date),
-            weekDayOnTimeSelects: {
-              create: args.timeSlots.map((t) => {
-                return {
-                  timeSelect: {
-                    create: {
-                      startTime: t.startTime,
-                      endTime: t.endTime,
-                    },
-                  },
-                };
-              }),
-            },
-          };
-        }),
-      },
+      daySlots:{
+        create: args.days.map((day) => {
+          return{
+            daySlot:{
+              create:{
+                name: day.dayName,
+                dateSlots:{
+                  create:args.dates.map((d) => {
+                    return {
+                      dateSlot:{
+                        create:{
+                          date: new Date(d.date),
+                          timeSelects:{
+                            create: args.timeSlots.map((t) => {
+                              return {
+                                timeSelect: {
+                                  create:{
+                                    startTime: t.startTime,
+                                    endTime: t.endTime,
+                                  }
+                                }
+                              }
+                            })
+                          }
+                        }
+                      }
+                    }
+                  })
+                }
+              }
+            }
+          }
+        })
+    },
       eventTypeOnLocations: {
         create: args.locations.map((l) => {
           return {
@@ -129,3 +130,6 @@ export const createEventType = (args: ICreateEventType) => {
     },
   });
 };
+
+export const getEventTypes = () =>
+prisma.eventType.findMany()

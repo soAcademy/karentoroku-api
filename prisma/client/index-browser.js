@@ -13,11 +13,11 @@ const Prisma = {}
 exports.Prisma = Prisma
 
 /**
- * Prisma Client JS version: 4.11.0
+ * Prisma Client JS version: 4.12.0
  * Query Engine version: 8fde8fef4033376662cad983758335009d522acb
  */
 Prisma.prismaVersion = {
-  client: "4.11.0",
+  client: "4.12.0",
   engine: "8fde8fef4033376662cad983758335009d522acb"
 }
 
@@ -115,6 +115,47 @@ exports.Prisma.CustomerScalarFieldEnum = makeEnum({
   updatedAt: 'updatedAt'
 });
 
+exports.Prisma.DateSlotOnTimeSelectScalarFieldEnum = makeEnum({
+  id: 'id',
+  dateSlotId: 'dateSlotId',
+  timeSelectId: 'timeSelectId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+});
+
+exports.Prisma.DateSlotScalarFieldEnum = makeEnum({
+  id: 'id',
+  availabilityScheduleId: 'availabilityScheduleId',
+  status: 'status',
+  date: 'date',
+  custormerId: 'custormerId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+});
+
+exports.Prisma.DaySlotOnDateSlotScalarFieldEnum = makeEnum({
+  id: 'id',
+  daySlotId: 'daySlotId',
+  dateSlotId: 'dateSlotId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+});
+
+exports.Prisma.DaySlotScalarFieldEnum = makeEnum({
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+});
+
+exports.Prisma.EventTypeOnDaySlotScalarFieldEnum = makeEnum({
+  id: 'id',
+  eventTypeId: 'eventTypeId',
+  daySlotId: 'daySlotId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+});
+
 exports.Prisma.EventTypeOnLocationScalarFieldEnum = makeEnum({
   id: 'id',
   eventTypeId: 'eventTypeId',
@@ -200,39 +241,23 @@ exports.Prisma.UserScalarFieldEnum = makeEnum({
   updatedAt: 'updatedAt'
 });
 
-exports.Prisma.WeekDayOnTimeSelectScalarFieldEnum = makeEnum({
-  id: 'id',
-  weekdayId: 'weekdayId',
-  timeSelectId: 'timeSelectId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-});
-
-exports.Prisma.WeekDayScalarFieldEnum = makeEnum({
-  id: 'id',
-  availabilityScheduleId: 'availabilityScheduleId',
-  eventTypeId: 'eventTypeId',
-  status: 'status',
-  date: 'date',
-  custormerId: 'custormerId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-});
-
 
 exports.Prisma.ModelName = makeEnum({
   User: 'User',
   EventType: 'EventType',
+  DaySlot: 'DaySlot',
+  DaySlotOnDateSlot: 'DaySlotOnDateSlot',
+  EventTypeOnDaySlot: 'EventTypeOnDaySlot',
   Location: 'Location',
   EventTypeOnLocation: 'EventTypeOnLocation',
   AvailabilitySchedule: 'AvailabilitySchedule',
-  WeekDay: 'WeekDay',
+  DateSlot: 'DateSlot',
   TimeSelect: 'TimeSelect',
   Customer: 'Customer',
   Billing: 'Billing',
   GroupMeeting: 'GroupMeeting',
   UserOnGroupMeeting: 'UserOnGroupMeeting',
-  WeekDayOnTimeSelect: 'WeekDayOnTimeSelect'
+  DateSlotOnTimeSelect: 'DateSlotOnTimeSelect'
 });
 
 /**

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createEventType = exports.createLocation = exports.createTimeSelect = exports.getUserById = exports.getUsers = exports.createUser = exports.prisma = void 0;
+exports.getEventTypes = exports.createEventType = exports.createLocation = exports.getUserById = exports.getUsers = exports.createUser = exports.prisma = void 0;
 const client_1 = require("../../prisma/client");
 const firebase_admin_1 = require("firebase-admin");
 const app_1 = require("firebase-admin/app");
@@ -59,19 +59,6 @@ const getUserById = (args) => {
     });
 };
 exports.getUserById = getUserById;
-const createTimeSelect = (args) => {
-    //   {
-    //   startTime: number;
-    //   endTime: number;
-    // }) => {
-    return exports.prisma.timeSelect.create({
-        data: {
-            startTime: args.startTime,
-            endTime: args.endTime,
-        },
-    });
-};
-exports.createTimeSelect = createTimeSelect;
 const createLocation = (args) => {
     return exports.prisma.location.create({
         data: {
@@ -92,24 +79,39 @@ const createEventType = (args) => {
                     id: args.userId,
                 },
             },
-            weekDays: {
-                create: args.dates.map((d) => {
+            daySlots: {
+                create: args.days.map((day) => {
                     return {
-                        date: new Date(d.date),
-                        weekDayOnTimeSelects: {
-                            create: args.timeSlots.map((t) => {
-                                return {
-                                    timeSelect: {
-                                        create: {
-                                            startTime: t.startTime,
-                                            endTime: t.endTime,
-                                        },
-                                    },
-                                };
-                            }),
-                        },
+                        daySlot: {
+                            create: {
+                                name: day.dayName,
+                                dateSlots: {
+                                    create: args.dates.map((d) => {
+                                        return {
+                                            dateSlot: {
+                                                create: {
+                                                    date: new Date(d.date),
+                                                    timeSelects: {
+                                                        create: args.timeSlots.map((t) => {
+                                                            return {
+                                                                timeSelect: {
+                                                                    create: {
+                                                                        startTime: t.startTime,
+                                                                        endTime: t.endTime,
+                                                                    }
+                                                                }
+                                                            };
+                                                        })
+                                                    }
+                                                }
+                                            }
+                                        };
+                                    })
+                                }
+                            }
+                        }
                     };
-                }),
+                })
             },
             eventTypeOnLocations: {
                 create: args.locations.map((l) => {
@@ -127,3 +129,5 @@ const createEventType = (args) => {
     });
 };
 exports.createEventType = createEventType;
+const getEventTypes = () => exports.prisma.eventType.findMany();
+exports.getEventTypes = getEventTypes;

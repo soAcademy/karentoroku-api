@@ -1,0 +1,43 @@
+"CreateEventType"
+
+{
+  "name": "Meeting1hr",
+  "description": "Test2",
+  "price": 500,
+  "timeDuration": 60,
+  "userId": 1,
+  "days": [
+      {
+          "dayName":"Monday"
+      },
+      {
+          "dayName":"Tuesday"
+      }
+  ],
+  "dates": [
+      {
+          "date": "2023-04-02"
+      },
+      {
+          "date": "2023-04-03"
+      }
+  ],
+  "timeSlots": [
+      {
+          "startTime": 600,
+          "endTime": 660
+      },
+      {
+          "startTime": 660,
+          "endTime": 720
+      }
+  ],
+  "locations": [
+      {
+          "locationName": "Zoom"
+      },
+      {
+          "locationName": "Team"
+      }
+  ]
+}

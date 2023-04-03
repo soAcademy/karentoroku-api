@@ -1,7 +1,7 @@
 import {
   createEventTypeHandler,
-  createTimeSelectHandler,
   createUserHandler,
+  getEventTypeHandler,
   getIndexHandler,
   getUserByIdHandler,
   getUsersHandler,
@@ -34,8 +34,8 @@ export const AppRoutes = [
     action: createEventTypeHandler,
   },
   {
-    path: "/createTimeSelect",
+    path: "/getEventType",
     method: "post",
-    action: createTimeSelectHandler,
+    action: getEventTypeHandler,
   }
 ];

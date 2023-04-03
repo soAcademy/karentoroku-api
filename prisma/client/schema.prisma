@@ -51,10 +51,39 @@ model EventType {
   timeDuration           Int
   availabilitySchedule   AvailabilitySchedule? @relation(fields: [availabilityScheduleId], references: [id])
   availabilityScheduleId Int?
-  weekDays               WeekDay[]
+  daySlots               EventTypeOnDaySlot[]
   groupMeetings          GroupMeeting[]
   createdAt              DateTime              @default(now())
   updatedAt              DateTime              @updatedAt
+}
+
+model DaySlot {
+  id             Int                  @id @default(autoincrement())
+  name           String               @unique
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  eventTypeSlots EventTypeOnDaySlot[]
+  dateSlots      DaySlotOnDateSlot[]
+}
+
+model DaySlotOnDateSlot {
+  id         Int      @id @default(autoincrement())
+  daySlot    DaySlot  @relation(fields: [daySlotId], references: [id])
+  daySlotId  Int
+  dateSlot   DateSlot @relation(fields: [dateSlotId], references: [id])
+  dateSlotId Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model EventTypeOnDaySlot {
+  id          Int       @id @default(autoincrement())
+  eventType   EventType @relation(fields: [eventTypeId], references: [id])
+  eventTypeId Int
+  daySlot     DaySlot   @relation(fields: [daySlotId], references: [id])
+  daySlotId   Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model Location {
@@ -81,33 +110,32 @@ model AvailabilitySchedule {
   name       String      @unique
   eventTypes EventType[]
   timezone   String
-  weekDays   WeekDay[]
+  dateSlots  DateSlot[]
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
 }
 
-model WeekDay {
-  id                     Int                   @id @default(autoincrement())
-  availabilitySchedule   AvailabilitySchedule? @relation(fields: [availabilityScheduleId], references: [id])
+model DateSlot {
+  id                     Int                    @id @default(autoincrement())
+  availabilitySchedule   AvailabilitySchedule?  @relation(fields: [availabilityScheduleId], references: [id])
   availabilityScheduleId Int?
-  eventType              EventType             @relation(fields: [eventTypeId], references: [id])
-  eventTypeId            Int
-  status                 String                @default("available")
+  status                 String                 @default("available")
   date                   DateTime
-  custormer              Customer?             @relation(fields: [custormerId], references: [id])
+  custormer              Customer?              @relation(fields: [custormerId], references: [id])
   custormerId            Int?
-  createdAt              DateTime              @default(now())
-  updatedAt              DateTime              @updatedAt
-  weekDayOnTimeSelects   WeekDayOnTimeSelect[]
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+  timeSelects            DateSlotOnTimeSelect[]
+  DaySlots               DaySlotOnDateSlot[]
 }
 
 model TimeSelect {
-  id                  Int                   @id @default(autoincrement())
-  startTime           Int
-  endTime             Int
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
-  WeekDayOnTimeSelect WeekDayOnTimeSelect[]
+  id        Int                    @id @default(autoincrement())
+  startTime Int
+  endTime   Int
+  createdAt DateTime               @default(now())
+  updatedAt DateTime               @updatedAt
+  dateSlots DateSlotOnTimeSelect[]
 }
 
 model Customer {
@@ -115,7 +143,7 @@ model Customer {
   name          String
   email         String         @unique
   groupMeetings GroupMeeting[]
-  weekDays      WeekDay[]
+  dateSlots     DateSlot[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 }
@@ -156,10 +184,10 @@ model UserOnGroupMeeting {
   updatedAt      DateTime     @updatedAt
 }
 
-model WeekDayOnTimeSelect {
+model DateSlotOnTimeSelect {
   id           Int        @id @default(autoincrement())
-  weekday      WeekDay    @relation(fields: [weekdayId], references: [id])
-  weekdayId    Int
+  dateSlot     DateSlot   @relation(fields: [dateSlotId], references: [id])
+  dateSlotId   Int
   timeSelect   TimeSelect @relation(fields: [timeSelectId], references: [id])
   timeSelectId Int
   createdAt    DateTime   @default(now())

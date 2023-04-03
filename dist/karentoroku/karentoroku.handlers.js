@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createTimeSelectHandler = exports.createEventTypeHandler = exports.getUserByIdHandler = exports.getUsersHandler = exports.createUserHandler = exports.getIndexHandler = void 0;
+exports.getEventTypeHandler = exports.createEventTypeHandler = exports.getUserByIdHandler = exports.getUsersHandler = exports.createUserHandler = exports.getIndexHandler = void 0;
 const karentoroku_interfaces_1 = require("./karentoroku.interfaces");
 const karentoroku_resolvers_1 = require("./karentoroku.resolvers");
 const getIndexHandler = (req, res) => {
@@ -86,20 +86,6 @@ const createEventTypeHandler = (req, res) => {
     }
 };
 exports.createEventTypeHandler = createEventTypeHandler;
-const createTimeSelectHandler = (req, res) => {
-    const body = req.body;
-    // console.log(body)
-    // console.log(CreateTimeSelectCodec.decode(body));
-    if (karentoroku_interfaces_1.CreateTimeSelectCodec.decode(body)._tag === "Right") {
-        return (0, karentoroku_resolvers_1.createTimeSelect)(body)
-            .then((response) => res.status(200).send(response))
-            .catch((error) => res.status(500).send(error));
-    }
-    else {
-        res.status(500).send("Failed to validate codec");
-    }
-};
-exports.createTimeSelectHandler = createTimeSelectHandler;
 // export const createLocationHandler = (req: Request, res: Response) => {
 //   const body = req.body;
 //   console.log(body)
@@ -112,3 +98,16 @@ exports.createTimeSelectHandler = createTimeSelectHandler;
 //     res.status(500).send("Failed to validate codec");
 //   }
 // };
+const getEventTypeHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const body = req === null || req === void 0 ? void 0 : req.body;
+    try {
+        const result = yield (0, karentoroku_resolvers_1.getEventTypes)();
+        res.status(200).json(result);
+    }
+    catch (e) {
+        res.status(500).json({
+            error: String(e),
+        });
+    }
+});
+exports.getEventTypeHandler = getEventTypeHandler;
