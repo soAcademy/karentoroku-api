@@ -9,7 +9,7 @@ export const CreateUserCodec = t.type({
 
 export interface ICreateUser extends t.TypeOf<typeof CreateUserCodec> {}
 
-export const CreateEventTypeCodec = t.strict({
+export const CreateEventTypeCodec = t.type({
   name: t.string,
   description: t.string,
   price: t.number,

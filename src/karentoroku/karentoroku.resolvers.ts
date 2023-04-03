@@ -131,5 +131,6 @@ export const createEventType = (args: ICreateEventType) => {
   });
 };
 
-export const getEventTypes = () =>
+export const getEventTypes = () => {
 prisma.eventType.findMany()
+}

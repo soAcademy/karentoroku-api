@@ -119,6 +119,7 @@ exports.Prisma.DateSlotOnTimeSelectScalarFieldEnum = makeEnum({
   id: 'id',
   dateSlotId: 'dateSlotId',
   timeSelectId: 'timeSelectId',
+  status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 });
@@ -126,7 +127,6 @@ exports.Prisma.DateSlotOnTimeSelectScalarFieldEnum = makeEnum({
 exports.Prisma.DateSlotScalarFieldEnum = makeEnum({
   id: 'id',
   availabilityScheduleId: 'availabilityScheduleId',
-  status: 'status',
   date: 'date',
   custormerId: 'custormerId',
   createdAt: 'createdAt',

@@ -123,7 +123,6 @@ export type AvailabilitySchedule = {
 export type DateSlot = {
   id: number
   availabilityScheduleId: number | null
-  status: string
   date: Date
   custormerId: number | null
   createdAt: Date
@@ -203,6 +202,7 @@ export type DateSlotOnTimeSelect = {
   id: number
   dateSlotId: number
   timeSelectId: number
+  status: string
   createdAt: Date
   updatedAt: Date
 }
@@ -9723,7 +9723,6 @@ export namespace Prisma {
   export type DateSlotMinAggregateOutputType = {
     id: number | null
     availabilityScheduleId: number | null
-    status: string | null
     date: Date | null
     custormerId: number | null
     createdAt: Date | null
@@ -9733,7 +9732,6 @@ export namespace Prisma {
   export type DateSlotMaxAggregateOutputType = {
     id: number | null
     availabilityScheduleId: number | null
-    status: string | null
     date: Date | null
     custormerId: number | null
     createdAt: Date | null
@@ -9743,7 +9741,6 @@ export namespace Prisma {
   export type DateSlotCountAggregateOutputType = {
     id: number
     availabilityScheduleId: number
-    status: number
     date: number
     custormerId: number
     createdAt: number
@@ -9767,7 +9764,6 @@ export namespace Prisma {
   export type DateSlotMinAggregateInputType = {
     id?: true
     availabilityScheduleId?: true
-    status?: true
     date?: true
     custormerId?: true
     createdAt?: true
@@ -9777,7 +9773,6 @@ export namespace Prisma {
   export type DateSlotMaxAggregateInputType = {
     id?: true
     availabilityScheduleId?: true
-    status?: true
     date?: true
     custormerId?: true
     createdAt?: true
@@ -9787,7 +9782,6 @@ export namespace Prisma {
   export type DateSlotCountAggregateInputType = {
     id?: true
     availabilityScheduleId?: true
-    status?: true
     date?: true
     custormerId?: true
     createdAt?: true
@@ -9885,7 +9879,6 @@ export namespace Prisma {
   export type DateSlotGroupByOutputType = {
     id: number
     availabilityScheduleId: number | null
-    status: string
     date: Date
     custormerId: number | null
     createdAt: Date
@@ -9914,7 +9907,6 @@ export namespace Prisma {
   export type DateSlotSelect = {
     id?: boolean
     availabilityScheduleId?: boolean
-    status?: boolean
     date?: boolean
     custormerId?: boolean
     createdAt?: boolean
@@ -15812,6 +15804,7 @@ export namespace Prisma {
     id: number | null
     dateSlotId: number | null
     timeSelectId: number | null
+    status: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -15820,6 +15813,7 @@ export namespace Prisma {
     id: number | null
     dateSlotId: number | null
     timeSelectId: number | null
+    status: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -15828,6 +15822,7 @@ export namespace Prisma {
     id: number
     dateSlotId: number
     timeSelectId: number
+    status: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -15850,6 +15845,7 @@ export namespace Prisma {
     id?: true
     dateSlotId?: true
     timeSelectId?: true
+    status?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -15858,6 +15854,7 @@ export namespace Prisma {
     id?: true
     dateSlotId?: true
     timeSelectId?: true
+    status?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -15866,6 +15863,7 @@ export namespace Prisma {
     id?: true
     dateSlotId?: true
     timeSelectId?: true
+    status?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -15962,6 +15960,7 @@ export namespace Prisma {
     id: number
     dateSlotId: number
     timeSelectId: number
+    status: string
     createdAt: Date
     updatedAt: Date
     _count: DateSlotOnTimeSelectCountAggregateOutputType | null
@@ -15989,6 +15988,7 @@ export namespace Prisma {
     id?: boolean
     dateSlotId?: boolean
     timeSelectId?: boolean
+    status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     dateSlot?: boolean | DateSlotArgs
@@ -16808,6 +16808,7 @@ export namespace Prisma {
     id: 'id',
     dateSlotId: 'dateSlotId',
     timeSelectId: 'timeSelectId',
+    status: 'status',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -16818,7 +16819,6 @@ export namespace Prisma {
   export const DateSlotScalarFieldEnum: {
     id: 'id',
     availabilityScheduleId: 'availabilityScheduleId',
-    status: 'status',
     date: 'date',
     custormerId: 'custormerId',
     createdAt: 'createdAt',
@@ -17441,7 +17441,6 @@ export namespace Prisma {
     NOT?: Enumerable<DateSlotWhereInput>
     id?: IntFilter | number
     availabilityScheduleId?: IntNullableFilter | number | null
-    status?: StringFilter | string
     date?: DateTimeFilter | Date | string
     custormerId?: IntNullableFilter | number | null
     createdAt?: DateTimeFilter | Date | string
@@ -17455,7 +17454,6 @@ export namespace Prisma {
   export type DateSlotOrderByWithRelationInput = {
     id?: SortOrder
     availabilityScheduleId?: SortOrder
-    status?: SortOrder
     date?: SortOrder
     custormerId?: SortOrder
     createdAt?: SortOrder
@@ -17473,7 +17471,6 @@ export namespace Prisma {
   export type DateSlotOrderByWithAggregationInput = {
     id?: SortOrder
     availabilityScheduleId?: SortOrder
-    status?: SortOrder
     date?: SortOrder
     custormerId?: SortOrder
     createdAt?: SortOrder
@@ -17491,7 +17488,6 @@ export namespace Prisma {
     NOT?: Enumerable<DateSlotScalarWhereWithAggregatesInput>
     id?: IntWithAggregatesFilter | number
     availabilityScheduleId?: IntNullableWithAggregatesFilter | number | null
-    status?: StringWithAggregatesFilter | string
     date?: DateTimeWithAggregatesFilter | Date | string
     custormerId?: IntNullableWithAggregatesFilter | number | null
     createdAt?: DateTimeWithAggregatesFilter | Date | string
@@ -17781,6 +17777,7 @@ export namespace Prisma {
     id?: IntFilter | number
     dateSlotId?: IntFilter | number
     timeSelectId?: IntFilter | number
+    status?: StringFilter | string
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
     dateSlot?: XOR<DateSlotRelationFilter, DateSlotWhereInput>
@@ -17791,6 +17788,7 @@ export namespace Prisma {
     id?: SortOrder
     dateSlotId?: SortOrder
     timeSelectId?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     dateSlot?: DateSlotOrderByWithRelationInput
@@ -17805,6 +17803,7 @@ export namespace Prisma {
     id?: SortOrder
     dateSlotId?: SortOrder
     timeSelectId?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: DateSlotOnTimeSelectCountOrderByAggregateInput
@@ -17821,6 +17820,7 @@ export namespace Prisma {
     id?: IntWithAggregatesFilter | number
     dateSlotId?: IntWithAggregatesFilter | number
     timeSelectId?: IntWithAggregatesFilter | number
+    status?: StringWithAggregatesFilter | string
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
   }
@@ -18346,7 +18346,6 @@ export namespace Prisma {
   }
 
   export type DateSlotCreateInput = {
-    status?: string
     date: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -18359,7 +18358,6 @@ export namespace Prisma {
   export type DateSlotUncheckedCreateInput = {
     id?: number
     availabilityScheduleId?: number | null
-    status?: string
     date: Date | string
     custormerId?: number | null
     createdAt?: Date | string
@@ -18369,7 +18367,6 @@ export namespace Prisma {
   }
 
   export type DateSlotUpdateInput = {
-    status?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -18382,7 +18379,6 @@ export namespace Prisma {
   export type DateSlotUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    status?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     custormerId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -18394,7 +18390,6 @@ export namespace Prisma {
   export type DateSlotCreateManyInput = {
     id?: number
     availabilityScheduleId?: number | null
-    status?: string
     date: Date | string
     custormerId?: number | null
     createdAt?: Date | string
@@ -18402,7 +18397,6 @@ export namespace Prisma {
   }
 
   export type DateSlotUpdateManyMutationInput = {
-    status?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -18411,7 +18405,6 @@ export namespace Prisma {
   export type DateSlotUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    status?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     custormerId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -18729,6 +18722,7 @@ export namespace Prisma {
   }
 
   export type DateSlotOnTimeSelectCreateInput = {
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     dateSlot: DateSlotCreateNestedOneWithoutTimeSelectsInput
@@ -18739,11 +18733,13 @@ export namespace Prisma {
     id?: number
     dateSlotId: number
     timeSelectId: number
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type DateSlotOnTimeSelectUpdateInput = {
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dateSlot?: DateSlotUpdateOneRequiredWithoutTimeSelectsNestedInput
@@ -18754,6 +18750,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     dateSlotId?: IntFieldUpdateOperationsInput | number
     timeSelectId?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18762,11 +18759,13 @@ export namespace Prisma {
     id?: number
     dateSlotId: number
     timeSelectId: number
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type DateSlotOnTimeSelectUpdateManyMutationInput = {
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18775,6 +18774,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     dateSlotId?: IntFieldUpdateOperationsInput | number
     timeSelectId?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -19352,7 +19352,6 @@ export namespace Prisma {
   export type DateSlotCountOrderByAggregateInput = {
     id?: SortOrder
     availabilityScheduleId?: SortOrder
-    status?: SortOrder
     date?: SortOrder
     custormerId?: SortOrder
     createdAt?: SortOrder
@@ -19368,7 +19367,6 @@ export namespace Prisma {
   export type DateSlotMaxOrderByAggregateInput = {
     id?: SortOrder
     availabilityScheduleId?: SortOrder
-    status?: SortOrder
     date?: SortOrder
     custormerId?: SortOrder
     createdAt?: SortOrder
@@ -19378,7 +19376,6 @@ export namespace Prisma {
   export type DateSlotMinOrderByAggregateInput = {
     id?: SortOrder
     availabilityScheduleId?: SortOrder
-    status?: SortOrder
     date?: SortOrder
     custormerId?: SortOrder
     createdAt?: SortOrder
@@ -19602,6 +19599,7 @@ export namespace Prisma {
     id?: SortOrder
     dateSlotId?: SortOrder
     timeSelectId?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -19616,6 +19614,7 @@ export namespace Prisma {
     id?: SortOrder
     dateSlotId?: SortOrder
     timeSelectId?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -19624,6 +19623,7 @@ export namespace Prisma {
     id?: SortOrder
     dateSlotId?: SortOrder
     timeSelectId?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -21400,7 +21400,6 @@ export namespace Prisma {
   }
 
   export type DateSlotCreateWithoutDaySlotsInput = {
-    status?: string
     date: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -21412,7 +21411,6 @@ export namespace Prisma {
   export type DateSlotUncheckedCreateWithoutDaySlotsInput = {
     id?: number
     availabilityScheduleId?: number | null
-    status?: string
     date: Date | string
     custormerId?: number | null
     createdAt?: Date | string
@@ -21451,7 +21449,6 @@ export namespace Prisma {
   }
 
   export type DateSlotUpdateWithoutDaySlotsInput = {
-    status?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21463,7 +21460,6 @@ export namespace Prisma {
   export type DateSlotUncheckedUpdateWithoutDaySlotsInput = {
     id?: IntFieldUpdateOperationsInput | number
     availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    status?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     custormerId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21803,7 +21799,6 @@ export namespace Prisma {
   }
 
   export type DateSlotCreateWithoutAvailabilityScheduleInput = {
-    status?: string
     date: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -21814,7 +21809,6 @@ export namespace Prisma {
 
   export type DateSlotUncheckedCreateWithoutAvailabilityScheduleInput = {
     id?: number
-    status?: string
     date: Date | string
     custormerId?: number | null
     createdAt?: Date | string
@@ -21871,7 +21865,6 @@ export namespace Prisma {
     NOT?: Enumerable<DateSlotScalarWhereInput>
     id?: IntFilter | number
     availabilityScheduleId?: IntNullableFilter | number | null
-    status?: StringFilter | string
     date?: DateTimeFilter | Date | string
     custormerId?: IntNullableFilter | number | null
     createdAt?: DateTimeFilter | Date | string
@@ -21923,6 +21916,7 @@ export namespace Prisma {
   }
 
   export type DateSlotOnTimeSelectCreateWithoutDateSlotInput = {
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     timeSelect: TimeSelectCreateNestedOneWithoutDateSlotsInput
@@ -21931,6 +21925,7 @@ export namespace Prisma {
   export type DateSlotOnTimeSelectUncheckedCreateWithoutDateSlotInput = {
     id?: number
     timeSelectId: number
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -22035,6 +22030,7 @@ export namespace Prisma {
     id?: IntFilter | number
     dateSlotId?: IntFilter | number
     timeSelectId?: IntFilter | number
+    status?: StringFilter | string
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
   }
@@ -22056,6 +22052,7 @@ export namespace Prisma {
   }
 
   export type DateSlotOnTimeSelectCreateWithoutTimeSelectInput = {
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     dateSlot: DateSlotCreateNestedOneWithoutTimeSelectsInput
@@ -22064,6 +22061,7 @@ export namespace Prisma {
   export type DateSlotOnTimeSelectUncheckedCreateWithoutTimeSelectInput = {
     id?: number
     dateSlotId: number
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -22126,7 +22124,6 @@ export namespace Prisma {
   }
 
   export type DateSlotCreateWithoutCustormerInput = {
-    status?: string
     date: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -22138,7 +22135,6 @@ export namespace Prisma {
   export type DateSlotUncheckedCreateWithoutCustormerInput = {
     id?: number
     availabilityScheduleId?: number | null
-    status?: string
     date: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -22572,7 +22568,6 @@ export namespace Prisma {
   }
 
   export type DateSlotCreateWithoutTimeSelectsInput = {
-    status?: string
     date: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -22584,7 +22579,6 @@ export namespace Prisma {
   export type DateSlotUncheckedCreateWithoutTimeSelectsInput = {
     id?: number
     availabilityScheduleId?: number | null
-    status?: string
     date: Date | string
     custormerId?: number | null
     createdAt?: Date | string
@@ -22623,7 +22617,6 @@ export namespace Prisma {
   }
 
   export type DateSlotUpdateWithoutTimeSelectsInput = {
-    status?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -22635,7 +22628,6 @@ export namespace Prisma {
   export type DateSlotUncheckedUpdateWithoutTimeSelectsInput = {
     id?: IntFieldUpdateOperationsInput | number
     availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    status?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     custormerId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -22987,7 +22979,6 @@ export namespace Prisma {
 
   export type DateSlotCreateManyAvailabilityScheduleInput = {
     id?: number
-    status?: string
     date: Date | string
     custormerId?: number | null
     createdAt?: Date | string
@@ -23022,7 +23013,6 @@ export namespace Prisma {
   }
 
   export type DateSlotUpdateWithoutAvailabilityScheduleInput = {
-    status?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23033,7 +23023,6 @@ export namespace Prisma {
 
   export type DateSlotUncheckedUpdateWithoutAvailabilityScheduleInput = {
     id?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     custormerId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23044,7 +23033,6 @@ export namespace Prisma {
 
   export type DateSlotUncheckedUpdateManyWithoutDateSlotsInput = {
     id?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     custormerId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23054,6 +23042,7 @@ export namespace Prisma {
   export type DateSlotOnTimeSelectCreateManyDateSlotInput = {
     id?: number
     timeSelectId: number
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -23066,6 +23055,7 @@ export namespace Prisma {
   }
 
   export type DateSlotOnTimeSelectUpdateWithoutDateSlotInput = {
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     timeSelect?: TimeSelectUpdateOneRequiredWithoutDateSlotsNestedInput
@@ -23074,6 +23064,7 @@ export namespace Prisma {
   export type DateSlotOnTimeSelectUncheckedUpdateWithoutDateSlotInput = {
     id?: IntFieldUpdateOperationsInput | number
     timeSelectId?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -23081,6 +23072,7 @@ export namespace Prisma {
   export type DateSlotOnTimeSelectUncheckedUpdateManyWithoutTimeSelectsInput = {
     id?: IntFieldUpdateOperationsInput | number
     timeSelectId?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -23108,11 +23100,13 @@ export namespace Prisma {
   export type DateSlotOnTimeSelectCreateManyTimeSelectInput = {
     id?: number
     dateSlotId: number
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type DateSlotOnTimeSelectUpdateWithoutTimeSelectInput = {
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dateSlot?: DateSlotUpdateOneRequiredWithoutTimeSelectsNestedInput
@@ -23121,6 +23115,7 @@ export namespace Prisma {
   export type DateSlotOnTimeSelectUncheckedUpdateWithoutTimeSelectInput = {
     id?: IntFieldUpdateOperationsInput | number
     dateSlotId?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -23128,6 +23123,7 @@ export namespace Prisma {
   export type DateSlotOnTimeSelectUncheckedUpdateManyWithoutDateSlotsInput = {
     id?: IntFieldUpdateOperationsInput | number
     dateSlotId?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -23145,7 +23141,6 @@ export namespace Prisma {
   export type DateSlotCreateManyCustormerInput = {
     id?: number
     availabilityScheduleId?: number | null
-    status?: string
     date: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -23173,7 +23168,6 @@ export namespace Prisma {
   }
 
   export type DateSlotUpdateWithoutCustormerInput = {
-    status?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23185,7 +23179,6 @@ export namespace Prisma {
   export type DateSlotUncheckedUpdateWithoutCustormerInput = {
     id?: IntFieldUpdateOperationsInput | number
     availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    status?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

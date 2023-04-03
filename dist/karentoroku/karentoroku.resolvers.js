@@ -129,5 +129,7 @@ const createEventType = (args) => {
     });
 };
 exports.createEventType = createEventType;
-const getEventTypes = () => exports.prisma.eventType.findMany();
+const getEventTypes = () => {
+    exports.prisma.eventType.findMany();
+};
 exports.getEventTypes = getEventTypes;

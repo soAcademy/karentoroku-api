@@ -30,7 +30,7 @@ exports.CreateUserCodec = t.type({
     username: t.string,
     idToken: t.string,
 });
-exports.CreateEventTypeCodec = t.strict({
+exports.CreateEventTypeCodec = t.type({
     name: t.string,
     description: t.string,
     price: t.number,
