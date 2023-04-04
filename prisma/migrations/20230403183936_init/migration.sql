@@ -23,13 +23,21 @@ CREATE TABLE "EventType" (
     "description" TEXT NOT NULL,
     "price" INTEGER NOT NULL,
     "timeDuration" INTEGER NOT NULL,
-    "calendarSelectId" INTEGER NOT NULL,
-    "customerId" INTEGER NOT NULL,
-    "status" TEXT NOT NULL,
+    "availabilityScheduleId" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "EventType_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "DaySlot" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "DaySlot_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -57,7 +65,6 @@ CREATE TABLE "EventTypeOnLocation" (
 CREATE TABLE "AvailabilitySchedule" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
-    "eventTypeId" INTEGER NOT NULL,
     "timezone" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -66,29 +73,37 @@ CREATE TABLE "AvailabilitySchedule" (
 );
 
 -- CreateTable
-CREATE TABLE "WeekDay" (
+CREATE TABLE "DateSlot" (
     "id" SERIAL NOT NULL,
-    "day" INTEGER NOT NULL,
     "availabilityScheduleId" INTEGER,
-    "timeSelectId" INTEGER NOT NULL,
-    "eventTypeId" INTEGER,
-    "status" TEXT NOT NULL,
     "date" TIMESTAMP(3) NOT NULL,
+    "custormerId" INTEGER,
+    "eventId" INTEGER NOT NULL,
+    "dayName" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "WeekDay_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "DateSlot_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "TimeSelect" (
+CREATE TABLE "DateOnTimeSlot" (
     "id" SERIAL NOT NULL,
-    "startTime" TIMESTAMP(3) NOT NULL,
-    "endTime" TIMESTAMP(3) NOT NULL,
+    "timeSlotId" INTEGER NOT NULL,
+    "dateSlotId" INTEGER NOT NULL,
+
+    CONSTRAINT "DateOnTimeSlot_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "TimeSlot" (
+    "id" SERIAL NOT NULL,
+    "startTime" INTEGER NOT NULL,
+    "endTime" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "TimeSelect_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "TimeSlot_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -100,17 +115,6 @@ CREATE TABLE "Customer" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Customer_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "CalendarSelect" (
-    "id" SERIAL NOT NULL,
-    "startDate" TIMESTAMP(3) NOT NULL,
-    "endDate" TIMESTAMP(3) NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "CalendarSelect_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -141,20 +145,6 @@ CREATE TABLE "GroupMeeting" (
 );
 
 -- CreateTable
-CREATE TABLE "EventSelect" (
-    "id" SERIAL NOT NULL,
-    "eventTypeId" INTEGER NOT NULL,
-    "customerId" INTEGER NOT NULL,
-    "selectDate" TEXT NOT NULL,
-    "selectTime" TIMESTAMP(3) NOT NULL,
-    "status" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "EventSelect_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "UserOnGroupMeeting" (
     "id" SERIAL NOT NULL,
     "userId" INTEGER NOT NULL,
@@ -171,14 +161,35 @@ CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
 -- CreateIndex
 CREATE UNIQUE INDEX "User_firebaseUid_key" ON "User"("firebaseUid");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "User_mobileNumber_key" ON "User"("mobileNumber");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_userLink_key" ON "User"("userLink");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "EventType_userId_name_key" ON "EventType"("userId", "name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "DaySlot_name_key" ON "DaySlot"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Location_name_key" ON "Location"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "AvailabilitySchedule_name_key" ON "AvailabilitySchedule"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "TimeSlot_startTime_endTime_key" ON "TimeSlot"("startTime", "endTime");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Customer_email_key" ON "Customer"("email");
+
 -- AddForeignKey
 ALTER TABLE "EventType" ADD CONSTRAINT "EventType_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EventType" ADD CONSTRAINT "EventType_calendarSelectId_fkey" FOREIGN KEY ("calendarSelectId") REFERENCES "CalendarSelect"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "EventType" ADD CONSTRAINT "EventType_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "EventType" ADD CONSTRAINT "EventType_availabilityScheduleId_fkey" FOREIGN KEY ("availabilityScheduleId") REFERENCES "AvailabilitySchedule"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "EventTypeOnLocation" ADD CONSTRAINT "EventTypeOnLocation_eventTypeId_fkey" FOREIGN KEY ("eventTypeId") REFERENCES "EventType"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -187,16 +198,22 @@ ALTER TABLE "EventTypeOnLocation" ADD CONSTRAINT "EventTypeOnLocation_eventTypeI
 ALTER TABLE "EventTypeOnLocation" ADD CONSTRAINT "EventTypeOnLocation_locationId_fkey" FOREIGN KEY ("locationId") REFERENCES "Location"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "AvailabilitySchedule" ADD CONSTRAINT "AvailabilitySchedule_eventTypeId_fkey" FOREIGN KEY ("eventTypeId") REFERENCES "EventType"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "DateSlot" ADD CONSTRAINT "DateSlot_availabilityScheduleId_fkey" FOREIGN KEY ("availabilityScheduleId") REFERENCES "AvailabilitySchedule"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "WeekDay" ADD CONSTRAINT "WeekDay_availabilityScheduleId_fkey" FOREIGN KEY ("availabilityScheduleId") REFERENCES "AvailabilitySchedule"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "DateSlot" ADD CONSTRAINT "DateSlot_custormerId_fkey" FOREIGN KEY ("custormerId") REFERENCES "Customer"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "WeekDay" ADD CONSTRAINT "WeekDay_timeSelectId_fkey" FOREIGN KEY ("timeSelectId") REFERENCES "TimeSelect"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "DateSlot" ADD CONSTRAINT "DateSlot_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "EventType"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "WeekDay" ADD CONSTRAINT "WeekDay_eventTypeId_fkey" FOREIGN KEY ("eventTypeId") REFERENCES "EventType"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "DateSlot" ADD CONSTRAINT "DateSlot_dayName_fkey" FOREIGN KEY ("dayName") REFERENCES "DaySlot"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "DateOnTimeSlot" ADD CONSTRAINT "DateOnTimeSlot_timeSlotId_fkey" FOREIGN KEY ("timeSlotId") REFERENCES "TimeSlot"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "DateOnTimeSlot" ADD CONSTRAINT "DateOnTimeSlot_dateSlotId_fkey" FOREIGN KEY ("dateSlotId") REFERENCES "DateSlot"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Billing" ADD CONSTRAINT "Billing_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -209,12 +226,6 @@ ALTER TABLE "GroupMeeting" ADD CONSTRAINT "GroupMeeting_customerId_fkey" FOREIGN
 
 -- AddForeignKey
 ALTER TABLE "GroupMeeting" ADD CONSTRAINT "GroupMeeting_eventTypeId_fkey" FOREIGN KEY ("eventTypeId") REFERENCES "EventType"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "EventSelect" ADD CONSTRAINT "EventSelect_eventTypeId_fkey" FOREIGN KEY ("eventTypeId") REFERENCES "EventType"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "EventSelect" ADD CONSTRAINT "EventSelect_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserOnGroupMeeting" ADD CONSTRAINT "UserOnGroupMeeting_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
