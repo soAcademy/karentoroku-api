@@ -57,27 +57,23 @@ export const getUserById = (args: { id: number }) => {
   });
 };
 
-export const getUserByIdToken = (args: { idToken: string }) => {
-  getAuth(firebaseApp)
-    .verifyIdToken(args.idToken)
-    .then((decodedToken) => {
-      const uid = decodedToken.uid;
-      // ...
-      // console.log(uid);
-      return prisma.user.findUniqueOrThrow({
-        select: {
-          name: true,
-          username: true,
-        },
-        where: {
-          firebaseUid: uid,
-        },
-      });
-    })
-    .catch((error) => {
-      // Handle error
-      console.log("Error:", error);
+export const getUserByIdToken = async (args: { idToken: string }) => {
+  try {
+    const decodedToken = await getAuth(firebaseApp).verifyIdToken(args.idToken);
+    const uid = decodedToken.uid;
+    return await prisma.user.findUniqueOrThrow({
+      select: {
+        name: true,
+        username: true,
+      },
+      where: {
+        firebaseUid: uid,
+      },
     });
+  } catch (error) {
+    // Handle error
+    console.log("Error:", error);
+  }
 };
 
 export const createLocation = (args: { name: string }) => {
