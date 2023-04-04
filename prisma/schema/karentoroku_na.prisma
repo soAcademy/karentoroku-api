@@ -37,39 +37,12 @@ model EventType {
   timeDuration           Int
   availabilitySchedule   AvailabilitySchedule? @relation(fields: [availabilityScheduleId], references: [id])
   availabilityScheduleId Int?
-  daySlots               EventTypeOnDaySlot[]
+  dateSlots              DateSlot[]
   groupMeetings          GroupMeeting[]
   createdAt              DateTime              @default(now())
   updatedAt              DateTime              @updatedAt
-}
 
-model DaySlot {
-  id             Int                  @id @default(autoincrement())
-  name           String               @unique
-  createdAt      DateTime             @default(now())
-  updatedAt      DateTime             @updatedAt
-  eventTypeSlots EventTypeOnDaySlot[]
-  dateSlots      DaySlotOnDateSlot[]
-}
-
-model DaySlotOnDateSlot {
-  id         Int      @id @default(autoincrement())
-  daySlot    DaySlot  @relation(fields: [daySlotId], references: [id])
-  daySlotId  Int
-  dateSlot   DateSlot @relation(fields: [dateSlotId], references: [id])
-  dateSlotId Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-}
-
-model EventTypeOnDaySlot {
-  id          Int       @id @default(autoincrement())
-  eventType   EventType @relation(fields: [eventTypeId], references: [id])
-  eventTypeId Int
-  daySlot     DaySlot   @relation(fields: [daySlotId], references: [id])
-  daySlotId   Int
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  @@unique([userId, name])
 }
 
 model Location {
@@ -101,27 +74,50 @@ model AvailabilitySchedule {
   updatedAt  DateTime    @updatedAt
 }
 
+model DaySlot {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  dateSlots DateSlot[]
+}
+
 model DateSlot {
   id                     Int                   @id @default(autoincrement())
   availabilitySchedule   AvailabilitySchedule? @relation(fields: [availabilityScheduleId], references: [id])
   availabilityScheduleId Int?
-
-  date        DateTime
-  custormer   Customer?              @relation(fields: [custormerId], references: [id])
-  custormerId Int?
-  createdAt   DateTime               @default(now())
-  updatedAt   DateTime               @updatedAt
-  timeSelects DateSlotOnTimeSelect[]
-  DaySlots    DaySlotOnDateSlot[]
+  name                   DateTime
+  custormer              Customer?             @relation(fields: [custormerId], references: [id])
+  custormerId            Int?
+  eventType              EventType             @relation(fields: [eventId], references: [id])
+  eventId                Int
+  daySlot                DaySlot               @relation(fields: [dayName], references: [name])
+  dayName                String
+  dateOnTimeSlots        DateOnTimeSlot[]
+  createdAt              DateTime              @default(now())
+  updatedAt              DateTime              @updatedAt
 }
 
-model TimeSelect {
-  id        Int                    @id @default(autoincrement())
-  startTime Int
-  endTime   Int
-  createdAt DateTime               @default(now())
-  updatedAt DateTime               @updatedAt
-  dateSlots DateSlotOnTimeSelect[]
+model DateOnTimeSlot {
+  id          Int       @id @default(autoincrement())
+  timeSlot    TimeSlot  @relation(fields: [timeSlotId], references: [id])
+  timeSlotId  Int
+  dateSlot    DateSlot  @relation(fields: [dateSlotId], references: [id])
+  dateSlotId  Int
+  status      String    @default("available")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model TimeSlot {
+  id              Int              @id @default(autoincrement())
+  startTime       Int
+  endTime         Int
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  dateOnTimeSlots DateOnTimeSlot[]
+
+  @@unique([startTime, endTime])
 }
 
 model Customer {
@@ -168,15 +164,4 @@ model UserOnGroupMeeting {
   groupMeetingId Int
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
-}
-
-model DateSlotOnTimeSelect {
-  id           Int        @id @default(autoincrement())
-  dateSlot     DateSlot   @relation(fields: [dateSlotId], references: [id])
-  dateSlotId   Int
-  timeSelect   TimeSelect @relation(fields: [timeSelectId], references: [id])
-  timeSelectId Int
-  status       String     @default("available")
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
 }

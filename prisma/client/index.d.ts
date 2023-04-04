@@ -47,41 +47,6 @@ export type EventType = {
 }
 
 /**
- * Model DaySlot
- * 
- */
-export type DaySlot = {
-  id: number
-  name: string
-  createdAt: Date
-  updatedAt: Date
-}
-
-/**
- * Model DaySlotOnDateSlot
- * 
- */
-export type DaySlotOnDateSlot = {
-  id: number
-  daySlotId: number
-  dateSlotId: number
-  createdAt: Date
-  updatedAt: Date
-}
-
-/**
- * Model EventTypeOnDaySlot
- * 
- */
-export type EventTypeOnDaySlot = {
-  id: number
-  eventTypeId: number
-  daySlotId: number
-  createdAt: Date
-  updatedAt: Date
-}
-
-/**
  * Model Location
  * 
  */
@@ -117,23 +82,49 @@ export type AvailabilitySchedule = {
 }
 
 /**
+ * Model DaySlot
+ * 
+ */
+export type DaySlot = {
+  id: number
+  name: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+/**
  * Model DateSlot
  * 
  */
 export type DateSlot = {
   id: number
   availabilityScheduleId: number | null
-  date: Date
+  name: Date
   custormerId: number | null
+  eventId: number
+  dayName: string
   createdAt: Date
   updatedAt: Date
 }
 
 /**
- * Model TimeSelect
+ * Model DateOnTimeSlot
  * 
  */
-export type TimeSelect = {
+export type DateOnTimeSlot = {
+  id: number
+  timeSlotId: number
+  dateSlotId: number
+  status: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+/**
+ * Model TimeSlot
+ * 
+ */
+export type TimeSlot = {
   id: number
   startTime: number
   endTime: number
@@ -190,19 +181,6 @@ export type UserOnGroupMeeting = {
   id: number
   userId: number
   groupMeetingId: number
-  createdAt: Date
-  updatedAt: Date
-}
-
-/**
- * Model DateSlotOnTimeSelect
- * 
- */
-export type DateSlotOnTimeSelect = {
-  id: number
-  dateSlotId: number
-  timeSelectId: number
-  status: string
   createdAt: Date
   updatedAt: Date
 }
@@ -346,36 +324,6 @@ export class PrismaClient<
   get eventType(): Prisma.EventTypeDelegate<GlobalReject>;
 
   /**
-   * `prisma.daySlot`: Exposes CRUD operations for the **DaySlot** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more DaySlots
-    * const daySlots = await prisma.daySlot.findMany()
-    * ```
-    */
-  get daySlot(): Prisma.DaySlotDelegate<GlobalReject>;
-
-  /**
-   * `prisma.daySlotOnDateSlot`: Exposes CRUD operations for the **DaySlotOnDateSlot** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more DaySlotOnDateSlots
-    * const daySlotOnDateSlots = await prisma.daySlotOnDateSlot.findMany()
-    * ```
-    */
-  get daySlotOnDateSlot(): Prisma.DaySlotOnDateSlotDelegate<GlobalReject>;
-
-  /**
-   * `prisma.eventTypeOnDaySlot`: Exposes CRUD operations for the **EventTypeOnDaySlot** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more EventTypeOnDaySlots
-    * const eventTypeOnDaySlots = await prisma.eventTypeOnDaySlot.findMany()
-    * ```
-    */
-  get eventTypeOnDaySlot(): Prisma.EventTypeOnDaySlotDelegate<GlobalReject>;
-
-  /**
    * `prisma.location`: Exposes CRUD operations for the **Location** model.
     * Example usage:
     * ```ts
@@ -406,6 +354,16 @@ export class PrismaClient<
   get availabilitySchedule(): Prisma.AvailabilityScheduleDelegate<GlobalReject>;
 
   /**
+   * `prisma.daySlot`: Exposes CRUD operations for the **DaySlot** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DaySlots
+    * const daySlots = await prisma.daySlot.findMany()
+    * ```
+    */
+  get daySlot(): Prisma.DaySlotDelegate<GlobalReject>;
+
+  /**
    * `prisma.dateSlot`: Exposes CRUD operations for the **DateSlot** model.
     * Example usage:
     * ```ts
@@ -416,14 +374,24 @@ export class PrismaClient<
   get dateSlot(): Prisma.DateSlotDelegate<GlobalReject>;
 
   /**
-   * `prisma.timeSelect`: Exposes CRUD operations for the **TimeSelect** model.
+   * `prisma.dateOnTimeSlot`: Exposes CRUD operations for the **DateOnTimeSlot** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more TimeSelects
-    * const timeSelects = await prisma.timeSelect.findMany()
+    * // Fetch zero or more DateOnTimeSlots
+    * const dateOnTimeSlots = await prisma.dateOnTimeSlot.findMany()
     * ```
     */
-  get timeSelect(): Prisma.TimeSelectDelegate<GlobalReject>;
+  get dateOnTimeSlot(): Prisma.DateOnTimeSlotDelegate<GlobalReject>;
+
+  /**
+   * `prisma.timeSlot`: Exposes CRUD operations for the **TimeSlot** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TimeSlots
+    * const timeSlots = await prisma.timeSlot.findMany()
+    * ```
+    */
+  get timeSlot(): Prisma.TimeSlotDelegate<GlobalReject>;
 
   /**
    * `prisma.customer`: Exposes CRUD operations for the **Customer** model.
@@ -464,16 +432,6 @@ export class PrismaClient<
     * ```
     */
   get userOnGroupMeeting(): Prisma.UserOnGroupMeetingDelegate<GlobalReject>;
-
-  /**
-   * `prisma.dateSlotOnTimeSelect`: Exposes CRUD operations for the **DateSlotOnTimeSelect** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more DateSlotOnTimeSelects
-    * const dateSlotOnTimeSelects = await prisma.dateSlotOnTimeSelect.findMany()
-    * ```
-    */
-  get dateSlotOnTimeSelect(): Prisma.DateSlotOnTimeSelectDelegate<GlobalReject>;
 }
 
 export namespace Prisma {
@@ -945,19 +903,17 @@ export namespace Prisma {
   export const ModelName: {
     User: 'User',
     EventType: 'EventType',
-    DaySlot: 'DaySlot',
-    DaySlotOnDateSlot: 'DaySlotOnDateSlot',
-    EventTypeOnDaySlot: 'EventTypeOnDaySlot',
     Location: 'Location',
     EventTypeOnLocation: 'EventTypeOnLocation',
     AvailabilitySchedule: 'AvailabilitySchedule',
+    DaySlot: 'DaySlot',
     DateSlot: 'DateSlot',
-    TimeSelect: 'TimeSelect',
+    DateOnTimeSlot: 'DateOnTimeSlot',
+    TimeSlot: 'TimeSlot',
     Customer: 'Customer',
     Billing: 'Billing',
     GroupMeeting: 'GroupMeeting',
-    UserOnGroupMeeting: 'UserOnGroupMeeting',
-    DateSlotOnTimeSelect: 'DateSlotOnTimeSelect'
+    UserOnGroupMeeting: 'UserOnGroupMeeting'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1172,13 +1128,13 @@ export namespace Prisma {
 
   export type EventTypeCountOutputType = {
     eventTypeOnLocations: number
-    daySlots: number
+    dateSlots: number
     groupMeetings: number
   }
 
   export type EventTypeCountOutputTypeSelect = {
     eventTypeOnLocations?: boolean
-    daySlots?: boolean
+    dateSlots?: boolean
     groupMeetings?: boolean
   }
 
@@ -1208,51 +1164,6 @@ export namespace Prisma {
      * Select specific fields to fetch from the EventTypeCountOutputType
      */
     select?: EventTypeCountOutputTypeSelect | null
-  }
-
-
-
-  /**
-   * Count Type DaySlotCountOutputType
-   */
-
-
-  export type DaySlotCountOutputType = {
-    eventTypeSlots: number
-    dateSlots: number
-  }
-
-  export type DaySlotCountOutputTypeSelect = {
-    eventTypeSlots?: boolean
-    dateSlots?: boolean
-  }
-
-  export type DaySlotCountOutputTypeGetPayload<S extends boolean | null | undefined | DaySlotCountOutputTypeArgs> =
-    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? DaySlotCountOutputType :
-    S extends undefined ? never :
-    S extends { include: any } & (DaySlotCountOutputTypeArgs)
-    ? DaySlotCountOutputType 
-    : S extends { select: any } & (DaySlotCountOutputTypeArgs)
-      ? {
-    [P in TruthyKeys<S['select']>]:
-    P extends keyof DaySlotCountOutputType ? DaySlotCountOutputType[P] : never
-  } 
-      : DaySlotCountOutputType
-
-
-
-
-  // Custom InputTypes
-
-  /**
-   * DaySlotCountOutputType without action
-   */
-  export type DaySlotCountOutputTypeArgs = {
-    /**
-     * Select specific fields to fetch from the DaySlotCountOutputType
-     */
-    select?: DaySlotCountOutputTypeSelect | null
   }
 
 
@@ -1348,18 +1259,59 @@ export namespace Prisma {
 
 
   /**
+   * Count Type DaySlotCountOutputType
+   */
+
+
+  export type DaySlotCountOutputType = {
+    dateSlots: number
+  }
+
+  export type DaySlotCountOutputTypeSelect = {
+    dateSlots?: boolean
+  }
+
+  export type DaySlotCountOutputTypeGetPayload<S extends boolean | null | undefined | DaySlotCountOutputTypeArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? DaySlotCountOutputType :
+    S extends undefined ? never :
+    S extends { include: any } & (DaySlotCountOutputTypeArgs)
+    ? DaySlotCountOutputType 
+    : S extends { select: any } & (DaySlotCountOutputTypeArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+    P extends keyof DaySlotCountOutputType ? DaySlotCountOutputType[P] : never
+  } 
+      : DaySlotCountOutputType
+
+
+
+
+  // Custom InputTypes
+
+  /**
+   * DaySlotCountOutputType without action
+   */
+  export type DaySlotCountOutputTypeArgs = {
+    /**
+     * Select specific fields to fetch from the DaySlotCountOutputType
+     */
+    select?: DaySlotCountOutputTypeSelect | null
+  }
+
+
+
+  /**
    * Count Type DateSlotCountOutputType
    */
 
 
   export type DateSlotCountOutputType = {
-    timeSelects: number
-    DaySlots: number
+    dateOnTimeSlots: number
   }
 
   export type DateSlotCountOutputTypeSelect = {
-    timeSelects?: boolean
-    DaySlots?: boolean
+    dateOnTimeSlots?: boolean
   }
 
   export type DateSlotCountOutputTypeGetPayload<S extends boolean | null | undefined | DateSlotCountOutputTypeArgs> =
@@ -1393,30 +1345,30 @@ export namespace Prisma {
 
 
   /**
-   * Count Type TimeSelectCountOutputType
+   * Count Type TimeSlotCountOutputType
    */
 
 
-  export type TimeSelectCountOutputType = {
-    dateSlots: number
+  export type TimeSlotCountOutputType = {
+    dateOnTimeSlots: number
   }
 
-  export type TimeSelectCountOutputTypeSelect = {
-    dateSlots?: boolean
+  export type TimeSlotCountOutputTypeSelect = {
+    dateOnTimeSlots?: boolean
   }
 
-  export type TimeSelectCountOutputTypeGetPayload<S extends boolean | null | undefined | TimeSelectCountOutputTypeArgs> =
+  export type TimeSlotCountOutputTypeGetPayload<S extends boolean | null | undefined | TimeSlotCountOutputTypeArgs> =
     S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? TimeSelectCountOutputType :
+    S extends true ? TimeSlotCountOutputType :
     S extends undefined ? never :
-    S extends { include: any } & (TimeSelectCountOutputTypeArgs)
-    ? TimeSelectCountOutputType 
-    : S extends { select: any } & (TimeSelectCountOutputTypeArgs)
+    S extends { include: any } & (TimeSlotCountOutputTypeArgs)
+    ? TimeSlotCountOutputType 
+    : S extends { select: any } & (TimeSlotCountOutputTypeArgs)
       ? {
     [P in TruthyKeys<S['select']>]:
-    P extends keyof TimeSelectCountOutputType ? TimeSelectCountOutputType[P] : never
+    P extends keyof TimeSlotCountOutputType ? TimeSlotCountOutputType[P] : never
   } 
-      : TimeSelectCountOutputType
+      : TimeSlotCountOutputType
 
 
 
@@ -1424,13 +1376,13 @@ export namespace Prisma {
   // Custom InputTypes
 
   /**
-   * TimeSelectCountOutputType without action
+   * TimeSlotCountOutputType without action
    */
-  export type TimeSelectCountOutputTypeArgs = {
+  export type TimeSlotCountOutputTypeArgs = {
     /**
-     * Select specific fields to fetch from the TimeSelectCountOutputType
+     * Select specific fields to fetch from the TimeSlotCountOutputType
      */
-    select?: TimeSelectCountOutputTypeSelect | null
+    select?: TimeSlotCountOutputTypeSelect | null
   }
 
 
@@ -2870,7 +2822,7 @@ export namespace Prisma {
     user?: boolean | UserArgs
     eventTypeOnLocations?: boolean | EventType$eventTypeOnLocationsArgs
     availabilitySchedule?: boolean | AvailabilityScheduleArgs
-    daySlots?: boolean | EventType$daySlotsArgs
+    dateSlots?: boolean | EventType$dateSlotsArgs
     groupMeetings?: boolean | EventType$groupMeetingsArgs
     _count?: boolean | EventTypeCountOutputTypeArgs
   }
@@ -2880,7 +2832,7 @@ export namespace Prisma {
     user?: boolean | UserArgs
     eventTypeOnLocations?: boolean | EventType$eventTypeOnLocationsArgs
     availabilitySchedule?: boolean | AvailabilityScheduleArgs
-    daySlots?: boolean | EventType$daySlotsArgs
+    dateSlots?: boolean | EventType$dateSlotsArgs
     groupMeetings?: boolean | EventType$groupMeetingsArgs
     _count?: boolean | EventTypeCountOutputTypeArgs
   }
@@ -2895,7 +2847,7 @@ export namespace Prisma {
         P extends 'user' ? UserGetPayload<S['include'][P]> :
         P extends 'eventTypeOnLocations' ? Array < EventTypeOnLocationGetPayload<S['include'][P]>>  :
         P extends 'availabilitySchedule' ? AvailabilityScheduleGetPayload<S['include'][P]> | null :
-        P extends 'daySlots' ? Array < EventTypeOnDaySlotGetPayload<S['include'][P]>>  :
+        P extends 'dateSlots' ? Array < DateSlotGetPayload<S['include'][P]>>  :
         P extends 'groupMeetings' ? Array < GroupMeetingGetPayload<S['include'][P]>>  :
         P extends '_count' ? EventTypeCountOutputTypeGetPayload<S['include'][P]> :  never
   } 
@@ -2905,7 +2857,7 @@ export namespace Prisma {
         P extends 'user' ? UserGetPayload<S['select'][P]> :
         P extends 'eventTypeOnLocations' ? Array < EventTypeOnLocationGetPayload<S['select'][P]>>  :
         P extends 'availabilitySchedule' ? AvailabilityScheduleGetPayload<S['select'][P]> | null :
-        P extends 'daySlots' ? Array < EventTypeOnDaySlotGetPayload<S['select'][P]>>  :
+        P extends 'dateSlots' ? Array < DateSlotGetPayload<S['select'][P]>>  :
         P extends 'groupMeetings' ? Array < GroupMeetingGetPayload<S['select'][P]>>  :
         P extends '_count' ? EventTypeCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof EventType ? EventType[P] : never
   } 
@@ -3285,7 +3237,7 @@ export namespace Prisma {
 
     availabilitySchedule<T extends AvailabilityScheduleArgs= {}>(args?: Subset<T, AvailabilityScheduleArgs>): Prisma__AvailabilityScheduleClient<AvailabilityScheduleGetPayload<T> | Null>;
 
-    daySlots<T extends EventType$daySlotsArgs= {}>(args?: Subset<T, EventType$daySlotsArgs>): Prisma.PrismaPromise<Array<EventTypeOnDaySlotGetPayload<T>>| Null>;
+    dateSlots<T extends EventType$dateSlotsArgs= {}>(args?: Subset<T, EventType$dateSlotsArgs>): Prisma.PrismaPromise<Array<DateSlotGetPayload<T>>| Null>;
 
     groupMeetings<T extends EventType$groupMeetingsArgs= {}>(args?: Subset<T, EventType$groupMeetingsArgs>): Prisma.PrismaPromise<Array<GroupMeetingGetPayload<T>>| Null>;
 
@@ -3666,23 +3618,23 @@ export namespace Prisma {
 
 
   /**
-   * EventType.daySlots
+   * EventType.dateSlots
    */
-  export type EventType$daySlotsArgs = {
+  export type EventType$dateSlotsArgs = {
     /**
-     * Select specific fields to fetch from the EventTypeOnDaySlot
+     * Select specific fields to fetch from the DateSlot
      */
-    select?: EventTypeOnDaySlotSelect | null
+    select?: DateSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: EventTypeOnDaySlotInclude | null
-    where?: EventTypeOnDaySlotWhereInput
-    orderBy?: Enumerable<EventTypeOnDaySlotOrderByWithRelationInput>
-    cursor?: EventTypeOnDaySlotWhereUniqueInput
+    include?: DateSlotInclude | null
+    where?: DateSlotWhereInput
+    orderBy?: Enumerable<DateSlotOrderByWithRelationInput>
+    cursor?: DateSlotWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: Enumerable<EventTypeOnDaySlotScalarFieldEnum>
+    distinct?: Enumerable<DateSlotScalarFieldEnum>
   }
 
 
@@ -3719,2973 +3671,6 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well.
      */
     include?: EventTypeInclude | null
-  }
-
-
-
-  /**
-   * Model DaySlot
-   */
-
-
-  export type AggregateDaySlot = {
-    _count: DaySlotCountAggregateOutputType | null
-    _avg: DaySlotAvgAggregateOutputType | null
-    _sum: DaySlotSumAggregateOutputType | null
-    _min: DaySlotMinAggregateOutputType | null
-    _max: DaySlotMaxAggregateOutputType | null
-  }
-
-  export type DaySlotAvgAggregateOutputType = {
-    id: number | null
-  }
-
-  export type DaySlotSumAggregateOutputType = {
-    id: number | null
-  }
-
-  export type DaySlotMinAggregateOutputType = {
-    id: number | null
-    name: string | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type DaySlotMaxAggregateOutputType = {
-    id: number | null
-    name: string | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type DaySlotCountAggregateOutputType = {
-    id: number
-    name: number
-    createdAt: number
-    updatedAt: number
-    _all: number
-  }
-
-
-  export type DaySlotAvgAggregateInputType = {
-    id?: true
-  }
-
-  export type DaySlotSumAggregateInputType = {
-    id?: true
-  }
-
-  export type DaySlotMinAggregateInputType = {
-    id?: true
-    name?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type DaySlotMaxAggregateInputType = {
-    id?: true
-    name?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type DaySlotCountAggregateInputType = {
-    id?: true
-    name?: true
-    createdAt?: true
-    updatedAt?: true
-    _all?: true
-  }
-
-  export type DaySlotAggregateArgs = {
-    /**
-     * Filter which DaySlot to aggregate.
-     */
-    where?: DaySlotWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of DaySlots to fetch.
-     */
-    orderBy?: Enumerable<DaySlotOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: DaySlotWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` DaySlots from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` DaySlots.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned DaySlots
-    **/
-    _count?: true | DaySlotCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: DaySlotAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: DaySlotSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: DaySlotMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: DaySlotMaxAggregateInputType
-  }
-
-  export type GetDaySlotAggregateType<T extends DaySlotAggregateArgs> = {
-        [P in keyof T & keyof AggregateDaySlot]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateDaySlot[P]>
-      : GetScalarType<T[P], AggregateDaySlot[P]>
-  }
-
-
-
-
-  export type DaySlotGroupByArgs = {
-    where?: DaySlotWhereInput
-    orderBy?: Enumerable<DaySlotOrderByWithAggregationInput>
-    by: DaySlotScalarFieldEnum[]
-    having?: DaySlotScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: DaySlotCountAggregateInputType | true
-    _avg?: DaySlotAvgAggregateInputType
-    _sum?: DaySlotSumAggregateInputType
-    _min?: DaySlotMinAggregateInputType
-    _max?: DaySlotMaxAggregateInputType
-  }
-
-
-  export type DaySlotGroupByOutputType = {
-    id: number
-    name: string
-    createdAt: Date
-    updatedAt: Date
-    _count: DaySlotCountAggregateOutputType | null
-    _avg: DaySlotAvgAggregateOutputType | null
-    _sum: DaySlotSumAggregateOutputType | null
-    _min: DaySlotMinAggregateOutputType | null
-    _max: DaySlotMaxAggregateOutputType | null
-  }
-
-  type GetDaySlotGroupByPayload<T extends DaySlotGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickArray<DaySlotGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof DaySlotGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], DaySlotGroupByOutputType[P]>
-            : GetScalarType<T[P], DaySlotGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type DaySlotSelect = {
-    id?: boolean
-    name?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    eventTypeSlots?: boolean | DaySlot$eventTypeSlotsArgs
-    dateSlots?: boolean | DaySlot$dateSlotsArgs
-    _count?: boolean | DaySlotCountOutputTypeArgs
-  }
-
-
-  export type DaySlotInclude = {
-    eventTypeSlots?: boolean | DaySlot$eventTypeSlotsArgs
-    dateSlots?: boolean | DaySlot$dateSlotsArgs
-    _count?: boolean | DaySlotCountOutputTypeArgs
-  }
-
-  export type DaySlotGetPayload<S extends boolean | null | undefined | DaySlotArgs> =
-    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? DaySlot :
-    S extends undefined ? never :
-    S extends { include: any } & (DaySlotArgs | DaySlotFindManyArgs)
-    ? DaySlot  & {
-    [P in TruthyKeys<S['include']>]:
-        P extends 'eventTypeSlots' ? Array < EventTypeOnDaySlotGetPayload<S['include'][P]>>  :
-        P extends 'dateSlots' ? Array < DaySlotOnDateSlotGetPayload<S['include'][P]>>  :
-        P extends '_count' ? DaySlotCountOutputTypeGetPayload<S['include'][P]> :  never
-  } 
-    : S extends { select: any } & (DaySlotArgs | DaySlotFindManyArgs)
-      ? {
-    [P in TruthyKeys<S['select']>]:
-        P extends 'eventTypeSlots' ? Array < EventTypeOnDaySlotGetPayload<S['select'][P]>>  :
-        P extends 'dateSlots' ? Array < DaySlotOnDateSlotGetPayload<S['select'][P]>>  :
-        P extends '_count' ? DaySlotCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof DaySlot ? DaySlot[P] : never
-  } 
-      : DaySlot
-
-
-  type DaySlotCountArgs = 
-    Omit<DaySlotFindManyArgs, 'select' | 'include'> & {
-      select?: DaySlotCountAggregateInputType | true
-    }
-
-  export interface DaySlotDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
-
-    /**
-     * Find zero or one DaySlot that matches the filter.
-     * @param {DaySlotFindUniqueArgs} args - Arguments to find a DaySlot
-     * @example
-     * // Get one DaySlot
-     * const daySlot = await prisma.daySlot.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUnique<T extends DaySlotFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args: SelectSubset<T, DaySlotFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'DaySlot'> extends True ? Prisma__DaySlotClient<DaySlotGetPayload<T>> : Prisma__DaySlotClient<DaySlotGetPayload<T> | null, null>
-
-    /**
-     * Find one DaySlot that matches the filter or throw an error  with `error.code='P2025'` 
-     *     if no matches were found.
-     * @param {DaySlotFindUniqueOrThrowArgs} args - Arguments to find a DaySlot
-     * @example
-     * // Get one DaySlot
-     * const daySlot = await prisma.daySlot.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUniqueOrThrow<T extends DaySlotFindUniqueOrThrowArgs>(
-      args?: SelectSubset<T, DaySlotFindUniqueOrThrowArgs>
-    ): Prisma__DaySlotClient<DaySlotGetPayload<T>>
-
-    /**
-     * Find the first DaySlot that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DaySlotFindFirstArgs} args - Arguments to find a DaySlot
-     * @example
-     * // Get one DaySlot
-     * const daySlot = await prisma.daySlot.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirst<T extends DaySlotFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args?: SelectSubset<T, DaySlotFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'DaySlot'> extends True ? Prisma__DaySlotClient<DaySlotGetPayload<T>> : Prisma__DaySlotClient<DaySlotGetPayload<T> | null, null>
-
-    /**
-     * Find the first DaySlot that matches the filter or
-     * throw `NotFoundError` if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DaySlotFindFirstOrThrowArgs} args - Arguments to find a DaySlot
-     * @example
-     * // Get one DaySlot
-     * const daySlot = await prisma.daySlot.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirstOrThrow<T extends DaySlotFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, DaySlotFindFirstOrThrowArgs>
-    ): Prisma__DaySlotClient<DaySlotGetPayload<T>>
-
-    /**
-     * Find zero or more DaySlots that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DaySlotFindManyArgs=} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all DaySlots
-     * const daySlots = await prisma.daySlot.findMany()
-     * 
-     * // Get first 10 DaySlots
-     * const daySlots = await prisma.daySlot.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const daySlotWithIdOnly = await prisma.daySlot.findMany({ select: { id: true } })
-     * 
-    **/
-    findMany<T extends DaySlotFindManyArgs>(
-      args?: SelectSubset<T, DaySlotFindManyArgs>
-    ): Prisma.PrismaPromise<Array<DaySlotGetPayload<T>>>
-
-    /**
-     * Create a DaySlot.
-     * @param {DaySlotCreateArgs} args - Arguments to create a DaySlot.
-     * @example
-     * // Create one DaySlot
-     * const DaySlot = await prisma.daySlot.create({
-     *   data: {
-     *     // ... data to create a DaySlot
-     *   }
-     * })
-     * 
-    **/
-    create<T extends DaySlotCreateArgs>(
-      args: SelectSubset<T, DaySlotCreateArgs>
-    ): Prisma__DaySlotClient<DaySlotGetPayload<T>>
-
-    /**
-     * Create many DaySlots.
-     *     @param {DaySlotCreateManyArgs} args - Arguments to create many DaySlots.
-     *     @example
-     *     // Create many DaySlots
-     *     const daySlot = await prisma.daySlot.createMany({
-     *       data: {
-     *         // ... provide data here
-     *       }
-     *     })
-     *     
-    **/
-    createMany<T extends DaySlotCreateManyArgs>(
-      args?: SelectSubset<T, DaySlotCreateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Delete a DaySlot.
-     * @param {DaySlotDeleteArgs} args - Arguments to delete one DaySlot.
-     * @example
-     * // Delete one DaySlot
-     * const DaySlot = await prisma.daySlot.delete({
-     *   where: {
-     *     // ... filter to delete one DaySlot
-     *   }
-     * })
-     * 
-    **/
-    delete<T extends DaySlotDeleteArgs>(
-      args: SelectSubset<T, DaySlotDeleteArgs>
-    ): Prisma__DaySlotClient<DaySlotGetPayload<T>>
-
-    /**
-     * Update one DaySlot.
-     * @param {DaySlotUpdateArgs} args - Arguments to update one DaySlot.
-     * @example
-     * // Update one DaySlot
-     * const daySlot = await prisma.daySlot.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    update<T extends DaySlotUpdateArgs>(
-      args: SelectSubset<T, DaySlotUpdateArgs>
-    ): Prisma__DaySlotClient<DaySlotGetPayload<T>>
-
-    /**
-     * Delete zero or more DaySlots.
-     * @param {DaySlotDeleteManyArgs} args - Arguments to filter DaySlots to delete.
-     * @example
-     * // Delete a few DaySlots
-     * const { count } = await prisma.daySlot.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-    **/
-    deleteMany<T extends DaySlotDeleteManyArgs>(
-      args?: SelectSubset<T, DaySlotDeleteManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more DaySlots.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DaySlotUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many DaySlots
-     * const daySlot = await prisma.daySlot.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    updateMany<T extends DaySlotUpdateManyArgs>(
-      args: SelectSubset<T, DaySlotUpdateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one DaySlot.
-     * @param {DaySlotUpsertArgs} args - Arguments to update or create a DaySlot.
-     * @example
-     * // Update or create a DaySlot
-     * const daySlot = await prisma.daySlot.upsert({
-     *   create: {
-     *     // ... data to create a DaySlot
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the DaySlot we want to update
-     *   }
-     * })
-    **/
-    upsert<T extends DaySlotUpsertArgs>(
-      args: SelectSubset<T, DaySlotUpsertArgs>
-    ): Prisma__DaySlotClient<DaySlotGetPayload<T>>
-
-    /**
-     * Count the number of DaySlots.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DaySlotCountArgs} args - Arguments to filter DaySlots to count.
-     * @example
-     * // Count the number of DaySlots
-     * const count = await prisma.daySlot.count({
-     *   where: {
-     *     // ... the filter for the DaySlots we want to count
-     *   }
-     * })
-    **/
-    count<T extends DaySlotCountArgs>(
-      args?: Subset<T, DaySlotCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends _Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], DaySlotCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a DaySlot.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DaySlotAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends DaySlotAggregateArgs>(args: Subset<T, DaySlotAggregateArgs>): Prisma.PrismaPromise<GetDaySlotAggregateType<T>>
-
-    /**
-     * Group by DaySlot.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DaySlotGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends DaySlotGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: DaySlotGroupByArgs['orderBy'] }
-        : { orderBy?: DaySlotGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends TupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, DaySlotGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDaySlotGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for DaySlot.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export class Prisma__DaySlotClient<T, Null = never> implements Prisma.PrismaPromise<T> {
-    private readonly _dmmf;
-    private readonly _queryType;
-    private readonly _rootField;
-    private readonly _clientMethod;
-    private readonly _args;
-    private readonly _dataPath;
-    private readonly _errorFormat;
-    private readonly _measurePerformance?;
-    private _isList;
-    private _callsite;
-    private _requestPromise?;
-    readonly [Symbol.toStringTag]: 'PrismaPromise';
-    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
-
-    eventTypeSlots<T extends DaySlot$eventTypeSlotsArgs= {}>(args?: Subset<T, DaySlot$eventTypeSlotsArgs>): Prisma.PrismaPromise<Array<EventTypeOnDaySlotGetPayload<T>>| Null>;
-
-    dateSlots<T extends DaySlot$dateSlotsArgs= {}>(args?: Subset<T, DaySlot$dateSlotsArgs>): Prisma.PrismaPromise<Array<DaySlotOnDateSlotGetPayload<T>>| Null>;
-
-    private get _document();
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
-  }
-
-
-
-  // Custom InputTypes
-
-  /**
-   * DaySlot base type for findUnique actions
-   */
-  export type DaySlotFindUniqueArgsBase = {
-    /**
-     * Select specific fields to fetch from the DaySlot
-     */
-    select?: DaySlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DaySlotInclude | null
-    /**
-     * Filter, which DaySlot to fetch.
-     */
-    where: DaySlotWhereUniqueInput
-  }
-
-  /**
-   * DaySlot findUnique
-   */
-  export interface DaySlotFindUniqueArgs extends DaySlotFindUniqueArgsBase {
-   /**
-    * Throw an Error if query returns no results
-    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
-    */
-    rejectOnNotFound?: RejectOnNotFound
-  }
-      
-
-  /**
-   * DaySlot findUniqueOrThrow
-   */
-  export type DaySlotFindUniqueOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the DaySlot
-     */
-    select?: DaySlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DaySlotInclude | null
-    /**
-     * Filter, which DaySlot to fetch.
-     */
-    where: DaySlotWhereUniqueInput
-  }
-
-
-  /**
-   * DaySlot base type for findFirst actions
-   */
-  export type DaySlotFindFirstArgsBase = {
-    /**
-     * Select specific fields to fetch from the DaySlot
-     */
-    select?: DaySlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DaySlotInclude | null
-    /**
-     * Filter, which DaySlot to fetch.
-     */
-    where?: DaySlotWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of DaySlots to fetch.
-     */
-    orderBy?: Enumerable<DaySlotOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for DaySlots.
-     */
-    cursor?: DaySlotWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` DaySlots from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` DaySlots.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of DaySlots.
-     */
-    distinct?: Enumerable<DaySlotScalarFieldEnum>
-  }
-
-  /**
-   * DaySlot findFirst
-   */
-  export interface DaySlotFindFirstArgs extends DaySlotFindFirstArgsBase {
-   /**
-    * Throw an Error if query returns no results
-    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
-    */
-    rejectOnNotFound?: RejectOnNotFound
-  }
-      
-
-  /**
-   * DaySlot findFirstOrThrow
-   */
-  export type DaySlotFindFirstOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the DaySlot
-     */
-    select?: DaySlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DaySlotInclude | null
-    /**
-     * Filter, which DaySlot to fetch.
-     */
-    where?: DaySlotWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of DaySlots to fetch.
-     */
-    orderBy?: Enumerable<DaySlotOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for DaySlots.
-     */
-    cursor?: DaySlotWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` DaySlots from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` DaySlots.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of DaySlots.
-     */
-    distinct?: Enumerable<DaySlotScalarFieldEnum>
-  }
-
-
-  /**
-   * DaySlot findMany
-   */
-  export type DaySlotFindManyArgs = {
-    /**
-     * Select specific fields to fetch from the DaySlot
-     */
-    select?: DaySlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DaySlotInclude | null
-    /**
-     * Filter, which DaySlots to fetch.
-     */
-    where?: DaySlotWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of DaySlots to fetch.
-     */
-    orderBy?: Enumerable<DaySlotOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing DaySlots.
-     */
-    cursor?: DaySlotWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` DaySlots from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` DaySlots.
-     */
-    skip?: number
-    distinct?: Enumerable<DaySlotScalarFieldEnum>
-  }
-
-
-  /**
-   * DaySlot create
-   */
-  export type DaySlotCreateArgs = {
-    /**
-     * Select specific fields to fetch from the DaySlot
-     */
-    select?: DaySlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DaySlotInclude | null
-    /**
-     * The data needed to create a DaySlot.
-     */
-    data: XOR<DaySlotCreateInput, DaySlotUncheckedCreateInput>
-  }
-
-
-  /**
-   * DaySlot createMany
-   */
-  export type DaySlotCreateManyArgs = {
-    /**
-     * The data used to create many DaySlots.
-     */
-    data: Enumerable<DaySlotCreateManyInput>
-    skipDuplicates?: boolean
-  }
-
-
-  /**
-   * DaySlot update
-   */
-  export type DaySlotUpdateArgs = {
-    /**
-     * Select specific fields to fetch from the DaySlot
-     */
-    select?: DaySlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DaySlotInclude | null
-    /**
-     * The data needed to update a DaySlot.
-     */
-    data: XOR<DaySlotUpdateInput, DaySlotUncheckedUpdateInput>
-    /**
-     * Choose, which DaySlot to update.
-     */
-    where: DaySlotWhereUniqueInput
-  }
-
-
-  /**
-   * DaySlot updateMany
-   */
-  export type DaySlotUpdateManyArgs = {
-    /**
-     * The data used to update DaySlots.
-     */
-    data: XOR<DaySlotUpdateManyMutationInput, DaySlotUncheckedUpdateManyInput>
-    /**
-     * Filter which DaySlots to update
-     */
-    where?: DaySlotWhereInput
-  }
-
-
-  /**
-   * DaySlot upsert
-   */
-  export type DaySlotUpsertArgs = {
-    /**
-     * Select specific fields to fetch from the DaySlot
-     */
-    select?: DaySlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DaySlotInclude | null
-    /**
-     * The filter to search for the DaySlot to update in case it exists.
-     */
-    where: DaySlotWhereUniqueInput
-    /**
-     * In case the DaySlot found by the `where` argument doesn't exist, create a new DaySlot with this data.
-     */
-    create: XOR<DaySlotCreateInput, DaySlotUncheckedCreateInput>
-    /**
-     * In case the DaySlot was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<DaySlotUpdateInput, DaySlotUncheckedUpdateInput>
-  }
-
-
-  /**
-   * DaySlot delete
-   */
-  export type DaySlotDeleteArgs = {
-    /**
-     * Select specific fields to fetch from the DaySlot
-     */
-    select?: DaySlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DaySlotInclude | null
-    /**
-     * Filter which DaySlot to delete.
-     */
-    where: DaySlotWhereUniqueInput
-  }
-
-
-  /**
-   * DaySlot deleteMany
-   */
-  export type DaySlotDeleteManyArgs = {
-    /**
-     * Filter which DaySlots to delete
-     */
-    where?: DaySlotWhereInput
-  }
-
-
-  /**
-   * DaySlot.eventTypeSlots
-   */
-  export type DaySlot$eventTypeSlotsArgs = {
-    /**
-     * Select specific fields to fetch from the EventTypeOnDaySlot
-     */
-    select?: EventTypeOnDaySlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: EventTypeOnDaySlotInclude | null
-    where?: EventTypeOnDaySlotWhereInput
-    orderBy?: Enumerable<EventTypeOnDaySlotOrderByWithRelationInput>
-    cursor?: EventTypeOnDaySlotWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: Enumerable<EventTypeOnDaySlotScalarFieldEnum>
-  }
-
-
-  /**
-   * DaySlot.dateSlots
-   */
-  export type DaySlot$dateSlotsArgs = {
-    /**
-     * Select specific fields to fetch from the DaySlotOnDateSlot
-     */
-    select?: DaySlotOnDateSlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DaySlotOnDateSlotInclude | null
-    where?: DaySlotOnDateSlotWhereInput
-    orderBy?: Enumerable<DaySlotOnDateSlotOrderByWithRelationInput>
-    cursor?: DaySlotOnDateSlotWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: Enumerable<DaySlotOnDateSlotScalarFieldEnum>
-  }
-
-
-  /**
-   * DaySlot without action
-   */
-  export type DaySlotArgs = {
-    /**
-     * Select specific fields to fetch from the DaySlot
-     */
-    select?: DaySlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DaySlotInclude | null
-  }
-
-
-
-  /**
-   * Model DaySlotOnDateSlot
-   */
-
-
-  export type AggregateDaySlotOnDateSlot = {
-    _count: DaySlotOnDateSlotCountAggregateOutputType | null
-    _avg: DaySlotOnDateSlotAvgAggregateOutputType | null
-    _sum: DaySlotOnDateSlotSumAggregateOutputType | null
-    _min: DaySlotOnDateSlotMinAggregateOutputType | null
-    _max: DaySlotOnDateSlotMaxAggregateOutputType | null
-  }
-
-  export type DaySlotOnDateSlotAvgAggregateOutputType = {
-    id: number | null
-    daySlotId: number | null
-    dateSlotId: number | null
-  }
-
-  export type DaySlotOnDateSlotSumAggregateOutputType = {
-    id: number | null
-    daySlotId: number | null
-    dateSlotId: number | null
-  }
-
-  export type DaySlotOnDateSlotMinAggregateOutputType = {
-    id: number | null
-    daySlotId: number | null
-    dateSlotId: number | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type DaySlotOnDateSlotMaxAggregateOutputType = {
-    id: number | null
-    daySlotId: number | null
-    dateSlotId: number | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type DaySlotOnDateSlotCountAggregateOutputType = {
-    id: number
-    daySlotId: number
-    dateSlotId: number
-    createdAt: number
-    updatedAt: number
-    _all: number
-  }
-
-
-  export type DaySlotOnDateSlotAvgAggregateInputType = {
-    id?: true
-    daySlotId?: true
-    dateSlotId?: true
-  }
-
-  export type DaySlotOnDateSlotSumAggregateInputType = {
-    id?: true
-    daySlotId?: true
-    dateSlotId?: true
-  }
-
-  export type DaySlotOnDateSlotMinAggregateInputType = {
-    id?: true
-    daySlotId?: true
-    dateSlotId?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type DaySlotOnDateSlotMaxAggregateInputType = {
-    id?: true
-    daySlotId?: true
-    dateSlotId?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type DaySlotOnDateSlotCountAggregateInputType = {
-    id?: true
-    daySlotId?: true
-    dateSlotId?: true
-    createdAt?: true
-    updatedAt?: true
-    _all?: true
-  }
-
-  export type DaySlotOnDateSlotAggregateArgs = {
-    /**
-     * Filter which DaySlotOnDateSlot to aggregate.
-     */
-    where?: DaySlotOnDateSlotWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of DaySlotOnDateSlots to fetch.
-     */
-    orderBy?: Enumerable<DaySlotOnDateSlotOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: DaySlotOnDateSlotWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` DaySlotOnDateSlots from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` DaySlotOnDateSlots.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned DaySlotOnDateSlots
-    **/
-    _count?: true | DaySlotOnDateSlotCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: DaySlotOnDateSlotAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: DaySlotOnDateSlotSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: DaySlotOnDateSlotMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: DaySlotOnDateSlotMaxAggregateInputType
-  }
-
-  export type GetDaySlotOnDateSlotAggregateType<T extends DaySlotOnDateSlotAggregateArgs> = {
-        [P in keyof T & keyof AggregateDaySlotOnDateSlot]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateDaySlotOnDateSlot[P]>
-      : GetScalarType<T[P], AggregateDaySlotOnDateSlot[P]>
-  }
-
-
-
-
-  export type DaySlotOnDateSlotGroupByArgs = {
-    where?: DaySlotOnDateSlotWhereInput
-    orderBy?: Enumerable<DaySlotOnDateSlotOrderByWithAggregationInput>
-    by: DaySlotOnDateSlotScalarFieldEnum[]
-    having?: DaySlotOnDateSlotScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: DaySlotOnDateSlotCountAggregateInputType | true
-    _avg?: DaySlotOnDateSlotAvgAggregateInputType
-    _sum?: DaySlotOnDateSlotSumAggregateInputType
-    _min?: DaySlotOnDateSlotMinAggregateInputType
-    _max?: DaySlotOnDateSlotMaxAggregateInputType
-  }
-
-
-  export type DaySlotOnDateSlotGroupByOutputType = {
-    id: number
-    daySlotId: number
-    dateSlotId: number
-    createdAt: Date
-    updatedAt: Date
-    _count: DaySlotOnDateSlotCountAggregateOutputType | null
-    _avg: DaySlotOnDateSlotAvgAggregateOutputType | null
-    _sum: DaySlotOnDateSlotSumAggregateOutputType | null
-    _min: DaySlotOnDateSlotMinAggregateOutputType | null
-    _max: DaySlotOnDateSlotMaxAggregateOutputType | null
-  }
-
-  type GetDaySlotOnDateSlotGroupByPayload<T extends DaySlotOnDateSlotGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickArray<DaySlotOnDateSlotGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof DaySlotOnDateSlotGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], DaySlotOnDateSlotGroupByOutputType[P]>
-            : GetScalarType<T[P], DaySlotOnDateSlotGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type DaySlotOnDateSlotSelect = {
-    id?: boolean
-    daySlotId?: boolean
-    dateSlotId?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    daySlot?: boolean | DaySlotArgs
-    dateSlot?: boolean | DateSlotArgs
-  }
-
-
-  export type DaySlotOnDateSlotInclude = {
-    daySlot?: boolean | DaySlotArgs
-    dateSlot?: boolean | DateSlotArgs
-  }
-
-  export type DaySlotOnDateSlotGetPayload<S extends boolean | null | undefined | DaySlotOnDateSlotArgs> =
-    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? DaySlotOnDateSlot :
-    S extends undefined ? never :
-    S extends { include: any } & (DaySlotOnDateSlotArgs | DaySlotOnDateSlotFindManyArgs)
-    ? DaySlotOnDateSlot  & {
-    [P in TruthyKeys<S['include']>]:
-        P extends 'daySlot' ? DaySlotGetPayload<S['include'][P]> :
-        P extends 'dateSlot' ? DateSlotGetPayload<S['include'][P]> :  never
-  } 
-    : S extends { select: any } & (DaySlotOnDateSlotArgs | DaySlotOnDateSlotFindManyArgs)
-      ? {
-    [P in TruthyKeys<S['select']>]:
-        P extends 'daySlot' ? DaySlotGetPayload<S['select'][P]> :
-        P extends 'dateSlot' ? DateSlotGetPayload<S['select'][P]> :  P extends keyof DaySlotOnDateSlot ? DaySlotOnDateSlot[P] : never
-  } 
-      : DaySlotOnDateSlot
-
-
-  type DaySlotOnDateSlotCountArgs = 
-    Omit<DaySlotOnDateSlotFindManyArgs, 'select' | 'include'> & {
-      select?: DaySlotOnDateSlotCountAggregateInputType | true
-    }
-
-  export interface DaySlotOnDateSlotDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
-
-    /**
-     * Find zero or one DaySlotOnDateSlot that matches the filter.
-     * @param {DaySlotOnDateSlotFindUniqueArgs} args - Arguments to find a DaySlotOnDateSlot
-     * @example
-     * // Get one DaySlotOnDateSlot
-     * const daySlotOnDateSlot = await prisma.daySlotOnDateSlot.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUnique<T extends DaySlotOnDateSlotFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args: SelectSubset<T, DaySlotOnDateSlotFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'DaySlotOnDateSlot'> extends True ? Prisma__DaySlotOnDateSlotClient<DaySlotOnDateSlotGetPayload<T>> : Prisma__DaySlotOnDateSlotClient<DaySlotOnDateSlotGetPayload<T> | null, null>
-
-    /**
-     * Find one DaySlotOnDateSlot that matches the filter or throw an error  with `error.code='P2025'` 
-     *     if no matches were found.
-     * @param {DaySlotOnDateSlotFindUniqueOrThrowArgs} args - Arguments to find a DaySlotOnDateSlot
-     * @example
-     * // Get one DaySlotOnDateSlot
-     * const daySlotOnDateSlot = await prisma.daySlotOnDateSlot.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUniqueOrThrow<T extends DaySlotOnDateSlotFindUniqueOrThrowArgs>(
-      args?: SelectSubset<T, DaySlotOnDateSlotFindUniqueOrThrowArgs>
-    ): Prisma__DaySlotOnDateSlotClient<DaySlotOnDateSlotGetPayload<T>>
-
-    /**
-     * Find the first DaySlotOnDateSlot that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DaySlotOnDateSlotFindFirstArgs} args - Arguments to find a DaySlotOnDateSlot
-     * @example
-     * // Get one DaySlotOnDateSlot
-     * const daySlotOnDateSlot = await prisma.daySlotOnDateSlot.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirst<T extends DaySlotOnDateSlotFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args?: SelectSubset<T, DaySlotOnDateSlotFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'DaySlotOnDateSlot'> extends True ? Prisma__DaySlotOnDateSlotClient<DaySlotOnDateSlotGetPayload<T>> : Prisma__DaySlotOnDateSlotClient<DaySlotOnDateSlotGetPayload<T> | null, null>
-
-    /**
-     * Find the first DaySlotOnDateSlot that matches the filter or
-     * throw `NotFoundError` if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DaySlotOnDateSlotFindFirstOrThrowArgs} args - Arguments to find a DaySlotOnDateSlot
-     * @example
-     * // Get one DaySlotOnDateSlot
-     * const daySlotOnDateSlot = await prisma.daySlotOnDateSlot.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirstOrThrow<T extends DaySlotOnDateSlotFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, DaySlotOnDateSlotFindFirstOrThrowArgs>
-    ): Prisma__DaySlotOnDateSlotClient<DaySlotOnDateSlotGetPayload<T>>
-
-    /**
-     * Find zero or more DaySlotOnDateSlots that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DaySlotOnDateSlotFindManyArgs=} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all DaySlotOnDateSlots
-     * const daySlotOnDateSlots = await prisma.daySlotOnDateSlot.findMany()
-     * 
-     * // Get first 10 DaySlotOnDateSlots
-     * const daySlotOnDateSlots = await prisma.daySlotOnDateSlot.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const daySlotOnDateSlotWithIdOnly = await prisma.daySlotOnDateSlot.findMany({ select: { id: true } })
-     * 
-    **/
-    findMany<T extends DaySlotOnDateSlotFindManyArgs>(
-      args?: SelectSubset<T, DaySlotOnDateSlotFindManyArgs>
-    ): Prisma.PrismaPromise<Array<DaySlotOnDateSlotGetPayload<T>>>
-
-    /**
-     * Create a DaySlotOnDateSlot.
-     * @param {DaySlotOnDateSlotCreateArgs} args - Arguments to create a DaySlotOnDateSlot.
-     * @example
-     * // Create one DaySlotOnDateSlot
-     * const DaySlotOnDateSlot = await prisma.daySlotOnDateSlot.create({
-     *   data: {
-     *     // ... data to create a DaySlotOnDateSlot
-     *   }
-     * })
-     * 
-    **/
-    create<T extends DaySlotOnDateSlotCreateArgs>(
-      args: SelectSubset<T, DaySlotOnDateSlotCreateArgs>
-    ): Prisma__DaySlotOnDateSlotClient<DaySlotOnDateSlotGetPayload<T>>
-
-    /**
-     * Create many DaySlotOnDateSlots.
-     *     @param {DaySlotOnDateSlotCreateManyArgs} args - Arguments to create many DaySlotOnDateSlots.
-     *     @example
-     *     // Create many DaySlotOnDateSlots
-     *     const daySlotOnDateSlot = await prisma.daySlotOnDateSlot.createMany({
-     *       data: {
-     *         // ... provide data here
-     *       }
-     *     })
-     *     
-    **/
-    createMany<T extends DaySlotOnDateSlotCreateManyArgs>(
-      args?: SelectSubset<T, DaySlotOnDateSlotCreateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Delete a DaySlotOnDateSlot.
-     * @param {DaySlotOnDateSlotDeleteArgs} args - Arguments to delete one DaySlotOnDateSlot.
-     * @example
-     * // Delete one DaySlotOnDateSlot
-     * const DaySlotOnDateSlot = await prisma.daySlotOnDateSlot.delete({
-     *   where: {
-     *     // ... filter to delete one DaySlotOnDateSlot
-     *   }
-     * })
-     * 
-    **/
-    delete<T extends DaySlotOnDateSlotDeleteArgs>(
-      args: SelectSubset<T, DaySlotOnDateSlotDeleteArgs>
-    ): Prisma__DaySlotOnDateSlotClient<DaySlotOnDateSlotGetPayload<T>>
-
-    /**
-     * Update one DaySlotOnDateSlot.
-     * @param {DaySlotOnDateSlotUpdateArgs} args - Arguments to update one DaySlotOnDateSlot.
-     * @example
-     * // Update one DaySlotOnDateSlot
-     * const daySlotOnDateSlot = await prisma.daySlotOnDateSlot.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    update<T extends DaySlotOnDateSlotUpdateArgs>(
-      args: SelectSubset<T, DaySlotOnDateSlotUpdateArgs>
-    ): Prisma__DaySlotOnDateSlotClient<DaySlotOnDateSlotGetPayload<T>>
-
-    /**
-     * Delete zero or more DaySlotOnDateSlots.
-     * @param {DaySlotOnDateSlotDeleteManyArgs} args - Arguments to filter DaySlotOnDateSlots to delete.
-     * @example
-     * // Delete a few DaySlotOnDateSlots
-     * const { count } = await prisma.daySlotOnDateSlot.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-    **/
-    deleteMany<T extends DaySlotOnDateSlotDeleteManyArgs>(
-      args?: SelectSubset<T, DaySlotOnDateSlotDeleteManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more DaySlotOnDateSlots.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DaySlotOnDateSlotUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many DaySlotOnDateSlots
-     * const daySlotOnDateSlot = await prisma.daySlotOnDateSlot.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    updateMany<T extends DaySlotOnDateSlotUpdateManyArgs>(
-      args: SelectSubset<T, DaySlotOnDateSlotUpdateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one DaySlotOnDateSlot.
-     * @param {DaySlotOnDateSlotUpsertArgs} args - Arguments to update or create a DaySlotOnDateSlot.
-     * @example
-     * // Update or create a DaySlotOnDateSlot
-     * const daySlotOnDateSlot = await prisma.daySlotOnDateSlot.upsert({
-     *   create: {
-     *     // ... data to create a DaySlotOnDateSlot
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the DaySlotOnDateSlot we want to update
-     *   }
-     * })
-    **/
-    upsert<T extends DaySlotOnDateSlotUpsertArgs>(
-      args: SelectSubset<T, DaySlotOnDateSlotUpsertArgs>
-    ): Prisma__DaySlotOnDateSlotClient<DaySlotOnDateSlotGetPayload<T>>
-
-    /**
-     * Count the number of DaySlotOnDateSlots.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DaySlotOnDateSlotCountArgs} args - Arguments to filter DaySlotOnDateSlots to count.
-     * @example
-     * // Count the number of DaySlotOnDateSlots
-     * const count = await prisma.daySlotOnDateSlot.count({
-     *   where: {
-     *     // ... the filter for the DaySlotOnDateSlots we want to count
-     *   }
-     * })
-    **/
-    count<T extends DaySlotOnDateSlotCountArgs>(
-      args?: Subset<T, DaySlotOnDateSlotCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends _Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], DaySlotOnDateSlotCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a DaySlotOnDateSlot.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DaySlotOnDateSlotAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends DaySlotOnDateSlotAggregateArgs>(args: Subset<T, DaySlotOnDateSlotAggregateArgs>): Prisma.PrismaPromise<GetDaySlotOnDateSlotAggregateType<T>>
-
-    /**
-     * Group by DaySlotOnDateSlot.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DaySlotOnDateSlotGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends DaySlotOnDateSlotGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: DaySlotOnDateSlotGroupByArgs['orderBy'] }
-        : { orderBy?: DaySlotOnDateSlotGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends TupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, DaySlotOnDateSlotGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDaySlotOnDateSlotGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for DaySlotOnDateSlot.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export class Prisma__DaySlotOnDateSlotClient<T, Null = never> implements Prisma.PrismaPromise<T> {
-    private readonly _dmmf;
-    private readonly _queryType;
-    private readonly _rootField;
-    private readonly _clientMethod;
-    private readonly _args;
-    private readonly _dataPath;
-    private readonly _errorFormat;
-    private readonly _measurePerformance?;
-    private _isList;
-    private _callsite;
-    private _requestPromise?;
-    readonly [Symbol.toStringTag]: 'PrismaPromise';
-    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
-
-    daySlot<T extends DaySlotArgs= {}>(args?: Subset<T, DaySlotArgs>): Prisma__DaySlotClient<DaySlotGetPayload<T> | Null>;
-
-    dateSlot<T extends DateSlotArgs= {}>(args?: Subset<T, DateSlotArgs>): Prisma__DateSlotClient<DateSlotGetPayload<T> | Null>;
-
-    private get _document();
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
-  }
-
-
-
-  // Custom InputTypes
-
-  /**
-   * DaySlotOnDateSlot base type for findUnique actions
-   */
-  export type DaySlotOnDateSlotFindUniqueArgsBase = {
-    /**
-     * Select specific fields to fetch from the DaySlotOnDateSlot
-     */
-    select?: DaySlotOnDateSlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DaySlotOnDateSlotInclude | null
-    /**
-     * Filter, which DaySlotOnDateSlot to fetch.
-     */
-    where: DaySlotOnDateSlotWhereUniqueInput
-  }
-
-  /**
-   * DaySlotOnDateSlot findUnique
-   */
-  export interface DaySlotOnDateSlotFindUniqueArgs extends DaySlotOnDateSlotFindUniqueArgsBase {
-   /**
-    * Throw an Error if query returns no results
-    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
-    */
-    rejectOnNotFound?: RejectOnNotFound
-  }
-      
-
-  /**
-   * DaySlotOnDateSlot findUniqueOrThrow
-   */
-  export type DaySlotOnDateSlotFindUniqueOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the DaySlotOnDateSlot
-     */
-    select?: DaySlotOnDateSlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DaySlotOnDateSlotInclude | null
-    /**
-     * Filter, which DaySlotOnDateSlot to fetch.
-     */
-    where: DaySlotOnDateSlotWhereUniqueInput
-  }
-
-
-  /**
-   * DaySlotOnDateSlot base type for findFirst actions
-   */
-  export type DaySlotOnDateSlotFindFirstArgsBase = {
-    /**
-     * Select specific fields to fetch from the DaySlotOnDateSlot
-     */
-    select?: DaySlotOnDateSlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DaySlotOnDateSlotInclude | null
-    /**
-     * Filter, which DaySlotOnDateSlot to fetch.
-     */
-    where?: DaySlotOnDateSlotWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of DaySlotOnDateSlots to fetch.
-     */
-    orderBy?: Enumerable<DaySlotOnDateSlotOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for DaySlotOnDateSlots.
-     */
-    cursor?: DaySlotOnDateSlotWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` DaySlotOnDateSlots from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` DaySlotOnDateSlots.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of DaySlotOnDateSlots.
-     */
-    distinct?: Enumerable<DaySlotOnDateSlotScalarFieldEnum>
-  }
-
-  /**
-   * DaySlotOnDateSlot findFirst
-   */
-  export interface DaySlotOnDateSlotFindFirstArgs extends DaySlotOnDateSlotFindFirstArgsBase {
-   /**
-    * Throw an Error if query returns no results
-    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
-    */
-    rejectOnNotFound?: RejectOnNotFound
-  }
-      
-
-  /**
-   * DaySlotOnDateSlot findFirstOrThrow
-   */
-  export type DaySlotOnDateSlotFindFirstOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the DaySlotOnDateSlot
-     */
-    select?: DaySlotOnDateSlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DaySlotOnDateSlotInclude | null
-    /**
-     * Filter, which DaySlotOnDateSlot to fetch.
-     */
-    where?: DaySlotOnDateSlotWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of DaySlotOnDateSlots to fetch.
-     */
-    orderBy?: Enumerable<DaySlotOnDateSlotOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for DaySlotOnDateSlots.
-     */
-    cursor?: DaySlotOnDateSlotWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` DaySlotOnDateSlots from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` DaySlotOnDateSlots.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of DaySlotOnDateSlots.
-     */
-    distinct?: Enumerable<DaySlotOnDateSlotScalarFieldEnum>
-  }
-
-
-  /**
-   * DaySlotOnDateSlot findMany
-   */
-  export type DaySlotOnDateSlotFindManyArgs = {
-    /**
-     * Select specific fields to fetch from the DaySlotOnDateSlot
-     */
-    select?: DaySlotOnDateSlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DaySlotOnDateSlotInclude | null
-    /**
-     * Filter, which DaySlotOnDateSlots to fetch.
-     */
-    where?: DaySlotOnDateSlotWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of DaySlotOnDateSlots to fetch.
-     */
-    orderBy?: Enumerable<DaySlotOnDateSlotOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing DaySlotOnDateSlots.
-     */
-    cursor?: DaySlotOnDateSlotWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` DaySlotOnDateSlots from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` DaySlotOnDateSlots.
-     */
-    skip?: number
-    distinct?: Enumerable<DaySlotOnDateSlotScalarFieldEnum>
-  }
-
-
-  /**
-   * DaySlotOnDateSlot create
-   */
-  export type DaySlotOnDateSlotCreateArgs = {
-    /**
-     * Select specific fields to fetch from the DaySlotOnDateSlot
-     */
-    select?: DaySlotOnDateSlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DaySlotOnDateSlotInclude | null
-    /**
-     * The data needed to create a DaySlotOnDateSlot.
-     */
-    data: XOR<DaySlotOnDateSlotCreateInput, DaySlotOnDateSlotUncheckedCreateInput>
-  }
-
-
-  /**
-   * DaySlotOnDateSlot createMany
-   */
-  export type DaySlotOnDateSlotCreateManyArgs = {
-    /**
-     * The data used to create many DaySlotOnDateSlots.
-     */
-    data: Enumerable<DaySlotOnDateSlotCreateManyInput>
-    skipDuplicates?: boolean
-  }
-
-
-  /**
-   * DaySlotOnDateSlot update
-   */
-  export type DaySlotOnDateSlotUpdateArgs = {
-    /**
-     * Select specific fields to fetch from the DaySlotOnDateSlot
-     */
-    select?: DaySlotOnDateSlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DaySlotOnDateSlotInclude | null
-    /**
-     * The data needed to update a DaySlotOnDateSlot.
-     */
-    data: XOR<DaySlotOnDateSlotUpdateInput, DaySlotOnDateSlotUncheckedUpdateInput>
-    /**
-     * Choose, which DaySlotOnDateSlot to update.
-     */
-    where: DaySlotOnDateSlotWhereUniqueInput
-  }
-
-
-  /**
-   * DaySlotOnDateSlot updateMany
-   */
-  export type DaySlotOnDateSlotUpdateManyArgs = {
-    /**
-     * The data used to update DaySlotOnDateSlots.
-     */
-    data: XOR<DaySlotOnDateSlotUpdateManyMutationInput, DaySlotOnDateSlotUncheckedUpdateManyInput>
-    /**
-     * Filter which DaySlotOnDateSlots to update
-     */
-    where?: DaySlotOnDateSlotWhereInput
-  }
-
-
-  /**
-   * DaySlotOnDateSlot upsert
-   */
-  export type DaySlotOnDateSlotUpsertArgs = {
-    /**
-     * Select specific fields to fetch from the DaySlotOnDateSlot
-     */
-    select?: DaySlotOnDateSlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DaySlotOnDateSlotInclude | null
-    /**
-     * The filter to search for the DaySlotOnDateSlot to update in case it exists.
-     */
-    where: DaySlotOnDateSlotWhereUniqueInput
-    /**
-     * In case the DaySlotOnDateSlot found by the `where` argument doesn't exist, create a new DaySlotOnDateSlot with this data.
-     */
-    create: XOR<DaySlotOnDateSlotCreateInput, DaySlotOnDateSlotUncheckedCreateInput>
-    /**
-     * In case the DaySlotOnDateSlot was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<DaySlotOnDateSlotUpdateInput, DaySlotOnDateSlotUncheckedUpdateInput>
-  }
-
-
-  /**
-   * DaySlotOnDateSlot delete
-   */
-  export type DaySlotOnDateSlotDeleteArgs = {
-    /**
-     * Select specific fields to fetch from the DaySlotOnDateSlot
-     */
-    select?: DaySlotOnDateSlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DaySlotOnDateSlotInclude | null
-    /**
-     * Filter which DaySlotOnDateSlot to delete.
-     */
-    where: DaySlotOnDateSlotWhereUniqueInput
-  }
-
-
-  /**
-   * DaySlotOnDateSlot deleteMany
-   */
-  export type DaySlotOnDateSlotDeleteManyArgs = {
-    /**
-     * Filter which DaySlotOnDateSlots to delete
-     */
-    where?: DaySlotOnDateSlotWhereInput
-  }
-
-
-  /**
-   * DaySlotOnDateSlot without action
-   */
-  export type DaySlotOnDateSlotArgs = {
-    /**
-     * Select specific fields to fetch from the DaySlotOnDateSlot
-     */
-    select?: DaySlotOnDateSlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DaySlotOnDateSlotInclude | null
-  }
-
-
-
-  /**
-   * Model EventTypeOnDaySlot
-   */
-
-
-  export type AggregateEventTypeOnDaySlot = {
-    _count: EventTypeOnDaySlotCountAggregateOutputType | null
-    _avg: EventTypeOnDaySlotAvgAggregateOutputType | null
-    _sum: EventTypeOnDaySlotSumAggregateOutputType | null
-    _min: EventTypeOnDaySlotMinAggregateOutputType | null
-    _max: EventTypeOnDaySlotMaxAggregateOutputType | null
-  }
-
-  export type EventTypeOnDaySlotAvgAggregateOutputType = {
-    id: number | null
-    eventTypeId: number | null
-    daySlotId: number | null
-  }
-
-  export type EventTypeOnDaySlotSumAggregateOutputType = {
-    id: number | null
-    eventTypeId: number | null
-    daySlotId: number | null
-  }
-
-  export type EventTypeOnDaySlotMinAggregateOutputType = {
-    id: number | null
-    eventTypeId: number | null
-    daySlotId: number | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type EventTypeOnDaySlotMaxAggregateOutputType = {
-    id: number | null
-    eventTypeId: number | null
-    daySlotId: number | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type EventTypeOnDaySlotCountAggregateOutputType = {
-    id: number
-    eventTypeId: number
-    daySlotId: number
-    createdAt: number
-    updatedAt: number
-    _all: number
-  }
-
-
-  export type EventTypeOnDaySlotAvgAggregateInputType = {
-    id?: true
-    eventTypeId?: true
-    daySlotId?: true
-  }
-
-  export type EventTypeOnDaySlotSumAggregateInputType = {
-    id?: true
-    eventTypeId?: true
-    daySlotId?: true
-  }
-
-  export type EventTypeOnDaySlotMinAggregateInputType = {
-    id?: true
-    eventTypeId?: true
-    daySlotId?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type EventTypeOnDaySlotMaxAggregateInputType = {
-    id?: true
-    eventTypeId?: true
-    daySlotId?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type EventTypeOnDaySlotCountAggregateInputType = {
-    id?: true
-    eventTypeId?: true
-    daySlotId?: true
-    createdAt?: true
-    updatedAt?: true
-    _all?: true
-  }
-
-  export type EventTypeOnDaySlotAggregateArgs = {
-    /**
-     * Filter which EventTypeOnDaySlot to aggregate.
-     */
-    where?: EventTypeOnDaySlotWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of EventTypeOnDaySlots to fetch.
-     */
-    orderBy?: Enumerable<EventTypeOnDaySlotOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: EventTypeOnDaySlotWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` EventTypeOnDaySlots from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` EventTypeOnDaySlots.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned EventTypeOnDaySlots
-    **/
-    _count?: true | EventTypeOnDaySlotCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: EventTypeOnDaySlotAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: EventTypeOnDaySlotSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: EventTypeOnDaySlotMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: EventTypeOnDaySlotMaxAggregateInputType
-  }
-
-  export type GetEventTypeOnDaySlotAggregateType<T extends EventTypeOnDaySlotAggregateArgs> = {
-        [P in keyof T & keyof AggregateEventTypeOnDaySlot]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateEventTypeOnDaySlot[P]>
-      : GetScalarType<T[P], AggregateEventTypeOnDaySlot[P]>
-  }
-
-
-
-
-  export type EventTypeOnDaySlotGroupByArgs = {
-    where?: EventTypeOnDaySlotWhereInput
-    orderBy?: Enumerable<EventTypeOnDaySlotOrderByWithAggregationInput>
-    by: EventTypeOnDaySlotScalarFieldEnum[]
-    having?: EventTypeOnDaySlotScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: EventTypeOnDaySlotCountAggregateInputType | true
-    _avg?: EventTypeOnDaySlotAvgAggregateInputType
-    _sum?: EventTypeOnDaySlotSumAggregateInputType
-    _min?: EventTypeOnDaySlotMinAggregateInputType
-    _max?: EventTypeOnDaySlotMaxAggregateInputType
-  }
-
-
-  export type EventTypeOnDaySlotGroupByOutputType = {
-    id: number
-    eventTypeId: number
-    daySlotId: number
-    createdAt: Date
-    updatedAt: Date
-    _count: EventTypeOnDaySlotCountAggregateOutputType | null
-    _avg: EventTypeOnDaySlotAvgAggregateOutputType | null
-    _sum: EventTypeOnDaySlotSumAggregateOutputType | null
-    _min: EventTypeOnDaySlotMinAggregateOutputType | null
-    _max: EventTypeOnDaySlotMaxAggregateOutputType | null
-  }
-
-  type GetEventTypeOnDaySlotGroupByPayload<T extends EventTypeOnDaySlotGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickArray<EventTypeOnDaySlotGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof EventTypeOnDaySlotGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], EventTypeOnDaySlotGroupByOutputType[P]>
-            : GetScalarType<T[P], EventTypeOnDaySlotGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type EventTypeOnDaySlotSelect = {
-    id?: boolean
-    eventTypeId?: boolean
-    daySlotId?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    eventType?: boolean | EventTypeArgs
-    daySlot?: boolean | DaySlotArgs
-  }
-
-
-  export type EventTypeOnDaySlotInclude = {
-    eventType?: boolean | EventTypeArgs
-    daySlot?: boolean | DaySlotArgs
-  }
-
-  export type EventTypeOnDaySlotGetPayload<S extends boolean | null | undefined | EventTypeOnDaySlotArgs> =
-    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? EventTypeOnDaySlot :
-    S extends undefined ? never :
-    S extends { include: any } & (EventTypeOnDaySlotArgs | EventTypeOnDaySlotFindManyArgs)
-    ? EventTypeOnDaySlot  & {
-    [P in TruthyKeys<S['include']>]:
-        P extends 'eventType' ? EventTypeGetPayload<S['include'][P]> :
-        P extends 'daySlot' ? DaySlotGetPayload<S['include'][P]> :  never
-  } 
-    : S extends { select: any } & (EventTypeOnDaySlotArgs | EventTypeOnDaySlotFindManyArgs)
-      ? {
-    [P in TruthyKeys<S['select']>]:
-        P extends 'eventType' ? EventTypeGetPayload<S['select'][P]> :
-        P extends 'daySlot' ? DaySlotGetPayload<S['select'][P]> :  P extends keyof EventTypeOnDaySlot ? EventTypeOnDaySlot[P] : never
-  } 
-      : EventTypeOnDaySlot
-
-
-  type EventTypeOnDaySlotCountArgs = 
-    Omit<EventTypeOnDaySlotFindManyArgs, 'select' | 'include'> & {
-      select?: EventTypeOnDaySlotCountAggregateInputType | true
-    }
-
-  export interface EventTypeOnDaySlotDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
-
-    /**
-     * Find zero or one EventTypeOnDaySlot that matches the filter.
-     * @param {EventTypeOnDaySlotFindUniqueArgs} args - Arguments to find a EventTypeOnDaySlot
-     * @example
-     * // Get one EventTypeOnDaySlot
-     * const eventTypeOnDaySlot = await prisma.eventTypeOnDaySlot.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUnique<T extends EventTypeOnDaySlotFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args: SelectSubset<T, EventTypeOnDaySlotFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'EventTypeOnDaySlot'> extends True ? Prisma__EventTypeOnDaySlotClient<EventTypeOnDaySlotGetPayload<T>> : Prisma__EventTypeOnDaySlotClient<EventTypeOnDaySlotGetPayload<T> | null, null>
-
-    /**
-     * Find one EventTypeOnDaySlot that matches the filter or throw an error  with `error.code='P2025'` 
-     *     if no matches were found.
-     * @param {EventTypeOnDaySlotFindUniqueOrThrowArgs} args - Arguments to find a EventTypeOnDaySlot
-     * @example
-     * // Get one EventTypeOnDaySlot
-     * const eventTypeOnDaySlot = await prisma.eventTypeOnDaySlot.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUniqueOrThrow<T extends EventTypeOnDaySlotFindUniqueOrThrowArgs>(
-      args?: SelectSubset<T, EventTypeOnDaySlotFindUniqueOrThrowArgs>
-    ): Prisma__EventTypeOnDaySlotClient<EventTypeOnDaySlotGetPayload<T>>
-
-    /**
-     * Find the first EventTypeOnDaySlot that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {EventTypeOnDaySlotFindFirstArgs} args - Arguments to find a EventTypeOnDaySlot
-     * @example
-     * // Get one EventTypeOnDaySlot
-     * const eventTypeOnDaySlot = await prisma.eventTypeOnDaySlot.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirst<T extends EventTypeOnDaySlotFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args?: SelectSubset<T, EventTypeOnDaySlotFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'EventTypeOnDaySlot'> extends True ? Prisma__EventTypeOnDaySlotClient<EventTypeOnDaySlotGetPayload<T>> : Prisma__EventTypeOnDaySlotClient<EventTypeOnDaySlotGetPayload<T> | null, null>
-
-    /**
-     * Find the first EventTypeOnDaySlot that matches the filter or
-     * throw `NotFoundError` if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {EventTypeOnDaySlotFindFirstOrThrowArgs} args - Arguments to find a EventTypeOnDaySlot
-     * @example
-     * // Get one EventTypeOnDaySlot
-     * const eventTypeOnDaySlot = await prisma.eventTypeOnDaySlot.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirstOrThrow<T extends EventTypeOnDaySlotFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, EventTypeOnDaySlotFindFirstOrThrowArgs>
-    ): Prisma__EventTypeOnDaySlotClient<EventTypeOnDaySlotGetPayload<T>>
-
-    /**
-     * Find zero or more EventTypeOnDaySlots that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {EventTypeOnDaySlotFindManyArgs=} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all EventTypeOnDaySlots
-     * const eventTypeOnDaySlots = await prisma.eventTypeOnDaySlot.findMany()
-     * 
-     * // Get first 10 EventTypeOnDaySlots
-     * const eventTypeOnDaySlots = await prisma.eventTypeOnDaySlot.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const eventTypeOnDaySlotWithIdOnly = await prisma.eventTypeOnDaySlot.findMany({ select: { id: true } })
-     * 
-    **/
-    findMany<T extends EventTypeOnDaySlotFindManyArgs>(
-      args?: SelectSubset<T, EventTypeOnDaySlotFindManyArgs>
-    ): Prisma.PrismaPromise<Array<EventTypeOnDaySlotGetPayload<T>>>
-
-    /**
-     * Create a EventTypeOnDaySlot.
-     * @param {EventTypeOnDaySlotCreateArgs} args - Arguments to create a EventTypeOnDaySlot.
-     * @example
-     * // Create one EventTypeOnDaySlot
-     * const EventTypeOnDaySlot = await prisma.eventTypeOnDaySlot.create({
-     *   data: {
-     *     // ... data to create a EventTypeOnDaySlot
-     *   }
-     * })
-     * 
-    **/
-    create<T extends EventTypeOnDaySlotCreateArgs>(
-      args: SelectSubset<T, EventTypeOnDaySlotCreateArgs>
-    ): Prisma__EventTypeOnDaySlotClient<EventTypeOnDaySlotGetPayload<T>>
-
-    /**
-     * Create many EventTypeOnDaySlots.
-     *     @param {EventTypeOnDaySlotCreateManyArgs} args - Arguments to create many EventTypeOnDaySlots.
-     *     @example
-     *     // Create many EventTypeOnDaySlots
-     *     const eventTypeOnDaySlot = await prisma.eventTypeOnDaySlot.createMany({
-     *       data: {
-     *         // ... provide data here
-     *       }
-     *     })
-     *     
-    **/
-    createMany<T extends EventTypeOnDaySlotCreateManyArgs>(
-      args?: SelectSubset<T, EventTypeOnDaySlotCreateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Delete a EventTypeOnDaySlot.
-     * @param {EventTypeOnDaySlotDeleteArgs} args - Arguments to delete one EventTypeOnDaySlot.
-     * @example
-     * // Delete one EventTypeOnDaySlot
-     * const EventTypeOnDaySlot = await prisma.eventTypeOnDaySlot.delete({
-     *   where: {
-     *     // ... filter to delete one EventTypeOnDaySlot
-     *   }
-     * })
-     * 
-    **/
-    delete<T extends EventTypeOnDaySlotDeleteArgs>(
-      args: SelectSubset<T, EventTypeOnDaySlotDeleteArgs>
-    ): Prisma__EventTypeOnDaySlotClient<EventTypeOnDaySlotGetPayload<T>>
-
-    /**
-     * Update one EventTypeOnDaySlot.
-     * @param {EventTypeOnDaySlotUpdateArgs} args - Arguments to update one EventTypeOnDaySlot.
-     * @example
-     * // Update one EventTypeOnDaySlot
-     * const eventTypeOnDaySlot = await prisma.eventTypeOnDaySlot.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    update<T extends EventTypeOnDaySlotUpdateArgs>(
-      args: SelectSubset<T, EventTypeOnDaySlotUpdateArgs>
-    ): Prisma__EventTypeOnDaySlotClient<EventTypeOnDaySlotGetPayload<T>>
-
-    /**
-     * Delete zero or more EventTypeOnDaySlots.
-     * @param {EventTypeOnDaySlotDeleteManyArgs} args - Arguments to filter EventTypeOnDaySlots to delete.
-     * @example
-     * // Delete a few EventTypeOnDaySlots
-     * const { count } = await prisma.eventTypeOnDaySlot.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-    **/
-    deleteMany<T extends EventTypeOnDaySlotDeleteManyArgs>(
-      args?: SelectSubset<T, EventTypeOnDaySlotDeleteManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more EventTypeOnDaySlots.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {EventTypeOnDaySlotUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many EventTypeOnDaySlots
-     * const eventTypeOnDaySlot = await prisma.eventTypeOnDaySlot.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    updateMany<T extends EventTypeOnDaySlotUpdateManyArgs>(
-      args: SelectSubset<T, EventTypeOnDaySlotUpdateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one EventTypeOnDaySlot.
-     * @param {EventTypeOnDaySlotUpsertArgs} args - Arguments to update or create a EventTypeOnDaySlot.
-     * @example
-     * // Update or create a EventTypeOnDaySlot
-     * const eventTypeOnDaySlot = await prisma.eventTypeOnDaySlot.upsert({
-     *   create: {
-     *     // ... data to create a EventTypeOnDaySlot
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the EventTypeOnDaySlot we want to update
-     *   }
-     * })
-    **/
-    upsert<T extends EventTypeOnDaySlotUpsertArgs>(
-      args: SelectSubset<T, EventTypeOnDaySlotUpsertArgs>
-    ): Prisma__EventTypeOnDaySlotClient<EventTypeOnDaySlotGetPayload<T>>
-
-    /**
-     * Count the number of EventTypeOnDaySlots.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {EventTypeOnDaySlotCountArgs} args - Arguments to filter EventTypeOnDaySlots to count.
-     * @example
-     * // Count the number of EventTypeOnDaySlots
-     * const count = await prisma.eventTypeOnDaySlot.count({
-     *   where: {
-     *     // ... the filter for the EventTypeOnDaySlots we want to count
-     *   }
-     * })
-    **/
-    count<T extends EventTypeOnDaySlotCountArgs>(
-      args?: Subset<T, EventTypeOnDaySlotCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends _Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], EventTypeOnDaySlotCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a EventTypeOnDaySlot.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {EventTypeOnDaySlotAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends EventTypeOnDaySlotAggregateArgs>(args: Subset<T, EventTypeOnDaySlotAggregateArgs>): Prisma.PrismaPromise<GetEventTypeOnDaySlotAggregateType<T>>
-
-    /**
-     * Group by EventTypeOnDaySlot.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {EventTypeOnDaySlotGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends EventTypeOnDaySlotGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: EventTypeOnDaySlotGroupByArgs['orderBy'] }
-        : { orderBy?: EventTypeOnDaySlotGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends TupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, EventTypeOnDaySlotGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetEventTypeOnDaySlotGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for EventTypeOnDaySlot.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export class Prisma__EventTypeOnDaySlotClient<T, Null = never> implements Prisma.PrismaPromise<T> {
-    private readonly _dmmf;
-    private readonly _queryType;
-    private readonly _rootField;
-    private readonly _clientMethod;
-    private readonly _args;
-    private readonly _dataPath;
-    private readonly _errorFormat;
-    private readonly _measurePerformance?;
-    private _isList;
-    private _callsite;
-    private _requestPromise?;
-    readonly [Symbol.toStringTag]: 'PrismaPromise';
-    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
-
-    eventType<T extends EventTypeArgs= {}>(args?: Subset<T, EventTypeArgs>): Prisma__EventTypeClient<EventTypeGetPayload<T> | Null>;
-
-    daySlot<T extends DaySlotArgs= {}>(args?: Subset<T, DaySlotArgs>): Prisma__DaySlotClient<DaySlotGetPayload<T> | Null>;
-
-    private get _document();
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
-  }
-
-
-
-  // Custom InputTypes
-
-  /**
-   * EventTypeOnDaySlot base type for findUnique actions
-   */
-  export type EventTypeOnDaySlotFindUniqueArgsBase = {
-    /**
-     * Select specific fields to fetch from the EventTypeOnDaySlot
-     */
-    select?: EventTypeOnDaySlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: EventTypeOnDaySlotInclude | null
-    /**
-     * Filter, which EventTypeOnDaySlot to fetch.
-     */
-    where: EventTypeOnDaySlotWhereUniqueInput
-  }
-
-  /**
-   * EventTypeOnDaySlot findUnique
-   */
-  export interface EventTypeOnDaySlotFindUniqueArgs extends EventTypeOnDaySlotFindUniqueArgsBase {
-   /**
-    * Throw an Error if query returns no results
-    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
-    */
-    rejectOnNotFound?: RejectOnNotFound
-  }
-      
-
-  /**
-   * EventTypeOnDaySlot findUniqueOrThrow
-   */
-  export type EventTypeOnDaySlotFindUniqueOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the EventTypeOnDaySlot
-     */
-    select?: EventTypeOnDaySlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: EventTypeOnDaySlotInclude | null
-    /**
-     * Filter, which EventTypeOnDaySlot to fetch.
-     */
-    where: EventTypeOnDaySlotWhereUniqueInput
-  }
-
-
-  /**
-   * EventTypeOnDaySlot base type for findFirst actions
-   */
-  export type EventTypeOnDaySlotFindFirstArgsBase = {
-    /**
-     * Select specific fields to fetch from the EventTypeOnDaySlot
-     */
-    select?: EventTypeOnDaySlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: EventTypeOnDaySlotInclude | null
-    /**
-     * Filter, which EventTypeOnDaySlot to fetch.
-     */
-    where?: EventTypeOnDaySlotWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of EventTypeOnDaySlots to fetch.
-     */
-    orderBy?: Enumerable<EventTypeOnDaySlotOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for EventTypeOnDaySlots.
-     */
-    cursor?: EventTypeOnDaySlotWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` EventTypeOnDaySlots from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` EventTypeOnDaySlots.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of EventTypeOnDaySlots.
-     */
-    distinct?: Enumerable<EventTypeOnDaySlotScalarFieldEnum>
-  }
-
-  /**
-   * EventTypeOnDaySlot findFirst
-   */
-  export interface EventTypeOnDaySlotFindFirstArgs extends EventTypeOnDaySlotFindFirstArgsBase {
-   /**
-    * Throw an Error if query returns no results
-    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
-    */
-    rejectOnNotFound?: RejectOnNotFound
-  }
-      
-
-  /**
-   * EventTypeOnDaySlot findFirstOrThrow
-   */
-  export type EventTypeOnDaySlotFindFirstOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the EventTypeOnDaySlot
-     */
-    select?: EventTypeOnDaySlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: EventTypeOnDaySlotInclude | null
-    /**
-     * Filter, which EventTypeOnDaySlot to fetch.
-     */
-    where?: EventTypeOnDaySlotWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of EventTypeOnDaySlots to fetch.
-     */
-    orderBy?: Enumerable<EventTypeOnDaySlotOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for EventTypeOnDaySlots.
-     */
-    cursor?: EventTypeOnDaySlotWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` EventTypeOnDaySlots from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` EventTypeOnDaySlots.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of EventTypeOnDaySlots.
-     */
-    distinct?: Enumerable<EventTypeOnDaySlotScalarFieldEnum>
-  }
-
-
-  /**
-   * EventTypeOnDaySlot findMany
-   */
-  export type EventTypeOnDaySlotFindManyArgs = {
-    /**
-     * Select specific fields to fetch from the EventTypeOnDaySlot
-     */
-    select?: EventTypeOnDaySlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: EventTypeOnDaySlotInclude | null
-    /**
-     * Filter, which EventTypeOnDaySlots to fetch.
-     */
-    where?: EventTypeOnDaySlotWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of EventTypeOnDaySlots to fetch.
-     */
-    orderBy?: Enumerable<EventTypeOnDaySlotOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing EventTypeOnDaySlots.
-     */
-    cursor?: EventTypeOnDaySlotWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` EventTypeOnDaySlots from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` EventTypeOnDaySlots.
-     */
-    skip?: number
-    distinct?: Enumerable<EventTypeOnDaySlotScalarFieldEnum>
-  }
-
-
-  /**
-   * EventTypeOnDaySlot create
-   */
-  export type EventTypeOnDaySlotCreateArgs = {
-    /**
-     * Select specific fields to fetch from the EventTypeOnDaySlot
-     */
-    select?: EventTypeOnDaySlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: EventTypeOnDaySlotInclude | null
-    /**
-     * The data needed to create a EventTypeOnDaySlot.
-     */
-    data: XOR<EventTypeOnDaySlotCreateInput, EventTypeOnDaySlotUncheckedCreateInput>
-  }
-
-
-  /**
-   * EventTypeOnDaySlot createMany
-   */
-  export type EventTypeOnDaySlotCreateManyArgs = {
-    /**
-     * The data used to create many EventTypeOnDaySlots.
-     */
-    data: Enumerable<EventTypeOnDaySlotCreateManyInput>
-    skipDuplicates?: boolean
-  }
-
-
-  /**
-   * EventTypeOnDaySlot update
-   */
-  export type EventTypeOnDaySlotUpdateArgs = {
-    /**
-     * Select specific fields to fetch from the EventTypeOnDaySlot
-     */
-    select?: EventTypeOnDaySlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: EventTypeOnDaySlotInclude | null
-    /**
-     * The data needed to update a EventTypeOnDaySlot.
-     */
-    data: XOR<EventTypeOnDaySlotUpdateInput, EventTypeOnDaySlotUncheckedUpdateInput>
-    /**
-     * Choose, which EventTypeOnDaySlot to update.
-     */
-    where: EventTypeOnDaySlotWhereUniqueInput
-  }
-
-
-  /**
-   * EventTypeOnDaySlot updateMany
-   */
-  export type EventTypeOnDaySlotUpdateManyArgs = {
-    /**
-     * The data used to update EventTypeOnDaySlots.
-     */
-    data: XOR<EventTypeOnDaySlotUpdateManyMutationInput, EventTypeOnDaySlotUncheckedUpdateManyInput>
-    /**
-     * Filter which EventTypeOnDaySlots to update
-     */
-    where?: EventTypeOnDaySlotWhereInput
-  }
-
-
-  /**
-   * EventTypeOnDaySlot upsert
-   */
-  export type EventTypeOnDaySlotUpsertArgs = {
-    /**
-     * Select specific fields to fetch from the EventTypeOnDaySlot
-     */
-    select?: EventTypeOnDaySlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: EventTypeOnDaySlotInclude | null
-    /**
-     * The filter to search for the EventTypeOnDaySlot to update in case it exists.
-     */
-    where: EventTypeOnDaySlotWhereUniqueInput
-    /**
-     * In case the EventTypeOnDaySlot found by the `where` argument doesn't exist, create a new EventTypeOnDaySlot with this data.
-     */
-    create: XOR<EventTypeOnDaySlotCreateInput, EventTypeOnDaySlotUncheckedCreateInput>
-    /**
-     * In case the EventTypeOnDaySlot was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<EventTypeOnDaySlotUpdateInput, EventTypeOnDaySlotUncheckedUpdateInput>
-  }
-
-
-  /**
-   * EventTypeOnDaySlot delete
-   */
-  export type EventTypeOnDaySlotDeleteArgs = {
-    /**
-     * Select specific fields to fetch from the EventTypeOnDaySlot
-     */
-    select?: EventTypeOnDaySlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: EventTypeOnDaySlotInclude | null
-    /**
-     * Filter which EventTypeOnDaySlot to delete.
-     */
-    where: EventTypeOnDaySlotWhereUniqueInput
-  }
-
-
-  /**
-   * EventTypeOnDaySlot deleteMany
-   */
-  export type EventTypeOnDaySlotDeleteManyArgs = {
-    /**
-     * Filter which EventTypeOnDaySlots to delete
-     */
-    where?: EventTypeOnDaySlotWhereInput
-  }
-
-
-  /**
-   * EventTypeOnDaySlot without action
-   */
-  export type EventTypeOnDaySlotArgs = {
-    /**
-     * Select specific fields to fetch from the EventTypeOnDaySlot
-     */
-    select?: EventTypeOnDaySlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: EventTypeOnDaySlotInclude | null
   }
 
 
@@ -9696,6 +6681,988 @@ export namespace Prisma {
 
 
   /**
+   * Model DaySlot
+   */
+
+
+  export type AggregateDaySlot = {
+    _count: DaySlotCountAggregateOutputType | null
+    _avg: DaySlotAvgAggregateOutputType | null
+    _sum: DaySlotSumAggregateOutputType | null
+    _min: DaySlotMinAggregateOutputType | null
+    _max: DaySlotMaxAggregateOutputType | null
+  }
+
+  export type DaySlotAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type DaySlotSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type DaySlotMinAggregateOutputType = {
+    id: number | null
+    name: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DaySlotMaxAggregateOutputType = {
+    id: number | null
+    name: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DaySlotCountAggregateOutputType = {
+    id: number
+    name: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type DaySlotAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type DaySlotSumAggregateInputType = {
+    id?: true
+  }
+
+  export type DaySlotMinAggregateInputType = {
+    id?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DaySlotMaxAggregateInputType = {
+    id?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DaySlotCountAggregateInputType = {
+    id?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type DaySlotAggregateArgs = {
+    /**
+     * Filter which DaySlot to aggregate.
+     */
+    where?: DaySlotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DaySlots to fetch.
+     */
+    orderBy?: Enumerable<DaySlotOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DaySlotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DaySlots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DaySlots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DaySlots
+    **/
+    _count?: true | DaySlotCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: DaySlotAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: DaySlotSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DaySlotMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DaySlotMaxAggregateInputType
+  }
+
+  export type GetDaySlotAggregateType<T extends DaySlotAggregateArgs> = {
+        [P in keyof T & keyof AggregateDaySlot]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDaySlot[P]>
+      : GetScalarType<T[P], AggregateDaySlot[P]>
+  }
+
+
+
+
+  export type DaySlotGroupByArgs = {
+    where?: DaySlotWhereInput
+    orderBy?: Enumerable<DaySlotOrderByWithAggregationInput>
+    by: DaySlotScalarFieldEnum[]
+    having?: DaySlotScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DaySlotCountAggregateInputType | true
+    _avg?: DaySlotAvgAggregateInputType
+    _sum?: DaySlotSumAggregateInputType
+    _min?: DaySlotMinAggregateInputType
+    _max?: DaySlotMaxAggregateInputType
+  }
+
+
+  export type DaySlotGroupByOutputType = {
+    id: number
+    name: string
+    createdAt: Date
+    updatedAt: Date
+    _count: DaySlotCountAggregateOutputType | null
+    _avg: DaySlotAvgAggregateOutputType | null
+    _sum: DaySlotSumAggregateOutputType | null
+    _min: DaySlotMinAggregateOutputType | null
+    _max: DaySlotMaxAggregateOutputType | null
+  }
+
+  type GetDaySlotGroupByPayload<T extends DaySlotGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickArray<DaySlotGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DaySlotGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DaySlotGroupByOutputType[P]>
+            : GetScalarType<T[P], DaySlotGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DaySlotSelect = {
+    id?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    dateSlots?: boolean | DaySlot$dateSlotsArgs
+    _count?: boolean | DaySlotCountOutputTypeArgs
+  }
+
+
+  export type DaySlotInclude = {
+    dateSlots?: boolean | DaySlot$dateSlotsArgs
+    _count?: boolean | DaySlotCountOutputTypeArgs
+  }
+
+  export type DaySlotGetPayload<S extends boolean | null | undefined | DaySlotArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? DaySlot :
+    S extends undefined ? never :
+    S extends { include: any } & (DaySlotArgs | DaySlotFindManyArgs)
+    ? DaySlot  & {
+    [P in TruthyKeys<S['include']>]:
+        P extends 'dateSlots' ? Array < DateSlotGetPayload<S['include'][P]>>  :
+        P extends '_count' ? DaySlotCountOutputTypeGetPayload<S['include'][P]> :  never
+  } 
+    : S extends { select: any } & (DaySlotArgs | DaySlotFindManyArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+        P extends 'dateSlots' ? Array < DateSlotGetPayload<S['select'][P]>>  :
+        P extends '_count' ? DaySlotCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof DaySlot ? DaySlot[P] : never
+  } 
+      : DaySlot
+
+
+  type DaySlotCountArgs = 
+    Omit<DaySlotFindManyArgs, 'select' | 'include'> & {
+      select?: DaySlotCountAggregateInputType | true
+    }
+
+  export interface DaySlotDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+
+    /**
+     * Find zero or one DaySlot that matches the filter.
+     * @param {DaySlotFindUniqueArgs} args - Arguments to find a DaySlot
+     * @example
+     * // Get one DaySlot
+     * const daySlot = await prisma.daySlot.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends DaySlotFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, DaySlotFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'DaySlot'> extends True ? Prisma__DaySlotClient<DaySlotGetPayload<T>> : Prisma__DaySlotClient<DaySlotGetPayload<T> | null, null>
+
+    /**
+     * Find one DaySlot that matches the filter or throw an error  with `error.code='P2025'` 
+     *     if no matches were found.
+     * @param {DaySlotFindUniqueOrThrowArgs} args - Arguments to find a DaySlot
+     * @example
+     * // Get one DaySlot
+     * const daySlot = await prisma.daySlot.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends DaySlotFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, DaySlotFindUniqueOrThrowArgs>
+    ): Prisma__DaySlotClient<DaySlotGetPayload<T>>
+
+    /**
+     * Find the first DaySlot that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DaySlotFindFirstArgs} args - Arguments to find a DaySlot
+     * @example
+     * // Get one DaySlot
+     * const daySlot = await prisma.daySlot.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends DaySlotFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, DaySlotFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'DaySlot'> extends True ? Prisma__DaySlotClient<DaySlotGetPayload<T>> : Prisma__DaySlotClient<DaySlotGetPayload<T> | null, null>
+
+    /**
+     * Find the first DaySlot that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DaySlotFindFirstOrThrowArgs} args - Arguments to find a DaySlot
+     * @example
+     * // Get one DaySlot
+     * const daySlot = await prisma.daySlot.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends DaySlotFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, DaySlotFindFirstOrThrowArgs>
+    ): Prisma__DaySlotClient<DaySlotGetPayload<T>>
+
+    /**
+     * Find zero or more DaySlots that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DaySlotFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DaySlots
+     * const daySlots = await prisma.daySlot.findMany()
+     * 
+     * // Get first 10 DaySlots
+     * const daySlots = await prisma.daySlot.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const daySlotWithIdOnly = await prisma.daySlot.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends DaySlotFindManyArgs>(
+      args?: SelectSubset<T, DaySlotFindManyArgs>
+    ): Prisma.PrismaPromise<Array<DaySlotGetPayload<T>>>
+
+    /**
+     * Create a DaySlot.
+     * @param {DaySlotCreateArgs} args - Arguments to create a DaySlot.
+     * @example
+     * // Create one DaySlot
+     * const DaySlot = await prisma.daySlot.create({
+     *   data: {
+     *     // ... data to create a DaySlot
+     *   }
+     * })
+     * 
+    **/
+    create<T extends DaySlotCreateArgs>(
+      args: SelectSubset<T, DaySlotCreateArgs>
+    ): Prisma__DaySlotClient<DaySlotGetPayload<T>>
+
+    /**
+     * Create many DaySlots.
+     *     @param {DaySlotCreateManyArgs} args - Arguments to create many DaySlots.
+     *     @example
+     *     // Create many DaySlots
+     *     const daySlot = await prisma.daySlot.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends DaySlotCreateManyArgs>(
+      args?: SelectSubset<T, DaySlotCreateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a DaySlot.
+     * @param {DaySlotDeleteArgs} args - Arguments to delete one DaySlot.
+     * @example
+     * // Delete one DaySlot
+     * const DaySlot = await prisma.daySlot.delete({
+     *   where: {
+     *     // ... filter to delete one DaySlot
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends DaySlotDeleteArgs>(
+      args: SelectSubset<T, DaySlotDeleteArgs>
+    ): Prisma__DaySlotClient<DaySlotGetPayload<T>>
+
+    /**
+     * Update one DaySlot.
+     * @param {DaySlotUpdateArgs} args - Arguments to update one DaySlot.
+     * @example
+     * // Update one DaySlot
+     * const daySlot = await prisma.daySlot.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends DaySlotUpdateArgs>(
+      args: SelectSubset<T, DaySlotUpdateArgs>
+    ): Prisma__DaySlotClient<DaySlotGetPayload<T>>
+
+    /**
+     * Delete zero or more DaySlots.
+     * @param {DaySlotDeleteManyArgs} args - Arguments to filter DaySlots to delete.
+     * @example
+     * // Delete a few DaySlots
+     * const { count } = await prisma.daySlot.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends DaySlotDeleteManyArgs>(
+      args?: SelectSubset<T, DaySlotDeleteManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DaySlots.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DaySlotUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DaySlots
+     * const daySlot = await prisma.daySlot.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends DaySlotUpdateManyArgs>(
+      args: SelectSubset<T, DaySlotUpdateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one DaySlot.
+     * @param {DaySlotUpsertArgs} args - Arguments to update or create a DaySlot.
+     * @example
+     * // Update or create a DaySlot
+     * const daySlot = await prisma.daySlot.upsert({
+     *   create: {
+     *     // ... data to create a DaySlot
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DaySlot we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends DaySlotUpsertArgs>(
+      args: SelectSubset<T, DaySlotUpsertArgs>
+    ): Prisma__DaySlotClient<DaySlotGetPayload<T>>
+
+    /**
+     * Count the number of DaySlots.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DaySlotCountArgs} args - Arguments to filter DaySlots to count.
+     * @example
+     * // Count the number of DaySlots
+     * const count = await prisma.daySlot.count({
+     *   where: {
+     *     // ... the filter for the DaySlots we want to count
+     *   }
+     * })
+    **/
+    count<T extends DaySlotCountArgs>(
+      args?: Subset<T, DaySlotCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DaySlotCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DaySlot.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DaySlotAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DaySlotAggregateArgs>(args: Subset<T, DaySlotAggregateArgs>): Prisma.PrismaPromise<GetDaySlotAggregateType<T>>
+
+    /**
+     * Group by DaySlot.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DaySlotGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DaySlotGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DaySlotGroupByArgs['orderBy'] }
+        : { orderBy?: DaySlotGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DaySlotGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDaySlotGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DaySlot.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__DaySlotClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+    private readonly _dmmf;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+
+    dateSlots<T extends DaySlot$dateSlotsArgs= {}>(args?: Subset<T, DaySlot$dateSlotsArgs>): Prisma.PrismaPromise<Array<DateSlotGetPayload<T>>| Null>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+
+
+  // Custom InputTypes
+
+  /**
+   * DaySlot base type for findUnique actions
+   */
+  export type DaySlotFindUniqueArgsBase = {
+    /**
+     * Select specific fields to fetch from the DaySlot
+     */
+    select?: DaySlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: DaySlotInclude | null
+    /**
+     * Filter, which DaySlot to fetch.
+     */
+    where: DaySlotWhereUniqueInput
+  }
+
+  /**
+   * DaySlot findUnique
+   */
+  export interface DaySlotFindUniqueArgs extends DaySlotFindUniqueArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * DaySlot findUniqueOrThrow
+   */
+  export type DaySlotFindUniqueOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the DaySlot
+     */
+    select?: DaySlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: DaySlotInclude | null
+    /**
+     * Filter, which DaySlot to fetch.
+     */
+    where: DaySlotWhereUniqueInput
+  }
+
+
+  /**
+   * DaySlot base type for findFirst actions
+   */
+  export type DaySlotFindFirstArgsBase = {
+    /**
+     * Select specific fields to fetch from the DaySlot
+     */
+    select?: DaySlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: DaySlotInclude | null
+    /**
+     * Filter, which DaySlot to fetch.
+     */
+    where?: DaySlotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DaySlots to fetch.
+     */
+    orderBy?: Enumerable<DaySlotOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DaySlots.
+     */
+    cursor?: DaySlotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DaySlots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DaySlots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DaySlots.
+     */
+    distinct?: Enumerable<DaySlotScalarFieldEnum>
+  }
+
+  /**
+   * DaySlot findFirst
+   */
+  export interface DaySlotFindFirstArgs extends DaySlotFindFirstArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * DaySlot findFirstOrThrow
+   */
+  export type DaySlotFindFirstOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the DaySlot
+     */
+    select?: DaySlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: DaySlotInclude | null
+    /**
+     * Filter, which DaySlot to fetch.
+     */
+    where?: DaySlotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DaySlots to fetch.
+     */
+    orderBy?: Enumerable<DaySlotOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DaySlots.
+     */
+    cursor?: DaySlotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DaySlots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DaySlots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DaySlots.
+     */
+    distinct?: Enumerable<DaySlotScalarFieldEnum>
+  }
+
+
+  /**
+   * DaySlot findMany
+   */
+  export type DaySlotFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the DaySlot
+     */
+    select?: DaySlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: DaySlotInclude | null
+    /**
+     * Filter, which DaySlots to fetch.
+     */
+    where?: DaySlotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DaySlots to fetch.
+     */
+    orderBy?: Enumerable<DaySlotOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DaySlots.
+     */
+    cursor?: DaySlotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DaySlots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DaySlots.
+     */
+    skip?: number
+    distinct?: Enumerable<DaySlotScalarFieldEnum>
+  }
+
+
+  /**
+   * DaySlot create
+   */
+  export type DaySlotCreateArgs = {
+    /**
+     * Select specific fields to fetch from the DaySlot
+     */
+    select?: DaySlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: DaySlotInclude | null
+    /**
+     * The data needed to create a DaySlot.
+     */
+    data: XOR<DaySlotCreateInput, DaySlotUncheckedCreateInput>
+  }
+
+
+  /**
+   * DaySlot createMany
+   */
+  export type DaySlotCreateManyArgs = {
+    /**
+     * The data used to create many DaySlots.
+     */
+    data: Enumerable<DaySlotCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * DaySlot update
+   */
+  export type DaySlotUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the DaySlot
+     */
+    select?: DaySlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: DaySlotInclude | null
+    /**
+     * The data needed to update a DaySlot.
+     */
+    data: XOR<DaySlotUpdateInput, DaySlotUncheckedUpdateInput>
+    /**
+     * Choose, which DaySlot to update.
+     */
+    where: DaySlotWhereUniqueInput
+  }
+
+
+  /**
+   * DaySlot updateMany
+   */
+  export type DaySlotUpdateManyArgs = {
+    /**
+     * The data used to update DaySlots.
+     */
+    data: XOR<DaySlotUpdateManyMutationInput, DaySlotUncheckedUpdateManyInput>
+    /**
+     * Filter which DaySlots to update
+     */
+    where?: DaySlotWhereInput
+  }
+
+
+  /**
+   * DaySlot upsert
+   */
+  export type DaySlotUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the DaySlot
+     */
+    select?: DaySlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: DaySlotInclude | null
+    /**
+     * The filter to search for the DaySlot to update in case it exists.
+     */
+    where: DaySlotWhereUniqueInput
+    /**
+     * In case the DaySlot found by the `where` argument doesn't exist, create a new DaySlot with this data.
+     */
+    create: XOR<DaySlotCreateInput, DaySlotUncheckedCreateInput>
+    /**
+     * In case the DaySlot was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DaySlotUpdateInput, DaySlotUncheckedUpdateInput>
+  }
+
+
+  /**
+   * DaySlot delete
+   */
+  export type DaySlotDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the DaySlot
+     */
+    select?: DaySlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: DaySlotInclude | null
+    /**
+     * Filter which DaySlot to delete.
+     */
+    where: DaySlotWhereUniqueInput
+  }
+
+
+  /**
+   * DaySlot deleteMany
+   */
+  export type DaySlotDeleteManyArgs = {
+    /**
+     * Filter which DaySlots to delete
+     */
+    where?: DaySlotWhereInput
+  }
+
+
+  /**
+   * DaySlot.dateSlots
+   */
+  export type DaySlot$dateSlotsArgs = {
+    /**
+     * Select specific fields to fetch from the DateSlot
+     */
+    select?: DateSlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: DateSlotInclude | null
+    where?: DateSlotWhereInput
+    orderBy?: Enumerable<DateSlotOrderByWithRelationInput>
+    cursor?: DateSlotWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Enumerable<DateSlotScalarFieldEnum>
+  }
+
+
+  /**
+   * DaySlot without action
+   */
+  export type DaySlotArgs = {
+    /**
+     * Select specific fields to fetch from the DaySlot
+     */
+    select?: DaySlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: DaySlotInclude | null
+  }
+
+
+
+  /**
    * Model DateSlot
    */
 
@@ -9712,19 +7679,23 @@ export namespace Prisma {
     id: number | null
     availabilityScheduleId: number | null
     custormerId: number | null
+    eventId: number | null
   }
 
   export type DateSlotSumAggregateOutputType = {
     id: number | null
     availabilityScheduleId: number | null
     custormerId: number | null
+    eventId: number | null
   }
 
   export type DateSlotMinAggregateOutputType = {
     id: number | null
     availabilityScheduleId: number | null
-    date: Date | null
+    name: Date | null
     custormerId: number | null
+    eventId: number | null
+    dayName: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -9732,8 +7703,10 @@ export namespace Prisma {
   export type DateSlotMaxAggregateOutputType = {
     id: number | null
     availabilityScheduleId: number | null
-    date: Date | null
+    name: Date | null
     custormerId: number | null
+    eventId: number | null
+    dayName: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -9741,8 +7714,10 @@ export namespace Prisma {
   export type DateSlotCountAggregateOutputType = {
     id: number
     availabilityScheduleId: number
-    date: number
+    name: number
     custormerId: number
+    eventId: number
+    dayName: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -9753,19 +7728,23 @@ export namespace Prisma {
     id?: true
     availabilityScheduleId?: true
     custormerId?: true
+    eventId?: true
   }
 
   export type DateSlotSumAggregateInputType = {
     id?: true
     availabilityScheduleId?: true
     custormerId?: true
+    eventId?: true
   }
 
   export type DateSlotMinAggregateInputType = {
     id?: true
     availabilityScheduleId?: true
-    date?: true
+    name?: true
     custormerId?: true
+    eventId?: true
+    dayName?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -9773,8 +7752,10 @@ export namespace Prisma {
   export type DateSlotMaxAggregateInputType = {
     id?: true
     availabilityScheduleId?: true
-    date?: true
+    name?: true
     custormerId?: true
+    eventId?: true
+    dayName?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -9782,8 +7763,10 @@ export namespace Prisma {
   export type DateSlotCountAggregateInputType = {
     id?: true
     availabilityScheduleId?: true
-    date?: true
+    name?: true
     custormerId?: true
+    eventId?: true
+    dayName?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -9879,8 +7862,10 @@ export namespace Prisma {
   export type DateSlotGroupByOutputType = {
     id: number
     availabilityScheduleId: number | null
-    date: Date
+    name: Date
     custormerId: number | null
+    eventId: number
+    dayName: string
     createdAt: Date
     updatedAt: Date
     _count: DateSlotCountAggregateOutputType | null
@@ -9907,14 +7892,17 @@ export namespace Prisma {
   export type DateSlotSelect = {
     id?: boolean
     availabilityScheduleId?: boolean
-    date?: boolean
+    name?: boolean
     custormerId?: boolean
+    eventId?: boolean
+    dayName?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     availabilitySchedule?: boolean | AvailabilityScheduleArgs
     custormer?: boolean | CustomerArgs
-    timeSelects?: boolean | DateSlot$timeSelectsArgs
-    DaySlots?: boolean | DateSlot$DaySlotsArgs
+    eventType?: boolean | EventTypeArgs
+    daySlot?: boolean | DaySlotArgs
+    dateOnTimeSlots?: boolean | DateSlot$dateOnTimeSlotsArgs
     _count?: boolean | DateSlotCountOutputTypeArgs
   }
 
@@ -9922,8 +7910,9 @@ export namespace Prisma {
   export type DateSlotInclude = {
     availabilitySchedule?: boolean | AvailabilityScheduleArgs
     custormer?: boolean | CustomerArgs
-    timeSelects?: boolean | DateSlot$timeSelectsArgs
-    DaySlots?: boolean | DateSlot$DaySlotsArgs
+    eventType?: boolean | EventTypeArgs
+    daySlot?: boolean | DaySlotArgs
+    dateOnTimeSlots?: boolean | DateSlot$dateOnTimeSlotsArgs
     _count?: boolean | DateSlotCountOutputTypeArgs
   }
 
@@ -9936,8 +7925,9 @@ export namespace Prisma {
     [P in TruthyKeys<S['include']>]:
         P extends 'availabilitySchedule' ? AvailabilityScheduleGetPayload<S['include'][P]> | null :
         P extends 'custormer' ? CustomerGetPayload<S['include'][P]> | null :
-        P extends 'timeSelects' ? Array < DateSlotOnTimeSelectGetPayload<S['include'][P]>>  :
-        P extends 'DaySlots' ? Array < DaySlotOnDateSlotGetPayload<S['include'][P]>>  :
+        P extends 'eventType' ? EventTypeGetPayload<S['include'][P]> :
+        P extends 'daySlot' ? DaySlotGetPayload<S['include'][P]> :
+        P extends 'dateOnTimeSlots' ? Array < DateOnTimeSlotGetPayload<S['include'][P]>>  :
         P extends '_count' ? DateSlotCountOutputTypeGetPayload<S['include'][P]> :  never
   } 
     : S extends { select: any } & (DateSlotArgs | DateSlotFindManyArgs)
@@ -9945,8 +7935,9 @@ export namespace Prisma {
     [P in TruthyKeys<S['select']>]:
         P extends 'availabilitySchedule' ? AvailabilityScheduleGetPayload<S['select'][P]> | null :
         P extends 'custormer' ? CustomerGetPayload<S['select'][P]> | null :
-        P extends 'timeSelects' ? Array < DateSlotOnTimeSelectGetPayload<S['select'][P]>>  :
-        P extends 'DaySlots' ? Array < DaySlotOnDateSlotGetPayload<S['select'][P]>>  :
+        P extends 'eventType' ? EventTypeGetPayload<S['select'][P]> :
+        P extends 'daySlot' ? DaySlotGetPayload<S['select'][P]> :
+        P extends 'dateOnTimeSlots' ? Array < DateOnTimeSlotGetPayload<S['select'][P]>>  :
         P extends '_count' ? DateSlotCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof DateSlot ? DateSlot[P] : never
   } 
       : DateSlot
@@ -10323,9 +8314,11 @@ export namespace Prisma {
 
     custormer<T extends CustomerArgs= {}>(args?: Subset<T, CustomerArgs>): Prisma__CustomerClient<CustomerGetPayload<T> | Null>;
 
-    timeSelects<T extends DateSlot$timeSelectsArgs= {}>(args?: Subset<T, DateSlot$timeSelectsArgs>): Prisma.PrismaPromise<Array<DateSlotOnTimeSelectGetPayload<T>>| Null>;
+    eventType<T extends EventTypeArgs= {}>(args?: Subset<T, EventTypeArgs>): Prisma__EventTypeClient<EventTypeGetPayload<T> | Null>;
 
-    DaySlots<T extends DateSlot$DaySlotsArgs= {}>(args?: Subset<T, DateSlot$DaySlotsArgs>): Prisma.PrismaPromise<Array<DaySlotOnDateSlotGetPayload<T>>| Null>;
+    daySlot<T extends DaySlotArgs= {}>(args?: Subset<T, DaySlotArgs>): Prisma__DaySlotClient<DaySlotGetPayload<T> | Null>;
+
+    dateOnTimeSlots<T extends DateSlot$dateOnTimeSlotsArgs= {}>(args?: Subset<T, DateSlot$dateOnTimeSlotsArgs>): Prisma.PrismaPromise<Array<DateOnTimeSlotGetPayload<T>>| Null>;
 
     private get _document();
     /**
@@ -10683,44 +8676,23 @@ export namespace Prisma {
 
 
   /**
-   * DateSlot.timeSelects
+   * DateSlot.dateOnTimeSlots
    */
-  export type DateSlot$timeSelectsArgs = {
+  export type DateSlot$dateOnTimeSlotsArgs = {
     /**
-     * Select specific fields to fetch from the DateSlotOnTimeSelect
+     * Select specific fields to fetch from the DateOnTimeSlot
      */
-    select?: DateSlotOnTimeSelectSelect | null
+    select?: DateOnTimeSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: DateSlotOnTimeSelectInclude | null
-    where?: DateSlotOnTimeSelectWhereInput
-    orderBy?: Enumerable<DateSlotOnTimeSelectOrderByWithRelationInput>
-    cursor?: DateSlotOnTimeSelectWhereUniqueInput
+    include?: DateOnTimeSlotInclude | null
+    where?: DateOnTimeSlotWhereInput
+    orderBy?: Enumerable<DateOnTimeSlotOrderByWithRelationInput>
+    cursor?: DateOnTimeSlotWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: Enumerable<DateSlotOnTimeSelectScalarFieldEnum>
-  }
-
-
-  /**
-   * DateSlot.DaySlots
-   */
-  export type DateSlot$DaySlotsArgs = {
-    /**
-     * Select specific fields to fetch from the DaySlotOnDateSlot
-     */
-    select?: DaySlotOnDateSlotSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DaySlotOnDateSlotInclude | null
-    where?: DaySlotOnDateSlotWhereInput
-    orderBy?: Enumerable<DaySlotOnDateSlotOrderByWithRelationInput>
-    cursor?: DaySlotOnDateSlotWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: Enumerable<DaySlotOnDateSlotScalarFieldEnum>
+    distinct?: Enumerable<DateOnTimeSlotScalarFieldEnum>
   }
 
 
@@ -10741,389 +8713,397 @@ export namespace Prisma {
 
 
   /**
-   * Model TimeSelect
+   * Model DateOnTimeSlot
    */
 
 
-  export type AggregateTimeSelect = {
-    _count: TimeSelectCountAggregateOutputType | null
-    _avg: TimeSelectAvgAggregateOutputType | null
-    _sum: TimeSelectSumAggregateOutputType | null
-    _min: TimeSelectMinAggregateOutputType | null
-    _max: TimeSelectMaxAggregateOutputType | null
+  export type AggregateDateOnTimeSlot = {
+    _count: DateOnTimeSlotCountAggregateOutputType | null
+    _avg: DateOnTimeSlotAvgAggregateOutputType | null
+    _sum: DateOnTimeSlotSumAggregateOutputType | null
+    _min: DateOnTimeSlotMinAggregateOutputType | null
+    _max: DateOnTimeSlotMaxAggregateOutputType | null
   }
 
-  export type TimeSelectAvgAggregateOutputType = {
+  export type DateOnTimeSlotAvgAggregateOutputType = {
     id: number | null
-    startTime: number | null
-    endTime: number | null
+    timeSlotId: number | null
+    dateSlotId: number | null
   }
 
-  export type TimeSelectSumAggregateOutputType = {
+  export type DateOnTimeSlotSumAggregateOutputType = {
     id: number | null
-    startTime: number | null
-    endTime: number | null
+    timeSlotId: number | null
+    dateSlotId: number | null
   }
 
-  export type TimeSelectMinAggregateOutputType = {
+  export type DateOnTimeSlotMinAggregateOutputType = {
     id: number | null
-    startTime: number | null
-    endTime: number | null
+    timeSlotId: number | null
+    dateSlotId: number | null
+    status: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
-  export type TimeSelectMaxAggregateOutputType = {
+  export type DateOnTimeSlotMaxAggregateOutputType = {
     id: number | null
-    startTime: number | null
-    endTime: number | null
+    timeSlotId: number | null
+    dateSlotId: number | null
+    status: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
-  export type TimeSelectCountAggregateOutputType = {
+  export type DateOnTimeSlotCountAggregateOutputType = {
     id: number
-    startTime: number
-    endTime: number
+    timeSlotId: number
+    dateSlotId: number
+    status: number
     createdAt: number
     updatedAt: number
     _all: number
   }
 
 
-  export type TimeSelectAvgAggregateInputType = {
+  export type DateOnTimeSlotAvgAggregateInputType = {
     id?: true
-    startTime?: true
-    endTime?: true
+    timeSlotId?: true
+    dateSlotId?: true
   }
 
-  export type TimeSelectSumAggregateInputType = {
+  export type DateOnTimeSlotSumAggregateInputType = {
     id?: true
-    startTime?: true
-    endTime?: true
+    timeSlotId?: true
+    dateSlotId?: true
   }
 
-  export type TimeSelectMinAggregateInputType = {
+  export type DateOnTimeSlotMinAggregateInputType = {
     id?: true
-    startTime?: true
-    endTime?: true
+    timeSlotId?: true
+    dateSlotId?: true
+    status?: true
     createdAt?: true
     updatedAt?: true
   }
 
-  export type TimeSelectMaxAggregateInputType = {
+  export type DateOnTimeSlotMaxAggregateInputType = {
     id?: true
-    startTime?: true
-    endTime?: true
+    timeSlotId?: true
+    dateSlotId?: true
+    status?: true
     createdAt?: true
     updatedAt?: true
   }
 
-  export type TimeSelectCountAggregateInputType = {
+  export type DateOnTimeSlotCountAggregateInputType = {
     id?: true
-    startTime?: true
-    endTime?: true
+    timeSlotId?: true
+    dateSlotId?: true
+    status?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
   }
 
-  export type TimeSelectAggregateArgs = {
+  export type DateOnTimeSlotAggregateArgs = {
     /**
-     * Filter which TimeSelect to aggregate.
+     * Filter which DateOnTimeSlot to aggregate.
      */
-    where?: TimeSelectWhereInput
+    where?: DateOnTimeSlotWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of TimeSelects to fetch.
+     * Determine the order of DateOnTimeSlots to fetch.
      */
-    orderBy?: Enumerable<TimeSelectOrderByWithRelationInput>
+    orderBy?: Enumerable<DateOnTimeSlotOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
      */
-    cursor?: TimeSelectWhereUniqueInput
+    cursor?: DateOnTimeSlotWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` TimeSelects from the position of the cursor.
+     * Take `±n` DateOnTimeSlots from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` TimeSelects.
+     * Skip the first `n` DateOnTimeSlots.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Count returned TimeSelects
+     * Count returned DateOnTimeSlots
     **/
-    _count?: true | TimeSelectCountAggregateInputType
+    _count?: true | DateOnTimeSlotCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
-    _avg?: TimeSelectAvgAggregateInputType
+    _avg?: DateOnTimeSlotAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to sum
     **/
-    _sum?: TimeSelectSumAggregateInputType
+    _sum?: DateOnTimeSlotSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
-    _min?: TimeSelectMinAggregateInputType
+    _min?: DateOnTimeSlotMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
-    _max?: TimeSelectMaxAggregateInputType
+    _max?: DateOnTimeSlotMaxAggregateInputType
   }
 
-  export type GetTimeSelectAggregateType<T extends TimeSelectAggregateArgs> = {
-        [P in keyof T & keyof AggregateTimeSelect]: P extends '_count' | 'count'
+  export type GetDateOnTimeSlotAggregateType<T extends DateOnTimeSlotAggregateArgs> = {
+        [P in keyof T & keyof AggregateDateOnTimeSlot]: P extends '_count' | 'count'
       ? T[P] extends true
         ? number
-        : GetScalarType<T[P], AggregateTimeSelect[P]>
-      : GetScalarType<T[P], AggregateTimeSelect[P]>
+        : GetScalarType<T[P], AggregateDateOnTimeSlot[P]>
+      : GetScalarType<T[P], AggregateDateOnTimeSlot[P]>
   }
 
 
 
 
-  export type TimeSelectGroupByArgs = {
-    where?: TimeSelectWhereInput
-    orderBy?: Enumerable<TimeSelectOrderByWithAggregationInput>
-    by: TimeSelectScalarFieldEnum[]
-    having?: TimeSelectScalarWhereWithAggregatesInput
+  export type DateOnTimeSlotGroupByArgs = {
+    where?: DateOnTimeSlotWhereInput
+    orderBy?: Enumerable<DateOnTimeSlotOrderByWithAggregationInput>
+    by: DateOnTimeSlotScalarFieldEnum[]
+    having?: DateOnTimeSlotScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    _count?: TimeSelectCountAggregateInputType | true
-    _avg?: TimeSelectAvgAggregateInputType
-    _sum?: TimeSelectSumAggregateInputType
-    _min?: TimeSelectMinAggregateInputType
-    _max?: TimeSelectMaxAggregateInputType
+    _count?: DateOnTimeSlotCountAggregateInputType | true
+    _avg?: DateOnTimeSlotAvgAggregateInputType
+    _sum?: DateOnTimeSlotSumAggregateInputType
+    _min?: DateOnTimeSlotMinAggregateInputType
+    _max?: DateOnTimeSlotMaxAggregateInputType
   }
 
 
-  export type TimeSelectGroupByOutputType = {
+  export type DateOnTimeSlotGroupByOutputType = {
     id: number
-    startTime: number
-    endTime: number
+    timeSlotId: number
+    dateSlotId: number
+    status: string
     createdAt: Date
     updatedAt: Date
-    _count: TimeSelectCountAggregateOutputType | null
-    _avg: TimeSelectAvgAggregateOutputType | null
-    _sum: TimeSelectSumAggregateOutputType | null
-    _min: TimeSelectMinAggregateOutputType | null
-    _max: TimeSelectMaxAggregateOutputType | null
+    _count: DateOnTimeSlotCountAggregateOutputType | null
+    _avg: DateOnTimeSlotAvgAggregateOutputType | null
+    _sum: DateOnTimeSlotSumAggregateOutputType | null
+    _min: DateOnTimeSlotMinAggregateOutputType | null
+    _max: DateOnTimeSlotMaxAggregateOutputType | null
   }
 
-  type GetTimeSelectGroupByPayload<T extends TimeSelectGroupByArgs> = Prisma.PrismaPromise<
+  type GetDateOnTimeSlotGroupByPayload<T extends DateOnTimeSlotGroupByArgs> = Prisma.PrismaPromise<
     Array<
-      PickArray<TimeSelectGroupByOutputType, T['by']> &
+      PickArray<DateOnTimeSlotGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof TimeSelectGroupByOutputType))]: P extends '_count'
+          [P in ((keyof T) & (keyof DateOnTimeSlotGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
               ? number
-              : GetScalarType<T[P], TimeSelectGroupByOutputType[P]>
-            : GetScalarType<T[P], TimeSelectGroupByOutputType[P]>
+              : GetScalarType<T[P], DateOnTimeSlotGroupByOutputType[P]>
+            : GetScalarType<T[P], DateOnTimeSlotGroupByOutputType[P]>
         }
       >
     >
 
 
-  export type TimeSelectSelect = {
+  export type DateOnTimeSlotSelect = {
     id?: boolean
-    startTime?: boolean
-    endTime?: boolean
+    timeSlotId?: boolean
+    dateSlotId?: boolean
+    status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    dateSlots?: boolean | TimeSelect$dateSlotsArgs
-    _count?: boolean | TimeSelectCountOutputTypeArgs
+    timeSlot?: boolean | TimeSlotArgs
+    dateSlot?: boolean | DateSlotArgs
   }
 
 
-  export type TimeSelectInclude = {
-    dateSlots?: boolean | TimeSelect$dateSlotsArgs
-    _count?: boolean | TimeSelectCountOutputTypeArgs
+  export type DateOnTimeSlotInclude = {
+    timeSlot?: boolean | TimeSlotArgs
+    dateSlot?: boolean | DateSlotArgs
   }
 
-  export type TimeSelectGetPayload<S extends boolean | null | undefined | TimeSelectArgs> =
+  export type DateOnTimeSlotGetPayload<S extends boolean | null | undefined | DateOnTimeSlotArgs> =
     S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? TimeSelect :
+    S extends true ? DateOnTimeSlot :
     S extends undefined ? never :
-    S extends { include: any } & (TimeSelectArgs | TimeSelectFindManyArgs)
-    ? TimeSelect  & {
+    S extends { include: any } & (DateOnTimeSlotArgs | DateOnTimeSlotFindManyArgs)
+    ? DateOnTimeSlot  & {
     [P in TruthyKeys<S['include']>]:
-        P extends 'dateSlots' ? Array < DateSlotOnTimeSelectGetPayload<S['include'][P]>>  :
-        P extends '_count' ? TimeSelectCountOutputTypeGetPayload<S['include'][P]> :  never
+        P extends 'timeSlot' ? TimeSlotGetPayload<S['include'][P]> :
+        P extends 'dateSlot' ? DateSlotGetPayload<S['include'][P]> :  never
   } 
-    : S extends { select: any } & (TimeSelectArgs | TimeSelectFindManyArgs)
+    : S extends { select: any } & (DateOnTimeSlotArgs | DateOnTimeSlotFindManyArgs)
       ? {
     [P in TruthyKeys<S['select']>]:
-        P extends 'dateSlots' ? Array < DateSlotOnTimeSelectGetPayload<S['select'][P]>>  :
-        P extends '_count' ? TimeSelectCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof TimeSelect ? TimeSelect[P] : never
+        P extends 'timeSlot' ? TimeSlotGetPayload<S['select'][P]> :
+        P extends 'dateSlot' ? DateSlotGetPayload<S['select'][P]> :  P extends keyof DateOnTimeSlot ? DateOnTimeSlot[P] : never
   } 
-      : TimeSelect
+      : DateOnTimeSlot
 
 
-  type TimeSelectCountArgs = 
-    Omit<TimeSelectFindManyArgs, 'select' | 'include'> & {
-      select?: TimeSelectCountAggregateInputType | true
+  type DateOnTimeSlotCountArgs = 
+    Omit<DateOnTimeSlotFindManyArgs, 'select' | 'include'> & {
+      select?: DateOnTimeSlotCountAggregateInputType | true
     }
 
-  export interface TimeSelectDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+  export interface DateOnTimeSlotDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
 
     /**
-     * Find zero or one TimeSelect that matches the filter.
-     * @param {TimeSelectFindUniqueArgs} args - Arguments to find a TimeSelect
+     * Find zero or one DateOnTimeSlot that matches the filter.
+     * @param {DateOnTimeSlotFindUniqueArgs} args - Arguments to find a DateOnTimeSlot
      * @example
-     * // Get one TimeSelect
-     * const timeSelect = await prisma.timeSelect.findUnique({
+     * // Get one DateOnTimeSlot
+     * const dateOnTimeSlot = await prisma.dateOnTimeSlot.findUnique({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
     **/
-    findUnique<T extends TimeSelectFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args: SelectSubset<T, TimeSelectFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'TimeSelect'> extends True ? Prisma__TimeSelectClient<TimeSelectGetPayload<T>> : Prisma__TimeSelectClient<TimeSelectGetPayload<T> | null, null>
+    findUnique<T extends DateOnTimeSlotFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, DateOnTimeSlotFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'DateOnTimeSlot'> extends True ? Prisma__DateOnTimeSlotClient<DateOnTimeSlotGetPayload<T>> : Prisma__DateOnTimeSlotClient<DateOnTimeSlotGetPayload<T> | null, null>
 
     /**
-     * Find one TimeSelect that matches the filter or throw an error  with `error.code='P2025'` 
+     * Find one DateOnTimeSlot that matches the filter or throw an error  with `error.code='P2025'` 
      *     if no matches were found.
-     * @param {TimeSelectFindUniqueOrThrowArgs} args - Arguments to find a TimeSelect
+     * @param {DateOnTimeSlotFindUniqueOrThrowArgs} args - Arguments to find a DateOnTimeSlot
      * @example
-     * // Get one TimeSelect
-     * const timeSelect = await prisma.timeSelect.findUniqueOrThrow({
+     * // Get one DateOnTimeSlot
+     * const dateOnTimeSlot = await prisma.dateOnTimeSlot.findUniqueOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
     **/
-    findUniqueOrThrow<T extends TimeSelectFindUniqueOrThrowArgs>(
-      args?: SelectSubset<T, TimeSelectFindUniqueOrThrowArgs>
-    ): Prisma__TimeSelectClient<TimeSelectGetPayload<T>>
+    findUniqueOrThrow<T extends DateOnTimeSlotFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, DateOnTimeSlotFindUniqueOrThrowArgs>
+    ): Prisma__DateOnTimeSlotClient<DateOnTimeSlotGetPayload<T>>
 
     /**
-     * Find the first TimeSelect that matches the filter.
+     * Find the first DateOnTimeSlot that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TimeSelectFindFirstArgs} args - Arguments to find a TimeSelect
+     * @param {DateOnTimeSlotFindFirstArgs} args - Arguments to find a DateOnTimeSlot
      * @example
-     * // Get one TimeSelect
-     * const timeSelect = await prisma.timeSelect.findFirst({
+     * // Get one DateOnTimeSlot
+     * const dateOnTimeSlot = await prisma.dateOnTimeSlot.findFirst({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
     **/
-    findFirst<T extends TimeSelectFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args?: SelectSubset<T, TimeSelectFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'TimeSelect'> extends True ? Prisma__TimeSelectClient<TimeSelectGetPayload<T>> : Prisma__TimeSelectClient<TimeSelectGetPayload<T> | null, null>
+    findFirst<T extends DateOnTimeSlotFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, DateOnTimeSlotFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'DateOnTimeSlot'> extends True ? Prisma__DateOnTimeSlotClient<DateOnTimeSlotGetPayload<T>> : Prisma__DateOnTimeSlotClient<DateOnTimeSlotGetPayload<T> | null, null>
 
     /**
-     * Find the first TimeSelect that matches the filter or
+     * Find the first DateOnTimeSlot that matches the filter or
      * throw `NotFoundError` if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TimeSelectFindFirstOrThrowArgs} args - Arguments to find a TimeSelect
+     * @param {DateOnTimeSlotFindFirstOrThrowArgs} args - Arguments to find a DateOnTimeSlot
      * @example
-     * // Get one TimeSelect
-     * const timeSelect = await prisma.timeSelect.findFirstOrThrow({
+     * // Get one DateOnTimeSlot
+     * const dateOnTimeSlot = await prisma.dateOnTimeSlot.findFirstOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
     **/
-    findFirstOrThrow<T extends TimeSelectFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, TimeSelectFindFirstOrThrowArgs>
-    ): Prisma__TimeSelectClient<TimeSelectGetPayload<T>>
+    findFirstOrThrow<T extends DateOnTimeSlotFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, DateOnTimeSlotFindFirstOrThrowArgs>
+    ): Prisma__DateOnTimeSlotClient<DateOnTimeSlotGetPayload<T>>
 
     /**
-     * Find zero or more TimeSelects that matches the filter.
+     * Find zero or more DateOnTimeSlots that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TimeSelectFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @param {DateOnTimeSlotFindManyArgs=} args - Arguments to filter and select certain fields only.
      * @example
-     * // Get all TimeSelects
-     * const timeSelects = await prisma.timeSelect.findMany()
+     * // Get all DateOnTimeSlots
+     * const dateOnTimeSlots = await prisma.dateOnTimeSlot.findMany()
      * 
-     * // Get first 10 TimeSelects
-     * const timeSelects = await prisma.timeSelect.findMany({ take: 10 })
+     * // Get first 10 DateOnTimeSlots
+     * const dateOnTimeSlots = await prisma.dateOnTimeSlot.findMany({ take: 10 })
      * 
      * // Only select the `id`
-     * const timeSelectWithIdOnly = await prisma.timeSelect.findMany({ select: { id: true } })
+     * const dateOnTimeSlotWithIdOnly = await prisma.dateOnTimeSlot.findMany({ select: { id: true } })
      * 
     **/
-    findMany<T extends TimeSelectFindManyArgs>(
-      args?: SelectSubset<T, TimeSelectFindManyArgs>
-    ): Prisma.PrismaPromise<Array<TimeSelectGetPayload<T>>>
+    findMany<T extends DateOnTimeSlotFindManyArgs>(
+      args?: SelectSubset<T, DateOnTimeSlotFindManyArgs>
+    ): Prisma.PrismaPromise<Array<DateOnTimeSlotGetPayload<T>>>
 
     /**
-     * Create a TimeSelect.
-     * @param {TimeSelectCreateArgs} args - Arguments to create a TimeSelect.
+     * Create a DateOnTimeSlot.
+     * @param {DateOnTimeSlotCreateArgs} args - Arguments to create a DateOnTimeSlot.
      * @example
-     * // Create one TimeSelect
-     * const TimeSelect = await prisma.timeSelect.create({
+     * // Create one DateOnTimeSlot
+     * const DateOnTimeSlot = await prisma.dateOnTimeSlot.create({
      *   data: {
-     *     // ... data to create a TimeSelect
+     *     // ... data to create a DateOnTimeSlot
      *   }
      * })
      * 
     **/
-    create<T extends TimeSelectCreateArgs>(
-      args: SelectSubset<T, TimeSelectCreateArgs>
-    ): Prisma__TimeSelectClient<TimeSelectGetPayload<T>>
+    create<T extends DateOnTimeSlotCreateArgs>(
+      args: SelectSubset<T, DateOnTimeSlotCreateArgs>
+    ): Prisma__DateOnTimeSlotClient<DateOnTimeSlotGetPayload<T>>
 
     /**
-     * Create many TimeSelects.
-     *     @param {TimeSelectCreateManyArgs} args - Arguments to create many TimeSelects.
+     * Create many DateOnTimeSlots.
+     *     @param {DateOnTimeSlotCreateManyArgs} args - Arguments to create many DateOnTimeSlots.
      *     @example
-     *     // Create many TimeSelects
-     *     const timeSelect = await prisma.timeSelect.createMany({
+     *     // Create many DateOnTimeSlots
+     *     const dateOnTimeSlot = await prisma.dateOnTimeSlot.createMany({
      *       data: {
      *         // ... provide data here
      *       }
      *     })
      *     
     **/
-    createMany<T extends TimeSelectCreateManyArgs>(
-      args?: SelectSubset<T, TimeSelectCreateManyArgs>
+    createMany<T extends DateOnTimeSlotCreateManyArgs>(
+      args?: SelectSubset<T, DateOnTimeSlotCreateManyArgs>
     ): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Delete a TimeSelect.
-     * @param {TimeSelectDeleteArgs} args - Arguments to delete one TimeSelect.
+     * Delete a DateOnTimeSlot.
+     * @param {DateOnTimeSlotDeleteArgs} args - Arguments to delete one DateOnTimeSlot.
      * @example
-     * // Delete one TimeSelect
-     * const TimeSelect = await prisma.timeSelect.delete({
+     * // Delete one DateOnTimeSlot
+     * const DateOnTimeSlot = await prisma.dateOnTimeSlot.delete({
      *   where: {
-     *     // ... filter to delete one TimeSelect
+     *     // ... filter to delete one DateOnTimeSlot
      *   }
      * })
      * 
     **/
-    delete<T extends TimeSelectDeleteArgs>(
-      args: SelectSubset<T, TimeSelectDeleteArgs>
-    ): Prisma__TimeSelectClient<TimeSelectGetPayload<T>>
+    delete<T extends DateOnTimeSlotDeleteArgs>(
+      args: SelectSubset<T, DateOnTimeSlotDeleteArgs>
+    ): Prisma__DateOnTimeSlotClient<DateOnTimeSlotGetPayload<T>>
 
     /**
-     * Update one TimeSelect.
-     * @param {TimeSelectUpdateArgs} args - Arguments to update one TimeSelect.
+     * Update one DateOnTimeSlot.
+     * @param {DateOnTimeSlotUpdateArgs} args - Arguments to update one DateOnTimeSlot.
      * @example
-     * // Update one TimeSelect
-     * const timeSelect = await prisma.timeSelect.update({
+     * // Update one DateOnTimeSlot
+     * const dateOnTimeSlot = await prisma.dateOnTimeSlot.update({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -11133,34 +9113,34 @@ export namespace Prisma {
      * })
      * 
     **/
-    update<T extends TimeSelectUpdateArgs>(
-      args: SelectSubset<T, TimeSelectUpdateArgs>
-    ): Prisma__TimeSelectClient<TimeSelectGetPayload<T>>
+    update<T extends DateOnTimeSlotUpdateArgs>(
+      args: SelectSubset<T, DateOnTimeSlotUpdateArgs>
+    ): Prisma__DateOnTimeSlotClient<DateOnTimeSlotGetPayload<T>>
 
     /**
-     * Delete zero or more TimeSelects.
-     * @param {TimeSelectDeleteManyArgs} args - Arguments to filter TimeSelects to delete.
+     * Delete zero or more DateOnTimeSlots.
+     * @param {DateOnTimeSlotDeleteManyArgs} args - Arguments to filter DateOnTimeSlots to delete.
      * @example
-     * // Delete a few TimeSelects
-     * const { count } = await prisma.timeSelect.deleteMany({
+     * // Delete a few DateOnTimeSlots
+     * const { count } = await prisma.dateOnTimeSlot.deleteMany({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      * 
     **/
-    deleteMany<T extends TimeSelectDeleteManyArgs>(
-      args?: SelectSubset<T, TimeSelectDeleteManyArgs>
+    deleteMany<T extends DateOnTimeSlotDeleteManyArgs>(
+      args?: SelectSubset<T, DateOnTimeSlotDeleteManyArgs>
     ): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more TimeSelects.
+     * Update zero or more DateOnTimeSlots.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TimeSelectUpdateManyArgs} args - Arguments to update one or more rows.
+     * @param {DateOnTimeSlotUpdateManyArgs} args - Arguments to update one or more rows.
      * @example
-     * // Update many TimeSelects
-     * const timeSelect = await prisma.timeSelect.updateMany({
+     * // Update many DateOnTimeSlots
+     * const dateOnTimeSlot = await prisma.dateOnTimeSlot.updateMany({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -11170,59 +9150,59 @@ export namespace Prisma {
      * })
      * 
     **/
-    updateMany<T extends TimeSelectUpdateManyArgs>(
-      args: SelectSubset<T, TimeSelectUpdateManyArgs>
+    updateMany<T extends DateOnTimeSlotUpdateManyArgs>(
+      args: SelectSubset<T, DateOnTimeSlotUpdateManyArgs>
     ): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Create or update one TimeSelect.
-     * @param {TimeSelectUpsertArgs} args - Arguments to update or create a TimeSelect.
+     * Create or update one DateOnTimeSlot.
+     * @param {DateOnTimeSlotUpsertArgs} args - Arguments to update or create a DateOnTimeSlot.
      * @example
-     * // Update or create a TimeSelect
-     * const timeSelect = await prisma.timeSelect.upsert({
+     * // Update or create a DateOnTimeSlot
+     * const dateOnTimeSlot = await prisma.dateOnTimeSlot.upsert({
      *   create: {
-     *     // ... data to create a TimeSelect
+     *     // ... data to create a DateOnTimeSlot
      *   },
      *   update: {
      *     // ... in case it already exists, update
      *   },
      *   where: {
-     *     // ... the filter for the TimeSelect we want to update
+     *     // ... the filter for the DateOnTimeSlot we want to update
      *   }
      * })
     **/
-    upsert<T extends TimeSelectUpsertArgs>(
-      args: SelectSubset<T, TimeSelectUpsertArgs>
-    ): Prisma__TimeSelectClient<TimeSelectGetPayload<T>>
+    upsert<T extends DateOnTimeSlotUpsertArgs>(
+      args: SelectSubset<T, DateOnTimeSlotUpsertArgs>
+    ): Prisma__DateOnTimeSlotClient<DateOnTimeSlotGetPayload<T>>
 
     /**
-     * Count the number of TimeSelects.
+     * Count the number of DateOnTimeSlots.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TimeSelectCountArgs} args - Arguments to filter TimeSelects to count.
+     * @param {DateOnTimeSlotCountArgs} args - Arguments to filter DateOnTimeSlots to count.
      * @example
-     * // Count the number of TimeSelects
-     * const count = await prisma.timeSelect.count({
+     * // Count the number of DateOnTimeSlots
+     * const count = await prisma.dateOnTimeSlot.count({
      *   where: {
-     *     // ... the filter for the TimeSelects we want to count
+     *     // ... the filter for the DateOnTimeSlots we want to count
      *   }
      * })
     **/
-    count<T extends TimeSelectCountArgs>(
-      args?: Subset<T, TimeSelectCountArgs>,
+    count<T extends DateOnTimeSlotCountArgs>(
+      args?: Subset<T, DateOnTimeSlotCountArgs>,
     ): Prisma.PrismaPromise<
       T extends _Record<'select', any>
         ? T['select'] extends true
           ? number
-          : GetScalarType<T['select'], TimeSelectCountAggregateOutputType>
+          : GetScalarType<T['select'], DateOnTimeSlotCountAggregateOutputType>
         : number
     >
 
     /**
-     * Allows you to perform aggregations operations on a TimeSelect.
+     * Allows you to perform aggregations operations on a DateOnTimeSlot.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TimeSelectAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @param {DateOnTimeSlotAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
      * @example
      * // Ordered by age ascending
      * // Where email contains prisma.io
@@ -11242,13 +9222,13 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends TimeSelectAggregateArgs>(args: Subset<T, TimeSelectAggregateArgs>): Prisma.PrismaPromise<GetTimeSelectAggregateType<T>>
+    aggregate<T extends DateOnTimeSlotAggregateArgs>(args: Subset<T, DateOnTimeSlotAggregateArgs>): Prisma.PrismaPromise<GetDateOnTimeSlotAggregateType<T>>
 
     /**
-     * Group by TimeSelect.
+     * Group by DateOnTimeSlot.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TimeSelectGroupByArgs} args - Group by arguments.
+     * @param {DateOnTimeSlotGroupByArgs} args - Group by arguments.
      * @example
      * // Group by city, order by createdAt, get count
      * const result = await prisma.user.groupBy({
@@ -11263,14 +9243,14 @@ export namespace Prisma {
      * 
     **/
     groupBy<
-      T extends TimeSelectGroupByArgs,
+      T extends DateOnTimeSlotGroupByArgs,
       HasSelectOrTake extends Or<
         Extends<'skip', Keys<T>>,
         Extends<'take', Keys<T>>
       >,
       OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: TimeSelectGroupByArgs['orderBy'] }
-        : { orderBy?: TimeSelectGroupByArgs['orderBy'] },
+        ? { orderBy: DateOnTimeSlotGroupByArgs['orderBy'] }
+        : { orderBy?: DateOnTimeSlotGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends TupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -11319,17 +9299,17 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, TimeSelectGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTimeSelectGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, DateOnTimeSlotGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDateOnTimeSlotGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
 
   }
 
   /**
-   * The delegate class that acts as a "Promise-like" for TimeSelect.
+   * The delegate class that acts as a "Promise-like" for DateOnTimeSlot.
    * Why is this prefixed with `Prisma__`?
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export class Prisma__TimeSelectClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+  export class Prisma__DateOnTimeSlotClient<T, Null = never> implements Prisma.PrismaPromise<T> {
     private readonly _dmmf;
     private readonly _queryType;
     private readonly _rootField;
@@ -11344,7 +9324,9 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
     constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
 
-    dateSlots<T extends TimeSelect$dateSlotsArgs= {}>(args?: Subset<T, TimeSelect$dateSlotsArgs>): Prisma.PrismaPromise<Array<DateSlotOnTimeSelectGetPayload<T>>| Null>;
+    timeSlot<T extends TimeSlotArgs= {}>(args?: Subset<T, TimeSlotArgs>): Prisma__TimeSlotClient<TimeSlotGetPayload<T> | Null>;
+
+    dateSlot<T extends DateSlotArgs= {}>(args?: Subset<T, DateSlotArgs>): Prisma__DateSlotClient<DateSlotGetPayload<T> | Null>;
 
     private get _document();
     /**
@@ -11374,27 +9356,27 @@ export namespace Prisma {
   // Custom InputTypes
 
   /**
-   * TimeSelect base type for findUnique actions
+   * DateOnTimeSlot base type for findUnique actions
    */
-  export type TimeSelectFindUniqueArgsBase = {
+  export type DateOnTimeSlotFindUniqueArgsBase = {
     /**
-     * Select specific fields to fetch from the TimeSelect
+     * Select specific fields to fetch from the DateOnTimeSlot
      */
-    select?: TimeSelectSelect | null
+    select?: DateOnTimeSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: TimeSelectInclude | null
+    include?: DateOnTimeSlotInclude | null
     /**
-     * Filter, which TimeSelect to fetch.
+     * Filter, which DateOnTimeSlot to fetch.
      */
-    where: TimeSelectWhereUniqueInput
+    where: DateOnTimeSlotWhereUniqueInput
   }
 
   /**
-   * TimeSelect findUnique
+   * DateOnTimeSlot findUnique
    */
-  export interface TimeSelectFindUniqueArgs extends TimeSelectFindUniqueArgsBase {
+  export interface DateOnTimeSlotFindUniqueArgs extends DateOnTimeSlotFindUniqueArgsBase {
    /**
     * Throw an Error if query returns no results
     * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
@@ -11404,76 +9386,76 @@ export namespace Prisma {
       
 
   /**
-   * TimeSelect findUniqueOrThrow
+   * DateOnTimeSlot findUniqueOrThrow
    */
-  export type TimeSelectFindUniqueOrThrowArgs = {
+  export type DateOnTimeSlotFindUniqueOrThrowArgs = {
     /**
-     * Select specific fields to fetch from the TimeSelect
+     * Select specific fields to fetch from the DateOnTimeSlot
      */
-    select?: TimeSelectSelect | null
+    select?: DateOnTimeSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: TimeSelectInclude | null
+    include?: DateOnTimeSlotInclude | null
     /**
-     * Filter, which TimeSelect to fetch.
+     * Filter, which DateOnTimeSlot to fetch.
      */
-    where: TimeSelectWhereUniqueInput
+    where: DateOnTimeSlotWhereUniqueInput
   }
 
 
   /**
-   * TimeSelect base type for findFirst actions
+   * DateOnTimeSlot base type for findFirst actions
    */
-  export type TimeSelectFindFirstArgsBase = {
+  export type DateOnTimeSlotFindFirstArgsBase = {
     /**
-     * Select specific fields to fetch from the TimeSelect
+     * Select specific fields to fetch from the DateOnTimeSlot
      */
-    select?: TimeSelectSelect | null
+    select?: DateOnTimeSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: TimeSelectInclude | null
+    include?: DateOnTimeSlotInclude | null
     /**
-     * Filter, which TimeSelect to fetch.
+     * Filter, which DateOnTimeSlot to fetch.
      */
-    where?: TimeSelectWhereInput
+    where?: DateOnTimeSlotWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of TimeSelects to fetch.
+     * Determine the order of DateOnTimeSlots to fetch.
      */
-    orderBy?: Enumerable<TimeSelectOrderByWithRelationInput>
+    orderBy?: Enumerable<DateOnTimeSlotOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for TimeSelects.
+     * Sets the position for searching for DateOnTimeSlots.
      */
-    cursor?: TimeSelectWhereUniqueInput
+    cursor?: DateOnTimeSlotWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` TimeSelects from the position of the cursor.
+     * Take `±n` DateOnTimeSlots from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` TimeSelects.
+     * Skip the first `n` DateOnTimeSlots.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of TimeSelects.
+     * Filter by unique combinations of DateOnTimeSlots.
      */
-    distinct?: Enumerable<TimeSelectScalarFieldEnum>
+    distinct?: Enumerable<DateOnTimeSlotScalarFieldEnum>
   }
 
   /**
-   * TimeSelect findFirst
+   * DateOnTimeSlot findFirst
    */
-  export interface TimeSelectFindFirstArgs extends TimeSelectFindFirstArgsBase {
+  export interface DateOnTimeSlotFindFirstArgs extends DateOnTimeSlotFindFirstArgsBase {
    /**
     * Throw an Error if query returns no results
     * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
@@ -11483,257 +9465,1234 @@ export namespace Prisma {
       
 
   /**
-   * TimeSelect findFirstOrThrow
+   * DateOnTimeSlot findFirstOrThrow
    */
-  export type TimeSelectFindFirstOrThrowArgs = {
+  export type DateOnTimeSlotFindFirstOrThrowArgs = {
     /**
-     * Select specific fields to fetch from the TimeSelect
+     * Select specific fields to fetch from the DateOnTimeSlot
      */
-    select?: TimeSelectSelect | null
+    select?: DateOnTimeSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: TimeSelectInclude | null
+    include?: DateOnTimeSlotInclude | null
     /**
-     * Filter, which TimeSelect to fetch.
+     * Filter, which DateOnTimeSlot to fetch.
      */
-    where?: TimeSelectWhereInput
+    where?: DateOnTimeSlotWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of TimeSelects to fetch.
+     * Determine the order of DateOnTimeSlots to fetch.
      */
-    orderBy?: Enumerable<TimeSelectOrderByWithRelationInput>
+    orderBy?: Enumerable<DateOnTimeSlotOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for TimeSelects.
+     * Sets the position for searching for DateOnTimeSlots.
      */
-    cursor?: TimeSelectWhereUniqueInput
+    cursor?: DateOnTimeSlotWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` TimeSelects from the position of the cursor.
+     * Take `±n` DateOnTimeSlots from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` TimeSelects.
+     * Skip the first `n` DateOnTimeSlots.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of TimeSelects.
+     * Filter by unique combinations of DateOnTimeSlots.
      */
-    distinct?: Enumerable<TimeSelectScalarFieldEnum>
+    distinct?: Enumerable<DateOnTimeSlotScalarFieldEnum>
   }
 
 
   /**
-   * TimeSelect findMany
+   * DateOnTimeSlot findMany
    */
-  export type TimeSelectFindManyArgs = {
+  export type DateOnTimeSlotFindManyArgs = {
     /**
-     * Select specific fields to fetch from the TimeSelect
+     * Select specific fields to fetch from the DateOnTimeSlot
      */
-    select?: TimeSelectSelect | null
+    select?: DateOnTimeSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: TimeSelectInclude | null
+    include?: DateOnTimeSlotInclude | null
     /**
-     * Filter, which TimeSelects to fetch.
+     * Filter, which DateOnTimeSlots to fetch.
      */
-    where?: TimeSelectWhereInput
+    where?: DateOnTimeSlotWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of TimeSelects to fetch.
+     * Determine the order of DateOnTimeSlots to fetch.
      */
-    orderBy?: Enumerable<TimeSelectOrderByWithRelationInput>
+    orderBy?: Enumerable<DateOnTimeSlotOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for listing TimeSelects.
+     * Sets the position for listing DateOnTimeSlots.
      */
-    cursor?: TimeSelectWhereUniqueInput
+    cursor?: DateOnTimeSlotWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` TimeSelects from the position of the cursor.
+     * Take `±n` DateOnTimeSlots from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` TimeSelects.
+     * Skip the first `n` DateOnTimeSlots.
      */
     skip?: number
-    distinct?: Enumerable<TimeSelectScalarFieldEnum>
+    distinct?: Enumerable<DateOnTimeSlotScalarFieldEnum>
   }
 
 
   /**
-   * TimeSelect create
+   * DateOnTimeSlot create
    */
-  export type TimeSelectCreateArgs = {
+  export type DateOnTimeSlotCreateArgs = {
     /**
-     * Select specific fields to fetch from the TimeSelect
+     * Select specific fields to fetch from the DateOnTimeSlot
      */
-    select?: TimeSelectSelect | null
+    select?: DateOnTimeSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: TimeSelectInclude | null
+    include?: DateOnTimeSlotInclude | null
     /**
-     * The data needed to create a TimeSelect.
+     * The data needed to create a DateOnTimeSlot.
      */
-    data: XOR<TimeSelectCreateInput, TimeSelectUncheckedCreateInput>
+    data: XOR<DateOnTimeSlotCreateInput, DateOnTimeSlotUncheckedCreateInput>
   }
 
 
   /**
-   * TimeSelect createMany
+   * DateOnTimeSlot createMany
    */
-  export type TimeSelectCreateManyArgs = {
+  export type DateOnTimeSlotCreateManyArgs = {
     /**
-     * The data used to create many TimeSelects.
+     * The data used to create many DateOnTimeSlots.
      */
-    data: Enumerable<TimeSelectCreateManyInput>
+    data: Enumerable<DateOnTimeSlotCreateManyInput>
     skipDuplicates?: boolean
   }
 
 
   /**
-   * TimeSelect update
+   * DateOnTimeSlot update
    */
-  export type TimeSelectUpdateArgs = {
+  export type DateOnTimeSlotUpdateArgs = {
     /**
-     * Select specific fields to fetch from the TimeSelect
+     * Select specific fields to fetch from the DateOnTimeSlot
      */
-    select?: TimeSelectSelect | null
+    select?: DateOnTimeSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: TimeSelectInclude | null
+    include?: DateOnTimeSlotInclude | null
     /**
-     * The data needed to update a TimeSelect.
+     * The data needed to update a DateOnTimeSlot.
      */
-    data: XOR<TimeSelectUpdateInput, TimeSelectUncheckedUpdateInput>
+    data: XOR<DateOnTimeSlotUpdateInput, DateOnTimeSlotUncheckedUpdateInput>
     /**
-     * Choose, which TimeSelect to update.
+     * Choose, which DateOnTimeSlot to update.
      */
-    where: TimeSelectWhereUniqueInput
+    where: DateOnTimeSlotWhereUniqueInput
   }
 
 
   /**
-   * TimeSelect updateMany
+   * DateOnTimeSlot updateMany
    */
-  export type TimeSelectUpdateManyArgs = {
+  export type DateOnTimeSlotUpdateManyArgs = {
     /**
-     * The data used to update TimeSelects.
+     * The data used to update DateOnTimeSlots.
      */
-    data: XOR<TimeSelectUpdateManyMutationInput, TimeSelectUncheckedUpdateManyInput>
+    data: XOR<DateOnTimeSlotUpdateManyMutationInput, DateOnTimeSlotUncheckedUpdateManyInput>
     /**
-     * Filter which TimeSelects to update
+     * Filter which DateOnTimeSlots to update
      */
-    where?: TimeSelectWhereInput
+    where?: DateOnTimeSlotWhereInput
   }
 
 
   /**
-   * TimeSelect upsert
+   * DateOnTimeSlot upsert
    */
-  export type TimeSelectUpsertArgs = {
+  export type DateOnTimeSlotUpsertArgs = {
     /**
-     * Select specific fields to fetch from the TimeSelect
+     * Select specific fields to fetch from the DateOnTimeSlot
      */
-    select?: TimeSelectSelect | null
+    select?: DateOnTimeSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: TimeSelectInclude | null
+    include?: DateOnTimeSlotInclude | null
     /**
-     * The filter to search for the TimeSelect to update in case it exists.
+     * The filter to search for the DateOnTimeSlot to update in case it exists.
      */
-    where: TimeSelectWhereUniqueInput
+    where: DateOnTimeSlotWhereUniqueInput
     /**
-     * In case the TimeSelect found by the `where` argument doesn't exist, create a new TimeSelect with this data.
+     * In case the DateOnTimeSlot found by the `where` argument doesn't exist, create a new DateOnTimeSlot with this data.
      */
-    create: XOR<TimeSelectCreateInput, TimeSelectUncheckedCreateInput>
+    create: XOR<DateOnTimeSlotCreateInput, DateOnTimeSlotUncheckedCreateInput>
     /**
-     * In case the TimeSelect was found with the provided `where` argument, update it with this data.
+     * In case the DateOnTimeSlot was found with the provided `where` argument, update it with this data.
      */
-    update: XOR<TimeSelectUpdateInput, TimeSelectUncheckedUpdateInput>
+    update: XOR<DateOnTimeSlotUpdateInput, DateOnTimeSlotUncheckedUpdateInput>
   }
 
 
   /**
-   * TimeSelect delete
+   * DateOnTimeSlot delete
    */
-  export type TimeSelectDeleteArgs = {
+  export type DateOnTimeSlotDeleteArgs = {
     /**
-     * Select specific fields to fetch from the TimeSelect
+     * Select specific fields to fetch from the DateOnTimeSlot
      */
-    select?: TimeSelectSelect | null
+    select?: DateOnTimeSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: TimeSelectInclude | null
+    include?: DateOnTimeSlotInclude | null
     /**
-     * Filter which TimeSelect to delete.
+     * Filter which DateOnTimeSlot to delete.
      */
-    where: TimeSelectWhereUniqueInput
+    where: DateOnTimeSlotWhereUniqueInput
   }
 
 
   /**
-   * TimeSelect deleteMany
+   * DateOnTimeSlot deleteMany
    */
-  export type TimeSelectDeleteManyArgs = {
+  export type DateOnTimeSlotDeleteManyArgs = {
     /**
-     * Filter which TimeSelects to delete
+     * Filter which DateOnTimeSlots to delete
      */
-    where?: TimeSelectWhereInput
+    where?: DateOnTimeSlotWhereInput
   }
 
 
   /**
-   * TimeSelect.dateSlots
+   * DateOnTimeSlot without action
    */
-  export type TimeSelect$dateSlotsArgs = {
+  export type DateOnTimeSlotArgs = {
     /**
-     * Select specific fields to fetch from the DateSlotOnTimeSelect
+     * Select specific fields to fetch from the DateOnTimeSlot
      */
-    select?: DateSlotOnTimeSelectSelect | null
+    select?: DateOnTimeSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: DateSlotOnTimeSelectInclude | null
-    where?: DateSlotOnTimeSelectWhereInput
-    orderBy?: Enumerable<DateSlotOnTimeSelectOrderByWithRelationInput>
-    cursor?: DateSlotOnTimeSelectWhereUniqueInput
+    include?: DateOnTimeSlotInclude | null
+  }
+
+
+
+  /**
+   * Model TimeSlot
+   */
+
+
+  export type AggregateTimeSlot = {
+    _count: TimeSlotCountAggregateOutputType | null
+    _avg: TimeSlotAvgAggregateOutputType | null
+    _sum: TimeSlotSumAggregateOutputType | null
+    _min: TimeSlotMinAggregateOutputType | null
+    _max: TimeSlotMaxAggregateOutputType | null
+  }
+
+  export type TimeSlotAvgAggregateOutputType = {
+    id: number | null
+    startTime: number | null
+    endTime: number | null
+  }
+
+  export type TimeSlotSumAggregateOutputType = {
+    id: number | null
+    startTime: number | null
+    endTime: number | null
+  }
+
+  export type TimeSlotMinAggregateOutputType = {
+    id: number | null
+    startTime: number | null
+    endTime: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TimeSlotMaxAggregateOutputType = {
+    id: number | null
+    startTime: number | null
+    endTime: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TimeSlotCountAggregateOutputType = {
+    id: number
+    startTime: number
+    endTime: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type TimeSlotAvgAggregateInputType = {
+    id?: true
+    startTime?: true
+    endTime?: true
+  }
+
+  export type TimeSlotSumAggregateInputType = {
+    id?: true
+    startTime?: true
+    endTime?: true
+  }
+
+  export type TimeSlotMinAggregateInputType = {
+    id?: true
+    startTime?: true
+    endTime?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TimeSlotMaxAggregateInputType = {
+    id?: true
+    startTime?: true
+    endTime?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TimeSlotCountAggregateInputType = {
+    id?: true
+    startTime?: true
+    endTime?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type TimeSlotAggregateArgs = {
+    /**
+     * Filter which TimeSlot to aggregate.
+     */
+    where?: TimeSlotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TimeSlots to fetch.
+     */
+    orderBy?: Enumerable<TimeSlotOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TimeSlotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TimeSlots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TimeSlots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TimeSlots
+    **/
+    _count?: true | TimeSlotCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: TimeSlotAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TimeSlotSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TimeSlotMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TimeSlotMaxAggregateInputType
+  }
+
+  export type GetTimeSlotAggregateType<T extends TimeSlotAggregateArgs> = {
+        [P in keyof T & keyof AggregateTimeSlot]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTimeSlot[P]>
+      : GetScalarType<T[P], AggregateTimeSlot[P]>
+  }
+
+
+
+
+  export type TimeSlotGroupByArgs = {
+    where?: TimeSlotWhereInput
+    orderBy?: Enumerable<TimeSlotOrderByWithAggregationInput>
+    by: TimeSlotScalarFieldEnum[]
+    having?: TimeSlotScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    distinct?: Enumerable<DateSlotOnTimeSelectScalarFieldEnum>
+    _count?: TimeSlotCountAggregateInputType | true
+    _avg?: TimeSlotAvgAggregateInputType
+    _sum?: TimeSlotSumAggregateInputType
+    _min?: TimeSlotMinAggregateInputType
+    _max?: TimeSlotMaxAggregateInputType
+  }
+
+
+  export type TimeSlotGroupByOutputType = {
+    id: number
+    startTime: number
+    endTime: number
+    createdAt: Date
+    updatedAt: Date
+    _count: TimeSlotCountAggregateOutputType | null
+    _avg: TimeSlotAvgAggregateOutputType | null
+    _sum: TimeSlotSumAggregateOutputType | null
+    _min: TimeSlotMinAggregateOutputType | null
+    _max: TimeSlotMaxAggregateOutputType | null
+  }
+
+  type GetTimeSlotGroupByPayload<T extends TimeSlotGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickArray<TimeSlotGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TimeSlotGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TimeSlotGroupByOutputType[P]>
+            : GetScalarType<T[P], TimeSlotGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TimeSlotSelect = {
+    id?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    dateOnTimeSlots?: boolean | TimeSlot$dateOnTimeSlotsArgs
+    _count?: boolean | TimeSlotCountOutputTypeArgs
+  }
+
+
+  export type TimeSlotInclude = {
+    dateOnTimeSlots?: boolean | TimeSlot$dateOnTimeSlotsArgs
+    _count?: boolean | TimeSlotCountOutputTypeArgs
+  }
+
+  export type TimeSlotGetPayload<S extends boolean | null | undefined | TimeSlotArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? TimeSlot :
+    S extends undefined ? never :
+    S extends { include: any } & (TimeSlotArgs | TimeSlotFindManyArgs)
+    ? TimeSlot  & {
+    [P in TruthyKeys<S['include']>]:
+        P extends 'dateOnTimeSlots' ? Array < DateOnTimeSlotGetPayload<S['include'][P]>>  :
+        P extends '_count' ? TimeSlotCountOutputTypeGetPayload<S['include'][P]> :  never
+  } 
+    : S extends { select: any } & (TimeSlotArgs | TimeSlotFindManyArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+        P extends 'dateOnTimeSlots' ? Array < DateOnTimeSlotGetPayload<S['select'][P]>>  :
+        P extends '_count' ? TimeSlotCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof TimeSlot ? TimeSlot[P] : never
+  } 
+      : TimeSlot
+
+
+  type TimeSlotCountArgs = 
+    Omit<TimeSlotFindManyArgs, 'select' | 'include'> & {
+      select?: TimeSlotCountAggregateInputType | true
+    }
+
+  export interface TimeSlotDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+
+    /**
+     * Find zero or one TimeSlot that matches the filter.
+     * @param {TimeSlotFindUniqueArgs} args - Arguments to find a TimeSlot
+     * @example
+     * // Get one TimeSlot
+     * const timeSlot = await prisma.timeSlot.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends TimeSlotFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, TimeSlotFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'TimeSlot'> extends True ? Prisma__TimeSlotClient<TimeSlotGetPayload<T>> : Prisma__TimeSlotClient<TimeSlotGetPayload<T> | null, null>
+
+    /**
+     * Find one TimeSlot that matches the filter or throw an error  with `error.code='P2025'` 
+     *     if no matches were found.
+     * @param {TimeSlotFindUniqueOrThrowArgs} args - Arguments to find a TimeSlot
+     * @example
+     * // Get one TimeSlot
+     * const timeSlot = await prisma.timeSlot.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends TimeSlotFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, TimeSlotFindUniqueOrThrowArgs>
+    ): Prisma__TimeSlotClient<TimeSlotGetPayload<T>>
+
+    /**
+     * Find the first TimeSlot that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeSlotFindFirstArgs} args - Arguments to find a TimeSlot
+     * @example
+     * // Get one TimeSlot
+     * const timeSlot = await prisma.timeSlot.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends TimeSlotFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, TimeSlotFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'TimeSlot'> extends True ? Prisma__TimeSlotClient<TimeSlotGetPayload<T>> : Prisma__TimeSlotClient<TimeSlotGetPayload<T> | null, null>
+
+    /**
+     * Find the first TimeSlot that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeSlotFindFirstOrThrowArgs} args - Arguments to find a TimeSlot
+     * @example
+     * // Get one TimeSlot
+     * const timeSlot = await prisma.timeSlot.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends TimeSlotFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, TimeSlotFindFirstOrThrowArgs>
+    ): Prisma__TimeSlotClient<TimeSlotGetPayload<T>>
+
+    /**
+     * Find zero or more TimeSlots that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeSlotFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TimeSlots
+     * const timeSlots = await prisma.timeSlot.findMany()
+     * 
+     * // Get first 10 TimeSlots
+     * const timeSlots = await prisma.timeSlot.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const timeSlotWithIdOnly = await prisma.timeSlot.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends TimeSlotFindManyArgs>(
+      args?: SelectSubset<T, TimeSlotFindManyArgs>
+    ): Prisma.PrismaPromise<Array<TimeSlotGetPayload<T>>>
+
+    /**
+     * Create a TimeSlot.
+     * @param {TimeSlotCreateArgs} args - Arguments to create a TimeSlot.
+     * @example
+     * // Create one TimeSlot
+     * const TimeSlot = await prisma.timeSlot.create({
+     *   data: {
+     *     // ... data to create a TimeSlot
+     *   }
+     * })
+     * 
+    **/
+    create<T extends TimeSlotCreateArgs>(
+      args: SelectSubset<T, TimeSlotCreateArgs>
+    ): Prisma__TimeSlotClient<TimeSlotGetPayload<T>>
+
+    /**
+     * Create many TimeSlots.
+     *     @param {TimeSlotCreateManyArgs} args - Arguments to create many TimeSlots.
+     *     @example
+     *     // Create many TimeSlots
+     *     const timeSlot = await prisma.timeSlot.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends TimeSlotCreateManyArgs>(
+      args?: SelectSubset<T, TimeSlotCreateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a TimeSlot.
+     * @param {TimeSlotDeleteArgs} args - Arguments to delete one TimeSlot.
+     * @example
+     * // Delete one TimeSlot
+     * const TimeSlot = await prisma.timeSlot.delete({
+     *   where: {
+     *     // ... filter to delete one TimeSlot
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends TimeSlotDeleteArgs>(
+      args: SelectSubset<T, TimeSlotDeleteArgs>
+    ): Prisma__TimeSlotClient<TimeSlotGetPayload<T>>
+
+    /**
+     * Update one TimeSlot.
+     * @param {TimeSlotUpdateArgs} args - Arguments to update one TimeSlot.
+     * @example
+     * // Update one TimeSlot
+     * const timeSlot = await prisma.timeSlot.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends TimeSlotUpdateArgs>(
+      args: SelectSubset<T, TimeSlotUpdateArgs>
+    ): Prisma__TimeSlotClient<TimeSlotGetPayload<T>>
+
+    /**
+     * Delete zero or more TimeSlots.
+     * @param {TimeSlotDeleteManyArgs} args - Arguments to filter TimeSlots to delete.
+     * @example
+     * // Delete a few TimeSlots
+     * const { count } = await prisma.timeSlot.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends TimeSlotDeleteManyArgs>(
+      args?: SelectSubset<T, TimeSlotDeleteManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TimeSlots.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeSlotUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TimeSlots
+     * const timeSlot = await prisma.timeSlot.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends TimeSlotUpdateManyArgs>(
+      args: SelectSubset<T, TimeSlotUpdateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one TimeSlot.
+     * @param {TimeSlotUpsertArgs} args - Arguments to update or create a TimeSlot.
+     * @example
+     * // Update or create a TimeSlot
+     * const timeSlot = await prisma.timeSlot.upsert({
+     *   create: {
+     *     // ... data to create a TimeSlot
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TimeSlot we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends TimeSlotUpsertArgs>(
+      args: SelectSubset<T, TimeSlotUpsertArgs>
+    ): Prisma__TimeSlotClient<TimeSlotGetPayload<T>>
+
+    /**
+     * Count the number of TimeSlots.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeSlotCountArgs} args - Arguments to filter TimeSlots to count.
+     * @example
+     * // Count the number of TimeSlots
+     * const count = await prisma.timeSlot.count({
+     *   where: {
+     *     // ... the filter for the TimeSlots we want to count
+     *   }
+     * })
+    **/
+    count<T extends TimeSlotCountArgs>(
+      args?: Subset<T, TimeSlotCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TimeSlotCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TimeSlot.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeSlotAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TimeSlotAggregateArgs>(args: Subset<T, TimeSlotAggregateArgs>): Prisma.PrismaPromise<GetTimeSlotAggregateType<T>>
+
+    /**
+     * Group by TimeSlot.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeSlotGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TimeSlotGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TimeSlotGroupByArgs['orderBy'] }
+        : { orderBy?: TimeSlotGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TimeSlotGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTimeSlotGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TimeSlot.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__TimeSlotClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+    private readonly _dmmf;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+
+    dateOnTimeSlots<T extends TimeSlot$dateOnTimeSlotsArgs= {}>(args?: Subset<T, TimeSlot$dateOnTimeSlotsArgs>): Prisma.PrismaPromise<Array<DateOnTimeSlotGetPayload<T>>| Null>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+
+
+  // Custom InputTypes
+
+  /**
+   * TimeSlot base type for findUnique actions
+   */
+  export type TimeSlotFindUniqueArgsBase = {
+    /**
+     * Select specific fields to fetch from the TimeSlot
+     */
+    select?: TimeSlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSlotInclude | null
+    /**
+     * Filter, which TimeSlot to fetch.
+     */
+    where: TimeSlotWhereUniqueInput
+  }
+
+  /**
+   * TimeSlot findUnique
+   */
+  export interface TimeSlotFindUniqueArgs extends TimeSlotFindUniqueArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * TimeSlot findUniqueOrThrow
+   */
+  export type TimeSlotFindUniqueOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the TimeSlot
+     */
+    select?: TimeSlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSlotInclude | null
+    /**
+     * Filter, which TimeSlot to fetch.
+     */
+    where: TimeSlotWhereUniqueInput
   }
 
 
   /**
-   * TimeSelect without action
+   * TimeSlot base type for findFirst actions
    */
-  export type TimeSelectArgs = {
+  export type TimeSlotFindFirstArgsBase = {
     /**
-     * Select specific fields to fetch from the TimeSelect
+     * Select specific fields to fetch from the TimeSlot
      */
-    select?: TimeSelectSelect | null
+    select?: TimeSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: TimeSelectInclude | null
+    include?: TimeSlotInclude | null
+    /**
+     * Filter, which TimeSlot to fetch.
+     */
+    where?: TimeSlotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TimeSlots to fetch.
+     */
+    orderBy?: Enumerable<TimeSlotOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TimeSlots.
+     */
+    cursor?: TimeSlotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TimeSlots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TimeSlots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TimeSlots.
+     */
+    distinct?: Enumerable<TimeSlotScalarFieldEnum>
+  }
+
+  /**
+   * TimeSlot findFirst
+   */
+  export interface TimeSlotFindFirstArgs extends TimeSlotFindFirstArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * TimeSlot findFirstOrThrow
+   */
+  export type TimeSlotFindFirstOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the TimeSlot
+     */
+    select?: TimeSlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSlotInclude | null
+    /**
+     * Filter, which TimeSlot to fetch.
+     */
+    where?: TimeSlotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TimeSlots to fetch.
+     */
+    orderBy?: Enumerable<TimeSlotOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TimeSlots.
+     */
+    cursor?: TimeSlotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TimeSlots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TimeSlots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TimeSlots.
+     */
+    distinct?: Enumerable<TimeSlotScalarFieldEnum>
+  }
+
+
+  /**
+   * TimeSlot findMany
+   */
+  export type TimeSlotFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the TimeSlot
+     */
+    select?: TimeSlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSlotInclude | null
+    /**
+     * Filter, which TimeSlots to fetch.
+     */
+    where?: TimeSlotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TimeSlots to fetch.
+     */
+    orderBy?: Enumerable<TimeSlotOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TimeSlots.
+     */
+    cursor?: TimeSlotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TimeSlots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TimeSlots.
+     */
+    skip?: number
+    distinct?: Enumerable<TimeSlotScalarFieldEnum>
+  }
+
+
+  /**
+   * TimeSlot create
+   */
+  export type TimeSlotCreateArgs = {
+    /**
+     * Select specific fields to fetch from the TimeSlot
+     */
+    select?: TimeSlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSlotInclude | null
+    /**
+     * The data needed to create a TimeSlot.
+     */
+    data: XOR<TimeSlotCreateInput, TimeSlotUncheckedCreateInput>
+  }
+
+
+  /**
+   * TimeSlot createMany
+   */
+  export type TimeSlotCreateManyArgs = {
+    /**
+     * The data used to create many TimeSlots.
+     */
+    data: Enumerable<TimeSlotCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * TimeSlot update
+   */
+  export type TimeSlotUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the TimeSlot
+     */
+    select?: TimeSlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSlotInclude | null
+    /**
+     * The data needed to update a TimeSlot.
+     */
+    data: XOR<TimeSlotUpdateInput, TimeSlotUncheckedUpdateInput>
+    /**
+     * Choose, which TimeSlot to update.
+     */
+    where: TimeSlotWhereUniqueInput
+  }
+
+
+  /**
+   * TimeSlot updateMany
+   */
+  export type TimeSlotUpdateManyArgs = {
+    /**
+     * The data used to update TimeSlots.
+     */
+    data: XOR<TimeSlotUpdateManyMutationInput, TimeSlotUncheckedUpdateManyInput>
+    /**
+     * Filter which TimeSlots to update
+     */
+    where?: TimeSlotWhereInput
+  }
+
+
+  /**
+   * TimeSlot upsert
+   */
+  export type TimeSlotUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the TimeSlot
+     */
+    select?: TimeSlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSlotInclude | null
+    /**
+     * The filter to search for the TimeSlot to update in case it exists.
+     */
+    where: TimeSlotWhereUniqueInput
+    /**
+     * In case the TimeSlot found by the `where` argument doesn't exist, create a new TimeSlot with this data.
+     */
+    create: XOR<TimeSlotCreateInput, TimeSlotUncheckedCreateInput>
+    /**
+     * In case the TimeSlot was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TimeSlotUpdateInput, TimeSlotUncheckedUpdateInput>
+  }
+
+
+  /**
+   * TimeSlot delete
+   */
+  export type TimeSlotDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the TimeSlot
+     */
+    select?: TimeSlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSlotInclude | null
+    /**
+     * Filter which TimeSlot to delete.
+     */
+    where: TimeSlotWhereUniqueInput
+  }
+
+
+  /**
+   * TimeSlot deleteMany
+   */
+  export type TimeSlotDeleteManyArgs = {
+    /**
+     * Filter which TimeSlots to delete
+     */
+    where?: TimeSlotWhereInput
+  }
+
+
+  /**
+   * TimeSlot.dateOnTimeSlots
+   */
+  export type TimeSlot$dateOnTimeSlotsArgs = {
+    /**
+     * Select specific fields to fetch from the DateOnTimeSlot
+     */
+    select?: DateOnTimeSlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: DateOnTimeSlotInclude | null
+    where?: DateOnTimeSlotWhereInput
+    orderBy?: Enumerable<DateOnTimeSlotOrderByWithRelationInput>
+    cursor?: DateOnTimeSlotWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Enumerable<DateOnTimeSlotScalarFieldEnum>
+  }
+
+
+  /**
+   * TimeSlot without action
+   */
+  export type TimeSlotArgs = {
+    /**
+     * Select specific fields to fetch from the TimeSlot
+     */
+    select?: TimeSlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSlotInclude | null
   }
 
 
@@ -15776,993 +14735,6 @@ export namespace Prisma {
 
 
   /**
-   * Model DateSlotOnTimeSelect
-   */
-
-
-  export type AggregateDateSlotOnTimeSelect = {
-    _count: DateSlotOnTimeSelectCountAggregateOutputType | null
-    _avg: DateSlotOnTimeSelectAvgAggregateOutputType | null
-    _sum: DateSlotOnTimeSelectSumAggregateOutputType | null
-    _min: DateSlotOnTimeSelectMinAggregateOutputType | null
-    _max: DateSlotOnTimeSelectMaxAggregateOutputType | null
-  }
-
-  export type DateSlotOnTimeSelectAvgAggregateOutputType = {
-    id: number | null
-    dateSlotId: number | null
-    timeSelectId: number | null
-  }
-
-  export type DateSlotOnTimeSelectSumAggregateOutputType = {
-    id: number | null
-    dateSlotId: number | null
-    timeSelectId: number | null
-  }
-
-  export type DateSlotOnTimeSelectMinAggregateOutputType = {
-    id: number | null
-    dateSlotId: number | null
-    timeSelectId: number | null
-    status: string | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type DateSlotOnTimeSelectMaxAggregateOutputType = {
-    id: number | null
-    dateSlotId: number | null
-    timeSelectId: number | null
-    status: string | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type DateSlotOnTimeSelectCountAggregateOutputType = {
-    id: number
-    dateSlotId: number
-    timeSelectId: number
-    status: number
-    createdAt: number
-    updatedAt: number
-    _all: number
-  }
-
-
-  export type DateSlotOnTimeSelectAvgAggregateInputType = {
-    id?: true
-    dateSlotId?: true
-    timeSelectId?: true
-  }
-
-  export type DateSlotOnTimeSelectSumAggregateInputType = {
-    id?: true
-    dateSlotId?: true
-    timeSelectId?: true
-  }
-
-  export type DateSlotOnTimeSelectMinAggregateInputType = {
-    id?: true
-    dateSlotId?: true
-    timeSelectId?: true
-    status?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type DateSlotOnTimeSelectMaxAggregateInputType = {
-    id?: true
-    dateSlotId?: true
-    timeSelectId?: true
-    status?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type DateSlotOnTimeSelectCountAggregateInputType = {
-    id?: true
-    dateSlotId?: true
-    timeSelectId?: true
-    status?: true
-    createdAt?: true
-    updatedAt?: true
-    _all?: true
-  }
-
-  export type DateSlotOnTimeSelectAggregateArgs = {
-    /**
-     * Filter which DateSlotOnTimeSelect to aggregate.
-     */
-    where?: DateSlotOnTimeSelectWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of DateSlotOnTimeSelects to fetch.
-     */
-    orderBy?: Enumerable<DateSlotOnTimeSelectOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: DateSlotOnTimeSelectWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` DateSlotOnTimeSelects from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` DateSlotOnTimeSelects.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned DateSlotOnTimeSelects
-    **/
-    _count?: true | DateSlotOnTimeSelectCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: DateSlotOnTimeSelectAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: DateSlotOnTimeSelectSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: DateSlotOnTimeSelectMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: DateSlotOnTimeSelectMaxAggregateInputType
-  }
-
-  export type GetDateSlotOnTimeSelectAggregateType<T extends DateSlotOnTimeSelectAggregateArgs> = {
-        [P in keyof T & keyof AggregateDateSlotOnTimeSelect]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateDateSlotOnTimeSelect[P]>
-      : GetScalarType<T[P], AggregateDateSlotOnTimeSelect[P]>
-  }
-
-
-
-
-  export type DateSlotOnTimeSelectGroupByArgs = {
-    where?: DateSlotOnTimeSelectWhereInput
-    orderBy?: Enumerable<DateSlotOnTimeSelectOrderByWithAggregationInput>
-    by: DateSlotOnTimeSelectScalarFieldEnum[]
-    having?: DateSlotOnTimeSelectScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: DateSlotOnTimeSelectCountAggregateInputType | true
-    _avg?: DateSlotOnTimeSelectAvgAggregateInputType
-    _sum?: DateSlotOnTimeSelectSumAggregateInputType
-    _min?: DateSlotOnTimeSelectMinAggregateInputType
-    _max?: DateSlotOnTimeSelectMaxAggregateInputType
-  }
-
-
-  export type DateSlotOnTimeSelectGroupByOutputType = {
-    id: number
-    dateSlotId: number
-    timeSelectId: number
-    status: string
-    createdAt: Date
-    updatedAt: Date
-    _count: DateSlotOnTimeSelectCountAggregateOutputType | null
-    _avg: DateSlotOnTimeSelectAvgAggregateOutputType | null
-    _sum: DateSlotOnTimeSelectSumAggregateOutputType | null
-    _min: DateSlotOnTimeSelectMinAggregateOutputType | null
-    _max: DateSlotOnTimeSelectMaxAggregateOutputType | null
-  }
-
-  type GetDateSlotOnTimeSelectGroupByPayload<T extends DateSlotOnTimeSelectGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickArray<DateSlotOnTimeSelectGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof DateSlotOnTimeSelectGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], DateSlotOnTimeSelectGroupByOutputType[P]>
-            : GetScalarType<T[P], DateSlotOnTimeSelectGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type DateSlotOnTimeSelectSelect = {
-    id?: boolean
-    dateSlotId?: boolean
-    timeSelectId?: boolean
-    status?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    dateSlot?: boolean | DateSlotArgs
-    timeSelect?: boolean | TimeSelectArgs
-  }
-
-
-  export type DateSlotOnTimeSelectInclude = {
-    dateSlot?: boolean | DateSlotArgs
-    timeSelect?: boolean | TimeSelectArgs
-  }
-
-  export type DateSlotOnTimeSelectGetPayload<S extends boolean | null | undefined | DateSlotOnTimeSelectArgs> =
-    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? DateSlotOnTimeSelect :
-    S extends undefined ? never :
-    S extends { include: any } & (DateSlotOnTimeSelectArgs | DateSlotOnTimeSelectFindManyArgs)
-    ? DateSlotOnTimeSelect  & {
-    [P in TruthyKeys<S['include']>]:
-        P extends 'dateSlot' ? DateSlotGetPayload<S['include'][P]> :
-        P extends 'timeSelect' ? TimeSelectGetPayload<S['include'][P]> :  never
-  } 
-    : S extends { select: any } & (DateSlotOnTimeSelectArgs | DateSlotOnTimeSelectFindManyArgs)
-      ? {
-    [P in TruthyKeys<S['select']>]:
-        P extends 'dateSlot' ? DateSlotGetPayload<S['select'][P]> :
-        P extends 'timeSelect' ? TimeSelectGetPayload<S['select'][P]> :  P extends keyof DateSlotOnTimeSelect ? DateSlotOnTimeSelect[P] : never
-  } 
-      : DateSlotOnTimeSelect
-
-
-  type DateSlotOnTimeSelectCountArgs = 
-    Omit<DateSlotOnTimeSelectFindManyArgs, 'select' | 'include'> & {
-      select?: DateSlotOnTimeSelectCountAggregateInputType | true
-    }
-
-  export interface DateSlotOnTimeSelectDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
-
-    /**
-     * Find zero or one DateSlotOnTimeSelect that matches the filter.
-     * @param {DateSlotOnTimeSelectFindUniqueArgs} args - Arguments to find a DateSlotOnTimeSelect
-     * @example
-     * // Get one DateSlotOnTimeSelect
-     * const dateSlotOnTimeSelect = await prisma.dateSlotOnTimeSelect.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUnique<T extends DateSlotOnTimeSelectFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args: SelectSubset<T, DateSlotOnTimeSelectFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'DateSlotOnTimeSelect'> extends True ? Prisma__DateSlotOnTimeSelectClient<DateSlotOnTimeSelectGetPayload<T>> : Prisma__DateSlotOnTimeSelectClient<DateSlotOnTimeSelectGetPayload<T> | null, null>
-
-    /**
-     * Find one DateSlotOnTimeSelect that matches the filter or throw an error  with `error.code='P2025'` 
-     *     if no matches were found.
-     * @param {DateSlotOnTimeSelectFindUniqueOrThrowArgs} args - Arguments to find a DateSlotOnTimeSelect
-     * @example
-     * // Get one DateSlotOnTimeSelect
-     * const dateSlotOnTimeSelect = await prisma.dateSlotOnTimeSelect.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUniqueOrThrow<T extends DateSlotOnTimeSelectFindUniqueOrThrowArgs>(
-      args?: SelectSubset<T, DateSlotOnTimeSelectFindUniqueOrThrowArgs>
-    ): Prisma__DateSlotOnTimeSelectClient<DateSlotOnTimeSelectGetPayload<T>>
-
-    /**
-     * Find the first DateSlotOnTimeSelect that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DateSlotOnTimeSelectFindFirstArgs} args - Arguments to find a DateSlotOnTimeSelect
-     * @example
-     * // Get one DateSlotOnTimeSelect
-     * const dateSlotOnTimeSelect = await prisma.dateSlotOnTimeSelect.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirst<T extends DateSlotOnTimeSelectFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args?: SelectSubset<T, DateSlotOnTimeSelectFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'DateSlotOnTimeSelect'> extends True ? Prisma__DateSlotOnTimeSelectClient<DateSlotOnTimeSelectGetPayload<T>> : Prisma__DateSlotOnTimeSelectClient<DateSlotOnTimeSelectGetPayload<T> | null, null>
-
-    /**
-     * Find the first DateSlotOnTimeSelect that matches the filter or
-     * throw `NotFoundError` if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DateSlotOnTimeSelectFindFirstOrThrowArgs} args - Arguments to find a DateSlotOnTimeSelect
-     * @example
-     * // Get one DateSlotOnTimeSelect
-     * const dateSlotOnTimeSelect = await prisma.dateSlotOnTimeSelect.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirstOrThrow<T extends DateSlotOnTimeSelectFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, DateSlotOnTimeSelectFindFirstOrThrowArgs>
-    ): Prisma__DateSlotOnTimeSelectClient<DateSlotOnTimeSelectGetPayload<T>>
-
-    /**
-     * Find zero or more DateSlotOnTimeSelects that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DateSlotOnTimeSelectFindManyArgs=} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all DateSlotOnTimeSelects
-     * const dateSlotOnTimeSelects = await prisma.dateSlotOnTimeSelect.findMany()
-     * 
-     * // Get first 10 DateSlotOnTimeSelects
-     * const dateSlotOnTimeSelects = await prisma.dateSlotOnTimeSelect.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const dateSlotOnTimeSelectWithIdOnly = await prisma.dateSlotOnTimeSelect.findMany({ select: { id: true } })
-     * 
-    **/
-    findMany<T extends DateSlotOnTimeSelectFindManyArgs>(
-      args?: SelectSubset<T, DateSlotOnTimeSelectFindManyArgs>
-    ): Prisma.PrismaPromise<Array<DateSlotOnTimeSelectGetPayload<T>>>
-
-    /**
-     * Create a DateSlotOnTimeSelect.
-     * @param {DateSlotOnTimeSelectCreateArgs} args - Arguments to create a DateSlotOnTimeSelect.
-     * @example
-     * // Create one DateSlotOnTimeSelect
-     * const DateSlotOnTimeSelect = await prisma.dateSlotOnTimeSelect.create({
-     *   data: {
-     *     // ... data to create a DateSlotOnTimeSelect
-     *   }
-     * })
-     * 
-    **/
-    create<T extends DateSlotOnTimeSelectCreateArgs>(
-      args: SelectSubset<T, DateSlotOnTimeSelectCreateArgs>
-    ): Prisma__DateSlotOnTimeSelectClient<DateSlotOnTimeSelectGetPayload<T>>
-
-    /**
-     * Create many DateSlotOnTimeSelects.
-     *     @param {DateSlotOnTimeSelectCreateManyArgs} args - Arguments to create many DateSlotOnTimeSelects.
-     *     @example
-     *     // Create many DateSlotOnTimeSelects
-     *     const dateSlotOnTimeSelect = await prisma.dateSlotOnTimeSelect.createMany({
-     *       data: {
-     *         // ... provide data here
-     *       }
-     *     })
-     *     
-    **/
-    createMany<T extends DateSlotOnTimeSelectCreateManyArgs>(
-      args?: SelectSubset<T, DateSlotOnTimeSelectCreateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Delete a DateSlotOnTimeSelect.
-     * @param {DateSlotOnTimeSelectDeleteArgs} args - Arguments to delete one DateSlotOnTimeSelect.
-     * @example
-     * // Delete one DateSlotOnTimeSelect
-     * const DateSlotOnTimeSelect = await prisma.dateSlotOnTimeSelect.delete({
-     *   where: {
-     *     // ... filter to delete one DateSlotOnTimeSelect
-     *   }
-     * })
-     * 
-    **/
-    delete<T extends DateSlotOnTimeSelectDeleteArgs>(
-      args: SelectSubset<T, DateSlotOnTimeSelectDeleteArgs>
-    ): Prisma__DateSlotOnTimeSelectClient<DateSlotOnTimeSelectGetPayload<T>>
-
-    /**
-     * Update one DateSlotOnTimeSelect.
-     * @param {DateSlotOnTimeSelectUpdateArgs} args - Arguments to update one DateSlotOnTimeSelect.
-     * @example
-     * // Update one DateSlotOnTimeSelect
-     * const dateSlotOnTimeSelect = await prisma.dateSlotOnTimeSelect.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    update<T extends DateSlotOnTimeSelectUpdateArgs>(
-      args: SelectSubset<T, DateSlotOnTimeSelectUpdateArgs>
-    ): Prisma__DateSlotOnTimeSelectClient<DateSlotOnTimeSelectGetPayload<T>>
-
-    /**
-     * Delete zero or more DateSlotOnTimeSelects.
-     * @param {DateSlotOnTimeSelectDeleteManyArgs} args - Arguments to filter DateSlotOnTimeSelects to delete.
-     * @example
-     * // Delete a few DateSlotOnTimeSelects
-     * const { count } = await prisma.dateSlotOnTimeSelect.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-    **/
-    deleteMany<T extends DateSlotOnTimeSelectDeleteManyArgs>(
-      args?: SelectSubset<T, DateSlotOnTimeSelectDeleteManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more DateSlotOnTimeSelects.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DateSlotOnTimeSelectUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many DateSlotOnTimeSelects
-     * const dateSlotOnTimeSelect = await prisma.dateSlotOnTimeSelect.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    updateMany<T extends DateSlotOnTimeSelectUpdateManyArgs>(
-      args: SelectSubset<T, DateSlotOnTimeSelectUpdateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one DateSlotOnTimeSelect.
-     * @param {DateSlotOnTimeSelectUpsertArgs} args - Arguments to update or create a DateSlotOnTimeSelect.
-     * @example
-     * // Update or create a DateSlotOnTimeSelect
-     * const dateSlotOnTimeSelect = await prisma.dateSlotOnTimeSelect.upsert({
-     *   create: {
-     *     // ... data to create a DateSlotOnTimeSelect
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the DateSlotOnTimeSelect we want to update
-     *   }
-     * })
-    **/
-    upsert<T extends DateSlotOnTimeSelectUpsertArgs>(
-      args: SelectSubset<T, DateSlotOnTimeSelectUpsertArgs>
-    ): Prisma__DateSlotOnTimeSelectClient<DateSlotOnTimeSelectGetPayload<T>>
-
-    /**
-     * Count the number of DateSlotOnTimeSelects.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DateSlotOnTimeSelectCountArgs} args - Arguments to filter DateSlotOnTimeSelects to count.
-     * @example
-     * // Count the number of DateSlotOnTimeSelects
-     * const count = await prisma.dateSlotOnTimeSelect.count({
-     *   where: {
-     *     // ... the filter for the DateSlotOnTimeSelects we want to count
-     *   }
-     * })
-    **/
-    count<T extends DateSlotOnTimeSelectCountArgs>(
-      args?: Subset<T, DateSlotOnTimeSelectCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends _Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], DateSlotOnTimeSelectCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a DateSlotOnTimeSelect.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DateSlotOnTimeSelectAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends DateSlotOnTimeSelectAggregateArgs>(args: Subset<T, DateSlotOnTimeSelectAggregateArgs>): Prisma.PrismaPromise<GetDateSlotOnTimeSelectAggregateType<T>>
-
-    /**
-     * Group by DateSlotOnTimeSelect.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DateSlotOnTimeSelectGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends DateSlotOnTimeSelectGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: DateSlotOnTimeSelectGroupByArgs['orderBy'] }
-        : { orderBy?: DateSlotOnTimeSelectGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends TupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, DateSlotOnTimeSelectGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDateSlotOnTimeSelectGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for DateSlotOnTimeSelect.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export class Prisma__DateSlotOnTimeSelectClient<T, Null = never> implements Prisma.PrismaPromise<T> {
-    private readonly _dmmf;
-    private readonly _queryType;
-    private readonly _rootField;
-    private readonly _clientMethod;
-    private readonly _args;
-    private readonly _dataPath;
-    private readonly _errorFormat;
-    private readonly _measurePerformance?;
-    private _isList;
-    private _callsite;
-    private _requestPromise?;
-    readonly [Symbol.toStringTag]: 'PrismaPromise';
-    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
-
-    dateSlot<T extends DateSlotArgs= {}>(args?: Subset<T, DateSlotArgs>): Prisma__DateSlotClient<DateSlotGetPayload<T> | Null>;
-
-    timeSelect<T extends TimeSelectArgs= {}>(args?: Subset<T, TimeSelectArgs>): Prisma__TimeSelectClient<TimeSelectGetPayload<T> | Null>;
-
-    private get _document();
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
-  }
-
-
-
-  // Custom InputTypes
-
-  /**
-   * DateSlotOnTimeSelect base type for findUnique actions
-   */
-  export type DateSlotOnTimeSelectFindUniqueArgsBase = {
-    /**
-     * Select specific fields to fetch from the DateSlotOnTimeSelect
-     */
-    select?: DateSlotOnTimeSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DateSlotOnTimeSelectInclude | null
-    /**
-     * Filter, which DateSlotOnTimeSelect to fetch.
-     */
-    where: DateSlotOnTimeSelectWhereUniqueInput
-  }
-
-  /**
-   * DateSlotOnTimeSelect findUnique
-   */
-  export interface DateSlotOnTimeSelectFindUniqueArgs extends DateSlotOnTimeSelectFindUniqueArgsBase {
-   /**
-    * Throw an Error if query returns no results
-    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
-    */
-    rejectOnNotFound?: RejectOnNotFound
-  }
-      
-
-  /**
-   * DateSlotOnTimeSelect findUniqueOrThrow
-   */
-  export type DateSlotOnTimeSelectFindUniqueOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the DateSlotOnTimeSelect
-     */
-    select?: DateSlotOnTimeSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DateSlotOnTimeSelectInclude | null
-    /**
-     * Filter, which DateSlotOnTimeSelect to fetch.
-     */
-    where: DateSlotOnTimeSelectWhereUniqueInput
-  }
-
-
-  /**
-   * DateSlotOnTimeSelect base type for findFirst actions
-   */
-  export type DateSlotOnTimeSelectFindFirstArgsBase = {
-    /**
-     * Select specific fields to fetch from the DateSlotOnTimeSelect
-     */
-    select?: DateSlotOnTimeSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DateSlotOnTimeSelectInclude | null
-    /**
-     * Filter, which DateSlotOnTimeSelect to fetch.
-     */
-    where?: DateSlotOnTimeSelectWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of DateSlotOnTimeSelects to fetch.
-     */
-    orderBy?: Enumerable<DateSlotOnTimeSelectOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for DateSlotOnTimeSelects.
-     */
-    cursor?: DateSlotOnTimeSelectWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` DateSlotOnTimeSelects from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` DateSlotOnTimeSelects.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of DateSlotOnTimeSelects.
-     */
-    distinct?: Enumerable<DateSlotOnTimeSelectScalarFieldEnum>
-  }
-
-  /**
-   * DateSlotOnTimeSelect findFirst
-   */
-  export interface DateSlotOnTimeSelectFindFirstArgs extends DateSlotOnTimeSelectFindFirstArgsBase {
-   /**
-    * Throw an Error if query returns no results
-    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
-    */
-    rejectOnNotFound?: RejectOnNotFound
-  }
-      
-
-  /**
-   * DateSlotOnTimeSelect findFirstOrThrow
-   */
-  export type DateSlotOnTimeSelectFindFirstOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the DateSlotOnTimeSelect
-     */
-    select?: DateSlotOnTimeSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DateSlotOnTimeSelectInclude | null
-    /**
-     * Filter, which DateSlotOnTimeSelect to fetch.
-     */
-    where?: DateSlotOnTimeSelectWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of DateSlotOnTimeSelects to fetch.
-     */
-    orderBy?: Enumerable<DateSlotOnTimeSelectOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for DateSlotOnTimeSelects.
-     */
-    cursor?: DateSlotOnTimeSelectWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` DateSlotOnTimeSelects from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` DateSlotOnTimeSelects.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of DateSlotOnTimeSelects.
-     */
-    distinct?: Enumerable<DateSlotOnTimeSelectScalarFieldEnum>
-  }
-
-
-  /**
-   * DateSlotOnTimeSelect findMany
-   */
-  export type DateSlotOnTimeSelectFindManyArgs = {
-    /**
-     * Select specific fields to fetch from the DateSlotOnTimeSelect
-     */
-    select?: DateSlotOnTimeSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DateSlotOnTimeSelectInclude | null
-    /**
-     * Filter, which DateSlotOnTimeSelects to fetch.
-     */
-    where?: DateSlotOnTimeSelectWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of DateSlotOnTimeSelects to fetch.
-     */
-    orderBy?: Enumerable<DateSlotOnTimeSelectOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing DateSlotOnTimeSelects.
-     */
-    cursor?: DateSlotOnTimeSelectWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` DateSlotOnTimeSelects from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` DateSlotOnTimeSelects.
-     */
-    skip?: number
-    distinct?: Enumerable<DateSlotOnTimeSelectScalarFieldEnum>
-  }
-
-
-  /**
-   * DateSlotOnTimeSelect create
-   */
-  export type DateSlotOnTimeSelectCreateArgs = {
-    /**
-     * Select specific fields to fetch from the DateSlotOnTimeSelect
-     */
-    select?: DateSlotOnTimeSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DateSlotOnTimeSelectInclude | null
-    /**
-     * The data needed to create a DateSlotOnTimeSelect.
-     */
-    data: XOR<DateSlotOnTimeSelectCreateInput, DateSlotOnTimeSelectUncheckedCreateInput>
-  }
-
-
-  /**
-   * DateSlotOnTimeSelect createMany
-   */
-  export type DateSlotOnTimeSelectCreateManyArgs = {
-    /**
-     * The data used to create many DateSlotOnTimeSelects.
-     */
-    data: Enumerable<DateSlotOnTimeSelectCreateManyInput>
-    skipDuplicates?: boolean
-  }
-
-
-  /**
-   * DateSlotOnTimeSelect update
-   */
-  export type DateSlotOnTimeSelectUpdateArgs = {
-    /**
-     * Select specific fields to fetch from the DateSlotOnTimeSelect
-     */
-    select?: DateSlotOnTimeSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DateSlotOnTimeSelectInclude | null
-    /**
-     * The data needed to update a DateSlotOnTimeSelect.
-     */
-    data: XOR<DateSlotOnTimeSelectUpdateInput, DateSlotOnTimeSelectUncheckedUpdateInput>
-    /**
-     * Choose, which DateSlotOnTimeSelect to update.
-     */
-    where: DateSlotOnTimeSelectWhereUniqueInput
-  }
-
-
-  /**
-   * DateSlotOnTimeSelect updateMany
-   */
-  export type DateSlotOnTimeSelectUpdateManyArgs = {
-    /**
-     * The data used to update DateSlotOnTimeSelects.
-     */
-    data: XOR<DateSlotOnTimeSelectUpdateManyMutationInput, DateSlotOnTimeSelectUncheckedUpdateManyInput>
-    /**
-     * Filter which DateSlotOnTimeSelects to update
-     */
-    where?: DateSlotOnTimeSelectWhereInput
-  }
-
-
-  /**
-   * DateSlotOnTimeSelect upsert
-   */
-  export type DateSlotOnTimeSelectUpsertArgs = {
-    /**
-     * Select specific fields to fetch from the DateSlotOnTimeSelect
-     */
-    select?: DateSlotOnTimeSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DateSlotOnTimeSelectInclude | null
-    /**
-     * The filter to search for the DateSlotOnTimeSelect to update in case it exists.
-     */
-    where: DateSlotOnTimeSelectWhereUniqueInput
-    /**
-     * In case the DateSlotOnTimeSelect found by the `where` argument doesn't exist, create a new DateSlotOnTimeSelect with this data.
-     */
-    create: XOR<DateSlotOnTimeSelectCreateInput, DateSlotOnTimeSelectUncheckedCreateInput>
-    /**
-     * In case the DateSlotOnTimeSelect was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<DateSlotOnTimeSelectUpdateInput, DateSlotOnTimeSelectUncheckedUpdateInput>
-  }
-
-
-  /**
-   * DateSlotOnTimeSelect delete
-   */
-  export type DateSlotOnTimeSelectDeleteArgs = {
-    /**
-     * Select specific fields to fetch from the DateSlotOnTimeSelect
-     */
-    select?: DateSlotOnTimeSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DateSlotOnTimeSelectInclude | null
-    /**
-     * Filter which DateSlotOnTimeSelect to delete.
-     */
-    where: DateSlotOnTimeSelectWhereUniqueInput
-  }
-
-
-  /**
-   * DateSlotOnTimeSelect deleteMany
-   */
-  export type DateSlotOnTimeSelectDeleteManyArgs = {
-    /**
-     * Filter which DateSlotOnTimeSelects to delete
-     */
-    where?: DateSlotOnTimeSelectWhereInput
-  }
-
-
-  /**
-   * DateSlotOnTimeSelect without action
-   */
-  export type DateSlotOnTimeSelectArgs = {
-    /**
-     * Select specific fields to fetch from the DateSlotOnTimeSelect
-     */
-    select?: DateSlotOnTimeSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: DateSlotOnTimeSelectInclude | null
-  }
-
-
-
-  /**
    * Enums
    */
 
@@ -16804,39 +14776,30 @@ export namespace Prisma {
   export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
 
 
-  export const DateSlotOnTimeSelectScalarFieldEnum: {
+  export const DateOnTimeSlotScalarFieldEnum: {
     id: 'id',
+    timeSlotId: 'timeSlotId',
     dateSlotId: 'dateSlotId',
-    timeSelectId: 'timeSelectId',
     status: 'status',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
 
-  export type DateSlotOnTimeSelectScalarFieldEnum = (typeof DateSlotOnTimeSelectScalarFieldEnum)[keyof typeof DateSlotOnTimeSelectScalarFieldEnum]
+  export type DateOnTimeSlotScalarFieldEnum = (typeof DateOnTimeSlotScalarFieldEnum)[keyof typeof DateOnTimeSlotScalarFieldEnum]
 
 
   export const DateSlotScalarFieldEnum: {
     id: 'id',
     availabilityScheduleId: 'availabilityScheduleId',
-    date: 'date',
+    name: 'name',
     custormerId: 'custormerId',
+    eventId: 'eventId',
+    dayName: 'dayName',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
 
   export type DateSlotScalarFieldEnum = (typeof DateSlotScalarFieldEnum)[keyof typeof DateSlotScalarFieldEnum]
-
-
-  export const DaySlotOnDateSlotScalarFieldEnum: {
-    id: 'id',
-    daySlotId: 'daySlotId',
-    dateSlotId: 'dateSlotId',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
-  };
-
-  export type DaySlotOnDateSlotScalarFieldEnum = (typeof DaySlotOnDateSlotScalarFieldEnum)[keyof typeof DaySlotOnDateSlotScalarFieldEnum]
 
 
   export const DaySlotScalarFieldEnum: {
@@ -16847,17 +14810,6 @@ export namespace Prisma {
   };
 
   export type DaySlotScalarFieldEnum = (typeof DaySlotScalarFieldEnum)[keyof typeof DaySlotScalarFieldEnum]
-
-
-  export const EventTypeOnDaySlotScalarFieldEnum: {
-    id: 'id',
-    eventTypeId: 'eventTypeId',
-    daySlotId: 'daySlotId',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
-  };
-
-  export type EventTypeOnDaySlotScalarFieldEnum = (typeof EventTypeOnDaySlotScalarFieldEnum)[keyof typeof EventTypeOnDaySlotScalarFieldEnum]
 
 
   export const EventTypeOnLocationScalarFieldEnum: {
@@ -16926,7 +14878,7 @@ export namespace Prisma {
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
-  export const TimeSelectScalarFieldEnum: {
+  export const TimeSlotScalarFieldEnum: {
     id: 'id',
     startTime: 'startTime',
     endTime: 'endTime',
@@ -16934,7 +14886,7 @@ export namespace Prisma {
     updatedAt: 'updatedAt'
   };
 
-  export type TimeSelectScalarFieldEnum = (typeof TimeSelectScalarFieldEnum)[keyof typeof TimeSelectScalarFieldEnum]
+  export type TimeSlotScalarFieldEnum = (typeof TimeSlotScalarFieldEnum)[keyof typeof TimeSlotScalarFieldEnum]
 
 
   export const TransactionIsolationLevel: {
@@ -17077,7 +15029,7 @@ export namespace Prisma {
     user?: XOR<UserRelationFilter, UserWhereInput>
     eventTypeOnLocations?: EventTypeOnLocationListRelationFilter
     availabilitySchedule?: XOR<AvailabilityScheduleRelationFilter, AvailabilityScheduleWhereInput> | null
-    daySlots?: EventTypeOnDaySlotListRelationFilter
+    dateSlots?: DateSlotListRelationFilter
     groupMeetings?: GroupMeetingListRelationFilter
   }
 
@@ -17094,12 +15046,13 @@ export namespace Prisma {
     user?: UserOrderByWithRelationInput
     eventTypeOnLocations?: EventTypeOnLocationOrderByRelationAggregateInput
     availabilitySchedule?: AvailabilityScheduleOrderByWithRelationInput
-    daySlots?: EventTypeOnDaySlotOrderByRelationAggregateInput
+    dateSlots?: DateSlotOrderByRelationAggregateInput
     groupMeetings?: GroupMeetingOrderByRelationAggregateInput
   }
 
   export type EventTypeWhereUniqueInput = {
     id?: number
+    userId_name?: EventTypeUserIdNameCompoundUniqueInput
   }
 
   export type EventTypeOrderByWithAggregationInput = {
@@ -17130,156 +15083,6 @@ export namespace Prisma {
     price?: IntWithAggregatesFilter | number
     timeDuration?: IntWithAggregatesFilter | number
     availabilityScheduleId?: IntNullableWithAggregatesFilter | number | null
-    createdAt?: DateTimeWithAggregatesFilter | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter | Date | string
-  }
-
-  export type DaySlotWhereInput = {
-    AND?: Enumerable<DaySlotWhereInput>
-    OR?: Enumerable<DaySlotWhereInput>
-    NOT?: Enumerable<DaySlotWhereInput>
-    id?: IntFilter | number
-    name?: StringFilter | string
-    createdAt?: DateTimeFilter | Date | string
-    updatedAt?: DateTimeFilter | Date | string
-    eventTypeSlots?: EventTypeOnDaySlotListRelationFilter
-    dateSlots?: DaySlotOnDateSlotListRelationFilter
-  }
-
-  export type DaySlotOrderByWithRelationInput = {
-    id?: SortOrder
-    name?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    eventTypeSlots?: EventTypeOnDaySlotOrderByRelationAggregateInput
-    dateSlots?: DaySlotOnDateSlotOrderByRelationAggregateInput
-  }
-
-  export type DaySlotWhereUniqueInput = {
-    id?: number
-    name?: string
-  }
-
-  export type DaySlotOrderByWithAggregationInput = {
-    id?: SortOrder
-    name?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    _count?: DaySlotCountOrderByAggregateInput
-    _avg?: DaySlotAvgOrderByAggregateInput
-    _max?: DaySlotMaxOrderByAggregateInput
-    _min?: DaySlotMinOrderByAggregateInput
-    _sum?: DaySlotSumOrderByAggregateInput
-  }
-
-  export type DaySlotScalarWhereWithAggregatesInput = {
-    AND?: Enumerable<DaySlotScalarWhereWithAggregatesInput>
-    OR?: Enumerable<DaySlotScalarWhereWithAggregatesInput>
-    NOT?: Enumerable<DaySlotScalarWhereWithAggregatesInput>
-    id?: IntWithAggregatesFilter | number
-    name?: StringWithAggregatesFilter | string
-    createdAt?: DateTimeWithAggregatesFilter | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter | Date | string
-  }
-
-  export type DaySlotOnDateSlotWhereInput = {
-    AND?: Enumerable<DaySlotOnDateSlotWhereInput>
-    OR?: Enumerable<DaySlotOnDateSlotWhereInput>
-    NOT?: Enumerable<DaySlotOnDateSlotWhereInput>
-    id?: IntFilter | number
-    daySlotId?: IntFilter | number
-    dateSlotId?: IntFilter | number
-    createdAt?: DateTimeFilter | Date | string
-    updatedAt?: DateTimeFilter | Date | string
-    daySlot?: XOR<DaySlotRelationFilter, DaySlotWhereInput>
-    dateSlot?: XOR<DateSlotRelationFilter, DateSlotWhereInput>
-  }
-
-  export type DaySlotOnDateSlotOrderByWithRelationInput = {
-    id?: SortOrder
-    daySlotId?: SortOrder
-    dateSlotId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    daySlot?: DaySlotOrderByWithRelationInput
-    dateSlot?: DateSlotOrderByWithRelationInput
-  }
-
-  export type DaySlotOnDateSlotWhereUniqueInput = {
-    id?: number
-  }
-
-  export type DaySlotOnDateSlotOrderByWithAggregationInput = {
-    id?: SortOrder
-    daySlotId?: SortOrder
-    dateSlotId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    _count?: DaySlotOnDateSlotCountOrderByAggregateInput
-    _avg?: DaySlotOnDateSlotAvgOrderByAggregateInput
-    _max?: DaySlotOnDateSlotMaxOrderByAggregateInput
-    _min?: DaySlotOnDateSlotMinOrderByAggregateInput
-    _sum?: DaySlotOnDateSlotSumOrderByAggregateInput
-  }
-
-  export type DaySlotOnDateSlotScalarWhereWithAggregatesInput = {
-    AND?: Enumerable<DaySlotOnDateSlotScalarWhereWithAggregatesInput>
-    OR?: Enumerable<DaySlotOnDateSlotScalarWhereWithAggregatesInput>
-    NOT?: Enumerable<DaySlotOnDateSlotScalarWhereWithAggregatesInput>
-    id?: IntWithAggregatesFilter | number
-    daySlotId?: IntWithAggregatesFilter | number
-    dateSlotId?: IntWithAggregatesFilter | number
-    createdAt?: DateTimeWithAggregatesFilter | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter | Date | string
-  }
-
-  export type EventTypeOnDaySlotWhereInput = {
-    AND?: Enumerable<EventTypeOnDaySlotWhereInput>
-    OR?: Enumerable<EventTypeOnDaySlotWhereInput>
-    NOT?: Enumerable<EventTypeOnDaySlotWhereInput>
-    id?: IntFilter | number
-    eventTypeId?: IntFilter | number
-    daySlotId?: IntFilter | number
-    createdAt?: DateTimeFilter | Date | string
-    updatedAt?: DateTimeFilter | Date | string
-    eventType?: XOR<EventTypeRelationFilter, EventTypeWhereInput>
-    daySlot?: XOR<DaySlotRelationFilter, DaySlotWhereInput>
-  }
-
-  export type EventTypeOnDaySlotOrderByWithRelationInput = {
-    id?: SortOrder
-    eventTypeId?: SortOrder
-    daySlotId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    eventType?: EventTypeOrderByWithRelationInput
-    daySlot?: DaySlotOrderByWithRelationInput
-  }
-
-  export type EventTypeOnDaySlotWhereUniqueInput = {
-    id?: number
-  }
-
-  export type EventTypeOnDaySlotOrderByWithAggregationInput = {
-    id?: SortOrder
-    eventTypeId?: SortOrder
-    daySlotId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    _count?: EventTypeOnDaySlotCountOrderByAggregateInput
-    _avg?: EventTypeOnDaySlotAvgOrderByAggregateInput
-    _max?: EventTypeOnDaySlotMaxOrderByAggregateInput
-    _min?: EventTypeOnDaySlotMinOrderByAggregateInput
-    _sum?: EventTypeOnDaySlotSumOrderByAggregateInput
-  }
-
-  export type EventTypeOnDaySlotScalarWhereWithAggregatesInput = {
-    AND?: Enumerable<EventTypeOnDaySlotScalarWhereWithAggregatesInput>
-    OR?: Enumerable<EventTypeOnDaySlotScalarWhereWithAggregatesInput>
-    NOT?: Enumerable<EventTypeOnDaySlotScalarWhereWithAggregatesInput>
-    id?: IntWithAggregatesFilter | number
-    eventTypeId?: IntWithAggregatesFilter | number
-    daySlotId?: IntWithAggregatesFilter | number
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
   }
@@ -17435,33 +15238,85 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
   }
 
+  export type DaySlotWhereInput = {
+    AND?: Enumerable<DaySlotWhereInput>
+    OR?: Enumerable<DaySlotWhereInput>
+    NOT?: Enumerable<DaySlotWhereInput>
+    id?: IntFilter | number
+    name?: StringFilter | string
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+    dateSlots?: DateSlotListRelationFilter
+  }
+
+  export type DaySlotOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    dateSlots?: DateSlotOrderByRelationAggregateInput
+  }
+
+  export type DaySlotWhereUniqueInput = {
+    id?: number
+    name?: string
+  }
+
+  export type DaySlotOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: DaySlotCountOrderByAggregateInput
+    _avg?: DaySlotAvgOrderByAggregateInput
+    _max?: DaySlotMaxOrderByAggregateInput
+    _min?: DaySlotMinOrderByAggregateInput
+    _sum?: DaySlotSumOrderByAggregateInput
+  }
+
+  export type DaySlotScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<DaySlotScalarWhereWithAggregatesInput>
+    OR?: Enumerable<DaySlotScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<DaySlotScalarWhereWithAggregatesInput>
+    id?: IntWithAggregatesFilter | number
+    name?: StringWithAggregatesFilter | string
+    createdAt?: DateTimeWithAggregatesFilter | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter | Date | string
+  }
+
   export type DateSlotWhereInput = {
     AND?: Enumerable<DateSlotWhereInput>
     OR?: Enumerable<DateSlotWhereInput>
     NOT?: Enumerable<DateSlotWhereInput>
     id?: IntFilter | number
     availabilityScheduleId?: IntNullableFilter | number | null
-    date?: DateTimeFilter | Date | string
+    name?: DateTimeFilter | Date | string
     custormerId?: IntNullableFilter | number | null
+    eventId?: IntFilter | number
+    dayName?: StringFilter | string
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
     availabilitySchedule?: XOR<AvailabilityScheduleRelationFilter, AvailabilityScheduleWhereInput> | null
     custormer?: XOR<CustomerRelationFilter, CustomerWhereInput> | null
-    timeSelects?: DateSlotOnTimeSelectListRelationFilter
-    DaySlots?: DaySlotOnDateSlotListRelationFilter
+    eventType?: XOR<EventTypeRelationFilter, EventTypeWhereInput>
+    daySlot?: XOR<DaySlotRelationFilter, DaySlotWhereInput>
+    dateOnTimeSlots?: DateOnTimeSlotListRelationFilter
   }
 
   export type DateSlotOrderByWithRelationInput = {
     id?: SortOrder
     availabilityScheduleId?: SortOrder
-    date?: SortOrder
+    name?: SortOrder
     custormerId?: SortOrder
+    eventId?: SortOrder
+    dayName?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     availabilitySchedule?: AvailabilityScheduleOrderByWithRelationInput
     custormer?: CustomerOrderByWithRelationInput
-    timeSelects?: DateSlotOnTimeSelectOrderByRelationAggregateInput
-    DaySlots?: DaySlotOnDateSlotOrderByRelationAggregateInput
+    eventType?: EventTypeOrderByWithRelationInput
+    daySlot?: DaySlotOrderByWithRelationInput
+    dateOnTimeSlots?: DateOnTimeSlotOrderByRelationAggregateInput
   }
 
   export type DateSlotWhereUniqueInput = {
@@ -17471,8 +15326,10 @@ export namespace Prisma {
   export type DateSlotOrderByWithAggregationInput = {
     id?: SortOrder
     availabilityScheduleId?: SortOrder
-    date?: SortOrder
+    name?: SortOrder
     custormerId?: SortOrder
+    eventId?: SortOrder
+    dayName?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: DateSlotCountOrderByAggregateInput
@@ -17488,54 +15345,112 @@ export namespace Prisma {
     NOT?: Enumerable<DateSlotScalarWhereWithAggregatesInput>
     id?: IntWithAggregatesFilter | number
     availabilityScheduleId?: IntNullableWithAggregatesFilter | number | null
-    date?: DateTimeWithAggregatesFilter | Date | string
+    name?: DateTimeWithAggregatesFilter | Date | string
     custormerId?: IntNullableWithAggregatesFilter | number | null
+    eventId?: IntWithAggregatesFilter | number
+    dayName?: StringWithAggregatesFilter | string
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
   }
 
-  export type TimeSelectWhereInput = {
-    AND?: Enumerable<TimeSelectWhereInput>
-    OR?: Enumerable<TimeSelectWhereInput>
-    NOT?: Enumerable<TimeSelectWhereInput>
+  export type DateOnTimeSlotWhereInput = {
+    AND?: Enumerable<DateOnTimeSlotWhereInput>
+    OR?: Enumerable<DateOnTimeSlotWhereInput>
+    NOT?: Enumerable<DateOnTimeSlotWhereInput>
+    id?: IntFilter | number
+    timeSlotId?: IntFilter | number
+    dateSlotId?: IntFilter | number
+    status?: StringFilter | string
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+    timeSlot?: XOR<TimeSlotRelationFilter, TimeSlotWhereInput>
+    dateSlot?: XOR<DateSlotRelationFilter, DateSlotWhereInput>
+  }
+
+  export type DateOnTimeSlotOrderByWithRelationInput = {
+    id?: SortOrder
+    timeSlotId?: SortOrder
+    dateSlotId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    timeSlot?: TimeSlotOrderByWithRelationInput
+    dateSlot?: DateSlotOrderByWithRelationInput
+  }
+
+  export type DateOnTimeSlotWhereUniqueInput = {
+    id?: number
+  }
+
+  export type DateOnTimeSlotOrderByWithAggregationInput = {
+    id?: SortOrder
+    timeSlotId?: SortOrder
+    dateSlotId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: DateOnTimeSlotCountOrderByAggregateInput
+    _avg?: DateOnTimeSlotAvgOrderByAggregateInput
+    _max?: DateOnTimeSlotMaxOrderByAggregateInput
+    _min?: DateOnTimeSlotMinOrderByAggregateInput
+    _sum?: DateOnTimeSlotSumOrderByAggregateInput
+  }
+
+  export type DateOnTimeSlotScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<DateOnTimeSlotScalarWhereWithAggregatesInput>
+    OR?: Enumerable<DateOnTimeSlotScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<DateOnTimeSlotScalarWhereWithAggregatesInput>
+    id?: IntWithAggregatesFilter | number
+    timeSlotId?: IntWithAggregatesFilter | number
+    dateSlotId?: IntWithAggregatesFilter | number
+    status?: StringWithAggregatesFilter | string
+    createdAt?: DateTimeWithAggregatesFilter | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter | Date | string
+  }
+
+  export type TimeSlotWhereInput = {
+    AND?: Enumerable<TimeSlotWhereInput>
+    OR?: Enumerable<TimeSlotWhereInput>
+    NOT?: Enumerable<TimeSlotWhereInput>
     id?: IntFilter | number
     startTime?: IntFilter | number
     endTime?: IntFilter | number
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
-    dateSlots?: DateSlotOnTimeSelectListRelationFilter
+    dateOnTimeSlots?: DateOnTimeSlotListRelationFilter
   }
 
-  export type TimeSelectOrderByWithRelationInput = {
+  export type TimeSlotOrderByWithRelationInput = {
     id?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    dateSlots?: DateSlotOnTimeSelectOrderByRelationAggregateInput
+    dateOnTimeSlots?: DateOnTimeSlotOrderByRelationAggregateInput
   }
 
-  export type TimeSelectWhereUniqueInput = {
+  export type TimeSlotWhereUniqueInput = {
     id?: number
+    startTime_endTime?: TimeSlotStartTimeEndTimeCompoundUniqueInput
   }
 
-  export type TimeSelectOrderByWithAggregationInput = {
+  export type TimeSlotOrderByWithAggregationInput = {
     id?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    _count?: TimeSelectCountOrderByAggregateInput
-    _avg?: TimeSelectAvgOrderByAggregateInput
-    _max?: TimeSelectMaxOrderByAggregateInput
-    _min?: TimeSelectMinOrderByAggregateInput
-    _sum?: TimeSelectSumOrderByAggregateInput
+    _count?: TimeSlotCountOrderByAggregateInput
+    _avg?: TimeSlotAvgOrderByAggregateInput
+    _max?: TimeSlotMaxOrderByAggregateInput
+    _min?: TimeSlotMinOrderByAggregateInput
+    _sum?: TimeSlotSumOrderByAggregateInput
   }
 
-  export type TimeSelectScalarWhereWithAggregatesInput = {
-    AND?: Enumerable<TimeSelectScalarWhereWithAggregatesInput>
-    OR?: Enumerable<TimeSelectScalarWhereWithAggregatesInput>
-    NOT?: Enumerable<TimeSelectScalarWhereWithAggregatesInput>
+  export type TimeSlotScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<TimeSlotScalarWhereWithAggregatesInput>
+    OR?: Enumerable<TimeSlotScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<TimeSlotScalarWhereWithAggregatesInput>
     id?: IntWithAggregatesFilter | number
     startTime?: IntWithAggregatesFilter | number
     endTime?: IntWithAggregatesFilter | number
@@ -17770,61 +15685,6 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
   }
 
-  export type DateSlotOnTimeSelectWhereInput = {
-    AND?: Enumerable<DateSlotOnTimeSelectWhereInput>
-    OR?: Enumerable<DateSlotOnTimeSelectWhereInput>
-    NOT?: Enumerable<DateSlotOnTimeSelectWhereInput>
-    id?: IntFilter | number
-    dateSlotId?: IntFilter | number
-    timeSelectId?: IntFilter | number
-    status?: StringFilter | string
-    createdAt?: DateTimeFilter | Date | string
-    updatedAt?: DateTimeFilter | Date | string
-    dateSlot?: XOR<DateSlotRelationFilter, DateSlotWhereInput>
-    timeSelect?: XOR<TimeSelectRelationFilter, TimeSelectWhereInput>
-  }
-
-  export type DateSlotOnTimeSelectOrderByWithRelationInput = {
-    id?: SortOrder
-    dateSlotId?: SortOrder
-    timeSelectId?: SortOrder
-    status?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    dateSlot?: DateSlotOrderByWithRelationInput
-    timeSelect?: TimeSelectOrderByWithRelationInput
-  }
-
-  export type DateSlotOnTimeSelectWhereUniqueInput = {
-    id?: number
-  }
-
-  export type DateSlotOnTimeSelectOrderByWithAggregationInput = {
-    id?: SortOrder
-    dateSlotId?: SortOrder
-    timeSelectId?: SortOrder
-    status?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    _count?: DateSlotOnTimeSelectCountOrderByAggregateInput
-    _avg?: DateSlotOnTimeSelectAvgOrderByAggregateInput
-    _max?: DateSlotOnTimeSelectMaxOrderByAggregateInput
-    _min?: DateSlotOnTimeSelectMinOrderByAggregateInput
-    _sum?: DateSlotOnTimeSelectSumOrderByAggregateInput
-  }
-
-  export type DateSlotOnTimeSelectScalarWhereWithAggregatesInput = {
-    AND?: Enumerable<DateSlotOnTimeSelectScalarWhereWithAggregatesInput>
-    OR?: Enumerable<DateSlotOnTimeSelectScalarWhereWithAggregatesInput>
-    NOT?: Enumerable<DateSlotOnTimeSelectScalarWhereWithAggregatesInput>
-    id?: IntWithAggregatesFilter | number
-    dateSlotId?: IntWithAggregatesFilter | number
-    timeSelectId?: IntWithAggregatesFilter | number
-    status?: StringWithAggregatesFilter | string
-    createdAt?: DateTimeWithAggregatesFilter | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter | Date | string
-  }
-
   export type UserCreateInput = {
     name: string
     username: string
@@ -17942,7 +15802,7 @@ export namespace Prisma {
     user: UserCreateNestedOneWithoutEventTypesInput
     eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutEventTypeInput
     availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutEventTypesInput
-    daySlots?: EventTypeOnDaySlotCreateNestedManyWithoutEventTypeInput
+    dateSlots?: DateSlotCreateNestedManyWithoutEventTypeInput
     groupMeetings?: GroupMeetingCreateNestedManyWithoutEventTypeInput
   }
 
@@ -17957,7 +15817,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput
-    daySlots?: EventTypeOnDaySlotUncheckedCreateNestedManyWithoutEventTypeInput
+    dateSlots?: DateSlotUncheckedCreateNestedManyWithoutEventTypeInput
     groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput
   }
 
@@ -17971,7 +15831,7 @@ export namespace Prisma {
     user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
     eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
     availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutEventTypesNestedInput
-    daySlots?: EventTypeOnDaySlotUpdateManyWithoutEventTypeNestedInput
+    dateSlots?: DateSlotUpdateManyWithoutEventTypeNestedInput
     groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
   }
 
@@ -17986,7 +15846,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
-    daySlots?: EventTypeOnDaySlotUncheckedUpdateManyWithoutEventTypeNestedInput
+    dateSlots?: DateSlotUncheckedUpdateManyWithoutEventTypeNestedInput
     groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
   }
 
@@ -18019,162 +15879,6 @@ export namespace Prisma {
     price?: IntFieldUpdateOperationsInput | number
     timeDuration?: IntFieldUpdateOperationsInput | number
     availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type DaySlotCreateInput = {
-    name: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    eventTypeSlots?: EventTypeOnDaySlotCreateNestedManyWithoutDaySlotInput
-    dateSlots?: DaySlotOnDateSlotCreateNestedManyWithoutDaySlotInput
-  }
-
-  export type DaySlotUncheckedCreateInput = {
-    id?: number
-    name: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    eventTypeSlots?: EventTypeOnDaySlotUncheckedCreateNestedManyWithoutDaySlotInput
-    dateSlots?: DaySlotOnDateSlotUncheckedCreateNestedManyWithoutDaySlotInput
-  }
-
-  export type DaySlotUpdateInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    eventTypeSlots?: EventTypeOnDaySlotUpdateManyWithoutDaySlotNestedInput
-    dateSlots?: DaySlotOnDateSlotUpdateManyWithoutDaySlotNestedInput
-  }
-
-  export type DaySlotUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    eventTypeSlots?: EventTypeOnDaySlotUncheckedUpdateManyWithoutDaySlotNestedInput
-    dateSlots?: DaySlotOnDateSlotUncheckedUpdateManyWithoutDaySlotNestedInput
-  }
-
-  export type DaySlotCreateManyInput = {
-    id?: number
-    name: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type DaySlotUpdateManyMutationInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type DaySlotUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type DaySlotOnDateSlotCreateInput = {
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    daySlot: DaySlotCreateNestedOneWithoutDateSlotsInput
-    dateSlot: DateSlotCreateNestedOneWithoutDaySlotsInput
-  }
-
-  export type DaySlotOnDateSlotUncheckedCreateInput = {
-    id?: number
-    daySlotId: number
-    dateSlotId: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type DaySlotOnDateSlotUpdateInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    daySlot?: DaySlotUpdateOneRequiredWithoutDateSlotsNestedInput
-    dateSlot?: DateSlotUpdateOneRequiredWithoutDaySlotsNestedInput
-  }
-
-  export type DaySlotOnDateSlotUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    daySlotId?: IntFieldUpdateOperationsInput | number
-    dateSlotId?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type DaySlotOnDateSlotCreateManyInput = {
-    id?: number
-    daySlotId: number
-    dateSlotId: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type DaySlotOnDateSlotUpdateManyMutationInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type DaySlotOnDateSlotUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    daySlotId?: IntFieldUpdateOperationsInput | number
-    dateSlotId?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type EventTypeOnDaySlotCreateInput = {
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    eventType: EventTypeCreateNestedOneWithoutDaySlotsInput
-    daySlot: DaySlotCreateNestedOneWithoutEventTypeSlotsInput
-  }
-
-  export type EventTypeOnDaySlotUncheckedCreateInput = {
-    id?: number
-    eventTypeId: number
-    daySlotId: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type EventTypeOnDaySlotUpdateInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    eventType?: EventTypeUpdateOneRequiredWithoutDaySlotsNestedInput
-    daySlot?: DaySlotUpdateOneRequiredWithoutEventTypeSlotsNestedInput
-  }
-
-  export type EventTypeOnDaySlotUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    eventTypeId?: IntFieldUpdateOperationsInput | number
-    daySlotId?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type EventTypeOnDaySlotCreateManyInput = {
-    id?: number
-    eventTypeId: number
-    daySlotId: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type EventTypeOnDaySlotUpdateManyMutationInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type EventTypeOnDaySlotUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    eventTypeId?: IntFieldUpdateOperationsInput | number
-    daySlotId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18345,59 +16049,115 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type DaySlotCreateInput = {
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dateSlots?: DateSlotCreateNestedManyWithoutDaySlotInput
+  }
+
+  export type DaySlotUncheckedCreateInput = {
+    id?: number
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dateSlots?: DateSlotUncheckedCreateNestedManyWithoutDaySlotInput
+  }
+
+  export type DaySlotUpdateInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dateSlots?: DateSlotUpdateManyWithoutDaySlotNestedInput
+  }
+
+  export type DaySlotUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dateSlots?: DateSlotUncheckedUpdateManyWithoutDaySlotNestedInput
+  }
+
+  export type DaySlotCreateManyInput = {
+    id?: number
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DaySlotUpdateManyMutationInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DaySlotUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type DateSlotCreateInput = {
-    date: Date | string
+    name: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
     availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutDateSlotsInput
     custormer?: CustomerCreateNestedOneWithoutDateSlotsInput
-    timeSelects?: DateSlotOnTimeSelectCreateNestedManyWithoutDateSlotInput
-    DaySlots?: DaySlotOnDateSlotCreateNestedManyWithoutDateSlotInput
+    eventType: EventTypeCreateNestedOneWithoutDateSlotsInput
+    daySlot: DaySlotCreateNestedOneWithoutDateSlotsInput
+    dateOnTimeSlots?: DateOnTimeSlotCreateNestedManyWithoutDateSlotInput
   }
 
   export type DateSlotUncheckedCreateInput = {
     id?: number
     availabilityScheduleId?: number | null
-    date: Date | string
+    name: Date | string
     custormerId?: number | null
+    eventId: number
+    dayName: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    timeSelects?: DateSlotOnTimeSelectUncheckedCreateNestedManyWithoutDateSlotInput
-    DaySlots?: DaySlotOnDateSlotUncheckedCreateNestedManyWithoutDateSlotInput
+    dateOnTimeSlots?: DateOnTimeSlotUncheckedCreateNestedManyWithoutDateSlotInput
   }
 
   export type DateSlotUpdateInput = {
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutDateSlotsNestedInput
     custormer?: CustomerUpdateOneWithoutDateSlotsNestedInput
-    timeSelects?: DateSlotOnTimeSelectUpdateManyWithoutDateSlotNestedInput
-    DaySlots?: DaySlotOnDateSlotUpdateManyWithoutDateSlotNestedInput
+    eventType?: EventTypeUpdateOneRequiredWithoutDateSlotsNestedInput
+    daySlot?: DaySlotUpdateOneRequiredWithoutDateSlotsNestedInput
+    dateOnTimeSlots?: DateOnTimeSlotUpdateManyWithoutDateSlotNestedInput
   }
 
   export type DateSlotUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
     custormerId?: NullableIntFieldUpdateOperationsInput | number | null
+    eventId?: IntFieldUpdateOperationsInput | number
+    dayName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    timeSelects?: DateSlotOnTimeSelectUncheckedUpdateManyWithoutDateSlotNestedInput
-    DaySlots?: DaySlotOnDateSlotUncheckedUpdateManyWithoutDateSlotNestedInput
+    dateOnTimeSlots?: DateOnTimeSlotUncheckedUpdateManyWithoutDateSlotNestedInput
   }
 
   export type DateSlotCreateManyInput = {
     id?: number
     availabilityScheduleId?: number | null
-    date: Date | string
+    name: Date | string
     custormerId?: number | null
+    eventId: number
+    dayName: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type DateSlotUpdateManyMutationInput = {
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18405,47 +16165,107 @@ export namespace Prisma {
   export type DateSlotUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
     custormerId?: NullableIntFieldUpdateOperationsInput | number | null
+    eventId?: IntFieldUpdateOperationsInput | number
+    dayName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type TimeSelectCreateInput = {
+  export type DateOnTimeSlotCreateInput = {
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    timeSlot: TimeSlotCreateNestedOneWithoutDateOnTimeSlotsInput
+    dateSlot: DateSlotCreateNestedOneWithoutDateOnTimeSlotsInput
+  }
+
+  export type DateOnTimeSlotUncheckedCreateInput = {
+    id?: number
+    timeSlotId: number
+    dateSlotId: number
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DateOnTimeSlotUpdateInput = {
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeSlot?: TimeSlotUpdateOneRequiredWithoutDateOnTimeSlotsNestedInput
+    dateSlot?: DateSlotUpdateOneRequiredWithoutDateOnTimeSlotsNestedInput
+  }
+
+  export type DateOnTimeSlotUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    timeSlotId?: IntFieldUpdateOperationsInput | number
+    dateSlotId?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DateOnTimeSlotCreateManyInput = {
+    id?: number
+    timeSlotId: number
+    dateSlotId: number
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DateOnTimeSlotUpdateManyMutationInput = {
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DateOnTimeSlotUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    timeSlotId?: IntFieldUpdateOperationsInput | number
+    dateSlotId?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TimeSlotCreateInput = {
     startTime: number
     endTime: number
     createdAt?: Date | string
     updatedAt?: Date | string
-    dateSlots?: DateSlotOnTimeSelectCreateNestedManyWithoutTimeSelectInput
+    dateOnTimeSlots?: DateOnTimeSlotCreateNestedManyWithoutTimeSlotInput
   }
 
-  export type TimeSelectUncheckedCreateInput = {
+  export type TimeSlotUncheckedCreateInput = {
     id?: number
     startTime: number
     endTime: number
     createdAt?: Date | string
     updatedAt?: Date | string
-    dateSlots?: DateSlotOnTimeSelectUncheckedCreateNestedManyWithoutTimeSelectInput
+    dateOnTimeSlots?: DateOnTimeSlotUncheckedCreateNestedManyWithoutTimeSlotInput
   }
 
-  export type TimeSelectUpdateInput = {
+  export type TimeSlotUpdateInput = {
     startTime?: IntFieldUpdateOperationsInput | number
     endTime?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    dateSlots?: DateSlotOnTimeSelectUpdateManyWithoutTimeSelectNestedInput
+    dateOnTimeSlots?: DateOnTimeSlotUpdateManyWithoutTimeSlotNestedInput
   }
 
-  export type TimeSelectUncheckedUpdateInput = {
+  export type TimeSlotUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     startTime?: IntFieldUpdateOperationsInput | number
     endTime?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    dateSlots?: DateSlotOnTimeSelectUncheckedUpdateManyWithoutTimeSelectNestedInput
+    dateOnTimeSlots?: DateOnTimeSlotUncheckedUpdateManyWithoutTimeSlotNestedInput
   }
 
-  export type TimeSelectCreateManyInput = {
+  export type TimeSlotCreateManyInput = {
     id?: number
     startTime: number
     endTime: number
@@ -18453,14 +16273,14 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
-  export type TimeSelectUpdateManyMutationInput = {
+  export type TimeSlotUpdateManyMutationInput = {
     startTime?: IntFieldUpdateOperationsInput | number
     endTime?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type TimeSelectUncheckedUpdateManyInput = {
+  export type TimeSlotUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     startTime?: IntFieldUpdateOperationsInput | number
     endTime?: IntFieldUpdateOperationsInput | number
@@ -18721,64 +16541,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type DateSlotOnTimeSelectCreateInput = {
-    status?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    dateSlot: DateSlotCreateNestedOneWithoutTimeSelectsInput
-    timeSelect: TimeSelectCreateNestedOneWithoutDateSlotsInput
-  }
-
-  export type DateSlotOnTimeSelectUncheckedCreateInput = {
-    id?: number
-    dateSlotId: number
-    timeSelectId: number
-    status?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type DateSlotOnTimeSelectUpdateInput = {
-    status?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    dateSlot?: DateSlotUpdateOneRequiredWithoutTimeSelectsNestedInput
-    timeSelect?: TimeSelectUpdateOneRequiredWithoutDateSlotsNestedInput
-  }
-
-  export type DateSlotOnTimeSelectUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    dateSlotId?: IntFieldUpdateOperationsInput | number
-    timeSelectId?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type DateSlotOnTimeSelectCreateManyInput = {
-    id?: number
-    dateSlotId: number
-    timeSelectId: number
-    status?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type DateSlotOnTimeSelectUpdateManyMutationInput = {
-    status?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type DateSlotOnTimeSelectUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    dateSlotId?: IntFieldUpdateOperationsInput | number
-    timeSelectId?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
   export type IntFilter = {
     equals?: number
     in?: Enumerable<number>
@@ -19004,10 +16766,10 @@ export namespace Prisma {
     isNot?: AvailabilityScheduleWhereInput | null
   }
 
-  export type EventTypeOnDaySlotListRelationFilter = {
-    every?: EventTypeOnDaySlotWhereInput
-    some?: EventTypeOnDaySlotWhereInput
-    none?: EventTypeOnDaySlotWhereInput
+  export type DateSlotListRelationFilter = {
+    every?: DateSlotWhereInput
+    some?: DateSlotWhereInput
+    none?: DateSlotWhereInput
   }
 
   export type GroupMeetingListRelationFilter = {
@@ -19020,12 +16782,17 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
-  export type EventTypeOnDaySlotOrderByRelationAggregateInput = {
+  export type DateSlotOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
   export type GroupMeetingOrderByRelationAggregateInput = {
     _count?: SortOrder
+  }
+
+  export type EventTypeUserIdNameCompoundUniqueInput = {
+    userId: number
+    name: string
   }
 
   export type EventTypeCountOrderByAggregateInput = {
@@ -19096,132 +16863,6 @@ export namespace Prisma {
     _max?: NestedIntNullableFilter
   }
 
-  export type DaySlotOnDateSlotListRelationFilter = {
-    every?: DaySlotOnDateSlotWhereInput
-    some?: DaySlotOnDateSlotWhereInput
-    none?: DaySlotOnDateSlotWhereInput
-  }
-
-  export type DaySlotOnDateSlotOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type DaySlotCountOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type DaySlotAvgOrderByAggregateInput = {
-    id?: SortOrder
-  }
-
-  export type DaySlotMaxOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type DaySlotMinOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type DaySlotSumOrderByAggregateInput = {
-    id?: SortOrder
-  }
-
-  export type DaySlotRelationFilter = {
-    is?: DaySlotWhereInput
-    isNot?: DaySlotWhereInput
-  }
-
-  export type DateSlotRelationFilter = {
-    is?: DateSlotWhereInput
-    isNot?: DateSlotWhereInput
-  }
-
-  export type DaySlotOnDateSlotCountOrderByAggregateInput = {
-    id?: SortOrder
-    daySlotId?: SortOrder
-    dateSlotId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type DaySlotOnDateSlotAvgOrderByAggregateInput = {
-    id?: SortOrder
-    daySlotId?: SortOrder
-    dateSlotId?: SortOrder
-  }
-
-  export type DaySlotOnDateSlotMaxOrderByAggregateInput = {
-    id?: SortOrder
-    daySlotId?: SortOrder
-    dateSlotId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type DaySlotOnDateSlotMinOrderByAggregateInput = {
-    id?: SortOrder
-    daySlotId?: SortOrder
-    dateSlotId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type DaySlotOnDateSlotSumOrderByAggregateInput = {
-    id?: SortOrder
-    daySlotId?: SortOrder
-    dateSlotId?: SortOrder
-  }
-
-  export type EventTypeRelationFilter = {
-    is?: EventTypeWhereInput
-    isNot?: EventTypeWhereInput
-  }
-
-  export type EventTypeOnDaySlotCountOrderByAggregateInput = {
-    id?: SortOrder
-    eventTypeId?: SortOrder
-    daySlotId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type EventTypeOnDaySlotAvgOrderByAggregateInput = {
-    id?: SortOrder
-    eventTypeId?: SortOrder
-    daySlotId?: SortOrder
-  }
-
-  export type EventTypeOnDaySlotMaxOrderByAggregateInput = {
-    id?: SortOrder
-    eventTypeId?: SortOrder
-    daySlotId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type EventTypeOnDaySlotMinOrderByAggregateInput = {
-    id?: SortOrder
-    eventTypeId?: SortOrder
-    daySlotId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type EventTypeOnDaySlotSumOrderByAggregateInput = {
-    id?: SortOrder
-    eventTypeId?: SortOrder
-    daySlotId?: SortOrder
-  }
-
   export type LocationCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -19249,6 +16890,11 @@ export namespace Prisma {
 
   export type LocationSumOrderByAggregateInput = {
     id?: SortOrder
+  }
+
+  export type EventTypeRelationFilter = {
+    is?: EventTypeWhereInput
+    isNot?: EventTypeWhereInput
   }
 
   export type LocationRelationFilter = {
@@ -19292,16 +16938,6 @@ export namespace Prisma {
     locationId?: SortOrder
   }
 
-  export type DateSlotListRelationFilter = {
-    every?: DateSlotWhereInput
-    some?: DateSlotWhereInput
-    none?: DateSlotWhereInput
-  }
-
-  export type DateSlotOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
   export type AvailabilityScheduleCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -19334,26 +16970,62 @@ export namespace Prisma {
     id?: SortOrder
   }
 
+  export type DaySlotCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DaySlotAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type DaySlotMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DaySlotMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DaySlotSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
   export type CustomerRelationFilter = {
     is?: CustomerWhereInput | null
     isNot?: CustomerWhereInput | null
   }
 
-  export type DateSlotOnTimeSelectListRelationFilter = {
-    every?: DateSlotOnTimeSelectWhereInput
-    some?: DateSlotOnTimeSelectWhereInput
-    none?: DateSlotOnTimeSelectWhereInput
+  export type DaySlotRelationFilter = {
+    is?: DaySlotWhereInput
+    isNot?: DaySlotWhereInput
   }
 
-  export type DateSlotOnTimeSelectOrderByRelationAggregateInput = {
+  export type DateOnTimeSlotListRelationFilter = {
+    every?: DateOnTimeSlotWhereInput
+    some?: DateOnTimeSlotWhereInput
+    none?: DateOnTimeSlotWhereInput
+  }
+
+  export type DateOnTimeSlotOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
   export type DateSlotCountOrderByAggregateInput = {
     id?: SortOrder
     availabilityScheduleId?: SortOrder
-    date?: SortOrder
+    name?: SortOrder
     custormerId?: SortOrder
+    eventId?: SortOrder
+    dayName?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -19362,13 +17034,16 @@ export namespace Prisma {
     id?: SortOrder
     availabilityScheduleId?: SortOrder
     custormerId?: SortOrder
+    eventId?: SortOrder
   }
 
   export type DateSlotMaxOrderByAggregateInput = {
     id?: SortOrder
     availabilityScheduleId?: SortOrder
-    date?: SortOrder
+    name?: SortOrder
     custormerId?: SortOrder
+    eventId?: SortOrder
+    dayName?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -19376,8 +17051,10 @@ export namespace Prisma {
   export type DateSlotMinOrderByAggregateInput = {
     id?: SortOrder
     availabilityScheduleId?: SortOrder
-    date?: SortOrder
+    name?: SortOrder
     custormerId?: SortOrder
+    eventId?: SortOrder
+    dayName?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -19386,9 +17063,64 @@ export namespace Prisma {
     id?: SortOrder
     availabilityScheduleId?: SortOrder
     custormerId?: SortOrder
+    eventId?: SortOrder
   }
 
-  export type TimeSelectCountOrderByAggregateInput = {
+  export type TimeSlotRelationFilter = {
+    is?: TimeSlotWhereInput
+    isNot?: TimeSlotWhereInput
+  }
+
+  export type DateSlotRelationFilter = {
+    is?: DateSlotWhereInput
+    isNot?: DateSlotWhereInput
+  }
+
+  export type DateOnTimeSlotCountOrderByAggregateInput = {
+    id?: SortOrder
+    timeSlotId?: SortOrder
+    dateSlotId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DateOnTimeSlotAvgOrderByAggregateInput = {
+    id?: SortOrder
+    timeSlotId?: SortOrder
+    dateSlotId?: SortOrder
+  }
+
+  export type DateOnTimeSlotMaxOrderByAggregateInput = {
+    id?: SortOrder
+    timeSlotId?: SortOrder
+    dateSlotId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DateOnTimeSlotMinOrderByAggregateInput = {
+    id?: SortOrder
+    timeSlotId?: SortOrder
+    dateSlotId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DateOnTimeSlotSumOrderByAggregateInput = {
+    id?: SortOrder
+    timeSlotId?: SortOrder
+    dateSlotId?: SortOrder
+  }
+
+  export type TimeSlotStartTimeEndTimeCompoundUniqueInput = {
+    startTime: number
+    endTime: number
+  }
+
+  export type TimeSlotCountOrderByAggregateInput = {
     id?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
@@ -19396,21 +17128,13 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
-  export type TimeSelectAvgOrderByAggregateInput = {
+  export type TimeSlotAvgOrderByAggregateInput = {
     id?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
   }
 
-  export type TimeSelectMaxOrderByAggregateInput = {
-    id?: SortOrder
-    startTime?: SortOrder
-    endTime?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type TimeSelectMinOrderByAggregateInput = {
+  export type TimeSlotMaxOrderByAggregateInput = {
     id?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
@@ -19418,7 +17142,15 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
-  export type TimeSelectSumOrderByAggregateInput = {
+  export type TimeSlotMinOrderByAggregateInput = {
+    id?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TimeSlotSumOrderByAggregateInput = {
     id?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
@@ -19590,50 +17322,6 @@ export namespace Prisma {
     groupMeetingId?: SortOrder
   }
 
-  export type TimeSelectRelationFilter = {
-    is?: TimeSelectWhereInput
-    isNot?: TimeSelectWhereInput
-  }
-
-  export type DateSlotOnTimeSelectCountOrderByAggregateInput = {
-    id?: SortOrder
-    dateSlotId?: SortOrder
-    timeSelectId?: SortOrder
-    status?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type DateSlotOnTimeSelectAvgOrderByAggregateInput = {
-    id?: SortOrder
-    dateSlotId?: SortOrder
-    timeSelectId?: SortOrder
-  }
-
-  export type DateSlotOnTimeSelectMaxOrderByAggregateInput = {
-    id?: SortOrder
-    dateSlotId?: SortOrder
-    timeSelectId?: SortOrder
-    status?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type DateSlotOnTimeSelectMinOrderByAggregateInput = {
-    id?: SortOrder
-    dateSlotId?: SortOrder
-    timeSelectId?: SortOrder
-    status?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type DateSlotOnTimeSelectSumOrderByAggregateInput = {
-    id?: SortOrder
-    dateSlotId?: SortOrder
-    timeSelectId?: SortOrder
-  }
-
   export type EventTypeCreateNestedManyWithoutUserInput = {
     create?: XOR<Enumerable<EventTypeCreateWithoutUserInput>, Enumerable<EventTypeUncheckedCreateWithoutUserInput>>
     connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutUserInput>
@@ -19799,11 +17487,11 @@ export namespace Prisma {
     connect?: AvailabilityScheduleWhereUniqueInput
   }
 
-  export type EventTypeOnDaySlotCreateNestedManyWithoutEventTypeInput = {
-    create?: XOR<Enumerable<EventTypeOnDaySlotCreateWithoutEventTypeInput>, Enumerable<EventTypeOnDaySlotUncheckedCreateWithoutEventTypeInput>>
-    connectOrCreate?: Enumerable<EventTypeOnDaySlotCreateOrConnectWithoutEventTypeInput>
-    createMany?: EventTypeOnDaySlotCreateManyEventTypeInputEnvelope
-    connect?: Enumerable<EventTypeOnDaySlotWhereUniqueInput>
+  export type DateSlotCreateNestedManyWithoutEventTypeInput = {
+    create?: XOR<Enumerable<DateSlotCreateWithoutEventTypeInput>, Enumerable<DateSlotUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<DateSlotCreateOrConnectWithoutEventTypeInput>
+    createMany?: DateSlotCreateManyEventTypeInputEnvelope
+    connect?: Enumerable<DateSlotWhereUniqueInput>
   }
 
   export type GroupMeetingCreateNestedManyWithoutEventTypeInput = {
@@ -19820,11 +17508,11 @@ export namespace Prisma {
     connect?: Enumerable<EventTypeOnLocationWhereUniqueInput>
   }
 
-  export type EventTypeOnDaySlotUncheckedCreateNestedManyWithoutEventTypeInput = {
-    create?: XOR<Enumerable<EventTypeOnDaySlotCreateWithoutEventTypeInput>, Enumerable<EventTypeOnDaySlotUncheckedCreateWithoutEventTypeInput>>
-    connectOrCreate?: Enumerable<EventTypeOnDaySlotCreateOrConnectWithoutEventTypeInput>
-    createMany?: EventTypeOnDaySlotCreateManyEventTypeInputEnvelope
-    connect?: Enumerable<EventTypeOnDaySlotWhereUniqueInput>
+  export type DateSlotUncheckedCreateNestedManyWithoutEventTypeInput = {
+    create?: XOR<Enumerable<DateSlotCreateWithoutEventTypeInput>, Enumerable<DateSlotUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<DateSlotCreateOrConnectWithoutEventTypeInput>
+    createMany?: DateSlotCreateManyEventTypeInputEnvelope
+    connect?: Enumerable<DateSlotWhereUniqueInput>
   }
 
   export type GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput = {
@@ -19866,18 +17554,18 @@ export namespace Prisma {
     update?: XOR<AvailabilityScheduleUpdateWithoutEventTypesInput, AvailabilityScheduleUncheckedUpdateWithoutEventTypesInput>
   }
 
-  export type EventTypeOnDaySlotUpdateManyWithoutEventTypeNestedInput = {
-    create?: XOR<Enumerable<EventTypeOnDaySlotCreateWithoutEventTypeInput>, Enumerable<EventTypeOnDaySlotUncheckedCreateWithoutEventTypeInput>>
-    connectOrCreate?: Enumerable<EventTypeOnDaySlotCreateOrConnectWithoutEventTypeInput>
-    upsert?: Enumerable<EventTypeOnDaySlotUpsertWithWhereUniqueWithoutEventTypeInput>
-    createMany?: EventTypeOnDaySlotCreateManyEventTypeInputEnvelope
-    set?: Enumerable<EventTypeOnDaySlotWhereUniqueInput>
-    disconnect?: Enumerable<EventTypeOnDaySlotWhereUniqueInput>
-    delete?: Enumerable<EventTypeOnDaySlotWhereUniqueInput>
-    connect?: Enumerable<EventTypeOnDaySlotWhereUniqueInput>
-    update?: Enumerable<EventTypeOnDaySlotUpdateWithWhereUniqueWithoutEventTypeInput>
-    updateMany?: Enumerable<EventTypeOnDaySlotUpdateManyWithWhereWithoutEventTypeInput>
-    deleteMany?: Enumerable<EventTypeOnDaySlotScalarWhereInput>
+  export type DateSlotUpdateManyWithoutEventTypeNestedInput = {
+    create?: XOR<Enumerable<DateSlotCreateWithoutEventTypeInput>, Enumerable<DateSlotUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<DateSlotCreateOrConnectWithoutEventTypeInput>
+    upsert?: Enumerable<DateSlotUpsertWithWhereUniqueWithoutEventTypeInput>
+    createMany?: DateSlotCreateManyEventTypeInputEnvelope
+    set?: Enumerable<DateSlotWhereUniqueInput>
+    disconnect?: Enumerable<DateSlotWhereUniqueInput>
+    delete?: Enumerable<DateSlotWhereUniqueInput>
+    connect?: Enumerable<DateSlotWhereUniqueInput>
+    update?: Enumerable<DateSlotUpdateWithWhereUniqueWithoutEventTypeInput>
+    updateMany?: Enumerable<DateSlotUpdateManyWithWhereWithoutEventTypeInput>
+    deleteMany?: Enumerable<DateSlotScalarWhereInput>
   }
 
   export type GroupMeetingUpdateManyWithoutEventTypeNestedInput = {
@@ -19916,18 +17604,18 @@ export namespace Prisma {
     deleteMany?: Enumerable<EventTypeOnLocationScalarWhereInput>
   }
 
-  export type EventTypeOnDaySlotUncheckedUpdateManyWithoutEventTypeNestedInput = {
-    create?: XOR<Enumerable<EventTypeOnDaySlotCreateWithoutEventTypeInput>, Enumerable<EventTypeOnDaySlotUncheckedCreateWithoutEventTypeInput>>
-    connectOrCreate?: Enumerable<EventTypeOnDaySlotCreateOrConnectWithoutEventTypeInput>
-    upsert?: Enumerable<EventTypeOnDaySlotUpsertWithWhereUniqueWithoutEventTypeInput>
-    createMany?: EventTypeOnDaySlotCreateManyEventTypeInputEnvelope
-    set?: Enumerable<EventTypeOnDaySlotWhereUniqueInput>
-    disconnect?: Enumerable<EventTypeOnDaySlotWhereUniqueInput>
-    delete?: Enumerable<EventTypeOnDaySlotWhereUniqueInput>
-    connect?: Enumerable<EventTypeOnDaySlotWhereUniqueInput>
-    update?: Enumerable<EventTypeOnDaySlotUpdateWithWhereUniqueWithoutEventTypeInput>
-    updateMany?: Enumerable<EventTypeOnDaySlotUpdateManyWithWhereWithoutEventTypeInput>
-    deleteMany?: Enumerable<EventTypeOnDaySlotScalarWhereInput>
+  export type DateSlotUncheckedUpdateManyWithoutEventTypeNestedInput = {
+    create?: XOR<Enumerable<DateSlotCreateWithoutEventTypeInput>, Enumerable<DateSlotUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<DateSlotCreateOrConnectWithoutEventTypeInput>
+    upsert?: Enumerable<DateSlotUpsertWithWhereUniqueWithoutEventTypeInput>
+    createMany?: DateSlotCreateManyEventTypeInputEnvelope
+    set?: Enumerable<DateSlotWhereUniqueInput>
+    disconnect?: Enumerable<DateSlotWhereUniqueInput>
+    delete?: Enumerable<DateSlotWhereUniqueInput>
+    connect?: Enumerable<DateSlotWhereUniqueInput>
+    update?: Enumerable<DateSlotUpdateWithWhereUniqueWithoutEventTypeInput>
+    updateMany?: Enumerable<DateSlotUpdateManyWithWhereWithoutEventTypeInput>
+    deleteMany?: Enumerable<DateSlotScalarWhereInput>
   }
 
   export type GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput = {
@@ -19942,146 +17630,6 @@ export namespace Prisma {
     update?: Enumerable<GroupMeetingUpdateWithWhereUniqueWithoutEventTypeInput>
     updateMany?: Enumerable<GroupMeetingUpdateManyWithWhereWithoutEventTypeInput>
     deleteMany?: Enumerable<GroupMeetingScalarWhereInput>
-  }
-
-  export type EventTypeOnDaySlotCreateNestedManyWithoutDaySlotInput = {
-    create?: XOR<Enumerable<EventTypeOnDaySlotCreateWithoutDaySlotInput>, Enumerable<EventTypeOnDaySlotUncheckedCreateWithoutDaySlotInput>>
-    connectOrCreate?: Enumerable<EventTypeOnDaySlotCreateOrConnectWithoutDaySlotInput>
-    createMany?: EventTypeOnDaySlotCreateManyDaySlotInputEnvelope
-    connect?: Enumerable<EventTypeOnDaySlotWhereUniqueInput>
-  }
-
-  export type DaySlotOnDateSlotCreateNestedManyWithoutDaySlotInput = {
-    create?: XOR<Enumerable<DaySlotOnDateSlotCreateWithoutDaySlotInput>, Enumerable<DaySlotOnDateSlotUncheckedCreateWithoutDaySlotInput>>
-    connectOrCreate?: Enumerable<DaySlotOnDateSlotCreateOrConnectWithoutDaySlotInput>
-    createMany?: DaySlotOnDateSlotCreateManyDaySlotInputEnvelope
-    connect?: Enumerable<DaySlotOnDateSlotWhereUniqueInput>
-  }
-
-  export type EventTypeOnDaySlotUncheckedCreateNestedManyWithoutDaySlotInput = {
-    create?: XOR<Enumerable<EventTypeOnDaySlotCreateWithoutDaySlotInput>, Enumerable<EventTypeOnDaySlotUncheckedCreateWithoutDaySlotInput>>
-    connectOrCreate?: Enumerable<EventTypeOnDaySlotCreateOrConnectWithoutDaySlotInput>
-    createMany?: EventTypeOnDaySlotCreateManyDaySlotInputEnvelope
-    connect?: Enumerable<EventTypeOnDaySlotWhereUniqueInput>
-  }
-
-  export type DaySlotOnDateSlotUncheckedCreateNestedManyWithoutDaySlotInput = {
-    create?: XOR<Enumerable<DaySlotOnDateSlotCreateWithoutDaySlotInput>, Enumerable<DaySlotOnDateSlotUncheckedCreateWithoutDaySlotInput>>
-    connectOrCreate?: Enumerable<DaySlotOnDateSlotCreateOrConnectWithoutDaySlotInput>
-    createMany?: DaySlotOnDateSlotCreateManyDaySlotInputEnvelope
-    connect?: Enumerable<DaySlotOnDateSlotWhereUniqueInput>
-  }
-
-  export type EventTypeOnDaySlotUpdateManyWithoutDaySlotNestedInput = {
-    create?: XOR<Enumerable<EventTypeOnDaySlotCreateWithoutDaySlotInput>, Enumerable<EventTypeOnDaySlotUncheckedCreateWithoutDaySlotInput>>
-    connectOrCreate?: Enumerable<EventTypeOnDaySlotCreateOrConnectWithoutDaySlotInput>
-    upsert?: Enumerable<EventTypeOnDaySlotUpsertWithWhereUniqueWithoutDaySlotInput>
-    createMany?: EventTypeOnDaySlotCreateManyDaySlotInputEnvelope
-    set?: Enumerable<EventTypeOnDaySlotWhereUniqueInput>
-    disconnect?: Enumerable<EventTypeOnDaySlotWhereUniqueInput>
-    delete?: Enumerable<EventTypeOnDaySlotWhereUniqueInput>
-    connect?: Enumerable<EventTypeOnDaySlotWhereUniqueInput>
-    update?: Enumerable<EventTypeOnDaySlotUpdateWithWhereUniqueWithoutDaySlotInput>
-    updateMany?: Enumerable<EventTypeOnDaySlotUpdateManyWithWhereWithoutDaySlotInput>
-    deleteMany?: Enumerable<EventTypeOnDaySlotScalarWhereInput>
-  }
-
-  export type DaySlotOnDateSlotUpdateManyWithoutDaySlotNestedInput = {
-    create?: XOR<Enumerable<DaySlotOnDateSlotCreateWithoutDaySlotInput>, Enumerable<DaySlotOnDateSlotUncheckedCreateWithoutDaySlotInput>>
-    connectOrCreate?: Enumerable<DaySlotOnDateSlotCreateOrConnectWithoutDaySlotInput>
-    upsert?: Enumerable<DaySlotOnDateSlotUpsertWithWhereUniqueWithoutDaySlotInput>
-    createMany?: DaySlotOnDateSlotCreateManyDaySlotInputEnvelope
-    set?: Enumerable<DaySlotOnDateSlotWhereUniqueInput>
-    disconnect?: Enumerable<DaySlotOnDateSlotWhereUniqueInput>
-    delete?: Enumerable<DaySlotOnDateSlotWhereUniqueInput>
-    connect?: Enumerable<DaySlotOnDateSlotWhereUniqueInput>
-    update?: Enumerable<DaySlotOnDateSlotUpdateWithWhereUniqueWithoutDaySlotInput>
-    updateMany?: Enumerable<DaySlotOnDateSlotUpdateManyWithWhereWithoutDaySlotInput>
-    deleteMany?: Enumerable<DaySlotOnDateSlotScalarWhereInput>
-  }
-
-  export type EventTypeOnDaySlotUncheckedUpdateManyWithoutDaySlotNestedInput = {
-    create?: XOR<Enumerable<EventTypeOnDaySlotCreateWithoutDaySlotInput>, Enumerable<EventTypeOnDaySlotUncheckedCreateWithoutDaySlotInput>>
-    connectOrCreate?: Enumerable<EventTypeOnDaySlotCreateOrConnectWithoutDaySlotInput>
-    upsert?: Enumerable<EventTypeOnDaySlotUpsertWithWhereUniqueWithoutDaySlotInput>
-    createMany?: EventTypeOnDaySlotCreateManyDaySlotInputEnvelope
-    set?: Enumerable<EventTypeOnDaySlotWhereUniqueInput>
-    disconnect?: Enumerable<EventTypeOnDaySlotWhereUniqueInput>
-    delete?: Enumerable<EventTypeOnDaySlotWhereUniqueInput>
-    connect?: Enumerable<EventTypeOnDaySlotWhereUniqueInput>
-    update?: Enumerable<EventTypeOnDaySlotUpdateWithWhereUniqueWithoutDaySlotInput>
-    updateMany?: Enumerable<EventTypeOnDaySlotUpdateManyWithWhereWithoutDaySlotInput>
-    deleteMany?: Enumerable<EventTypeOnDaySlotScalarWhereInput>
-  }
-
-  export type DaySlotOnDateSlotUncheckedUpdateManyWithoutDaySlotNestedInput = {
-    create?: XOR<Enumerable<DaySlotOnDateSlotCreateWithoutDaySlotInput>, Enumerable<DaySlotOnDateSlotUncheckedCreateWithoutDaySlotInput>>
-    connectOrCreate?: Enumerable<DaySlotOnDateSlotCreateOrConnectWithoutDaySlotInput>
-    upsert?: Enumerable<DaySlotOnDateSlotUpsertWithWhereUniqueWithoutDaySlotInput>
-    createMany?: DaySlotOnDateSlotCreateManyDaySlotInputEnvelope
-    set?: Enumerable<DaySlotOnDateSlotWhereUniqueInput>
-    disconnect?: Enumerable<DaySlotOnDateSlotWhereUniqueInput>
-    delete?: Enumerable<DaySlotOnDateSlotWhereUniqueInput>
-    connect?: Enumerable<DaySlotOnDateSlotWhereUniqueInput>
-    update?: Enumerable<DaySlotOnDateSlotUpdateWithWhereUniqueWithoutDaySlotInput>
-    updateMany?: Enumerable<DaySlotOnDateSlotUpdateManyWithWhereWithoutDaySlotInput>
-    deleteMany?: Enumerable<DaySlotOnDateSlotScalarWhereInput>
-  }
-
-  export type DaySlotCreateNestedOneWithoutDateSlotsInput = {
-    create?: XOR<DaySlotCreateWithoutDateSlotsInput, DaySlotUncheckedCreateWithoutDateSlotsInput>
-    connectOrCreate?: DaySlotCreateOrConnectWithoutDateSlotsInput
-    connect?: DaySlotWhereUniqueInput
-  }
-
-  export type DateSlotCreateNestedOneWithoutDaySlotsInput = {
-    create?: XOR<DateSlotCreateWithoutDaySlotsInput, DateSlotUncheckedCreateWithoutDaySlotsInput>
-    connectOrCreate?: DateSlotCreateOrConnectWithoutDaySlotsInput
-    connect?: DateSlotWhereUniqueInput
-  }
-
-  export type DaySlotUpdateOneRequiredWithoutDateSlotsNestedInput = {
-    create?: XOR<DaySlotCreateWithoutDateSlotsInput, DaySlotUncheckedCreateWithoutDateSlotsInput>
-    connectOrCreate?: DaySlotCreateOrConnectWithoutDateSlotsInput
-    upsert?: DaySlotUpsertWithoutDateSlotsInput
-    connect?: DaySlotWhereUniqueInput
-    update?: XOR<DaySlotUpdateWithoutDateSlotsInput, DaySlotUncheckedUpdateWithoutDateSlotsInput>
-  }
-
-  export type DateSlotUpdateOneRequiredWithoutDaySlotsNestedInput = {
-    create?: XOR<DateSlotCreateWithoutDaySlotsInput, DateSlotUncheckedCreateWithoutDaySlotsInput>
-    connectOrCreate?: DateSlotCreateOrConnectWithoutDaySlotsInput
-    upsert?: DateSlotUpsertWithoutDaySlotsInput
-    connect?: DateSlotWhereUniqueInput
-    update?: XOR<DateSlotUpdateWithoutDaySlotsInput, DateSlotUncheckedUpdateWithoutDaySlotsInput>
-  }
-
-  export type EventTypeCreateNestedOneWithoutDaySlotsInput = {
-    create?: XOR<EventTypeCreateWithoutDaySlotsInput, EventTypeUncheckedCreateWithoutDaySlotsInput>
-    connectOrCreate?: EventTypeCreateOrConnectWithoutDaySlotsInput
-    connect?: EventTypeWhereUniqueInput
-  }
-
-  export type DaySlotCreateNestedOneWithoutEventTypeSlotsInput = {
-    create?: XOR<DaySlotCreateWithoutEventTypeSlotsInput, DaySlotUncheckedCreateWithoutEventTypeSlotsInput>
-    connectOrCreate?: DaySlotCreateOrConnectWithoutEventTypeSlotsInput
-    connect?: DaySlotWhereUniqueInput
-  }
-
-  export type EventTypeUpdateOneRequiredWithoutDaySlotsNestedInput = {
-    create?: XOR<EventTypeCreateWithoutDaySlotsInput, EventTypeUncheckedCreateWithoutDaySlotsInput>
-    connectOrCreate?: EventTypeCreateOrConnectWithoutDaySlotsInput
-    upsert?: EventTypeUpsertWithoutDaySlotsInput
-    connect?: EventTypeWhereUniqueInput
-    update?: XOR<EventTypeUpdateWithoutDaySlotsInput, EventTypeUncheckedUpdateWithoutDaySlotsInput>
-  }
-
-  export type DaySlotUpdateOneRequiredWithoutEventTypeSlotsNestedInput = {
-    create?: XOR<DaySlotCreateWithoutEventTypeSlotsInput, DaySlotUncheckedCreateWithoutEventTypeSlotsInput>
-    connectOrCreate?: DaySlotCreateOrConnectWithoutEventTypeSlotsInput
-    upsert?: DaySlotUpsertWithoutEventTypeSlotsInput
-    connect?: DaySlotWhereUniqueInput
-    update?: XOR<DaySlotUpdateWithoutEventTypeSlotsInput, DaySlotUncheckedUpdateWithoutEventTypeSlotsInput>
   }
 
   export type EventTypeOnLocationCreateNestedManyWithoutLocationInput = {
@@ -20280,6 +17828,48 @@ export namespace Prisma {
     deleteMany?: Enumerable<DateSlotScalarWhereInput>
   }
 
+  export type DateSlotCreateNestedManyWithoutDaySlotInput = {
+    create?: XOR<Enumerable<DateSlotCreateWithoutDaySlotInput>, Enumerable<DateSlotUncheckedCreateWithoutDaySlotInput>>
+    connectOrCreate?: Enumerable<DateSlotCreateOrConnectWithoutDaySlotInput>
+    createMany?: DateSlotCreateManyDaySlotInputEnvelope
+    connect?: Enumerable<DateSlotWhereUniqueInput>
+  }
+
+  export type DateSlotUncheckedCreateNestedManyWithoutDaySlotInput = {
+    create?: XOR<Enumerable<DateSlotCreateWithoutDaySlotInput>, Enumerable<DateSlotUncheckedCreateWithoutDaySlotInput>>
+    connectOrCreate?: Enumerable<DateSlotCreateOrConnectWithoutDaySlotInput>
+    createMany?: DateSlotCreateManyDaySlotInputEnvelope
+    connect?: Enumerable<DateSlotWhereUniqueInput>
+  }
+
+  export type DateSlotUpdateManyWithoutDaySlotNestedInput = {
+    create?: XOR<Enumerable<DateSlotCreateWithoutDaySlotInput>, Enumerable<DateSlotUncheckedCreateWithoutDaySlotInput>>
+    connectOrCreate?: Enumerable<DateSlotCreateOrConnectWithoutDaySlotInput>
+    upsert?: Enumerable<DateSlotUpsertWithWhereUniqueWithoutDaySlotInput>
+    createMany?: DateSlotCreateManyDaySlotInputEnvelope
+    set?: Enumerable<DateSlotWhereUniqueInput>
+    disconnect?: Enumerable<DateSlotWhereUniqueInput>
+    delete?: Enumerable<DateSlotWhereUniqueInput>
+    connect?: Enumerable<DateSlotWhereUniqueInput>
+    update?: Enumerable<DateSlotUpdateWithWhereUniqueWithoutDaySlotInput>
+    updateMany?: Enumerable<DateSlotUpdateManyWithWhereWithoutDaySlotInput>
+    deleteMany?: Enumerable<DateSlotScalarWhereInput>
+  }
+
+  export type DateSlotUncheckedUpdateManyWithoutDaySlotNestedInput = {
+    create?: XOR<Enumerable<DateSlotCreateWithoutDaySlotInput>, Enumerable<DateSlotUncheckedCreateWithoutDaySlotInput>>
+    connectOrCreate?: Enumerable<DateSlotCreateOrConnectWithoutDaySlotInput>
+    upsert?: Enumerable<DateSlotUpsertWithWhereUniqueWithoutDaySlotInput>
+    createMany?: DateSlotCreateManyDaySlotInputEnvelope
+    set?: Enumerable<DateSlotWhereUniqueInput>
+    disconnect?: Enumerable<DateSlotWhereUniqueInput>
+    delete?: Enumerable<DateSlotWhereUniqueInput>
+    connect?: Enumerable<DateSlotWhereUniqueInput>
+    update?: Enumerable<DateSlotUpdateWithWhereUniqueWithoutDaySlotInput>
+    updateMany?: Enumerable<DateSlotUpdateManyWithWhereWithoutDaySlotInput>
+    deleteMany?: Enumerable<DateSlotScalarWhereInput>
+  }
+
   export type AvailabilityScheduleCreateNestedOneWithoutDateSlotsInput = {
     create?: XOR<AvailabilityScheduleCreateWithoutDateSlotsInput, AvailabilityScheduleUncheckedCreateWithoutDateSlotsInput>
     connectOrCreate?: AvailabilityScheduleCreateOrConnectWithoutDateSlotsInput
@@ -20292,32 +17882,30 @@ export namespace Prisma {
     connect?: CustomerWhereUniqueInput
   }
 
-  export type DateSlotOnTimeSelectCreateNestedManyWithoutDateSlotInput = {
-    create?: XOR<Enumerable<DateSlotOnTimeSelectCreateWithoutDateSlotInput>, Enumerable<DateSlotOnTimeSelectUncheckedCreateWithoutDateSlotInput>>
-    connectOrCreate?: Enumerable<DateSlotOnTimeSelectCreateOrConnectWithoutDateSlotInput>
-    createMany?: DateSlotOnTimeSelectCreateManyDateSlotInputEnvelope
-    connect?: Enumerable<DateSlotOnTimeSelectWhereUniqueInput>
+  export type EventTypeCreateNestedOneWithoutDateSlotsInput = {
+    create?: XOR<EventTypeCreateWithoutDateSlotsInput, EventTypeUncheckedCreateWithoutDateSlotsInput>
+    connectOrCreate?: EventTypeCreateOrConnectWithoutDateSlotsInput
+    connect?: EventTypeWhereUniqueInput
   }
 
-  export type DaySlotOnDateSlotCreateNestedManyWithoutDateSlotInput = {
-    create?: XOR<Enumerable<DaySlotOnDateSlotCreateWithoutDateSlotInput>, Enumerable<DaySlotOnDateSlotUncheckedCreateWithoutDateSlotInput>>
-    connectOrCreate?: Enumerable<DaySlotOnDateSlotCreateOrConnectWithoutDateSlotInput>
-    createMany?: DaySlotOnDateSlotCreateManyDateSlotInputEnvelope
-    connect?: Enumerable<DaySlotOnDateSlotWhereUniqueInput>
+  export type DaySlotCreateNestedOneWithoutDateSlotsInput = {
+    create?: XOR<DaySlotCreateWithoutDateSlotsInput, DaySlotUncheckedCreateWithoutDateSlotsInput>
+    connectOrCreate?: DaySlotCreateOrConnectWithoutDateSlotsInput
+    connect?: DaySlotWhereUniqueInput
   }
 
-  export type DateSlotOnTimeSelectUncheckedCreateNestedManyWithoutDateSlotInput = {
-    create?: XOR<Enumerable<DateSlotOnTimeSelectCreateWithoutDateSlotInput>, Enumerable<DateSlotOnTimeSelectUncheckedCreateWithoutDateSlotInput>>
-    connectOrCreate?: Enumerable<DateSlotOnTimeSelectCreateOrConnectWithoutDateSlotInput>
-    createMany?: DateSlotOnTimeSelectCreateManyDateSlotInputEnvelope
-    connect?: Enumerable<DateSlotOnTimeSelectWhereUniqueInput>
+  export type DateOnTimeSlotCreateNestedManyWithoutDateSlotInput = {
+    create?: XOR<Enumerable<DateOnTimeSlotCreateWithoutDateSlotInput>, Enumerable<DateOnTimeSlotUncheckedCreateWithoutDateSlotInput>>
+    connectOrCreate?: Enumerable<DateOnTimeSlotCreateOrConnectWithoutDateSlotInput>
+    createMany?: DateOnTimeSlotCreateManyDateSlotInputEnvelope
+    connect?: Enumerable<DateOnTimeSlotWhereUniqueInput>
   }
 
-  export type DaySlotOnDateSlotUncheckedCreateNestedManyWithoutDateSlotInput = {
-    create?: XOR<Enumerable<DaySlotOnDateSlotCreateWithoutDateSlotInput>, Enumerable<DaySlotOnDateSlotUncheckedCreateWithoutDateSlotInput>>
-    connectOrCreate?: Enumerable<DaySlotOnDateSlotCreateOrConnectWithoutDateSlotInput>
-    createMany?: DaySlotOnDateSlotCreateManyDateSlotInputEnvelope
-    connect?: Enumerable<DaySlotOnDateSlotWhereUniqueInput>
+  export type DateOnTimeSlotUncheckedCreateNestedManyWithoutDateSlotInput = {
+    create?: XOR<Enumerable<DateOnTimeSlotCreateWithoutDateSlotInput>, Enumerable<DateOnTimeSlotUncheckedCreateWithoutDateSlotInput>>
+    connectOrCreate?: Enumerable<DateOnTimeSlotCreateOrConnectWithoutDateSlotInput>
+    createMany?: DateOnTimeSlotCreateManyDateSlotInputEnvelope
+    connect?: Enumerable<DateOnTimeSlotWhereUniqueInput>
   }
 
   export type AvailabilityScheduleUpdateOneWithoutDateSlotsNestedInput = {
@@ -20340,102 +17928,118 @@ export namespace Prisma {
     update?: XOR<CustomerUpdateWithoutDateSlotsInput, CustomerUncheckedUpdateWithoutDateSlotsInput>
   }
 
-  export type DateSlotOnTimeSelectUpdateManyWithoutDateSlotNestedInput = {
-    create?: XOR<Enumerable<DateSlotOnTimeSelectCreateWithoutDateSlotInput>, Enumerable<DateSlotOnTimeSelectUncheckedCreateWithoutDateSlotInput>>
-    connectOrCreate?: Enumerable<DateSlotOnTimeSelectCreateOrConnectWithoutDateSlotInput>
-    upsert?: Enumerable<DateSlotOnTimeSelectUpsertWithWhereUniqueWithoutDateSlotInput>
-    createMany?: DateSlotOnTimeSelectCreateManyDateSlotInputEnvelope
-    set?: Enumerable<DateSlotOnTimeSelectWhereUniqueInput>
-    disconnect?: Enumerable<DateSlotOnTimeSelectWhereUniqueInput>
-    delete?: Enumerable<DateSlotOnTimeSelectWhereUniqueInput>
-    connect?: Enumerable<DateSlotOnTimeSelectWhereUniqueInput>
-    update?: Enumerable<DateSlotOnTimeSelectUpdateWithWhereUniqueWithoutDateSlotInput>
-    updateMany?: Enumerable<DateSlotOnTimeSelectUpdateManyWithWhereWithoutDateSlotInput>
-    deleteMany?: Enumerable<DateSlotOnTimeSelectScalarWhereInput>
+  export type EventTypeUpdateOneRequiredWithoutDateSlotsNestedInput = {
+    create?: XOR<EventTypeCreateWithoutDateSlotsInput, EventTypeUncheckedCreateWithoutDateSlotsInput>
+    connectOrCreate?: EventTypeCreateOrConnectWithoutDateSlotsInput
+    upsert?: EventTypeUpsertWithoutDateSlotsInput
+    connect?: EventTypeWhereUniqueInput
+    update?: XOR<EventTypeUpdateWithoutDateSlotsInput, EventTypeUncheckedUpdateWithoutDateSlotsInput>
   }
 
-  export type DaySlotOnDateSlotUpdateManyWithoutDateSlotNestedInput = {
-    create?: XOR<Enumerable<DaySlotOnDateSlotCreateWithoutDateSlotInput>, Enumerable<DaySlotOnDateSlotUncheckedCreateWithoutDateSlotInput>>
-    connectOrCreate?: Enumerable<DaySlotOnDateSlotCreateOrConnectWithoutDateSlotInput>
-    upsert?: Enumerable<DaySlotOnDateSlotUpsertWithWhereUniqueWithoutDateSlotInput>
-    createMany?: DaySlotOnDateSlotCreateManyDateSlotInputEnvelope
-    set?: Enumerable<DaySlotOnDateSlotWhereUniqueInput>
-    disconnect?: Enumerable<DaySlotOnDateSlotWhereUniqueInput>
-    delete?: Enumerable<DaySlotOnDateSlotWhereUniqueInput>
-    connect?: Enumerable<DaySlotOnDateSlotWhereUniqueInput>
-    update?: Enumerable<DaySlotOnDateSlotUpdateWithWhereUniqueWithoutDateSlotInput>
-    updateMany?: Enumerable<DaySlotOnDateSlotUpdateManyWithWhereWithoutDateSlotInput>
-    deleteMany?: Enumerable<DaySlotOnDateSlotScalarWhereInput>
+  export type DaySlotUpdateOneRequiredWithoutDateSlotsNestedInput = {
+    create?: XOR<DaySlotCreateWithoutDateSlotsInput, DaySlotUncheckedCreateWithoutDateSlotsInput>
+    connectOrCreate?: DaySlotCreateOrConnectWithoutDateSlotsInput
+    upsert?: DaySlotUpsertWithoutDateSlotsInput
+    connect?: DaySlotWhereUniqueInput
+    update?: XOR<DaySlotUpdateWithoutDateSlotsInput, DaySlotUncheckedUpdateWithoutDateSlotsInput>
   }
 
-  export type DateSlotOnTimeSelectUncheckedUpdateManyWithoutDateSlotNestedInput = {
-    create?: XOR<Enumerable<DateSlotOnTimeSelectCreateWithoutDateSlotInput>, Enumerable<DateSlotOnTimeSelectUncheckedCreateWithoutDateSlotInput>>
-    connectOrCreate?: Enumerable<DateSlotOnTimeSelectCreateOrConnectWithoutDateSlotInput>
-    upsert?: Enumerable<DateSlotOnTimeSelectUpsertWithWhereUniqueWithoutDateSlotInput>
-    createMany?: DateSlotOnTimeSelectCreateManyDateSlotInputEnvelope
-    set?: Enumerable<DateSlotOnTimeSelectWhereUniqueInput>
-    disconnect?: Enumerable<DateSlotOnTimeSelectWhereUniqueInput>
-    delete?: Enumerable<DateSlotOnTimeSelectWhereUniqueInput>
-    connect?: Enumerable<DateSlotOnTimeSelectWhereUniqueInput>
-    update?: Enumerable<DateSlotOnTimeSelectUpdateWithWhereUniqueWithoutDateSlotInput>
-    updateMany?: Enumerable<DateSlotOnTimeSelectUpdateManyWithWhereWithoutDateSlotInput>
-    deleteMany?: Enumerable<DateSlotOnTimeSelectScalarWhereInput>
+  export type DateOnTimeSlotUpdateManyWithoutDateSlotNestedInput = {
+    create?: XOR<Enumerable<DateOnTimeSlotCreateWithoutDateSlotInput>, Enumerable<DateOnTimeSlotUncheckedCreateWithoutDateSlotInput>>
+    connectOrCreate?: Enumerable<DateOnTimeSlotCreateOrConnectWithoutDateSlotInput>
+    upsert?: Enumerable<DateOnTimeSlotUpsertWithWhereUniqueWithoutDateSlotInput>
+    createMany?: DateOnTimeSlotCreateManyDateSlotInputEnvelope
+    set?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    disconnect?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    delete?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    connect?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    update?: Enumerable<DateOnTimeSlotUpdateWithWhereUniqueWithoutDateSlotInput>
+    updateMany?: Enumerable<DateOnTimeSlotUpdateManyWithWhereWithoutDateSlotInput>
+    deleteMany?: Enumerable<DateOnTimeSlotScalarWhereInput>
   }
 
-  export type DaySlotOnDateSlotUncheckedUpdateManyWithoutDateSlotNestedInput = {
-    create?: XOR<Enumerable<DaySlotOnDateSlotCreateWithoutDateSlotInput>, Enumerable<DaySlotOnDateSlotUncheckedCreateWithoutDateSlotInput>>
-    connectOrCreate?: Enumerable<DaySlotOnDateSlotCreateOrConnectWithoutDateSlotInput>
-    upsert?: Enumerable<DaySlotOnDateSlotUpsertWithWhereUniqueWithoutDateSlotInput>
-    createMany?: DaySlotOnDateSlotCreateManyDateSlotInputEnvelope
-    set?: Enumerable<DaySlotOnDateSlotWhereUniqueInput>
-    disconnect?: Enumerable<DaySlotOnDateSlotWhereUniqueInput>
-    delete?: Enumerable<DaySlotOnDateSlotWhereUniqueInput>
-    connect?: Enumerable<DaySlotOnDateSlotWhereUniqueInput>
-    update?: Enumerable<DaySlotOnDateSlotUpdateWithWhereUniqueWithoutDateSlotInput>
-    updateMany?: Enumerable<DaySlotOnDateSlotUpdateManyWithWhereWithoutDateSlotInput>
-    deleteMany?: Enumerable<DaySlotOnDateSlotScalarWhereInput>
+  export type DateOnTimeSlotUncheckedUpdateManyWithoutDateSlotNestedInput = {
+    create?: XOR<Enumerable<DateOnTimeSlotCreateWithoutDateSlotInput>, Enumerable<DateOnTimeSlotUncheckedCreateWithoutDateSlotInput>>
+    connectOrCreate?: Enumerable<DateOnTimeSlotCreateOrConnectWithoutDateSlotInput>
+    upsert?: Enumerable<DateOnTimeSlotUpsertWithWhereUniqueWithoutDateSlotInput>
+    createMany?: DateOnTimeSlotCreateManyDateSlotInputEnvelope
+    set?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    disconnect?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    delete?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    connect?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    update?: Enumerable<DateOnTimeSlotUpdateWithWhereUniqueWithoutDateSlotInput>
+    updateMany?: Enumerable<DateOnTimeSlotUpdateManyWithWhereWithoutDateSlotInput>
+    deleteMany?: Enumerable<DateOnTimeSlotScalarWhereInput>
   }
 
-  export type DateSlotOnTimeSelectCreateNestedManyWithoutTimeSelectInput = {
-    create?: XOR<Enumerable<DateSlotOnTimeSelectCreateWithoutTimeSelectInput>, Enumerable<DateSlotOnTimeSelectUncheckedCreateWithoutTimeSelectInput>>
-    connectOrCreate?: Enumerable<DateSlotOnTimeSelectCreateOrConnectWithoutTimeSelectInput>
-    createMany?: DateSlotOnTimeSelectCreateManyTimeSelectInputEnvelope
-    connect?: Enumerable<DateSlotOnTimeSelectWhereUniqueInput>
+  export type TimeSlotCreateNestedOneWithoutDateOnTimeSlotsInput = {
+    create?: XOR<TimeSlotCreateWithoutDateOnTimeSlotsInput, TimeSlotUncheckedCreateWithoutDateOnTimeSlotsInput>
+    connectOrCreate?: TimeSlotCreateOrConnectWithoutDateOnTimeSlotsInput
+    connect?: TimeSlotWhereUniqueInput
   }
 
-  export type DateSlotOnTimeSelectUncheckedCreateNestedManyWithoutTimeSelectInput = {
-    create?: XOR<Enumerable<DateSlotOnTimeSelectCreateWithoutTimeSelectInput>, Enumerable<DateSlotOnTimeSelectUncheckedCreateWithoutTimeSelectInput>>
-    connectOrCreate?: Enumerable<DateSlotOnTimeSelectCreateOrConnectWithoutTimeSelectInput>
-    createMany?: DateSlotOnTimeSelectCreateManyTimeSelectInputEnvelope
-    connect?: Enumerable<DateSlotOnTimeSelectWhereUniqueInput>
+  export type DateSlotCreateNestedOneWithoutDateOnTimeSlotsInput = {
+    create?: XOR<DateSlotCreateWithoutDateOnTimeSlotsInput, DateSlotUncheckedCreateWithoutDateOnTimeSlotsInput>
+    connectOrCreate?: DateSlotCreateOrConnectWithoutDateOnTimeSlotsInput
+    connect?: DateSlotWhereUniqueInput
   }
 
-  export type DateSlotOnTimeSelectUpdateManyWithoutTimeSelectNestedInput = {
-    create?: XOR<Enumerable<DateSlotOnTimeSelectCreateWithoutTimeSelectInput>, Enumerable<DateSlotOnTimeSelectUncheckedCreateWithoutTimeSelectInput>>
-    connectOrCreate?: Enumerable<DateSlotOnTimeSelectCreateOrConnectWithoutTimeSelectInput>
-    upsert?: Enumerable<DateSlotOnTimeSelectUpsertWithWhereUniqueWithoutTimeSelectInput>
-    createMany?: DateSlotOnTimeSelectCreateManyTimeSelectInputEnvelope
-    set?: Enumerable<DateSlotOnTimeSelectWhereUniqueInput>
-    disconnect?: Enumerable<DateSlotOnTimeSelectWhereUniqueInput>
-    delete?: Enumerable<DateSlotOnTimeSelectWhereUniqueInput>
-    connect?: Enumerable<DateSlotOnTimeSelectWhereUniqueInput>
-    update?: Enumerable<DateSlotOnTimeSelectUpdateWithWhereUniqueWithoutTimeSelectInput>
-    updateMany?: Enumerable<DateSlotOnTimeSelectUpdateManyWithWhereWithoutTimeSelectInput>
-    deleteMany?: Enumerable<DateSlotOnTimeSelectScalarWhereInput>
+  export type TimeSlotUpdateOneRequiredWithoutDateOnTimeSlotsNestedInput = {
+    create?: XOR<TimeSlotCreateWithoutDateOnTimeSlotsInput, TimeSlotUncheckedCreateWithoutDateOnTimeSlotsInput>
+    connectOrCreate?: TimeSlotCreateOrConnectWithoutDateOnTimeSlotsInput
+    upsert?: TimeSlotUpsertWithoutDateOnTimeSlotsInput
+    connect?: TimeSlotWhereUniqueInput
+    update?: XOR<TimeSlotUpdateWithoutDateOnTimeSlotsInput, TimeSlotUncheckedUpdateWithoutDateOnTimeSlotsInput>
   }
 
-  export type DateSlotOnTimeSelectUncheckedUpdateManyWithoutTimeSelectNestedInput = {
-    create?: XOR<Enumerable<DateSlotOnTimeSelectCreateWithoutTimeSelectInput>, Enumerable<DateSlotOnTimeSelectUncheckedCreateWithoutTimeSelectInput>>
-    connectOrCreate?: Enumerable<DateSlotOnTimeSelectCreateOrConnectWithoutTimeSelectInput>
-    upsert?: Enumerable<DateSlotOnTimeSelectUpsertWithWhereUniqueWithoutTimeSelectInput>
-    createMany?: DateSlotOnTimeSelectCreateManyTimeSelectInputEnvelope
-    set?: Enumerable<DateSlotOnTimeSelectWhereUniqueInput>
-    disconnect?: Enumerable<DateSlotOnTimeSelectWhereUniqueInput>
-    delete?: Enumerable<DateSlotOnTimeSelectWhereUniqueInput>
-    connect?: Enumerable<DateSlotOnTimeSelectWhereUniqueInput>
-    update?: Enumerable<DateSlotOnTimeSelectUpdateWithWhereUniqueWithoutTimeSelectInput>
-    updateMany?: Enumerable<DateSlotOnTimeSelectUpdateManyWithWhereWithoutTimeSelectInput>
-    deleteMany?: Enumerable<DateSlotOnTimeSelectScalarWhereInput>
+  export type DateSlotUpdateOneRequiredWithoutDateOnTimeSlotsNestedInput = {
+    create?: XOR<DateSlotCreateWithoutDateOnTimeSlotsInput, DateSlotUncheckedCreateWithoutDateOnTimeSlotsInput>
+    connectOrCreate?: DateSlotCreateOrConnectWithoutDateOnTimeSlotsInput
+    upsert?: DateSlotUpsertWithoutDateOnTimeSlotsInput
+    connect?: DateSlotWhereUniqueInput
+    update?: XOR<DateSlotUpdateWithoutDateOnTimeSlotsInput, DateSlotUncheckedUpdateWithoutDateOnTimeSlotsInput>
+  }
+
+  export type DateOnTimeSlotCreateNestedManyWithoutTimeSlotInput = {
+    create?: XOR<Enumerable<DateOnTimeSlotCreateWithoutTimeSlotInput>, Enumerable<DateOnTimeSlotUncheckedCreateWithoutTimeSlotInput>>
+    connectOrCreate?: Enumerable<DateOnTimeSlotCreateOrConnectWithoutTimeSlotInput>
+    createMany?: DateOnTimeSlotCreateManyTimeSlotInputEnvelope
+    connect?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+  }
+
+  export type DateOnTimeSlotUncheckedCreateNestedManyWithoutTimeSlotInput = {
+    create?: XOR<Enumerable<DateOnTimeSlotCreateWithoutTimeSlotInput>, Enumerable<DateOnTimeSlotUncheckedCreateWithoutTimeSlotInput>>
+    connectOrCreate?: Enumerable<DateOnTimeSlotCreateOrConnectWithoutTimeSlotInput>
+    createMany?: DateOnTimeSlotCreateManyTimeSlotInputEnvelope
+    connect?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+  }
+
+  export type DateOnTimeSlotUpdateManyWithoutTimeSlotNestedInput = {
+    create?: XOR<Enumerable<DateOnTimeSlotCreateWithoutTimeSlotInput>, Enumerable<DateOnTimeSlotUncheckedCreateWithoutTimeSlotInput>>
+    connectOrCreate?: Enumerable<DateOnTimeSlotCreateOrConnectWithoutTimeSlotInput>
+    upsert?: Enumerable<DateOnTimeSlotUpsertWithWhereUniqueWithoutTimeSlotInput>
+    createMany?: DateOnTimeSlotCreateManyTimeSlotInputEnvelope
+    set?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    disconnect?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    delete?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    connect?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    update?: Enumerable<DateOnTimeSlotUpdateWithWhereUniqueWithoutTimeSlotInput>
+    updateMany?: Enumerable<DateOnTimeSlotUpdateManyWithWhereWithoutTimeSlotInput>
+    deleteMany?: Enumerable<DateOnTimeSlotScalarWhereInput>
+  }
+
+  export type DateOnTimeSlotUncheckedUpdateManyWithoutTimeSlotNestedInput = {
+    create?: XOR<Enumerable<DateOnTimeSlotCreateWithoutTimeSlotInput>, Enumerable<DateOnTimeSlotUncheckedCreateWithoutTimeSlotInput>>
+    connectOrCreate?: Enumerable<DateOnTimeSlotCreateOrConnectWithoutTimeSlotInput>
+    upsert?: Enumerable<DateOnTimeSlotUpsertWithWhereUniqueWithoutTimeSlotInput>
+    createMany?: DateOnTimeSlotCreateManyTimeSlotInputEnvelope
+    set?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    disconnect?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    delete?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    connect?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    update?: Enumerable<DateOnTimeSlotUpdateWithWhereUniqueWithoutTimeSlotInput>
+    updateMany?: Enumerable<DateOnTimeSlotUpdateManyWithWhereWithoutTimeSlotInput>
+    deleteMany?: Enumerable<DateOnTimeSlotScalarWhereInput>
   }
 
   export type GroupMeetingCreateNestedManyWithoutCustomerInput = {
@@ -20648,34 +18252,6 @@ export namespace Prisma {
     update?: XOR<GroupMeetingUpdateWithoutUserOnGroupMeetingsInput, GroupMeetingUncheckedUpdateWithoutUserOnGroupMeetingsInput>
   }
 
-  export type DateSlotCreateNestedOneWithoutTimeSelectsInput = {
-    create?: XOR<DateSlotCreateWithoutTimeSelectsInput, DateSlotUncheckedCreateWithoutTimeSelectsInput>
-    connectOrCreate?: DateSlotCreateOrConnectWithoutTimeSelectsInput
-    connect?: DateSlotWhereUniqueInput
-  }
-
-  export type TimeSelectCreateNestedOneWithoutDateSlotsInput = {
-    create?: XOR<TimeSelectCreateWithoutDateSlotsInput, TimeSelectUncheckedCreateWithoutDateSlotsInput>
-    connectOrCreate?: TimeSelectCreateOrConnectWithoutDateSlotsInput
-    connect?: TimeSelectWhereUniqueInput
-  }
-
-  export type DateSlotUpdateOneRequiredWithoutTimeSelectsNestedInput = {
-    create?: XOR<DateSlotCreateWithoutTimeSelectsInput, DateSlotUncheckedCreateWithoutTimeSelectsInput>
-    connectOrCreate?: DateSlotCreateOrConnectWithoutTimeSelectsInput
-    upsert?: DateSlotUpsertWithoutTimeSelectsInput
-    connect?: DateSlotWhereUniqueInput
-    update?: XOR<DateSlotUpdateWithoutTimeSelectsInput, DateSlotUncheckedUpdateWithoutTimeSelectsInput>
-  }
-
-  export type TimeSelectUpdateOneRequiredWithoutDateSlotsNestedInput = {
-    create?: XOR<TimeSelectCreateWithoutDateSlotsInput, TimeSelectUncheckedCreateWithoutDateSlotsInput>
-    connectOrCreate?: TimeSelectCreateOrConnectWithoutDateSlotsInput
-    upsert?: TimeSelectUpsertWithoutDateSlotsInput
-    connect?: TimeSelectWhereUniqueInput
-    update?: XOR<TimeSelectUpdateWithoutDateSlotsInput, TimeSelectUncheckedUpdateWithoutDateSlotsInput>
-  }
-
   export type NestedIntFilter = {
     equals?: number
     in?: Enumerable<number>
@@ -20848,7 +18424,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutEventTypeInput
     availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutEventTypesInput
-    daySlots?: EventTypeOnDaySlotCreateNestedManyWithoutEventTypeInput
+    dateSlots?: DateSlotCreateNestedManyWithoutEventTypeInput
     groupMeetings?: GroupMeetingCreateNestedManyWithoutEventTypeInput
   }
 
@@ -20862,7 +18438,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput
-    daySlots?: EventTypeOnDaySlotUncheckedCreateNestedManyWithoutEventTypeInput
+    dateSlots?: DateSlotUncheckedCreateNestedManyWithoutEventTypeInput
     groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput
   }
 
@@ -21094,26 +18670,34 @@ export namespace Prisma {
     create: XOR<AvailabilityScheduleCreateWithoutEventTypesInput, AvailabilityScheduleUncheckedCreateWithoutEventTypesInput>
   }
 
-  export type EventTypeOnDaySlotCreateWithoutEventTypeInput = {
+  export type DateSlotCreateWithoutEventTypeInput = {
+    name: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
-    daySlot: DaySlotCreateNestedOneWithoutEventTypeSlotsInput
+    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutDateSlotsInput
+    custormer?: CustomerCreateNestedOneWithoutDateSlotsInput
+    daySlot: DaySlotCreateNestedOneWithoutDateSlotsInput
+    dateOnTimeSlots?: DateOnTimeSlotCreateNestedManyWithoutDateSlotInput
   }
 
-  export type EventTypeOnDaySlotUncheckedCreateWithoutEventTypeInput = {
+  export type DateSlotUncheckedCreateWithoutEventTypeInput = {
     id?: number
-    daySlotId: number
+    availabilityScheduleId?: number | null
+    name: Date | string
+    custormerId?: number | null
+    dayName: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    dateOnTimeSlots?: DateOnTimeSlotUncheckedCreateNestedManyWithoutDateSlotInput
   }
 
-  export type EventTypeOnDaySlotCreateOrConnectWithoutEventTypeInput = {
-    where: EventTypeOnDaySlotWhereUniqueInput
-    create: XOR<EventTypeOnDaySlotCreateWithoutEventTypeInput, EventTypeOnDaySlotUncheckedCreateWithoutEventTypeInput>
+  export type DateSlotCreateOrConnectWithoutEventTypeInput = {
+    where: DateSlotWhereUniqueInput
+    create: XOR<DateSlotCreateWithoutEventTypeInput, DateSlotUncheckedCreateWithoutEventTypeInput>
   }
 
-  export type EventTypeOnDaySlotCreateManyEventTypeInputEnvelope = {
-    data: Enumerable<EventTypeOnDaySlotCreateManyEventTypeInput>
+  export type DateSlotCreateManyEventTypeInputEnvelope = {
+    data: Enumerable<DateSlotCreateManyEventTypeInput>
     skipDuplicates?: boolean
   }
 
@@ -21233,29 +18817,32 @@ export namespace Prisma {
     dateSlots?: DateSlotUncheckedUpdateManyWithoutAvailabilityScheduleNestedInput
   }
 
-  export type EventTypeOnDaySlotUpsertWithWhereUniqueWithoutEventTypeInput = {
-    where: EventTypeOnDaySlotWhereUniqueInput
-    update: XOR<EventTypeOnDaySlotUpdateWithoutEventTypeInput, EventTypeOnDaySlotUncheckedUpdateWithoutEventTypeInput>
-    create: XOR<EventTypeOnDaySlotCreateWithoutEventTypeInput, EventTypeOnDaySlotUncheckedCreateWithoutEventTypeInput>
+  export type DateSlotUpsertWithWhereUniqueWithoutEventTypeInput = {
+    where: DateSlotWhereUniqueInput
+    update: XOR<DateSlotUpdateWithoutEventTypeInput, DateSlotUncheckedUpdateWithoutEventTypeInput>
+    create: XOR<DateSlotCreateWithoutEventTypeInput, DateSlotUncheckedCreateWithoutEventTypeInput>
   }
 
-  export type EventTypeOnDaySlotUpdateWithWhereUniqueWithoutEventTypeInput = {
-    where: EventTypeOnDaySlotWhereUniqueInput
-    data: XOR<EventTypeOnDaySlotUpdateWithoutEventTypeInput, EventTypeOnDaySlotUncheckedUpdateWithoutEventTypeInput>
+  export type DateSlotUpdateWithWhereUniqueWithoutEventTypeInput = {
+    where: DateSlotWhereUniqueInput
+    data: XOR<DateSlotUpdateWithoutEventTypeInput, DateSlotUncheckedUpdateWithoutEventTypeInput>
   }
 
-  export type EventTypeOnDaySlotUpdateManyWithWhereWithoutEventTypeInput = {
-    where: EventTypeOnDaySlotScalarWhereInput
-    data: XOR<EventTypeOnDaySlotUpdateManyMutationInput, EventTypeOnDaySlotUncheckedUpdateManyWithoutDaySlotsInput>
+  export type DateSlotUpdateManyWithWhereWithoutEventTypeInput = {
+    where: DateSlotScalarWhereInput
+    data: XOR<DateSlotUpdateManyMutationInput, DateSlotUncheckedUpdateManyWithoutDateSlotsInput>
   }
 
-  export type EventTypeOnDaySlotScalarWhereInput = {
-    AND?: Enumerable<EventTypeOnDaySlotScalarWhereInput>
-    OR?: Enumerable<EventTypeOnDaySlotScalarWhereInput>
-    NOT?: Enumerable<EventTypeOnDaySlotScalarWhereInput>
+  export type DateSlotScalarWhereInput = {
+    AND?: Enumerable<DateSlotScalarWhereInput>
+    OR?: Enumerable<DateSlotScalarWhereInput>
+    NOT?: Enumerable<DateSlotScalarWhereInput>
     id?: IntFilter | number
-    eventTypeId?: IntFilter | number
-    daySlotId?: IntFilter | number
+    availabilityScheduleId?: IntNullableFilter | number | null
+    name?: DateTimeFilter | Date | string
+    custormerId?: IntNullableFilter | number | null
+    eventId?: IntFilter | number
+    dayName?: StringFilter | string
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
   }
@@ -21288,287 +18875,6 @@ export namespace Prisma {
     eventTypeId?: IntFilter | number
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
-  }
-
-  export type EventTypeOnDaySlotCreateWithoutDaySlotInput = {
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    eventType: EventTypeCreateNestedOneWithoutDaySlotsInput
-  }
-
-  export type EventTypeOnDaySlotUncheckedCreateWithoutDaySlotInput = {
-    id?: number
-    eventTypeId: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type EventTypeOnDaySlotCreateOrConnectWithoutDaySlotInput = {
-    where: EventTypeOnDaySlotWhereUniqueInput
-    create: XOR<EventTypeOnDaySlotCreateWithoutDaySlotInput, EventTypeOnDaySlotUncheckedCreateWithoutDaySlotInput>
-  }
-
-  export type EventTypeOnDaySlotCreateManyDaySlotInputEnvelope = {
-    data: Enumerable<EventTypeOnDaySlotCreateManyDaySlotInput>
-    skipDuplicates?: boolean
-  }
-
-  export type DaySlotOnDateSlotCreateWithoutDaySlotInput = {
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    dateSlot: DateSlotCreateNestedOneWithoutDaySlotsInput
-  }
-
-  export type DaySlotOnDateSlotUncheckedCreateWithoutDaySlotInput = {
-    id?: number
-    dateSlotId: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type DaySlotOnDateSlotCreateOrConnectWithoutDaySlotInput = {
-    where: DaySlotOnDateSlotWhereUniqueInput
-    create: XOR<DaySlotOnDateSlotCreateWithoutDaySlotInput, DaySlotOnDateSlotUncheckedCreateWithoutDaySlotInput>
-  }
-
-  export type DaySlotOnDateSlotCreateManyDaySlotInputEnvelope = {
-    data: Enumerable<DaySlotOnDateSlotCreateManyDaySlotInput>
-    skipDuplicates?: boolean
-  }
-
-  export type EventTypeOnDaySlotUpsertWithWhereUniqueWithoutDaySlotInput = {
-    where: EventTypeOnDaySlotWhereUniqueInput
-    update: XOR<EventTypeOnDaySlotUpdateWithoutDaySlotInput, EventTypeOnDaySlotUncheckedUpdateWithoutDaySlotInput>
-    create: XOR<EventTypeOnDaySlotCreateWithoutDaySlotInput, EventTypeOnDaySlotUncheckedCreateWithoutDaySlotInput>
-  }
-
-  export type EventTypeOnDaySlotUpdateWithWhereUniqueWithoutDaySlotInput = {
-    where: EventTypeOnDaySlotWhereUniqueInput
-    data: XOR<EventTypeOnDaySlotUpdateWithoutDaySlotInput, EventTypeOnDaySlotUncheckedUpdateWithoutDaySlotInput>
-  }
-
-  export type EventTypeOnDaySlotUpdateManyWithWhereWithoutDaySlotInput = {
-    where: EventTypeOnDaySlotScalarWhereInput
-    data: XOR<EventTypeOnDaySlotUpdateManyMutationInput, EventTypeOnDaySlotUncheckedUpdateManyWithoutEventTypeSlotsInput>
-  }
-
-  export type DaySlotOnDateSlotUpsertWithWhereUniqueWithoutDaySlotInput = {
-    where: DaySlotOnDateSlotWhereUniqueInput
-    update: XOR<DaySlotOnDateSlotUpdateWithoutDaySlotInput, DaySlotOnDateSlotUncheckedUpdateWithoutDaySlotInput>
-    create: XOR<DaySlotOnDateSlotCreateWithoutDaySlotInput, DaySlotOnDateSlotUncheckedCreateWithoutDaySlotInput>
-  }
-
-  export type DaySlotOnDateSlotUpdateWithWhereUniqueWithoutDaySlotInput = {
-    where: DaySlotOnDateSlotWhereUniqueInput
-    data: XOR<DaySlotOnDateSlotUpdateWithoutDaySlotInput, DaySlotOnDateSlotUncheckedUpdateWithoutDaySlotInput>
-  }
-
-  export type DaySlotOnDateSlotUpdateManyWithWhereWithoutDaySlotInput = {
-    where: DaySlotOnDateSlotScalarWhereInput
-    data: XOR<DaySlotOnDateSlotUpdateManyMutationInput, DaySlotOnDateSlotUncheckedUpdateManyWithoutDateSlotsInput>
-  }
-
-  export type DaySlotOnDateSlotScalarWhereInput = {
-    AND?: Enumerable<DaySlotOnDateSlotScalarWhereInput>
-    OR?: Enumerable<DaySlotOnDateSlotScalarWhereInput>
-    NOT?: Enumerable<DaySlotOnDateSlotScalarWhereInput>
-    id?: IntFilter | number
-    daySlotId?: IntFilter | number
-    dateSlotId?: IntFilter | number
-    createdAt?: DateTimeFilter | Date | string
-    updatedAt?: DateTimeFilter | Date | string
-  }
-
-  export type DaySlotCreateWithoutDateSlotsInput = {
-    name: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    eventTypeSlots?: EventTypeOnDaySlotCreateNestedManyWithoutDaySlotInput
-  }
-
-  export type DaySlotUncheckedCreateWithoutDateSlotsInput = {
-    id?: number
-    name: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    eventTypeSlots?: EventTypeOnDaySlotUncheckedCreateNestedManyWithoutDaySlotInput
-  }
-
-  export type DaySlotCreateOrConnectWithoutDateSlotsInput = {
-    where: DaySlotWhereUniqueInput
-    create: XOR<DaySlotCreateWithoutDateSlotsInput, DaySlotUncheckedCreateWithoutDateSlotsInput>
-  }
-
-  export type DateSlotCreateWithoutDaySlotsInput = {
-    date: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutDateSlotsInput
-    custormer?: CustomerCreateNestedOneWithoutDateSlotsInput
-    timeSelects?: DateSlotOnTimeSelectCreateNestedManyWithoutDateSlotInput
-  }
-
-  export type DateSlotUncheckedCreateWithoutDaySlotsInput = {
-    id?: number
-    availabilityScheduleId?: number | null
-    date: Date | string
-    custormerId?: number | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    timeSelects?: DateSlotOnTimeSelectUncheckedCreateNestedManyWithoutDateSlotInput
-  }
-
-  export type DateSlotCreateOrConnectWithoutDaySlotsInput = {
-    where: DateSlotWhereUniqueInput
-    create: XOR<DateSlotCreateWithoutDaySlotsInput, DateSlotUncheckedCreateWithoutDaySlotsInput>
-  }
-
-  export type DaySlotUpsertWithoutDateSlotsInput = {
-    update: XOR<DaySlotUpdateWithoutDateSlotsInput, DaySlotUncheckedUpdateWithoutDateSlotsInput>
-    create: XOR<DaySlotCreateWithoutDateSlotsInput, DaySlotUncheckedCreateWithoutDateSlotsInput>
-  }
-
-  export type DaySlotUpdateWithoutDateSlotsInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    eventTypeSlots?: EventTypeOnDaySlotUpdateManyWithoutDaySlotNestedInput
-  }
-
-  export type DaySlotUncheckedUpdateWithoutDateSlotsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    eventTypeSlots?: EventTypeOnDaySlotUncheckedUpdateManyWithoutDaySlotNestedInput
-  }
-
-  export type DateSlotUpsertWithoutDaySlotsInput = {
-    update: XOR<DateSlotUpdateWithoutDaySlotsInput, DateSlotUncheckedUpdateWithoutDaySlotsInput>
-    create: XOR<DateSlotCreateWithoutDaySlotsInput, DateSlotUncheckedCreateWithoutDaySlotsInput>
-  }
-
-  export type DateSlotUpdateWithoutDaySlotsInput = {
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutDateSlotsNestedInput
-    custormer?: CustomerUpdateOneWithoutDateSlotsNestedInput
-    timeSelects?: DateSlotOnTimeSelectUpdateManyWithoutDateSlotNestedInput
-  }
-
-  export type DateSlotUncheckedUpdateWithoutDaySlotsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    custormerId?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    timeSelects?: DateSlotOnTimeSelectUncheckedUpdateManyWithoutDateSlotNestedInput
-  }
-
-  export type EventTypeCreateWithoutDaySlotsInput = {
-    name: string
-    description: string
-    price: number
-    timeDuration: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    user: UserCreateNestedOneWithoutEventTypesInput
-    eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutEventTypeInput
-    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutEventTypesInput
-    groupMeetings?: GroupMeetingCreateNestedManyWithoutEventTypeInput
-  }
-
-  export type EventTypeUncheckedCreateWithoutDaySlotsInput = {
-    id?: number
-    name: string
-    userId: number
-    description: string
-    price: number
-    timeDuration: number
-    availabilityScheduleId?: number | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput
-    groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput
-  }
-
-  export type EventTypeCreateOrConnectWithoutDaySlotsInput = {
-    where: EventTypeWhereUniqueInput
-    create: XOR<EventTypeCreateWithoutDaySlotsInput, EventTypeUncheckedCreateWithoutDaySlotsInput>
-  }
-
-  export type DaySlotCreateWithoutEventTypeSlotsInput = {
-    name: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    dateSlots?: DaySlotOnDateSlotCreateNestedManyWithoutDaySlotInput
-  }
-
-  export type DaySlotUncheckedCreateWithoutEventTypeSlotsInput = {
-    id?: number
-    name: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    dateSlots?: DaySlotOnDateSlotUncheckedCreateNestedManyWithoutDaySlotInput
-  }
-
-  export type DaySlotCreateOrConnectWithoutEventTypeSlotsInput = {
-    where: DaySlotWhereUniqueInput
-    create: XOR<DaySlotCreateWithoutEventTypeSlotsInput, DaySlotUncheckedCreateWithoutEventTypeSlotsInput>
-  }
-
-  export type EventTypeUpsertWithoutDaySlotsInput = {
-    update: XOR<EventTypeUpdateWithoutDaySlotsInput, EventTypeUncheckedUpdateWithoutDaySlotsInput>
-    create: XOR<EventTypeCreateWithoutDaySlotsInput, EventTypeUncheckedCreateWithoutDaySlotsInput>
-  }
-
-  export type EventTypeUpdateWithoutDaySlotsInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
-    price?: IntFieldUpdateOperationsInput | number
-    timeDuration?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
-    eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
-    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutEventTypesNestedInput
-    groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
-  }
-
-  export type EventTypeUncheckedUpdateWithoutDaySlotsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    userId?: IntFieldUpdateOperationsInput | number
-    description?: StringFieldUpdateOperationsInput | string
-    price?: IntFieldUpdateOperationsInput | number
-    timeDuration?: IntFieldUpdateOperationsInput | number
-    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
-    groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
-  }
-
-  export type DaySlotUpsertWithoutEventTypeSlotsInput = {
-    update: XOR<DaySlotUpdateWithoutEventTypeSlotsInput, DaySlotUncheckedUpdateWithoutEventTypeSlotsInput>
-    create: XOR<DaySlotCreateWithoutEventTypeSlotsInput, DaySlotUncheckedCreateWithoutEventTypeSlotsInput>
-  }
-
-  export type DaySlotUpdateWithoutEventTypeSlotsInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    dateSlots?: DaySlotOnDateSlotUpdateManyWithoutDaySlotNestedInput
-  }
-
-  export type DaySlotUncheckedUpdateWithoutEventTypeSlotsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    dateSlots?: DaySlotOnDateSlotUncheckedUpdateManyWithoutDaySlotNestedInput
   }
 
   export type EventTypeOnLocationCreateWithoutLocationInput = {
@@ -21666,7 +18972,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutEventTypesInput
     availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutEventTypesInput
-    daySlots?: EventTypeOnDaySlotCreateNestedManyWithoutEventTypeInput
+    dateSlots?: DateSlotCreateNestedManyWithoutEventTypeInput
     groupMeetings?: GroupMeetingCreateNestedManyWithoutEventTypeInput
   }
 
@@ -21680,7 +18986,7 @@ export namespace Prisma {
     availabilityScheduleId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    daySlots?: EventTypeOnDaySlotUncheckedCreateNestedManyWithoutEventTypeInput
+    dateSlots?: DateSlotUncheckedCreateNestedManyWithoutEventTypeInput
     groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput
   }
 
@@ -21723,7 +19029,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
     availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutEventTypesNestedInput
-    daySlots?: EventTypeOnDaySlotUpdateManyWithoutEventTypeNestedInput
+    dateSlots?: DateSlotUpdateManyWithoutEventTypeNestedInput
     groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
   }
 
@@ -21737,7 +19043,7 @@ export namespace Prisma {
     availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    daySlots?: EventTypeOnDaySlotUncheckedUpdateManyWithoutEventTypeNestedInput
+    dateSlots?: DateSlotUncheckedUpdateManyWithoutEventTypeNestedInput
     groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
   }
 
@@ -21770,7 +19076,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutEventTypesInput
     eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutEventTypeInput
-    daySlots?: EventTypeOnDaySlotCreateNestedManyWithoutEventTypeInput
+    dateSlots?: DateSlotCreateNestedManyWithoutEventTypeInput
     groupMeetings?: GroupMeetingCreateNestedManyWithoutEventTypeInput
   }
 
@@ -21784,7 +19090,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput
-    daySlots?: EventTypeOnDaySlotUncheckedCreateNestedManyWithoutEventTypeInput
+    dateSlots?: DateSlotUncheckedCreateNestedManyWithoutEventTypeInput
     groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput
   }
 
@@ -21799,22 +19105,24 @@ export namespace Prisma {
   }
 
   export type DateSlotCreateWithoutAvailabilityScheduleInput = {
-    date: Date | string
+    name: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
     custormer?: CustomerCreateNestedOneWithoutDateSlotsInput
-    timeSelects?: DateSlotOnTimeSelectCreateNestedManyWithoutDateSlotInput
-    DaySlots?: DaySlotOnDateSlotCreateNestedManyWithoutDateSlotInput
+    eventType: EventTypeCreateNestedOneWithoutDateSlotsInput
+    daySlot: DaySlotCreateNestedOneWithoutDateSlotsInput
+    dateOnTimeSlots?: DateOnTimeSlotCreateNestedManyWithoutDateSlotInput
   }
 
   export type DateSlotUncheckedCreateWithoutAvailabilityScheduleInput = {
     id?: number
-    date: Date | string
+    name: Date | string
     custormerId?: number | null
+    eventId: number
+    dayName: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    timeSelects?: DateSlotOnTimeSelectUncheckedCreateNestedManyWithoutDateSlotInput
-    DaySlots?: DaySlotOnDateSlotUncheckedCreateNestedManyWithoutDateSlotInput
+    dateOnTimeSlots?: DateOnTimeSlotUncheckedCreateNestedManyWithoutDateSlotInput
   }
 
   export type DateSlotCreateOrConnectWithoutAvailabilityScheduleInput = {
@@ -21859,16 +19167,51 @@ export namespace Prisma {
     data: XOR<DateSlotUpdateManyMutationInput, DateSlotUncheckedUpdateManyWithoutDateSlotsInput>
   }
 
-  export type DateSlotScalarWhereInput = {
-    AND?: Enumerable<DateSlotScalarWhereInput>
-    OR?: Enumerable<DateSlotScalarWhereInput>
-    NOT?: Enumerable<DateSlotScalarWhereInput>
-    id?: IntFilter | number
-    availabilityScheduleId?: IntNullableFilter | number | null
-    date?: DateTimeFilter | Date | string
-    custormerId?: IntNullableFilter | number | null
-    createdAt?: DateTimeFilter | Date | string
-    updatedAt?: DateTimeFilter | Date | string
+  export type DateSlotCreateWithoutDaySlotInput = {
+    name: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutDateSlotsInput
+    custormer?: CustomerCreateNestedOneWithoutDateSlotsInput
+    eventType: EventTypeCreateNestedOneWithoutDateSlotsInput
+    dateOnTimeSlots?: DateOnTimeSlotCreateNestedManyWithoutDateSlotInput
+  }
+
+  export type DateSlotUncheckedCreateWithoutDaySlotInput = {
+    id?: number
+    availabilityScheduleId?: number | null
+    name: Date | string
+    custormerId?: number | null
+    eventId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dateOnTimeSlots?: DateOnTimeSlotUncheckedCreateNestedManyWithoutDateSlotInput
+  }
+
+  export type DateSlotCreateOrConnectWithoutDaySlotInput = {
+    where: DateSlotWhereUniqueInput
+    create: XOR<DateSlotCreateWithoutDaySlotInput, DateSlotUncheckedCreateWithoutDaySlotInput>
+  }
+
+  export type DateSlotCreateManyDaySlotInputEnvelope = {
+    data: Enumerable<DateSlotCreateManyDaySlotInput>
+    skipDuplicates?: boolean
+  }
+
+  export type DateSlotUpsertWithWhereUniqueWithoutDaySlotInput = {
+    where: DateSlotWhereUniqueInput
+    update: XOR<DateSlotUpdateWithoutDaySlotInput, DateSlotUncheckedUpdateWithoutDaySlotInput>
+    create: XOR<DateSlotCreateWithoutDaySlotInput, DateSlotUncheckedCreateWithoutDaySlotInput>
+  }
+
+  export type DateSlotUpdateWithWhereUniqueWithoutDaySlotInput = {
+    where: DateSlotWhereUniqueInput
+    data: XOR<DateSlotUpdateWithoutDaySlotInput, DateSlotUncheckedUpdateWithoutDaySlotInput>
+  }
+
+  export type DateSlotUpdateManyWithWhereWithoutDaySlotInput = {
+    where: DateSlotScalarWhereInput
+    data: XOR<DateSlotUpdateManyMutationInput, DateSlotUncheckedUpdateManyWithoutDateSlotsInput>
   }
 
   export type AvailabilityScheduleCreateWithoutDateSlotsInput = {
@@ -21915,51 +19258,78 @@ export namespace Prisma {
     create: XOR<CustomerCreateWithoutDateSlotsInput, CustomerUncheckedCreateWithoutDateSlotsInput>
   }
 
-  export type DateSlotOnTimeSelectCreateWithoutDateSlotInput = {
+  export type EventTypeCreateWithoutDateSlotsInput = {
+    name: string
+    description: string
+    price: number
+    timeDuration: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutEventTypesInput
+    eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutEventTypeInput
+    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutEventTypesInput
+    groupMeetings?: GroupMeetingCreateNestedManyWithoutEventTypeInput
+  }
+
+  export type EventTypeUncheckedCreateWithoutDateSlotsInput = {
+    id?: number
+    name: string
+    userId: number
+    description: string
+    price: number
+    timeDuration: number
+    availabilityScheduleId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput
+    groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput
+  }
+
+  export type EventTypeCreateOrConnectWithoutDateSlotsInput = {
+    where: EventTypeWhereUniqueInput
+    create: XOR<EventTypeCreateWithoutDateSlotsInput, EventTypeUncheckedCreateWithoutDateSlotsInput>
+  }
+
+  export type DaySlotCreateWithoutDateSlotsInput = {
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DaySlotUncheckedCreateWithoutDateSlotsInput = {
+    id?: number
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DaySlotCreateOrConnectWithoutDateSlotsInput = {
+    where: DaySlotWhereUniqueInput
+    create: XOR<DaySlotCreateWithoutDateSlotsInput, DaySlotUncheckedCreateWithoutDateSlotsInput>
+  }
+
+  export type DateOnTimeSlotCreateWithoutDateSlotInput = {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    timeSelect: TimeSelectCreateNestedOneWithoutDateSlotsInput
+    timeSlot: TimeSlotCreateNestedOneWithoutDateOnTimeSlotsInput
   }
 
-  export type DateSlotOnTimeSelectUncheckedCreateWithoutDateSlotInput = {
+  export type DateOnTimeSlotUncheckedCreateWithoutDateSlotInput = {
     id?: number
-    timeSelectId: number
+    timeSlotId: number
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type DateSlotOnTimeSelectCreateOrConnectWithoutDateSlotInput = {
-    where: DateSlotOnTimeSelectWhereUniqueInput
-    create: XOR<DateSlotOnTimeSelectCreateWithoutDateSlotInput, DateSlotOnTimeSelectUncheckedCreateWithoutDateSlotInput>
+  export type DateOnTimeSlotCreateOrConnectWithoutDateSlotInput = {
+    where: DateOnTimeSlotWhereUniqueInput
+    create: XOR<DateOnTimeSlotCreateWithoutDateSlotInput, DateOnTimeSlotUncheckedCreateWithoutDateSlotInput>
   }
 
-  export type DateSlotOnTimeSelectCreateManyDateSlotInputEnvelope = {
-    data: Enumerable<DateSlotOnTimeSelectCreateManyDateSlotInput>
-    skipDuplicates?: boolean
-  }
-
-  export type DaySlotOnDateSlotCreateWithoutDateSlotInput = {
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    daySlot: DaySlotCreateNestedOneWithoutDateSlotsInput
-  }
-
-  export type DaySlotOnDateSlotUncheckedCreateWithoutDateSlotInput = {
-    id?: number
-    daySlotId: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type DaySlotOnDateSlotCreateOrConnectWithoutDateSlotInput = {
-    where: DaySlotOnDateSlotWhereUniqueInput
-    create: XOR<DaySlotOnDateSlotCreateWithoutDateSlotInput, DaySlotOnDateSlotUncheckedCreateWithoutDateSlotInput>
-  }
-
-  export type DaySlotOnDateSlotCreateManyDateSlotInputEnvelope = {
-    data: Enumerable<DaySlotOnDateSlotCreateManyDateSlotInput>
+  export type DateOnTimeSlotCreateManyDateSlotInputEnvelope = {
+    data: Enumerable<DateOnTimeSlotCreateManyDateSlotInput>
     skipDuplicates?: boolean
   }
 
@@ -22007,58 +19377,184 @@ export namespace Prisma {
     groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
-  export type DateSlotOnTimeSelectUpsertWithWhereUniqueWithoutDateSlotInput = {
-    where: DateSlotOnTimeSelectWhereUniqueInput
-    update: XOR<DateSlotOnTimeSelectUpdateWithoutDateSlotInput, DateSlotOnTimeSelectUncheckedUpdateWithoutDateSlotInput>
-    create: XOR<DateSlotOnTimeSelectCreateWithoutDateSlotInput, DateSlotOnTimeSelectUncheckedCreateWithoutDateSlotInput>
+  export type EventTypeUpsertWithoutDateSlotsInput = {
+    update: XOR<EventTypeUpdateWithoutDateSlotsInput, EventTypeUncheckedUpdateWithoutDateSlotsInput>
+    create: XOR<EventTypeCreateWithoutDateSlotsInput, EventTypeUncheckedCreateWithoutDateSlotsInput>
   }
 
-  export type DateSlotOnTimeSelectUpdateWithWhereUniqueWithoutDateSlotInput = {
-    where: DateSlotOnTimeSelectWhereUniqueInput
-    data: XOR<DateSlotOnTimeSelectUpdateWithoutDateSlotInput, DateSlotOnTimeSelectUncheckedUpdateWithoutDateSlotInput>
+  export type EventTypeUpdateWithoutDateSlotsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
+    eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
+    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutEventTypesNestedInput
+    groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
   }
 
-  export type DateSlotOnTimeSelectUpdateManyWithWhereWithoutDateSlotInput = {
-    where: DateSlotOnTimeSelectScalarWhereInput
-    data: XOR<DateSlotOnTimeSelectUpdateManyMutationInput, DateSlotOnTimeSelectUncheckedUpdateManyWithoutTimeSelectsInput>
+  export type EventTypeUncheckedUpdateWithoutDateSlotsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    userId?: IntFieldUpdateOperationsInput | number
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
+    groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
   }
 
-  export type DateSlotOnTimeSelectScalarWhereInput = {
-    AND?: Enumerable<DateSlotOnTimeSelectScalarWhereInput>
-    OR?: Enumerable<DateSlotOnTimeSelectScalarWhereInput>
-    NOT?: Enumerable<DateSlotOnTimeSelectScalarWhereInput>
+  export type DaySlotUpsertWithoutDateSlotsInput = {
+    update: XOR<DaySlotUpdateWithoutDateSlotsInput, DaySlotUncheckedUpdateWithoutDateSlotsInput>
+    create: XOR<DaySlotCreateWithoutDateSlotsInput, DaySlotUncheckedCreateWithoutDateSlotsInput>
+  }
+
+  export type DaySlotUpdateWithoutDateSlotsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DaySlotUncheckedUpdateWithoutDateSlotsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DateOnTimeSlotUpsertWithWhereUniqueWithoutDateSlotInput = {
+    where: DateOnTimeSlotWhereUniqueInput
+    update: XOR<DateOnTimeSlotUpdateWithoutDateSlotInput, DateOnTimeSlotUncheckedUpdateWithoutDateSlotInput>
+    create: XOR<DateOnTimeSlotCreateWithoutDateSlotInput, DateOnTimeSlotUncheckedCreateWithoutDateSlotInput>
+  }
+
+  export type DateOnTimeSlotUpdateWithWhereUniqueWithoutDateSlotInput = {
+    where: DateOnTimeSlotWhereUniqueInput
+    data: XOR<DateOnTimeSlotUpdateWithoutDateSlotInput, DateOnTimeSlotUncheckedUpdateWithoutDateSlotInput>
+  }
+
+  export type DateOnTimeSlotUpdateManyWithWhereWithoutDateSlotInput = {
+    where: DateOnTimeSlotScalarWhereInput
+    data: XOR<DateOnTimeSlotUpdateManyMutationInput, DateOnTimeSlotUncheckedUpdateManyWithoutDateOnTimeSlotsInput>
+  }
+
+  export type DateOnTimeSlotScalarWhereInput = {
+    AND?: Enumerable<DateOnTimeSlotScalarWhereInput>
+    OR?: Enumerable<DateOnTimeSlotScalarWhereInput>
+    NOT?: Enumerable<DateOnTimeSlotScalarWhereInput>
     id?: IntFilter | number
+    timeSlotId?: IntFilter | number
     dateSlotId?: IntFilter | number
-    timeSelectId?: IntFilter | number
     status?: StringFilter | string
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
   }
 
-  export type DaySlotOnDateSlotUpsertWithWhereUniqueWithoutDateSlotInput = {
-    where: DaySlotOnDateSlotWhereUniqueInput
-    update: XOR<DaySlotOnDateSlotUpdateWithoutDateSlotInput, DaySlotOnDateSlotUncheckedUpdateWithoutDateSlotInput>
-    create: XOR<DaySlotOnDateSlotCreateWithoutDateSlotInput, DaySlotOnDateSlotUncheckedCreateWithoutDateSlotInput>
+  export type TimeSlotCreateWithoutDateOnTimeSlotsInput = {
+    startTime: number
+    endTime: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
-  export type DaySlotOnDateSlotUpdateWithWhereUniqueWithoutDateSlotInput = {
-    where: DaySlotOnDateSlotWhereUniqueInput
-    data: XOR<DaySlotOnDateSlotUpdateWithoutDateSlotInput, DaySlotOnDateSlotUncheckedUpdateWithoutDateSlotInput>
+  export type TimeSlotUncheckedCreateWithoutDateOnTimeSlotsInput = {
+    id?: number
+    startTime: number
+    endTime: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
-  export type DaySlotOnDateSlotUpdateManyWithWhereWithoutDateSlotInput = {
-    where: DaySlotOnDateSlotScalarWhereInput
-    data: XOR<DaySlotOnDateSlotUpdateManyMutationInput, DaySlotOnDateSlotUncheckedUpdateManyWithoutDaySlotsInput>
+  export type TimeSlotCreateOrConnectWithoutDateOnTimeSlotsInput = {
+    where: TimeSlotWhereUniqueInput
+    create: XOR<TimeSlotCreateWithoutDateOnTimeSlotsInput, TimeSlotUncheckedCreateWithoutDateOnTimeSlotsInput>
   }
 
-  export type DateSlotOnTimeSelectCreateWithoutTimeSelectInput = {
+  export type DateSlotCreateWithoutDateOnTimeSlotsInput = {
+    name: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutDateSlotsInput
+    custormer?: CustomerCreateNestedOneWithoutDateSlotsInput
+    eventType: EventTypeCreateNestedOneWithoutDateSlotsInput
+    daySlot: DaySlotCreateNestedOneWithoutDateSlotsInput
+  }
+
+  export type DateSlotUncheckedCreateWithoutDateOnTimeSlotsInput = {
+    id?: number
+    availabilityScheduleId?: number | null
+    name: Date | string
+    custormerId?: number | null
+    eventId: number
+    dayName: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DateSlotCreateOrConnectWithoutDateOnTimeSlotsInput = {
+    where: DateSlotWhereUniqueInput
+    create: XOR<DateSlotCreateWithoutDateOnTimeSlotsInput, DateSlotUncheckedCreateWithoutDateOnTimeSlotsInput>
+  }
+
+  export type TimeSlotUpsertWithoutDateOnTimeSlotsInput = {
+    update: XOR<TimeSlotUpdateWithoutDateOnTimeSlotsInput, TimeSlotUncheckedUpdateWithoutDateOnTimeSlotsInput>
+    create: XOR<TimeSlotCreateWithoutDateOnTimeSlotsInput, TimeSlotUncheckedCreateWithoutDateOnTimeSlotsInput>
+  }
+
+  export type TimeSlotUpdateWithoutDateOnTimeSlotsInput = {
+    startTime?: IntFieldUpdateOperationsInput | number
+    endTime?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TimeSlotUncheckedUpdateWithoutDateOnTimeSlotsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    startTime?: IntFieldUpdateOperationsInput | number
+    endTime?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DateSlotUpsertWithoutDateOnTimeSlotsInput = {
+    update: XOR<DateSlotUpdateWithoutDateOnTimeSlotsInput, DateSlotUncheckedUpdateWithoutDateOnTimeSlotsInput>
+    create: XOR<DateSlotCreateWithoutDateOnTimeSlotsInput, DateSlotUncheckedCreateWithoutDateOnTimeSlotsInput>
+  }
+
+  export type DateSlotUpdateWithoutDateOnTimeSlotsInput = {
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutDateSlotsNestedInput
+    custormer?: CustomerUpdateOneWithoutDateSlotsNestedInput
+    eventType?: EventTypeUpdateOneRequiredWithoutDateSlotsNestedInput
+    daySlot?: DaySlotUpdateOneRequiredWithoutDateSlotsNestedInput
+  }
+
+  export type DateSlotUncheckedUpdateWithoutDateOnTimeSlotsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
+    custormerId?: NullableIntFieldUpdateOperationsInput | number | null
+    eventId?: IntFieldUpdateOperationsInput | number
+    dayName?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DateOnTimeSlotCreateWithoutTimeSlotInput = {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    dateSlot: DateSlotCreateNestedOneWithoutTimeSelectsInput
+    dateSlot: DateSlotCreateNestedOneWithoutDateOnTimeSlotsInput
   }
 
-  export type DateSlotOnTimeSelectUncheckedCreateWithoutTimeSelectInput = {
+  export type DateOnTimeSlotUncheckedCreateWithoutTimeSlotInput = {
     id?: number
     dateSlotId: number
     status?: string
@@ -22066,30 +19562,30 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
-  export type DateSlotOnTimeSelectCreateOrConnectWithoutTimeSelectInput = {
-    where: DateSlotOnTimeSelectWhereUniqueInput
-    create: XOR<DateSlotOnTimeSelectCreateWithoutTimeSelectInput, DateSlotOnTimeSelectUncheckedCreateWithoutTimeSelectInput>
+  export type DateOnTimeSlotCreateOrConnectWithoutTimeSlotInput = {
+    where: DateOnTimeSlotWhereUniqueInput
+    create: XOR<DateOnTimeSlotCreateWithoutTimeSlotInput, DateOnTimeSlotUncheckedCreateWithoutTimeSlotInput>
   }
 
-  export type DateSlotOnTimeSelectCreateManyTimeSelectInputEnvelope = {
-    data: Enumerable<DateSlotOnTimeSelectCreateManyTimeSelectInput>
+  export type DateOnTimeSlotCreateManyTimeSlotInputEnvelope = {
+    data: Enumerable<DateOnTimeSlotCreateManyTimeSlotInput>
     skipDuplicates?: boolean
   }
 
-  export type DateSlotOnTimeSelectUpsertWithWhereUniqueWithoutTimeSelectInput = {
-    where: DateSlotOnTimeSelectWhereUniqueInput
-    update: XOR<DateSlotOnTimeSelectUpdateWithoutTimeSelectInput, DateSlotOnTimeSelectUncheckedUpdateWithoutTimeSelectInput>
-    create: XOR<DateSlotOnTimeSelectCreateWithoutTimeSelectInput, DateSlotOnTimeSelectUncheckedCreateWithoutTimeSelectInput>
+  export type DateOnTimeSlotUpsertWithWhereUniqueWithoutTimeSlotInput = {
+    where: DateOnTimeSlotWhereUniqueInput
+    update: XOR<DateOnTimeSlotUpdateWithoutTimeSlotInput, DateOnTimeSlotUncheckedUpdateWithoutTimeSlotInput>
+    create: XOR<DateOnTimeSlotCreateWithoutTimeSlotInput, DateOnTimeSlotUncheckedCreateWithoutTimeSlotInput>
   }
 
-  export type DateSlotOnTimeSelectUpdateWithWhereUniqueWithoutTimeSelectInput = {
-    where: DateSlotOnTimeSelectWhereUniqueInput
-    data: XOR<DateSlotOnTimeSelectUpdateWithoutTimeSelectInput, DateSlotOnTimeSelectUncheckedUpdateWithoutTimeSelectInput>
+  export type DateOnTimeSlotUpdateWithWhereUniqueWithoutTimeSlotInput = {
+    where: DateOnTimeSlotWhereUniqueInput
+    data: XOR<DateOnTimeSlotUpdateWithoutTimeSlotInput, DateOnTimeSlotUncheckedUpdateWithoutTimeSlotInput>
   }
 
-  export type DateSlotOnTimeSelectUpdateManyWithWhereWithoutTimeSelectInput = {
-    where: DateSlotOnTimeSelectScalarWhereInput
-    data: XOR<DateSlotOnTimeSelectUpdateManyMutationInput, DateSlotOnTimeSelectUncheckedUpdateManyWithoutDateSlotsInput>
+  export type DateOnTimeSlotUpdateManyWithWhereWithoutTimeSlotInput = {
+    where: DateOnTimeSlotScalarWhereInput
+    data: XOR<DateOnTimeSlotUpdateManyMutationInput, DateOnTimeSlotUncheckedUpdateManyWithoutDateOnTimeSlotsInput>
   }
 
   export type GroupMeetingCreateWithoutCustomerInput = {
@@ -22124,22 +19620,24 @@ export namespace Prisma {
   }
 
   export type DateSlotCreateWithoutCustormerInput = {
-    date: Date | string
+    name: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
     availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutDateSlotsInput
-    timeSelects?: DateSlotOnTimeSelectCreateNestedManyWithoutDateSlotInput
-    DaySlots?: DaySlotOnDateSlotCreateNestedManyWithoutDateSlotInput
+    eventType: EventTypeCreateNestedOneWithoutDateSlotsInput
+    daySlot: DaySlotCreateNestedOneWithoutDateSlotsInput
+    dateOnTimeSlots?: DateOnTimeSlotCreateNestedManyWithoutDateSlotInput
   }
 
   export type DateSlotUncheckedCreateWithoutCustormerInput = {
     id?: number
     availabilityScheduleId?: number | null
-    date: Date | string
+    name: Date | string
+    eventId: number
+    dayName: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    timeSelects?: DateSlotOnTimeSelectUncheckedCreateNestedManyWithoutDateSlotInput
-    DaySlots?: DaySlotOnDateSlotUncheckedCreateNestedManyWithoutDateSlotInput
+    dateOnTimeSlots?: DateOnTimeSlotUncheckedCreateNestedManyWithoutDateSlotInput
   }
 
   export type DateSlotCreateOrConnectWithoutCustormerInput = {
@@ -22308,7 +19806,7 @@ export namespace Prisma {
     user: UserCreateNestedOneWithoutEventTypesInput
     eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutEventTypeInput
     availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutEventTypesInput
-    daySlots?: EventTypeOnDaySlotCreateNestedManyWithoutEventTypeInput
+    dateSlots?: DateSlotCreateNestedManyWithoutEventTypeInput
   }
 
   export type EventTypeUncheckedCreateWithoutGroupMeetingsInput = {
@@ -22322,7 +19820,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput
-    daySlots?: EventTypeOnDaySlotUncheckedCreateNestedManyWithoutEventTypeInput
+    dateSlots?: DateSlotUncheckedCreateNestedManyWithoutEventTypeInput
   }
 
   export type EventTypeCreateOrConnectWithoutGroupMeetingsInput = {
@@ -22410,7 +19908,7 @@ export namespace Prisma {
     user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
     eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
     availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutEventTypesNestedInput
-    daySlots?: EventTypeOnDaySlotUpdateManyWithoutEventTypeNestedInput
+    dateSlots?: DateSlotUpdateManyWithoutEventTypeNestedInput
   }
 
   export type EventTypeUncheckedUpdateWithoutGroupMeetingsInput = {
@@ -22424,7 +19922,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
-    daySlots?: EventTypeOnDaySlotUncheckedUpdateManyWithoutEventTypeNestedInput
+    dateSlots?: DateSlotUncheckedUpdateManyWithoutEventTypeNestedInput
   }
 
   export type UserOnGroupMeetingUpsertWithWhereUniqueWithoutGroupMeetingInput = {
@@ -22567,94 +20065,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type DateSlotCreateWithoutTimeSelectsInput = {
-    date: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutDateSlotsInput
-    custormer?: CustomerCreateNestedOneWithoutDateSlotsInput
-    DaySlots?: DaySlotOnDateSlotCreateNestedManyWithoutDateSlotInput
-  }
-
-  export type DateSlotUncheckedCreateWithoutTimeSelectsInput = {
-    id?: number
-    availabilityScheduleId?: number | null
-    date: Date | string
-    custormerId?: number | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    DaySlots?: DaySlotOnDateSlotUncheckedCreateNestedManyWithoutDateSlotInput
-  }
-
-  export type DateSlotCreateOrConnectWithoutTimeSelectsInput = {
-    where: DateSlotWhereUniqueInput
-    create: XOR<DateSlotCreateWithoutTimeSelectsInput, DateSlotUncheckedCreateWithoutTimeSelectsInput>
-  }
-
-  export type TimeSelectCreateWithoutDateSlotsInput = {
-    startTime: number
-    endTime: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type TimeSelectUncheckedCreateWithoutDateSlotsInput = {
-    id?: number
-    startTime: number
-    endTime: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type TimeSelectCreateOrConnectWithoutDateSlotsInput = {
-    where: TimeSelectWhereUniqueInput
-    create: XOR<TimeSelectCreateWithoutDateSlotsInput, TimeSelectUncheckedCreateWithoutDateSlotsInput>
-  }
-
-  export type DateSlotUpsertWithoutTimeSelectsInput = {
-    update: XOR<DateSlotUpdateWithoutTimeSelectsInput, DateSlotUncheckedUpdateWithoutTimeSelectsInput>
-    create: XOR<DateSlotCreateWithoutTimeSelectsInput, DateSlotUncheckedCreateWithoutTimeSelectsInput>
-  }
-
-  export type DateSlotUpdateWithoutTimeSelectsInput = {
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutDateSlotsNestedInput
-    custormer?: CustomerUpdateOneWithoutDateSlotsNestedInput
-    DaySlots?: DaySlotOnDateSlotUpdateManyWithoutDateSlotNestedInput
-  }
-
-  export type DateSlotUncheckedUpdateWithoutTimeSelectsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    custormerId?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    DaySlots?: DaySlotOnDateSlotUncheckedUpdateManyWithoutDateSlotNestedInput
-  }
-
-  export type TimeSelectUpsertWithoutDateSlotsInput = {
-    update: XOR<TimeSelectUpdateWithoutDateSlotsInput, TimeSelectUncheckedUpdateWithoutDateSlotsInput>
-    create: XOR<TimeSelectCreateWithoutDateSlotsInput, TimeSelectUncheckedCreateWithoutDateSlotsInput>
-  }
-
-  export type TimeSelectUpdateWithoutDateSlotsInput = {
-    startTime?: IntFieldUpdateOperationsInput | number
-    endTime?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type TimeSelectUncheckedUpdateWithoutDateSlotsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    startTime?: IntFieldUpdateOperationsInput | number
-    endTime?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
   export type EventTypeCreateManyUserInput = {
     id?: number
     name: string
@@ -22691,7 +20101,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
     availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutEventTypesNestedInput
-    daySlots?: EventTypeOnDaySlotUpdateManyWithoutEventTypeNestedInput
+    dateSlots?: DateSlotUpdateManyWithoutEventTypeNestedInput
     groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
   }
 
@@ -22705,7 +20115,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
-    daySlots?: EventTypeOnDaySlotUncheckedUpdateManyWithoutEventTypeNestedInput
+    dateSlots?: DateSlotUncheckedUpdateManyWithoutEventTypeNestedInput
     groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
   }
 
@@ -22773,9 +20183,12 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
-  export type EventTypeOnDaySlotCreateManyEventTypeInput = {
+  export type DateSlotCreateManyEventTypeInput = {
     id?: number
-    daySlotId: number
+    availabilityScheduleId?: number | null
+    name: Date | string
+    custormerId?: number | null
+    dayName: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -22810,22 +20223,33 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type EventTypeOnDaySlotUpdateWithoutEventTypeInput = {
+  export type DateSlotUpdateWithoutEventTypeInput = {
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    daySlot?: DaySlotUpdateOneRequiredWithoutEventTypeSlotsNestedInput
+    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutDateSlotsNestedInput
+    custormer?: CustomerUpdateOneWithoutDateSlotsNestedInput
+    daySlot?: DaySlotUpdateOneRequiredWithoutDateSlotsNestedInput
+    dateOnTimeSlots?: DateOnTimeSlotUpdateManyWithoutDateSlotNestedInput
   }
 
-  export type EventTypeOnDaySlotUncheckedUpdateWithoutEventTypeInput = {
+  export type DateSlotUncheckedUpdateWithoutEventTypeInput = {
     id?: IntFieldUpdateOperationsInput | number
-    daySlotId?: IntFieldUpdateOperationsInput | number
+    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
+    custormerId?: NullableIntFieldUpdateOperationsInput | number | null
+    dayName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dateOnTimeSlots?: DateOnTimeSlotUncheckedUpdateManyWithoutDateSlotNestedInput
   }
 
-  export type EventTypeOnDaySlotUncheckedUpdateManyWithoutDaySlotsInput = {
+  export type DateSlotUncheckedUpdateManyWithoutDateSlotsInput = {
     id?: IntFieldUpdateOperationsInput | number
-    daySlotId?: IntFieldUpdateOperationsInput | number
+    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
+    custormerId?: NullableIntFieldUpdateOperationsInput | number | null
+    dayName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -22857,60 +20281,6 @@ export namespace Prisma {
     customerId?: IntFieldUpdateOperationsInput | number
     totalPrice?: IntFieldUpdateOperationsInput | number
     timezone?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type EventTypeOnDaySlotCreateManyDaySlotInput = {
-    id?: number
-    eventTypeId: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type DaySlotOnDateSlotCreateManyDaySlotInput = {
-    id?: number
-    dateSlotId: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type EventTypeOnDaySlotUpdateWithoutDaySlotInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    eventType?: EventTypeUpdateOneRequiredWithoutDaySlotsNestedInput
-  }
-
-  export type EventTypeOnDaySlotUncheckedUpdateWithoutDaySlotInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    eventTypeId?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type EventTypeOnDaySlotUncheckedUpdateManyWithoutEventTypeSlotsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    eventTypeId?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type DaySlotOnDateSlotUpdateWithoutDaySlotInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    dateSlot?: DateSlotUpdateOneRequiredWithoutDaySlotsNestedInput
-  }
-
-  export type DaySlotOnDateSlotUncheckedUpdateWithoutDaySlotInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    dateSlotId?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type DaySlotOnDateSlotUncheckedUpdateManyWithoutDateSlotsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    dateSlotId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -22979,8 +20349,10 @@ export namespace Prisma {
 
   export type DateSlotCreateManyAvailabilityScheduleInput = {
     id?: number
-    date: Date | string
+    name: Date | string
     custormerId?: number | null
+    eventId: number
+    dayName: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -22994,7 +20366,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
     eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
-    daySlots?: EventTypeOnDaySlotUpdateManyWithoutEventTypeNestedInput
+    dateSlots?: DateSlotUpdateManyWithoutEventTypeNestedInput
     groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
   }
 
@@ -23008,96 +20380,94 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
-    daySlots?: EventTypeOnDaySlotUncheckedUpdateManyWithoutEventTypeNestedInput
+    dateSlots?: DateSlotUncheckedUpdateManyWithoutEventTypeNestedInput
     groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
   }
 
   export type DateSlotUpdateWithoutAvailabilityScheduleInput = {
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     custormer?: CustomerUpdateOneWithoutDateSlotsNestedInput
-    timeSelects?: DateSlotOnTimeSelectUpdateManyWithoutDateSlotNestedInput
-    DaySlots?: DaySlotOnDateSlotUpdateManyWithoutDateSlotNestedInput
+    eventType?: EventTypeUpdateOneRequiredWithoutDateSlotsNestedInput
+    daySlot?: DaySlotUpdateOneRequiredWithoutDateSlotsNestedInput
+    dateOnTimeSlots?: DateOnTimeSlotUpdateManyWithoutDateSlotNestedInput
   }
 
   export type DateSlotUncheckedUpdateWithoutAvailabilityScheduleInput = {
     id?: IntFieldUpdateOperationsInput | number
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
     custormerId?: NullableIntFieldUpdateOperationsInput | number | null
+    eventId?: IntFieldUpdateOperationsInput | number
+    dayName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    timeSelects?: DateSlotOnTimeSelectUncheckedUpdateManyWithoutDateSlotNestedInput
-    DaySlots?: DaySlotOnDateSlotUncheckedUpdateManyWithoutDateSlotNestedInput
+    dateOnTimeSlots?: DateOnTimeSlotUncheckedUpdateManyWithoutDateSlotNestedInput
   }
 
-  export type DateSlotUncheckedUpdateManyWithoutDateSlotsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    custormerId?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type DateSlotOnTimeSelectCreateManyDateSlotInput = {
+  export type DateSlotCreateManyDaySlotInput = {
     id?: number
-    timeSelectId: number
+    availabilityScheduleId?: number | null
+    name: Date | string
+    custormerId?: number | null
+    eventId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DateSlotUpdateWithoutDaySlotInput = {
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutDateSlotsNestedInput
+    custormer?: CustomerUpdateOneWithoutDateSlotsNestedInput
+    eventType?: EventTypeUpdateOneRequiredWithoutDateSlotsNestedInput
+    dateOnTimeSlots?: DateOnTimeSlotUpdateManyWithoutDateSlotNestedInput
+  }
+
+  export type DateSlotUncheckedUpdateWithoutDaySlotInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
+    custormerId?: NullableIntFieldUpdateOperationsInput | number | null
+    eventId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dateOnTimeSlots?: DateOnTimeSlotUncheckedUpdateManyWithoutDateSlotNestedInput
+  }
+
+  export type DateOnTimeSlotCreateManyDateSlotInput = {
+    id?: number
+    timeSlotId: number
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type DaySlotOnDateSlotCreateManyDateSlotInput = {
-    id?: number
-    daySlotId: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type DateSlotOnTimeSelectUpdateWithoutDateSlotInput = {
+  export type DateOnTimeSlotUpdateWithoutDateSlotInput = {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    timeSelect?: TimeSelectUpdateOneRequiredWithoutDateSlotsNestedInput
+    timeSlot?: TimeSlotUpdateOneRequiredWithoutDateOnTimeSlotsNestedInput
   }
 
-  export type DateSlotOnTimeSelectUncheckedUpdateWithoutDateSlotInput = {
+  export type DateOnTimeSlotUncheckedUpdateWithoutDateSlotInput = {
     id?: IntFieldUpdateOperationsInput | number
-    timeSelectId?: IntFieldUpdateOperationsInput | number
+    timeSlotId?: IntFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type DateSlotOnTimeSelectUncheckedUpdateManyWithoutTimeSelectsInput = {
+  export type DateOnTimeSlotUncheckedUpdateManyWithoutDateOnTimeSlotsInput = {
     id?: IntFieldUpdateOperationsInput | number
-    timeSelectId?: IntFieldUpdateOperationsInput | number
+    timeSlotId?: IntFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type DaySlotOnDateSlotUpdateWithoutDateSlotInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    daySlot?: DaySlotUpdateOneRequiredWithoutDateSlotsNestedInput
-  }
-
-  export type DaySlotOnDateSlotUncheckedUpdateWithoutDateSlotInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    daySlotId?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type DaySlotOnDateSlotUncheckedUpdateManyWithoutDaySlotsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    daySlotId?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type DateSlotOnTimeSelectCreateManyTimeSelectInput = {
+  export type DateOnTimeSlotCreateManyTimeSlotInput = {
     id?: number
     dateSlotId: number
     status?: string
@@ -23105,22 +20475,14 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
-  export type DateSlotOnTimeSelectUpdateWithoutTimeSelectInput = {
+  export type DateOnTimeSlotUpdateWithoutTimeSlotInput = {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    dateSlot?: DateSlotUpdateOneRequiredWithoutTimeSelectsNestedInput
+    dateSlot?: DateSlotUpdateOneRequiredWithoutDateOnTimeSlotsNestedInput
   }
 
-  export type DateSlotOnTimeSelectUncheckedUpdateWithoutTimeSelectInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    dateSlotId?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type DateSlotOnTimeSelectUncheckedUpdateManyWithoutDateSlotsInput = {
+  export type DateOnTimeSlotUncheckedUpdateWithoutTimeSlotInput = {
     id?: IntFieldUpdateOperationsInput | number
     dateSlotId?: IntFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
@@ -23141,7 +20503,9 @@ export namespace Prisma {
   export type DateSlotCreateManyCustormerInput = {
     id?: number
     availabilityScheduleId?: number | null
-    date: Date | string
+    name: Date | string
+    eventId: number
+    dayName: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -23168,22 +20532,24 @@ export namespace Prisma {
   }
 
   export type DateSlotUpdateWithoutCustormerInput = {
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutDateSlotsNestedInput
-    timeSelects?: DateSlotOnTimeSelectUpdateManyWithoutDateSlotNestedInput
-    DaySlots?: DaySlotOnDateSlotUpdateManyWithoutDateSlotNestedInput
+    eventType?: EventTypeUpdateOneRequiredWithoutDateSlotsNestedInput
+    daySlot?: DaySlotUpdateOneRequiredWithoutDateSlotsNestedInput
+    dateOnTimeSlots?: DateOnTimeSlotUpdateManyWithoutDateSlotNestedInput
   }
 
   export type DateSlotUncheckedUpdateWithoutCustormerInput = {
     id?: IntFieldUpdateOperationsInput | number
     availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventId?: IntFieldUpdateOperationsInput | number
+    dayName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    timeSelects?: DateSlotOnTimeSelectUncheckedUpdateManyWithoutDateSlotNestedInput
-    DaySlots?: DaySlotOnDateSlotUncheckedUpdateManyWithoutDateSlotNestedInput
+    dateOnTimeSlots?: DateOnTimeSlotUncheckedUpdateManyWithoutDateSlotNestedInput
   }
 
   export type UserOnGroupMeetingCreateManyGroupMeetingInput = {

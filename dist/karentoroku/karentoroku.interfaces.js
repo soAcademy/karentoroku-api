@@ -36,7 +36,10 @@ exports.CreateEventTypeCodec = t.type({
     price: t.number,
     timeDuration: t.number,
     userId: t.number,
-    dates: t.array(t.type({ date: t.string })),
+    dateDaySlots: t.array(t.type({
+        dayName: t.string,
+        date: t.string,
+    })),
     timeSlots: t.array(t.type({
         startTime: t.number,
         endTime: t.number,
@@ -44,7 +47,4 @@ exports.CreateEventTypeCodec = t.type({
     locations: t.array(t.type({
         locationName: t.string,
     })),
-    days: t.array(t.type({
-        dayName: t.string,
-    }))
 });

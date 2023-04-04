@@ -68,8 +68,14 @@ const createLocation = (args) => {
 };
 exports.createLocation = createLocation;
 const createEventType = (args) => {
-    return exports.prisma.eventType.create({
-        data: {
+    return exports.prisma.eventType.upsert({
+        where: {
+            userId_name: {
+                userId: args.userId,
+                name: args.name
+            }
+        },
+        create: {
             name: args.name,
             description: args.description,
             price: args.price,
@@ -79,36 +85,39 @@ const createEventType = (args) => {
                     id: args.userId,
                 },
             },
-            daySlots: {
-                create: args.days.map((day) => {
+            dateSlots: {
+                create: args.dateDaySlots.map((r) => {
                     return {
+                        name: new Date(r.date),
                         daySlot: {
-                            create: {
-                                name: day.dayName,
-                                dateSlots: {
-                                    create: args.dates.map((d) => {
-                                        return {
-                                            dateSlot: {
-                                                create: {
-                                                    date: new Date(d.date),
-                                                    timeSelects: {
-                                                        create: args.timeSlots.map((t) => {
-                                                            return {
-                                                                timeSelect: {
-                                                                    create: {
-                                                                        startTime: t.startTime,
-                                                                        endTime: t.endTime,
-                                                                    }
-                                                                }
-                                                            };
-                                                        })
-                                                    }
-                                                }
-                                            }
-                                        };
-                                    })
+                            connectOrCreate: {
+                                where: {
+                                    name: r.dayName
+                                },
+                                create: {
+                                    name: r.dayName
                                 }
                             }
+                        },
+                        dateOnTimeSlots: {
+                            create: args.timeSlots.map((t) => {
+                                return {
+                                    timeSlot: {
+                                        connectOrCreate: {
+                                            where: {
+                                                startTime_endTime: {
+                                                    startTime: t.startTime,
+                                                    endTime: t.endTime,
+                                                }
+                                            },
+                                            create: {
+                                                startTime: t.startTime,
+                                                endTime: t.endTime,
+                                            }
+                                        }
+                                    }
+                                };
+                            })
                         }
                     };
                 })
@@ -117,19 +126,63 @@ const createEventType = (args) => {
                 create: args.locations.map((l) => {
                     return {
                         location: {
-                            connectOrCreate: {
-                                where: { name: l.locationName },
-                                create: { name: l.locationName },
-                            },
-                        },
+                            create: {
+                                name: l.locationName,
+                            }
+                        }
                     };
-                }),
-            },
+                })
+            }
         },
+        update: {
+            dateSlots: {
+                create: args.dateDaySlots.map((r) => {
+                    return {
+                        name: new Date(r.date),
+                        daySlot: {
+                            connectOrCreate: {
+                                where: {
+                                    name: r.dayName
+                                },
+                                create: {
+                                    name: r.dayName
+                                }
+                            }
+                        },
+                        dateOnTimeSlots: {
+                            create: args.timeSlots.map((t) => {
+                                return {
+                                    timeSlot: {
+                                        connectOrCreate: {
+                                            where: {
+                                                startTime_endTime: {
+                                                    startTime: t.startTime,
+                                                    endTime: t.endTime,
+                                                }
+                                            },
+                                            create: {
+                                                startTime: t.startTime,
+                                                endTime: t.endTime,
+                                            }
+                                        }
+                                    }
+                                };
+                            })
+                        }
+                    };
+                })
+            }
+        }
     });
 };
 exports.createEventType = createEventType;
 const getEventTypes = () => {
-    exports.prisma.eventType.findMany();
+    exports.prisma.eventType.findMany({
+        select: {
+            name: true,
+            timeDuration: true,
+            price: true,
+        }
+    });
 };
 exports.getEventTypes = getEventTypes;

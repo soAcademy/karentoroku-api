@@ -115,10 +115,10 @@ exports.Prisma.CustomerScalarFieldEnum = makeEnum({
   updatedAt: 'updatedAt'
 });
 
-exports.Prisma.DateSlotOnTimeSelectScalarFieldEnum = makeEnum({
+exports.Prisma.DateOnTimeSlotScalarFieldEnum = makeEnum({
   id: 'id',
+  timeSlotId: 'timeSlotId',
   dateSlotId: 'dateSlotId',
-  timeSelectId: 'timeSelectId',
   status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -127,16 +127,10 @@ exports.Prisma.DateSlotOnTimeSelectScalarFieldEnum = makeEnum({
 exports.Prisma.DateSlotScalarFieldEnum = makeEnum({
   id: 'id',
   availabilityScheduleId: 'availabilityScheduleId',
-  date: 'date',
+  name: 'name',
   custormerId: 'custormerId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-});
-
-exports.Prisma.DaySlotOnDateSlotScalarFieldEnum = makeEnum({
-  id: 'id',
-  daySlotId: 'daySlotId',
-  dateSlotId: 'dateSlotId',
+  eventId: 'eventId',
+  dayName: 'dayName',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 });
@@ -144,14 +138,6 @@ exports.Prisma.DaySlotOnDateSlotScalarFieldEnum = makeEnum({
 exports.Prisma.DaySlotScalarFieldEnum = makeEnum({
   id: 'id',
   name: 'name',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-});
-
-exports.Prisma.EventTypeOnDaySlotScalarFieldEnum = makeEnum({
-  id: 'id',
-  eventTypeId: 'eventTypeId',
-  daySlotId: 'daySlotId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 });
@@ -204,7 +190,7 @@ exports.Prisma.SortOrder = makeEnum({
   desc: 'desc'
 });
 
-exports.Prisma.TimeSelectScalarFieldEnum = makeEnum({
+exports.Prisma.TimeSlotScalarFieldEnum = makeEnum({
   id: 'id',
   startTime: 'startTime',
   endTime: 'endTime',
@@ -245,19 +231,17 @@ exports.Prisma.UserScalarFieldEnum = makeEnum({
 exports.Prisma.ModelName = makeEnum({
   User: 'User',
   EventType: 'EventType',
-  DaySlot: 'DaySlot',
-  DaySlotOnDateSlot: 'DaySlotOnDateSlot',
-  EventTypeOnDaySlot: 'EventTypeOnDaySlot',
   Location: 'Location',
   EventTypeOnLocation: 'EventTypeOnLocation',
   AvailabilitySchedule: 'AvailabilitySchedule',
+  DaySlot: 'DaySlot',
   DateSlot: 'DateSlot',
-  TimeSelect: 'TimeSelect',
+  DateOnTimeSlot: 'DateOnTimeSlot',
+  TimeSlot: 'TimeSlot',
   Customer: 'Customer',
   Billing: 'Billing',
   GroupMeeting: 'GroupMeeting',
-  UserOnGroupMeeting: 'UserOnGroupMeeting',
-  DateSlotOnTimeSelect: 'DateSlotOnTimeSelect'
+  UserOnGroupMeeting: 'UserOnGroupMeeting'
 });
 
 /**
