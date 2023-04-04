@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getEventTypeHandler = exports.createEventTypeHandler = exports.getUserByIdHandler = exports.getUsersHandler = exports.createUserHandler = exports.getIndexHandler = void 0;
+exports.getEventTypeHandler = exports.createEventTypeHandler = exports.getUserByIdTokenHandler = exports.getUserByIdHandler = exports.getUsersHandler = exports.createUserHandler = exports.getIndexHandler = void 0;
 const karentoroku_interfaces_1 = require("./karentoroku.interfaces");
 const karentoroku_resolvers_1 = require("./karentoroku.resolvers");
 const getIndexHandler = (req, res) => {
@@ -72,6 +72,28 @@ const getUserByIdHandler = (req, res) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.getUserByIdHandler = getUserByIdHandler;
+const getUserByIdTokenHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const args = req === null || req === void 0 ? void 0 : req.body;
+    if (typeof args.idToken === "string") {
+        try {
+            const result = yield (0, karentoroku_resolvers_1.getUserByIdToken)({
+                idToken: args.idToken,
+            });
+            res.status(200).json(result);
+        }
+        catch (e) {
+            res.status(500).json({
+                error: String(e),
+            });
+        }
+    }
+    else {
+        res
+            .status(500)
+            .json({ error: "ERROR: invalid request (getUserByIdToken)" });
+    }
+});
+exports.getUserByIdTokenHandler = getUserByIdTokenHandler;
 const createEventTypeHandler = (req, res) => {
     const body = req.body;
     console.log(body);

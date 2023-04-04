@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getEventTypes = exports.createEventType = exports.createLocation = exports.getUserById = exports.getUsers = exports.createUser = exports.prisma = void 0;
+exports.getEventTypes = exports.createEventType = exports.createLocation = exports.getUserByIdToken = exports.getUserById = exports.getUsers = exports.createUser = exports.prisma = void 0;
 const client_1 = require("../../prisma/client");
 const firebase_admin_1 = require("firebase-admin");
 const app_1 = require("firebase-admin/app");
@@ -59,6 +59,29 @@ const getUserById = (args) => {
     });
 };
 exports.getUserById = getUserById;
+const getUserByIdToken = (args) => {
+    (0, auth_1.getAuth)(firebaseApp)
+        .verifyIdToken(args.idToken)
+        .then((decodedToken) => {
+        const uid = decodedToken.uid;
+        // ...
+        // console.log(uid);
+        return exports.prisma.user.findUniqueOrThrow({
+            select: {
+                name: true,
+                username: true,
+            },
+            where: {
+                firebaseUid: uid,
+            },
+        });
+    })
+        .catch((error) => {
+        // Handle error
+        console.log("Error:", error);
+    });
+};
+exports.getUserByIdToken = getUserByIdToken;
 const createLocation = (args) => {
     return exports.prisma.location.create({
         data: {
@@ -72,8 +95,8 @@ const createEventType = (args) => {
         where: {
             userId_name: {
                 userId: args.userId,
-                name: args.name
-            }
+                name: args.name,
+            },
         },
         create: {
             name: args.name,
@@ -92,12 +115,12 @@ const createEventType = (args) => {
                         daySlot: {
                             connectOrCreate: {
                                 where: {
-                                    name: r.dayName
+                                    name: r.dayName,
                                 },
                                 create: {
-                                    name: r.dayName
-                                }
-                            }
+                                    name: r.dayName,
+                                },
+                            },
                         },
                         dateOnTimeSlots: {
                             create: args.timeSlots.map((t) => {
@@ -108,19 +131,19 @@ const createEventType = (args) => {
                                                 startTime_endTime: {
                                                     startTime: t.startTime,
                                                     endTime: t.endTime,
-                                                }
+                                                },
                                             },
                                             create: {
                                                 startTime: t.startTime,
                                                 endTime: t.endTime,
-                                            }
-                                        }
-                                    }
+                                            },
+                                        },
+                                    },
                                 };
-                            })
-                        }
+                            }),
+                        },
                     };
-                })
+                }),
             },
             eventTypeOnLocations: {
                 create: args.locations.map((l) => {
@@ -128,11 +151,11 @@ const createEventType = (args) => {
                         location: {
                             create: {
                                 name: l.locationName,
-                            }
-                        }
+                            },
+                        },
                     };
-                })
-            }
+                }),
+            },
         },
         update: {
             dateSlots: {
@@ -142,12 +165,12 @@ const createEventType = (args) => {
                         daySlot: {
                             connectOrCreate: {
                                 where: {
-                                    name: r.dayName
+                                    name: r.dayName,
                                 },
                                 create: {
-                                    name: r.dayName
-                                }
-                            }
+                                    name: r.dayName,
+                                },
+                            },
                         },
                         dateOnTimeSlots: {
                             create: args.timeSlots.map((t) => {
@@ -158,21 +181,21 @@ const createEventType = (args) => {
                                                 startTime_endTime: {
                                                     startTime: t.startTime,
                                                     endTime: t.endTime,
-                                                }
+                                                },
                                             },
                                             create: {
                                                 startTime: t.startTime,
                                                 endTime: t.endTime,
-                                            }
-                                        }
-                                    }
+                                            },
+                                        },
+                                    },
                                 };
-                            })
-                        }
+                            }),
+                        },
                     };
-                })
-            }
-        }
+                }),
+            },
+        },
     });
 };
 exports.createEventType = createEventType;
@@ -182,7 +205,7 @@ const getEventTypes = () => {
             name: true,
             timeDuration: true,
             price: true,
-        }
+        },
     });
 };
 exports.getEventTypes = getEventTypes;

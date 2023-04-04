@@ -24,6 +24,11 @@ exports.AppRoutes = [
         action: karentoroku_handlers_1.getUserByIdHandler,
     },
     {
+        path: "/getUserByIdToken",
+        method: "post",
+        action: karentoroku_handlers_1.getUserByIdTokenHandler,
+    },
+    {
         path: "/createEventType",
         method: "post",
         action: karentoroku_handlers_1.createEventTypeHandler,
@@ -32,5 +37,5 @@ exports.AppRoutes = [
         path: "/getEventType",
         method: "post",
         action: karentoroku_handlers_1.getEventTypeHandler,
-    }
+    },
 ];
