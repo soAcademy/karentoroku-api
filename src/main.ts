@@ -5,7 +5,8 @@ import { AppRoutes } from "./routes";
 
 const app: Application = express();
 const corsOptions = {
-  origin: ["http://localhost:3000", "https://karentoroku-api.vercel.app"],
+  // origin: ["http://localhost:3000", "https://karentoroku-api.vercel.app"],
+  origin: false,
   optionsSuccessStatus: 200,
 };
 
