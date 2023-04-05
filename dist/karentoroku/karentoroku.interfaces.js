@@ -23,10 +23,28 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateUserCodec = void 0;
+exports.CreateEventTypeCodec = exports.CreateUserCodec = void 0;
 const t = __importStar(require("io-ts"));
 exports.CreateUserCodec = t.type({
     name: t.string,
     username: t.string,
     idToken: t.string,
+});
+exports.CreateEventTypeCodec = t.type({
+    name: t.string,
+    description: t.string,
+    price: t.number,
+    timeDuration: t.number,
+    userId: t.number,
+    dateDaySlots: t.array(t.type({
+        dayName: t.string,
+        date: t.string,
+    })),
+    timeSlots: t.array(t.type({
+        startTime: t.number,
+        endTime: t.number,
+    })),
+    locations: t.array(t.type({
+        locationName: t.string,
+    })),
 });

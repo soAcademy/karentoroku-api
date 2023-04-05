@@ -13,12 +13,12 @@ const Prisma = {}
 exports.Prisma = Prisma
 
 /**
- * Prisma Client JS version: 4.11.0
- * Query Engine version: 8fde8fef4033376662cad983758335009d522acb
+ * Prisma Client JS version: 4.12.0
+ * Query Engine version: 659ef412370fa3b41cd7bf6e94587c1dfb7f67e7
  */
 Prisma.prismaVersion = {
-  client: "4.11.0",
-  engine: "8fde8fef4033376662cad983758335009d522acb"
+  client: "4.12.0",
+  engine: "659ef412370fa3b41cd7bf6e94587c1dfb7f67e7"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -92,7 +92,6 @@ function makeEnum(x) { return x; }
 exports.Prisma.AvailabilityScheduleScalarFieldEnum = makeEnum({
   id: 'id',
   name: 'name',
-  eventTypeId: 'eventTypeId',
   timezone: 'timezone',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -108,14 +107,6 @@ exports.Prisma.BillingScalarFieldEnum = makeEnum({
   updatedAt: 'updatedAt'
 });
 
-exports.Prisma.CalendarSelectScalarFieldEnum = makeEnum({
-  id: 'id',
-  startDate: 'startDate',
-  endDate: 'endDate',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-});
-
 exports.Prisma.CustomerScalarFieldEnum = makeEnum({
   id: 'id',
   name: 'name',
@@ -124,13 +115,29 @@ exports.Prisma.CustomerScalarFieldEnum = makeEnum({
   updatedAt: 'updatedAt'
 });
 
-exports.Prisma.EventSelectScalarFieldEnum = makeEnum({
+exports.Prisma.DateOnTimeSlotScalarFieldEnum = makeEnum({
   id: 'id',
-  eventTypeId: 'eventTypeId',
-  customerId: 'customerId',
-  selectDate: 'selectDate',
-  selectTime: 'selectTime',
+  timeSlotId: 'timeSlotId',
+  dateSlotId: 'dateSlotId',
   status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+});
+
+exports.Prisma.DateSlotScalarFieldEnum = makeEnum({
+  id: 'id',
+  availabilityScheduleId: 'availabilityScheduleId',
+  name: 'name',
+  custormerId: 'custormerId',
+  eventId: 'eventId',
+  dayName: 'dayName',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+});
+
+exports.Prisma.DaySlotScalarFieldEnum = makeEnum({
+  id: 'id',
+  name: 'name',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 });
@@ -150,9 +157,7 @@ exports.Prisma.EventTypeScalarFieldEnum = makeEnum({
   description: 'description',
   price: 'price',
   timeDuration: 'timeDuration',
-  calendarSelectId: 'calendarSelectId',
-  customerId: 'customerId',
-  status: 'status',
+  availabilityScheduleId: 'availabilityScheduleId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 });
@@ -185,7 +190,7 @@ exports.Prisma.SortOrder = makeEnum({
   desc: 'desc'
 });
 
-exports.Prisma.TimeSelectScalarFieldEnum = makeEnum({
+exports.Prisma.TimeSlotScalarFieldEnum = makeEnum({
   id: 'id',
   startTime: 'startTime',
   endTime: 'endTime',
@@ -222,18 +227,6 @@ exports.Prisma.UserScalarFieldEnum = makeEnum({
   updatedAt: 'updatedAt'
 });
 
-exports.Prisma.WeekDayScalarFieldEnum = makeEnum({
-  id: 'id',
-  day: 'day',
-  availabilityScheduleId: 'availabilityScheduleId',
-  timeSelectId: 'timeSelectId',
-  eventTypeId: 'eventTypeId',
-  status: 'status',
-  date: 'date',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-});
-
 
 exports.Prisma.ModelName = makeEnum({
   User: 'User',
@@ -241,13 +234,13 @@ exports.Prisma.ModelName = makeEnum({
   Location: 'Location',
   EventTypeOnLocation: 'EventTypeOnLocation',
   AvailabilitySchedule: 'AvailabilitySchedule',
-  WeekDay: 'WeekDay',
-  TimeSelect: 'TimeSelect',
+  DaySlot: 'DaySlot',
+  DateSlot: 'DateSlot',
+  DateOnTimeSlot: 'DateOnTimeSlot',
+  TimeSlot: 'TimeSlot',
   Customer: 'Customer',
-  CalendarSelect: 'CalendarSelect',
   Billing: 'Billing',
   GroupMeeting: 'GroupMeeting',
-  EventSelect: 'EventSelect',
   UserOnGroupMeeting: 'UserOnGroupMeeting'
 });
 

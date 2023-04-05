@@ -1,5 +1,5 @@
 import { PrismaClient } from "../../prisma/client";
-import { ICreateUser } from "./karentoroku.interfaces";
+import { ICreateEventType, ICreateUser } from "./karentoroku.interfaces";
 import { credential } from "firebase-admin";
 import { initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
@@ -32,7 +32,7 @@ export const createUser = (args: ICreateUser) => {
     })
     .catch((error) => {
       // Handle error
-      console.log(error);
+      console.log("Error:", error);
     });
 };
 
@@ -53,6 +53,152 @@ export const getUserById = (args: { id: number }) => {
     },
     where: {
       id: args.id,
+    },
+  });
+};
+
+export const getUserByIdToken = async (args: { idToken: string }) => {
+  try {
+    const decodedToken = await getAuth(firebaseApp).verifyIdToken(args.idToken);
+    const uid = decodedToken.uid;
+    return await prisma.user.findUniqueOrThrow({
+      select: {
+        name: true,
+        username: true,
+      },
+      where: {
+        firebaseUid: uid,
+      },
+    });
+  } catch (error) {
+    // Handle error
+    console.log("Error:", error);
+  }
+};
+
+export const createLocation = (args: { name: string }) => {
+  return prisma.location.create({
+    data: {
+      name: args.name,
+    },
+  });
+};
+
+export const createEventType = (args: ICreateEventType) => {
+  return prisma.eventType.upsert({
+    where: {
+      userId_name: {
+        userId: args.userId,
+        name: args.name,
+      },
+    },
+    create: {
+      name: args.name,
+      description: args.description,
+      price: args.price,
+      timeDuration: args.timeDuration,
+      user: {
+        connect: {
+          id: args.userId,
+        },
+      },
+      dateSlots: {
+        create: args.dateDaySlots.map((r) => {
+          return {
+            name: new Date(r.date),
+            daySlot: {
+              connectOrCreate: {
+                where: {
+                  name: r.dayName,
+                },
+                create: {
+                  name: r.dayName,
+                },
+              },
+            },
+            dateOnTimeSlots: {
+              create: args.timeSlots.map((t) => {
+                return {
+                  timeSlot: {
+                    connectOrCreate: {
+                      where: {
+                        startTime_endTime: {
+                          startTime: t.startTime,
+                          endTime: t.endTime,
+                        },
+                      },
+                      create: {
+                        startTime: t.startTime,
+                        endTime: t.endTime,
+                      },
+                    },
+                  },
+                };
+              }),
+            },
+          };
+        }),
+      },
+      eventTypeOnLocations: {
+        create: args.locations.map((l) => {
+          return {
+            location: {
+              create: {
+                name: l.locationName,
+              },
+            },
+          };
+        }),
+      },
+    },
+    update: {
+      dateSlots: {
+        create: args.dateDaySlots.map((r) => {
+          return {
+            name: new Date(r.date),
+            daySlot: {
+              connectOrCreate: {
+                where: {
+                  name: r.dayName,
+                },
+                create: {
+                  name: r.dayName,
+                },
+              },
+            },
+            dateOnTimeSlots: {
+              create: args.timeSlots.map((t) => {
+                return {
+                  timeSlot: {
+                    connectOrCreate: {
+                      where: {
+                        startTime_endTime: {
+                          startTime: t.startTime,
+                          endTime: t.endTime,
+                        },
+                      },
+                      create: {
+                        startTime: t.startTime,
+                        endTime: t.endTime,
+                      },
+                    },
+                  },
+                };
+              }),
+            },
+          };
+        }),
+      },
+    },
+  });
+};
+
+export const getEventTypes = () => {
+  prisma.eventType.findMany({
+    select: {
+      name: true,
+      timeDuration: true,
+      price: true,
     },
   });
 };

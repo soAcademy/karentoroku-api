@@ -1,0 +1,167 @@
+model User {
+  id                  Int                  @id @default(autoincrement())
+  name                String
+  username            String               @unique
+  // password_hash String   @unique
+  // sessions      Session[]
+  firebaseUid         String               @unique
+  eventTypes          EventType[]
+  subscription        String?
+  mobileNumber        String?              @unique
+  userLink            String?              @unique
+  billings            Billing[]
+  job                 String?
+  education           String?
+  userOnGroupMeetings UserOnGroupMeeting[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+}
+
+// model Session {
+//   id        Int      @id @default(autoincrement())
+//   token     String   @unique
+//   user      User     @relation(fields: [userId], references: [id])
+//   userId    Int
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
+
+model EventType {
+  id                     Int                   @id @default(autoincrement())
+  name                   String
+  user                   User                  @relation(fields: [userId], references: [id])
+  userId                 Int
+  eventTypeOnLocations   EventTypeOnLocation[]
+  description            String
+  price                  Int
+  timeDuration           Int
+  availabilitySchedule   AvailabilitySchedule? @relation(fields: [availabilityScheduleId], references: [id])
+  availabilityScheduleId Int?
+  dateSlots              DateSlot[]
+  groupMeetings          GroupMeeting[]
+  createdAt              DateTime              @default(now())
+  updatedAt              DateTime              @updatedAt
+
+  @@unique([userId, name])
+}
+
+model Location {
+  id                   Int                   @id @default(autoincrement())
+  name                 String                @unique
+  eventTypeOnLocations EventTypeOnLocation[]
+  groupMeetings        GroupMeeting[]
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+}
+
+model EventTypeOnLocation {
+  id          Int       @id @default(autoincrement())
+  eventType   EventType @relation(fields: [eventTypeId], references: [id])
+  eventTypeId Int
+  location    Location  @relation(fields: [locationId], references: [id])
+  locationId  Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model AvailabilitySchedule {
+  id         Int         @id @default(autoincrement())
+  name       String      @unique
+  eventTypes EventType[]
+  timezone   String
+  dateSlots  DateSlot[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model DaySlot {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  dateSlots DateSlot[]
+}
+
+model DateSlot {
+  id                     Int                   @id @default(autoincrement())
+  availabilitySchedule   AvailabilitySchedule? @relation(fields: [availabilityScheduleId], references: [id])
+  availabilityScheduleId Int?
+  name                   DateTime
+  custormer              Customer?             @relation(fields: [custormerId], references: [id])
+  custormerId            Int?
+  eventType              EventType             @relation(fields: [eventId], references: [id])
+  eventId                Int
+  daySlot                DaySlot               @relation(fields: [dayName], references: [name])
+  dayName                String
+  dateOnTimeSlots        DateOnTimeSlot[]
+  createdAt              DateTime              @default(now())
+  updatedAt              DateTime              @updatedAt
+}
+
+model DateOnTimeSlot {
+  id          Int       @id @default(autoincrement())
+  timeSlot    TimeSlot  @relation(fields: [timeSlotId], references: [id])
+  timeSlotId  Int
+  dateSlot    DateSlot  @relation(fields: [dateSlotId], references: [id])
+  dateSlotId  Int
+  status      String    @default("available")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model TimeSlot {
+  id              Int              @id @default(autoincrement())
+  startTime       Int
+  endTime         Int
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  dateOnTimeSlots DateOnTimeSlot[]
+
+  @@unique([startTime, endTime])
+}
+
+model Customer {
+  id            Int            @id @default(autoincrement())
+  name          String
+  email         String         @unique
+  groupMeetings GroupMeeting[]
+  dateSlots     DateSlot[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Billing {
+  id                Int      @id @default(autoincrement())
+  subscriptionMonth Int
+  subscriptionPrice Int
+  user              User     @relation(fields: [userId], references: [id])
+  userId            Int
+  name              String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model GroupMeeting {
+  id                  Int                  @id @default(autoincrement())
+  location            Location             @relation(fields: [locationId], references: [id])
+  locationId          Int
+  customer            Customer             @relation(fields: [customerId], references: [id])
+  customerId          Int
+  totalPrice          Int
+  timezone            String
+  eventType           EventType            @relation(fields: [eventTypeId], references: [id])
+  eventTypeId         Int
+  userOnGroupMeetings UserOnGroupMeeting[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+}
+
+model UserOnGroupMeeting {
+  id             Int          @id @default(autoincrement())
+  user           User         @relation(fields: [userId], references: [id])
+  userId         Int
+  groupMeeting   GroupMeeting @relation(fields: [groupMeetingId], references: [id])
+  groupMeetingId Int
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}

@@ -21,8 +21,8 @@ model User {
   firebaseUid         String               @unique
   eventTypes          EventType[]
   subscription        String?
-  mobileNumber        String?
-  userLink            String?
+  mobileNumber        String?              @unique
+  userLink            String?              @unique
   billings            Billing[]
   job                 String?
   education           String?
@@ -41,30 +41,27 @@ model User {
 // }
 
 model EventType {
-  id                    Int                    @id @default(autoincrement())
-  name                  String
-  user                  User                   @relation(fields: [userId], references: [id])
-  userId                Int
-  eventTypeOnLocations  EventTypeOnLocation[]
-  description           String
-  price                 Int
-  timeDuration          Int
-  availabilitySchedules AvailabilitySchedule[]
-  weekDays              WeekDay[]
-  calendarSelect        CalendarSelect         @relation(fields: [calendarSelectId], references: [id])
-  calendarSelectId      Int
-  customer              Customer               @relation(fields: [customerId], references: [id])
-  customerId            Int
-  status                String
-  groupMeetings         GroupMeeting[]
-  eventSelects          EventSelect[]
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @updatedAt
+  id                     Int                   @id @default(autoincrement())
+  name                   String
+  user                   User                  @relation(fields: [userId], references: [id])
+  userId                 Int
+  eventTypeOnLocations   EventTypeOnLocation[]
+  description            String
+  price                  Int
+  timeDuration           Int
+  availabilitySchedule   AvailabilitySchedule? @relation(fields: [availabilityScheduleId], references: [id])
+  availabilityScheduleId Int?
+  dateSlots              DateSlot[]
+  groupMeetings          GroupMeeting[]
+  createdAt              DateTime              @default(now())
+  updatedAt              DateTime              @updatedAt
+
+  @@unique([userId, name])
 }
 
 model Location {
   id                   Int                   @id @default(autoincrement())
-  name                 String
+  name                 String                @unique
   eventTypeOnLocations EventTypeOnLocation[]
   groupMeetings        GroupMeeting[]
   createdAt            DateTime              @default(now())
@@ -82,58 +79,69 @@ model EventTypeOnLocation {
 }
 
 model AvailabilitySchedule {
-  id          Int       @id @default(autoincrement())
-  name        String
-  eventType   EventType @relation(fields: [eventTypeId], references: [id])
-  eventTypeId Int
-  timezone    String
-  weekDays    WeekDay[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id         Int         @id @default(autoincrement())
+  name       String      @unique
+  eventTypes EventType[]
+  timezone   String
+  dateSlots  DateSlot[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 }
 
-model WeekDay {
+model DaySlot {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  dateSlots DateSlot[]
+}
+
+model DateSlot {
   id                     Int                   @id @default(autoincrement())
-  day                    Int // day of the week from 0 (Sunday) to 6 (Saturday)
   availabilitySchedule   AvailabilitySchedule? @relation(fields: [availabilityScheduleId], references: [id])
   availabilityScheduleId Int?
-  timeSelect             TimeSelect            @relation(fields: [timeSelectId], references: [id])
-  timeSelectId           Int
-  eventType              EventType?            @relation(fields: [eventTypeId], references: [id])
-  eventTypeId            Int?
-  status                 String
-  date                   DateTime
+  name                   DateTime
+  custormer              Customer?             @relation(fields: [custormerId], references: [id])
+  custormerId            Int?
+  eventType              EventType             @relation(fields: [eventId], references: [id])
+  eventId                Int
+  daySlot                DaySlot               @relation(fields: [dayName], references: [name])
+  dayName                String
+  dateOnTimeSlots        DateOnTimeSlot[]
   createdAt              DateTime              @default(now())
   updatedAt              DateTime              @updatedAt
 }
 
-model TimeSelect {
-  id        Int       @id @default(autoincrement())
-  startTime DateTime
-  endTime   DateTime
-  weekDays  WeekDay[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+model DateOnTimeSlot {
+  id         Int      @id @default(autoincrement())
+  timeSlot   TimeSlot @relation(fields: [timeSlotId], references: [id])
+  timeSlotId Int
+  dateSlot   DateSlot @relation(fields: [dateSlotId], references: [id])
+  dateSlotId Int
+  status     String   @default("available")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model TimeSlot {
+  id              Int              @id @default(autoincrement())
+  startTime       Int
+  endTime         Int
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  dateOnTimeSlots DateOnTimeSlot[]
+
+  @@unique([startTime, endTime])
 }
 
 model Customer {
   id            Int            @id @default(autoincrement())
   name          String
-  email         String
-  eventTypes    EventType[]
+  email         String         @unique
   groupMeetings GroupMeeting[]
-  eventSelects  EventSelect[]
+  dateSlots     DateSlot[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
-}
-
-model CalendarSelect {
-  id         Int         @id @default(autoincrement())
-  startDate  DateTime
-  endDate    DateTime
-  eventTypes EventType[]
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
 }
 
 model Billing {
@@ -160,19 +168,6 @@ model GroupMeeting {
   userOnGroupMeetings UserOnGroupMeeting[]
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
-}
-
-model EventSelect {
-  id          Int       @id @default(autoincrement())
-  eventType   EventType @relation(fields: [eventTypeId], references: [id])
-  eventTypeId Int
-  customer    Customer  @relation(fields: [customerId], references: [id])
-  customerId  Int
-  selectDate  String
-  selectTime  DateTime
-  status      String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
 }
 
 model UserOnGroupMeeting {

@@ -1,6 +1,16 @@
 import { Request, Response } from "express";
-import { CreateUserCodec } from "./karentoroku.interfaces";
-import { createUser, getUserById, getUsers } from "./karentoroku.resolvers";
+import {
+  CreateEventTypeCodec,
+  CreateUserCodec,
+} from "./karentoroku.interfaces";
+import {
+  createEventType,
+  createUser,
+  getEventTypes,
+  getUserById,
+  getUserByIdToken,
+  getUsers,
+} from "./karentoroku.resolvers";
 
 export const getIndexHandler = (req: Request, res: Response) => {
   res.setHeader("Content-Type", "text/html");
@@ -57,5 +67,64 @@ export const getUserByIdHandler = async (req: Request, res: Response) => {
     }
   } else {
     res.status(500).json({ error: "ERROR: invalid request (getUser)" });
+  }
+};
+
+export const getUserByIdTokenHandler = async (req: Request, res: Response) => {
+  const args = req?.body;
+
+  if (typeof args.idToken === "string") {
+    try {
+      const result = await getUserByIdToken({
+        idToken: args.idToken,
+      });
+      res.status(200).json(result);
+    } catch (e) {
+      res.status(500).json({
+        error: String(e),
+      });
+    }
+  } else {
+    res
+      .status(500)
+      .json({ error: "ERROR: invalid request (getUserByIdToken)" });
+  }
+};
+
+export const createEventTypeHandler = (req: Request, res: Response) => {
+  const body = req.body;
+  console.log(body);
+  console.log(CreateEventTypeCodec.decode(body));
+  if (CreateEventTypeCodec.decode(body)._tag === "Right") {
+    return createEventType(body)
+      .then((response) => res.status(200).send(response))
+      .catch((error) => res.status(500).send(error));
+  } else {
+    res.status(500).send("Failed to validate codec");
+  }
+};
+
+// export const createLocationHandler = (req: Request, res: Response) => {
+//   const body = req.body;
+//   console.log(body)
+//   console.log(CreateLocationCodec.decode(body));
+//   if (CreateEventTypeCodec.decode(body)._tag === "Right") {
+//     return createTimeSelect(body)
+//       .then((response) => res.status(200).send(response))
+//       .catch((error) => res.status(500).send(error));
+//   } else {
+//     res.status(500).send("Failed to validate codec");
+//   }
+// };
+
+export const getEventTypeHandler = async (req: Request, res: Response) => {
+  const body = req?.body;
+  try {
+    const result = await getEventTypes();
+    res.status(200).json(result);
+  } catch (e) {
+    res.status(500).json({
+      error: String(e),
+    });
   }
 };

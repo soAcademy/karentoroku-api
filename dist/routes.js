@@ -23,4 +23,19 @@ exports.AppRoutes = [
         method: "post",
         action: karentoroku_handlers_1.getUserByIdHandler,
     },
+    {
+        path: "/getUserByIdToken",
+        method: "post",
+        action: karentoroku_handlers_1.getUserByIdTokenHandler,
+    },
+    {
+        path: "/createEventType",
+        method: "post",
+        action: karentoroku_handlers_1.createEventTypeHandler,
+    },
+    {
+        path: "/getEventType",
+        method: "post",
+        action: karentoroku_handlers_1.getEventTypeHandler,
+    },
 ];

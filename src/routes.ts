@@ -1,7 +1,10 @@
 import {
+  createEventTypeHandler,
   createUserHandler,
+  getEventTypeHandler,
   getIndexHandler,
   getUserByIdHandler,
+  getUserByIdTokenHandler,
   getUsersHandler,
 } from "./karentoroku/karentoroku.handlers";
 
@@ -25,5 +28,20 @@ export const AppRoutes = [
     path: "/getUserById",
     method: "post",
     action: getUserByIdHandler,
+  },
+  {
+    path: "/getUserByIdToken",
+    method: "post",
+    action: getUserByIdTokenHandler,
+  },
+  {
+    path: "/createEventType",
+    method: "post",
+    action: createEventTypeHandler,
+  },
+  {
+    path: "/getEventType",
+    method: "post",
+    action: getEventTypeHandler,
   },
 ];

@@ -9,6 +9,8 @@ type UnwrapTuple<Tuple extends readonly unknown[]> = {
   [K in keyof Tuple]: K extends `${number}` ? Tuple[K] extends Prisma.PrismaPromise<infer X> ? X : UnwrapPromise<Tuple[K]> : UnwrapPromise<Tuple[K]>
 };
 
+export type PrismaPromise<T> = runtime.Types.Public.PrismaPromise<T>
+
 
 /**
  * Model User
@@ -39,9 +41,7 @@ export type EventType = {
   description: string
   price: number
   timeDuration: number
-  calendarSelectId: number
-  customerId: number
-  status: string
+  availabilityScheduleId: number | null
   createdAt: Date
   updatedAt: Date
 }
@@ -76,36 +76,58 @@ export type EventTypeOnLocation = {
 export type AvailabilitySchedule = {
   id: number
   name: string
-  eventTypeId: number
   timezone: string
   createdAt: Date
   updatedAt: Date
 }
 
 /**
- * Model WeekDay
+ * Model DaySlot
  * 
  */
-export type WeekDay = {
+export type DaySlot = {
   id: number
-  day: number
-  availabilityScheduleId: number | null
-  timeSelectId: number
-  eventTypeId: number | null
-  status: string
-  date: Date
+  name: string
   createdAt: Date
   updatedAt: Date
 }
 
 /**
- * Model TimeSelect
+ * Model DateSlot
  * 
  */
-export type TimeSelect = {
+export type DateSlot = {
   id: number
-  startTime: Date
-  endTime: Date
+  availabilityScheduleId: number | null
+  name: Date
+  custormerId: number | null
+  eventId: number
+  dayName: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+/**
+ * Model DateOnTimeSlot
+ * 
+ */
+export type DateOnTimeSlot = {
+  id: number
+  timeSlotId: number
+  dateSlotId: number
+  status: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+/**
+ * Model TimeSlot
+ * 
+ */
+export type TimeSlot = {
+  id: number
+  startTime: number
+  endTime: number
   createdAt: Date
   updatedAt: Date
 }
@@ -118,18 +140,6 @@ export type Customer = {
   id: number
   name: string
   email: string
-  createdAt: Date
-  updatedAt: Date
-}
-
-/**
- * Model CalendarSelect
- * 
- */
-export type CalendarSelect = {
-  id: number
-  startDate: Date
-  endDate: Date
   createdAt: Date
   updatedAt: Date
 }
@@ -159,21 +169,6 @@ export type GroupMeeting = {
   totalPrice: number
   timezone: string
   eventTypeId: number
-  createdAt: Date
-  updatedAt: Date
-}
-
-/**
- * Model EventSelect
- * 
- */
-export type EventSelect = {
-  id: number
-  eventTypeId: number
-  customerId: number
-  selectDate: string
-  selectTime: Date
-  status: string
   createdAt: Date
   updatedAt: Date
 }
@@ -359,24 +354,44 @@ export class PrismaClient<
   get availabilitySchedule(): Prisma.AvailabilityScheduleDelegate<GlobalReject>;
 
   /**
-   * `prisma.weekDay`: Exposes CRUD operations for the **WeekDay** model.
+   * `prisma.daySlot`: Exposes CRUD operations for the **DaySlot** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more WeekDays
-    * const weekDays = await prisma.weekDay.findMany()
+    * // Fetch zero or more DaySlots
+    * const daySlots = await prisma.daySlot.findMany()
     * ```
     */
-  get weekDay(): Prisma.WeekDayDelegate<GlobalReject>;
+  get daySlot(): Prisma.DaySlotDelegate<GlobalReject>;
 
   /**
-   * `prisma.timeSelect`: Exposes CRUD operations for the **TimeSelect** model.
+   * `prisma.dateSlot`: Exposes CRUD operations for the **DateSlot** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more TimeSelects
-    * const timeSelects = await prisma.timeSelect.findMany()
+    * // Fetch zero or more DateSlots
+    * const dateSlots = await prisma.dateSlot.findMany()
     * ```
     */
-  get timeSelect(): Prisma.TimeSelectDelegate<GlobalReject>;
+  get dateSlot(): Prisma.DateSlotDelegate<GlobalReject>;
+
+  /**
+   * `prisma.dateOnTimeSlot`: Exposes CRUD operations for the **DateOnTimeSlot** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DateOnTimeSlots
+    * const dateOnTimeSlots = await prisma.dateOnTimeSlot.findMany()
+    * ```
+    */
+  get dateOnTimeSlot(): Prisma.DateOnTimeSlotDelegate<GlobalReject>;
+
+  /**
+   * `prisma.timeSlot`: Exposes CRUD operations for the **TimeSlot** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TimeSlots
+    * const timeSlots = await prisma.timeSlot.findMany()
+    * ```
+    */
+  get timeSlot(): Prisma.TimeSlotDelegate<GlobalReject>;
 
   /**
    * `prisma.customer`: Exposes CRUD operations for the **Customer** model.
@@ -387,16 +402,6 @@ export class PrismaClient<
     * ```
     */
   get customer(): Prisma.CustomerDelegate<GlobalReject>;
-
-  /**
-   * `prisma.calendarSelect`: Exposes CRUD operations for the **CalendarSelect** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more CalendarSelects
-    * const calendarSelects = await prisma.calendarSelect.findMany()
-    * ```
-    */
-  get calendarSelect(): Prisma.CalendarSelectDelegate<GlobalReject>;
 
   /**
    * `prisma.billing`: Exposes CRUD operations for the **Billing** model.
@@ -417,16 +422,6 @@ export class PrismaClient<
     * ```
     */
   get groupMeeting(): Prisma.GroupMeetingDelegate<GlobalReject>;
-
-  /**
-   * `prisma.eventSelect`: Exposes CRUD operations for the **EventSelect** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more EventSelects
-    * const eventSelects = await prisma.eventSelect.findMany()
-    * ```
-    */
-  get eventSelect(): Prisma.EventSelectDelegate<GlobalReject>;
 
   /**
    * `prisma.userOnGroupMeeting`: Exposes CRUD operations for the **UserOnGroupMeeting** model.
@@ -480,8 +475,8 @@ export namespace Prisma {
 
 
   /**
-   * Prisma Client JS version: 4.11.0
-   * Query Engine version: 8fde8fef4033376662cad983758335009d522acb
+   * Prisma Client JS version: 4.12.0
+   * Query Engine version: 659ef412370fa3b41cd7bf6e94587c1dfb7f67e7
    */
   export type PrismaVersion = {
     client: string
@@ -911,13 +906,13 @@ export namespace Prisma {
     Location: 'Location',
     EventTypeOnLocation: 'EventTypeOnLocation',
     AvailabilitySchedule: 'AvailabilitySchedule',
-    WeekDay: 'WeekDay',
-    TimeSelect: 'TimeSelect',
+    DaySlot: 'DaySlot',
+    DateSlot: 'DateSlot',
+    DateOnTimeSlot: 'DateOnTimeSlot',
+    TimeSlot: 'TimeSlot',
     Customer: 'Customer',
-    CalendarSelect: 'CalendarSelect',
     Billing: 'Billing',
     GroupMeeting: 'GroupMeeting',
-    EventSelect: 'EventSelect',
     UserOnGroupMeeting: 'UserOnGroupMeeting'
   };
 
@@ -1133,18 +1128,14 @@ export namespace Prisma {
 
   export type EventTypeCountOutputType = {
     eventTypeOnLocations: number
-    availabilitySchedules: number
-    weekDays: number
+    dateSlots: number
     groupMeetings: number
-    eventSelects: number
   }
 
   export type EventTypeCountOutputTypeSelect = {
     eventTypeOnLocations?: boolean
-    availabilitySchedules?: boolean
-    weekDays?: boolean
+    dateSlots?: boolean
     groupMeetings?: boolean
-    eventSelects?: boolean
   }
 
   export type EventTypeCountOutputTypeGetPayload<S extends boolean | null | undefined | EventTypeCountOutputTypeArgs> =
@@ -1228,11 +1219,13 @@ export namespace Prisma {
 
 
   export type AvailabilityScheduleCountOutputType = {
-    weekDays: number
+    eventTypes: number
+    dateSlots: number
   }
 
   export type AvailabilityScheduleCountOutputTypeSelect = {
-    weekDays?: boolean
+    eventTypes?: boolean
+    dateSlots?: boolean
   }
 
   export type AvailabilityScheduleCountOutputTypeGetPayload<S extends boolean | null | undefined | AvailabilityScheduleCountOutputTypeArgs> =
@@ -1266,30 +1259,30 @@ export namespace Prisma {
 
 
   /**
-   * Count Type TimeSelectCountOutputType
+   * Count Type DaySlotCountOutputType
    */
 
 
-  export type TimeSelectCountOutputType = {
-    weekDays: number
+  export type DaySlotCountOutputType = {
+    dateSlots: number
   }
 
-  export type TimeSelectCountOutputTypeSelect = {
-    weekDays?: boolean
+  export type DaySlotCountOutputTypeSelect = {
+    dateSlots?: boolean
   }
 
-  export type TimeSelectCountOutputTypeGetPayload<S extends boolean | null | undefined | TimeSelectCountOutputTypeArgs> =
+  export type DaySlotCountOutputTypeGetPayload<S extends boolean | null | undefined | DaySlotCountOutputTypeArgs> =
     S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? TimeSelectCountOutputType :
+    S extends true ? DaySlotCountOutputType :
     S extends undefined ? never :
-    S extends { include: any } & (TimeSelectCountOutputTypeArgs)
-    ? TimeSelectCountOutputType 
-    : S extends { select: any } & (TimeSelectCountOutputTypeArgs)
+    S extends { include: any } & (DaySlotCountOutputTypeArgs)
+    ? DaySlotCountOutputType 
+    : S extends { select: any } & (DaySlotCountOutputTypeArgs)
       ? {
     [P in TruthyKeys<S['select']>]:
-    P extends keyof TimeSelectCountOutputType ? TimeSelectCountOutputType[P] : never
+    P extends keyof DaySlotCountOutputType ? DaySlotCountOutputType[P] : never
   } 
-      : TimeSelectCountOutputType
+      : DaySlotCountOutputType
 
 
 
@@ -1297,13 +1290,99 @@ export namespace Prisma {
   // Custom InputTypes
 
   /**
-   * TimeSelectCountOutputType without action
+   * DaySlotCountOutputType without action
    */
-  export type TimeSelectCountOutputTypeArgs = {
+  export type DaySlotCountOutputTypeArgs = {
     /**
-     * Select specific fields to fetch from the TimeSelectCountOutputType
+     * Select specific fields to fetch from the DaySlotCountOutputType
      */
-    select?: TimeSelectCountOutputTypeSelect | null
+    select?: DaySlotCountOutputTypeSelect | null
+  }
+
+
+
+  /**
+   * Count Type DateSlotCountOutputType
+   */
+
+
+  export type DateSlotCountOutputType = {
+    dateOnTimeSlots: number
+  }
+
+  export type DateSlotCountOutputTypeSelect = {
+    dateOnTimeSlots?: boolean
+  }
+
+  export type DateSlotCountOutputTypeGetPayload<S extends boolean | null | undefined | DateSlotCountOutputTypeArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? DateSlotCountOutputType :
+    S extends undefined ? never :
+    S extends { include: any } & (DateSlotCountOutputTypeArgs)
+    ? DateSlotCountOutputType 
+    : S extends { select: any } & (DateSlotCountOutputTypeArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+    P extends keyof DateSlotCountOutputType ? DateSlotCountOutputType[P] : never
+  } 
+      : DateSlotCountOutputType
+
+
+
+
+  // Custom InputTypes
+
+  /**
+   * DateSlotCountOutputType without action
+   */
+  export type DateSlotCountOutputTypeArgs = {
+    /**
+     * Select specific fields to fetch from the DateSlotCountOutputType
+     */
+    select?: DateSlotCountOutputTypeSelect | null
+  }
+
+
+
+  /**
+   * Count Type TimeSlotCountOutputType
+   */
+
+
+  export type TimeSlotCountOutputType = {
+    dateOnTimeSlots: number
+  }
+
+  export type TimeSlotCountOutputTypeSelect = {
+    dateOnTimeSlots?: boolean
+  }
+
+  export type TimeSlotCountOutputTypeGetPayload<S extends boolean | null | undefined | TimeSlotCountOutputTypeArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? TimeSlotCountOutputType :
+    S extends undefined ? never :
+    S extends { include: any } & (TimeSlotCountOutputTypeArgs)
+    ? TimeSlotCountOutputType 
+    : S extends { select: any } & (TimeSlotCountOutputTypeArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+    P extends keyof TimeSlotCountOutputType ? TimeSlotCountOutputType[P] : never
+  } 
+      : TimeSlotCountOutputType
+
+
+
+
+  // Custom InputTypes
+
+  /**
+   * TimeSlotCountOutputType without action
+   */
+  export type TimeSlotCountOutputTypeArgs = {
+    /**
+     * Select specific fields to fetch from the TimeSlotCountOutputType
+     */
+    select?: TimeSlotCountOutputTypeSelect | null
   }
 
 
@@ -1314,15 +1393,13 @@ export namespace Prisma {
 
 
   export type CustomerCountOutputType = {
-    eventTypes: number
     groupMeetings: number
-    eventSelects: number
+    dateSlots: number
   }
 
   export type CustomerCountOutputTypeSelect = {
-    eventTypes?: boolean
     groupMeetings?: boolean
-    eventSelects?: boolean
+    dateSlots?: boolean
   }
 
   export type CustomerCountOutputTypeGetPayload<S extends boolean | null | undefined | CustomerCountOutputTypeArgs> =
@@ -1351,49 +1428,6 @@ export namespace Prisma {
      * Select specific fields to fetch from the CustomerCountOutputType
      */
     select?: CustomerCountOutputTypeSelect | null
-  }
-
-
-
-  /**
-   * Count Type CalendarSelectCountOutputType
-   */
-
-
-  export type CalendarSelectCountOutputType = {
-    eventTypes: number
-  }
-
-  export type CalendarSelectCountOutputTypeSelect = {
-    eventTypes?: boolean
-  }
-
-  export type CalendarSelectCountOutputTypeGetPayload<S extends boolean | null | undefined | CalendarSelectCountOutputTypeArgs> =
-    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? CalendarSelectCountOutputType :
-    S extends undefined ? never :
-    S extends { include: any } & (CalendarSelectCountOutputTypeArgs)
-    ? CalendarSelectCountOutputType 
-    : S extends { select: any } & (CalendarSelectCountOutputTypeArgs)
-      ? {
-    [P in TruthyKeys<S['select']>]:
-    P extends keyof CalendarSelectCountOutputType ? CalendarSelectCountOutputType[P] : never
-  } 
-      : CalendarSelectCountOutputType
-
-
-
-
-  // Custom InputTypes
-
-  /**
-   * CalendarSelectCountOutputType without action
-   */
-  export type CalendarSelectCountOutputTypeArgs = {
-    /**
-     * Select specific fields to fetch from the CalendarSelectCountOutputType
-     */
-    select?: CalendarSelectCountOutputTypeSelect | null
   }
 
 
@@ -2555,8 +2589,7 @@ export namespace Prisma {
     userId: number | null
     price: number | null
     timeDuration: number | null
-    calendarSelectId: number | null
-    customerId: number | null
+    availabilityScheduleId: number | null
   }
 
   export type EventTypeSumAggregateOutputType = {
@@ -2564,8 +2597,7 @@ export namespace Prisma {
     userId: number | null
     price: number | null
     timeDuration: number | null
-    calendarSelectId: number | null
-    customerId: number | null
+    availabilityScheduleId: number | null
   }
 
   export type EventTypeMinAggregateOutputType = {
@@ -2575,9 +2607,7 @@ export namespace Prisma {
     description: string | null
     price: number | null
     timeDuration: number | null
-    calendarSelectId: number | null
-    customerId: number | null
-    status: string | null
+    availabilityScheduleId: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2589,9 +2619,7 @@ export namespace Prisma {
     description: string | null
     price: number | null
     timeDuration: number | null
-    calendarSelectId: number | null
-    customerId: number | null
-    status: string | null
+    availabilityScheduleId: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2603,9 +2631,7 @@ export namespace Prisma {
     description: number
     price: number
     timeDuration: number
-    calendarSelectId: number
-    customerId: number
-    status: number
+    availabilityScheduleId: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -2617,8 +2643,7 @@ export namespace Prisma {
     userId?: true
     price?: true
     timeDuration?: true
-    calendarSelectId?: true
-    customerId?: true
+    availabilityScheduleId?: true
   }
 
   export type EventTypeSumAggregateInputType = {
@@ -2626,8 +2651,7 @@ export namespace Prisma {
     userId?: true
     price?: true
     timeDuration?: true
-    calendarSelectId?: true
-    customerId?: true
+    availabilityScheduleId?: true
   }
 
   export type EventTypeMinAggregateInputType = {
@@ -2637,9 +2661,7 @@ export namespace Prisma {
     description?: true
     price?: true
     timeDuration?: true
-    calendarSelectId?: true
-    customerId?: true
-    status?: true
+    availabilityScheduleId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2651,9 +2673,7 @@ export namespace Prisma {
     description?: true
     price?: true
     timeDuration?: true
-    calendarSelectId?: true
-    customerId?: true
-    status?: true
+    availabilityScheduleId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2665,9 +2685,7 @@ export namespace Prisma {
     description?: true
     price?: true
     timeDuration?: true
-    calendarSelectId?: true
-    customerId?: true
-    status?: true
+    availabilityScheduleId?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -2767,9 +2785,7 @@ export namespace Prisma {
     description: string
     price: number
     timeDuration: number
-    calendarSelectId: number
-    customerId: number
-    status: string
+    availabilityScheduleId: number | null
     createdAt: Date
     updatedAt: Date
     _count: EventTypeCountAggregateOutputType | null
@@ -2800,19 +2816,14 @@ export namespace Prisma {
     description?: boolean
     price?: boolean
     timeDuration?: boolean
-    calendarSelectId?: boolean
-    customerId?: boolean
-    status?: boolean
+    availabilityScheduleId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserArgs
     eventTypeOnLocations?: boolean | EventType$eventTypeOnLocationsArgs
-    availabilitySchedules?: boolean | EventType$availabilitySchedulesArgs
-    weekDays?: boolean | EventType$weekDaysArgs
-    calendarSelect?: boolean | CalendarSelectArgs
-    customer?: boolean | CustomerArgs
+    availabilitySchedule?: boolean | AvailabilityScheduleArgs
+    dateSlots?: boolean | EventType$dateSlotsArgs
     groupMeetings?: boolean | EventType$groupMeetingsArgs
-    eventSelects?: boolean | EventType$eventSelectsArgs
     _count?: boolean | EventTypeCountOutputTypeArgs
   }
 
@@ -2820,12 +2831,9 @@ export namespace Prisma {
   export type EventTypeInclude = {
     user?: boolean | UserArgs
     eventTypeOnLocations?: boolean | EventType$eventTypeOnLocationsArgs
-    availabilitySchedules?: boolean | EventType$availabilitySchedulesArgs
-    weekDays?: boolean | EventType$weekDaysArgs
-    calendarSelect?: boolean | CalendarSelectArgs
-    customer?: boolean | CustomerArgs
+    availabilitySchedule?: boolean | AvailabilityScheduleArgs
+    dateSlots?: boolean | EventType$dateSlotsArgs
     groupMeetings?: boolean | EventType$groupMeetingsArgs
-    eventSelects?: boolean | EventType$eventSelectsArgs
     _count?: boolean | EventTypeCountOutputTypeArgs
   }
 
@@ -2838,12 +2846,9 @@ export namespace Prisma {
     [P in TruthyKeys<S['include']>]:
         P extends 'user' ? UserGetPayload<S['include'][P]> :
         P extends 'eventTypeOnLocations' ? Array < EventTypeOnLocationGetPayload<S['include'][P]>>  :
-        P extends 'availabilitySchedules' ? Array < AvailabilityScheduleGetPayload<S['include'][P]>>  :
-        P extends 'weekDays' ? Array < WeekDayGetPayload<S['include'][P]>>  :
-        P extends 'calendarSelect' ? CalendarSelectGetPayload<S['include'][P]> :
-        P extends 'customer' ? CustomerGetPayload<S['include'][P]> :
+        P extends 'availabilitySchedule' ? AvailabilityScheduleGetPayload<S['include'][P]> | null :
+        P extends 'dateSlots' ? Array < DateSlotGetPayload<S['include'][P]>>  :
         P extends 'groupMeetings' ? Array < GroupMeetingGetPayload<S['include'][P]>>  :
-        P extends 'eventSelects' ? Array < EventSelectGetPayload<S['include'][P]>>  :
         P extends '_count' ? EventTypeCountOutputTypeGetPayload<S['include'][P]> :  never
   } 
     : S extends { select: any } & (EventTypeArgs | EventTypeFindManyArgs)
@@ -2851,12 +2856,9 @@ export namespace Prisma {
     [P in TruthyKeys<S['select']>]:
         P extends 'user' ? UserGetPayload<S['select'][P]> :
         P extends 'eventTypeOnLocations' ? Array < EventTypeOnLocationGetPayload<S['select'][P]>>  :
-        P extends 'availabilitySchedules' ? Array < AvailabilityScheduleGetPayload<S['select'][P]>>  :
-        P extends 'weekDays' ? Array < WeekDayGetPayload<S['select'][P]>>  :
-        P extends 'calendarSelect' ? CalendarSelectGetPayload<S['select'][P]> :
-        P extends 'customer' ? CustomerGetPayload<S['select'][P]> :
+        P extends 'availabilitySchedule' ? AvailabilityScheduleGetPayload<S['select'][P]> | null :
+        P extends 'dateSlots' ? Array < DateSlotGetPayload<S['select'][P]>>  :
         P extends 'groupMeetings' ? Array < GroupMeetingGetPayload<S['select'][P]>>  :
-        P extends 'eventSelects' ? Array < EventSelectGetPayload<S['select'][P]>>  :
         P extends '_count' ? EventTypeCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof EventType ? EventType[P] : never
   } 
       : EventType
@@ -3233,17 +3235,11 @@ export namespace Prisma {
 
     eventTypeOnLocations<T extends EventType$eventTypeOnLocationsArgs= {}>(args?: Subset<T, EventType$eventTypeOnLocationsArgs>): Prisma.PrismaPromise<Array<EventTypeOnLocationGetPayload<T>>| Null>;
 
-    availabilitySchedules<T extends EventType$availabilitySchedulesArgs= {}>(args?: Subset<T, EventType$availabilitySchedulesArgs>): Prisma.PrismaPromise<Array<AvailabilityScheduleGetPayload<T>>| Null>;
+    availabilitySchedule<T extends AvailabilityScheduleArgs= {}>(args?: Subset<T, AvailabilityScheduleArgs>): Prisma__AvailabilityScheduleClient<AvailabilityScheduleGetPayload<T> | Null>;
 
-    weekDays<T extends EventType$weekDaysArgs= {}>(args?: Subset<T, EventType$weekDaysArgs>): Prisma.PrismaPromise<Array<WeekDayGetPayload<T>>| Null>;
-
-    calendarSelect<T extends CalendarSelectArgs= {}>(args?: Subset<T, CalendarSelectArgs>): Prisma__CalendarSelectClient<CalendarSelectGetPayload<T> | Null>;
-
-    customer<T extends CustomerArgs= {}>(args?: Subset<T, CustomerArgs>): Prisma__CustomerClient<CustomerGetPayload<T> | Null>;
+    dateSlots<T extends EventType$dateSlotsArgs= {}>(args?: Subset<T, EventType$dateSlotsArgs>): Prisma.PrismaPromise<Array<DateSlotGetPayload<T>>| Null>;
 
     groupMeetings<T extends EventType$groupMeetingsArgs= {}>(args?: Subset<T, EventType$groupMeetingsArgs>): Prisma.PrismaPromise<Array<GroupMeetingGetPayload<T>>| Null>;
-
-    eventSelects<T extends EventType$eventSelectsArgs= {}>(args?: Subset<T, EventType$eventSelectsArgs>): Prisma.PrismaPromise<Array<EventSelectGetPayload<T>>| Null>;
 
     private get _document();
     /**
@@ -3622,44 +3618,23 @@ export namespace Prisma {
 
 
   /**
-   * EventType.availabilitySchedules
+   * EventType.dateSlots
    */
-  export type EventType$availabilitySchedulesArgs = {
+  export type EventType$dateSlotsArgs = {
     /**
-     * Select specific fields to fetch from the AvailabilitySchedule
+     * Select specific fields to fetch from the DateSlot
      */
-    select?: AvailabilityScheduleSelect | null
+    select?: DateSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: AvailabilityScheduleInclude | null
-    where?: AvailabilityScheduleWhereInput
-    orderBy?: Enumerable<AvailabilityScheduleOrderByWithRelationInput>
-    cursor?: AvailabilityScheduleWhereUniqueInput
+    include?: DateSlotInclude | null
+    where?: DateSlotWhereInput
+    orderBy?: Enumerable<DateSlotOrderByWithRelationInput>
+    cursor?: DateSlotWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: Enumerable<AvailabilityScheduleScalarFieldEnum>
-  }
-
-
-  /**
-   * EventType.weekDays
-   */
-  export type EventType$weekDaysArgs = {
-    /**
-     * Select specific fields to fetch from the WeekDay
-     */
-    select?: WeekDaySelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: WeekDayInclude | null
-    where?: WeekDayWhereInput
-    orderBy?: Enumerable<WeekDayOrderByWithRelationInput>
-    cursor?: WeekDayWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: Enumerable<WeekDayScalarFieldEnum>
+    distinct?: Enumerable<DateSlotScalarFieldEnum>
   }
 
 
@@ -3681,27 +3656,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: Enumerable<GroupMeetingScalarFieldEnum>
-  }
-
-
-  /**
-   * EventType.eventSelects
-   */
-  export type EventType$eventSelectsArgs = {
-    /**
-     * Select specific fields to fetch from the EventSelect
-     */
-    select?: EventSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: EventSelectInclude | null
-    where?: EventSelectWhereInput
-    orderBy?: Enumerable<EventSelectOrderByWithRelationInput>
-    cursor?: EventSelectWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: Enumerable<EventSelectScalarFieldEnum>
   }
 
 
@@ -5724,18 +5678,15 @@ export namespace Prisma {
 
   export type AvailabilityScheduleAvgAggregateOutputType = {
     id: number | null
-    eventTypeId: number | null
   }
 
   export type AvailabilityScheduleSumAggregateOutputType = {
     id: number | null
-    eventTypeId: number | null
   }
 
   export type AvailabilityScheduleMinAggregateOutputType = {
     id: number | null
     name: string | null
-    eventTypeId: number | null
     timezone: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -5744,7 +5695,6 @@ export namespace Prisma {
   export type AvailabilityScheduleMaxAggregateOutputType = {
     id: number | null
     name: string | null
-    eventTypeId: number | null
     timezone: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -5753,7 +5703,6 @@ export namespace Prisma {
   export type AvailabilityScheduleCountAggregateOutputType = {
     id: number
     name: number
-    eventTypeId: number
     timezone: number
     createdAt: number
     updatedAt: number
@@ -5763,18 +5712,15 @@ export namespace Prisma {
 
   export type AvailabilityScheduleAvgAggregateInputType = {
     id?: true
-    eventTypeId?: true
   }
 
   export type AvailabilityScheduleSumAggregateInputType = {
     id?: true
-    eventTypeId?: true
   }
 
   export type AvailabilityScheduleMinAggregateInputType = {
     id?: true
     name?: true
-    eventTypeId?: true
     timezone?: true
     createdAt?: true
     updatedAt?: true
@@ -5783,7 +5729,6 @@ export namespace Prisma {
   export type AvailabilityScheduleMaxAggregateInputType = {
     id?: true
     name?: true
-    eventTypeId?: true
     timezone?: true
     createdAt?: true
     updatedAt?: true
@@ -5792,7 +5737,6 @@ export namespace Prisma {
   export type AvailabilityScheduleCountAggregateInputType = {
     id?: true
     name?: true
-    eventTypeId?: true
     timezone?: true
     createdAt?: true
     updatedAt?: true
@@ -5889,7 +5833,6 @@ export namespace Prisma {
   export type AvailabilityScheduleGroupByOutputType = {
     id: number
     name: string
-    eventTypeId: number
     timezone: string
     createdAt: Date
     updatedAt: Date
@@ -5917,19 +5860,18 @@ export namespace Prisma {
   export type AvailabilityScheduleSelect = {
     id?: boolean
     name?: boolean
-    eventTypeId?: boolean
     timezone?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    eventType?: boolean | EventTypeArgs
-    weekDays?: boolean | AvailabilitySchedule$weekDaysArgs
+    eventTypes?: boolean | AvailabilitySchedule$eventTypesArgs
+    dateSlots?: boolean | AvailabilitySchedule$dateSlotsArgs
     _count?: boolean | AvailabilityScheduleCountOutputTypeArgs
   }
 
 
   export type AvailabilityScheduleInclude = {
-    eventType?: boolean | EventTypeArgs
-    weekDays?: boolean | AvailabilitySchedule$weekDaysArgs
+    eventTypes?: boolean | AvailabilitySchedule$eventTypesArgs
+    dateSlots?: boolean | AvailabilitySchedule$dateSlotsArgs
     _count?: boolean | AvailabilityScheduleCountOutputTypeArgs
   }
 
@@ -5940,15 +5882,15 @@ export namespace Prisma {
     S extends { include: any } & (AvailabilityScheduleArgs | AvailabilityScheduleFindManyArgs)
     ? AvailabilitySchedule  & {
     [P in TruthyKeys<S['include']>]:
-        P extends 'eventType' ? EventTypeGetPayload<S['include'][P]> :
-        P extends 'weekDays' ? Array < WeekDayGetPayload<S['include'][P]>>  :
+        P extends 'eventTypes' ? Array < EventTypeGetPayload<S['include'][P]>>  :
+        P extends 'dateSlots' ? Array < DateSlotGetPayload<S['include'][P]>>  :
         P extends '_count' ? AvailabilityScheduleCountOutputTypeGetPayload<S['include'][P]> :  never
   } 
     : S extends { select: any } & (AvailabilityScheduleArgs | AvailabilityScheduleFindManyArgs)
       ? {
     [P in TruthyKeys<S['select']>]:
-        P extends 'eventType' ? EventTypeGetPayload<S['select'][P]> :
-        P extends 'weekDays' ? Array < WeekDayGetPayload<S['select'][P]>>  :
+        P extends 'eventTypes' ? Array < EventTypeGetPayload<S['select'][P]>>  :
+        P extends 'dateSlots' ? Array < DateSlotGetPayload<S['select'][P]>>  :
         P extends '_count' ? AvailabilityScheduleCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof AvailabilitySchedule ? AvailabilitySchedule[P] : never
   } 
       : AvailabilitySchedule
@@ -6321,9 +6263,9 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
     constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
 
-    eventType<T extends EventTypeArgs= {}>(args?: Subset<T, EventTypeArgs>): Prisma__EventTypeClient<EventTypeGetPayload<T> | Null>;
+    eventTypes<T extends AvailabilitySchedule$eventTypesArgs= {}>(args?: Subset<T, AvailabilitySchedule$eventTypesArgs>): Prisma.PrismaPromise<Array<EventTypeGetPayload<T>>| Null>;
 
-    weekDays<T extends AvailabilitySchedule$weekDaysArgs= {}>(args?: Subset<T, AvailabilitySchedule$weekDaysArgs>): Prisma.PrismaPromise<Array<WeekDayGetPayload<T>>| Null>;
+    dateSlots<T extends AvailabilitySchedule$dateSlotsArgs= {}>(args?: Subset<T, AvailabilitySchedule$dateSlotsArgs>): Prisma.PrismaPromise<Array<DateSlotGetPayload<T>>| Null>;
 
     private get _document();
     /**
@@ -6681,23 +6623,44 @@ export namespace Prisma {
 
 
   /**
-   * AvailabilitySchedule.weekDays
+   * AvailabilitySchedule.eventTypes
    */
-  export type AvailabilitySchedule$weekDaysArgs = {
+  export type AvailabilitySchedule$eventTypesArgs = {
     /**
-     * Select specific fields to fetch from the WeekDay
+     * Select specific fields to fetch from the EventType
      */
-    select?: WeekDaySelect | null
+    select?: EventTypeSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: WeekDayInclude | null
-    where?: WeekDayWhereInput
-    orderBy?: Enumerable<WeekDayOrderByWithRelationInput>
-    cursor?: WeekDayWhereUniqueInput
+    include?: EventTypeInclude | null
+    where?: EventTypeWhereInput
+    orderBy?: Enumerable<EventTypeOrderByWithRelationInput>
+    cursor?: EventTypeWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: Enumerable<WeekDayScalarFieldEnum>
+    distinct?: Enumerable<EventTypeScalarFieldEnum>
+  }
+
+
+  /**
+   * AvailabilitySchedule.dateSlots
+   */
+  export type AvailabilitySchedule$dateSlotsArgs = {
+    /**
+     * Select specific fields to fetch from the DateSlot
+     */
+    select?: DateSlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: DateSlotInclude | null
+    where?: DateSlotWhereInput
+    orderBy?: Enumerable<DateSlotOrderByWithRelationInput>
+    cursor?: DateSlotWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Enumerable<DateSlotScalarFieldEnum>
   }
 
 
@@ -6718,433 +6681,373 @@ export namespace Prisma {
 
 
   /**
-   * Model WeekDay
+   * Model DaySlot
    */
 
 
-  export type AggregateWeekDay = {
-    _count: WeekDayCountAggregateOutputType | null
-    _avg: WeekDayAvgAggregateOutputType | null
-    _sum: WeekDaySumAggregateOutputType | null
-    _min: WeekDayMinAggregateOutputType | null
-    _max: WeekDayMaxAggregateOutputType | null
+  export type AggregateDaySlot = {
+    _count: DaySlotCountAggregateOutputType | null
+    _avg: DaySlotAvgAggregateOutputType | null
+    _sum: DaySlotSumAggregateOutputType | null
+    _min: DaySlotMinAggregateOutputType | null
+    _max: DaySlotMaxAggregateOutputType | null
   }
 
-  export type WeekDayAvgAggregateOutputType = {
+  export type DaySlotAvgAggregateOutputType = {
     id: number | null
-    day: number | null
-    availabilityScheduleId: number | null
-    timeSelectId: number | null
-    eventTypeId: number | null
   }
 
-  export type WeekDaySumAggregateOutputType = {
+  export type DaySlotSumAggregateOutputType = {
     id: number | null
-    day: number | null
-    availabilityScheduleId: number | null
-    timeSelectId: number | null
-    eventTypeId: number | null
   }
 
-  export type WeekDayMinAggregateOutputType = {
+  export type DaySlotMinAggregateOutputType = {
     id: number | null
-    day: number | null
-    availabilityScheduleId: number | null
-    timeSelectId: number | null
-    eventTypeId: number | null
-    status: string | null
-    date: Date | null
+    name: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
-  export type WeekDayMaxAggregateOutputType = {
+  export type DaySlotMaxAggregateOutputType = {
     id: number | null
-    day: number | null
-    availabilityScheduleId: number | null
-    timeSelectId: number | null
-    eventTypeId: number | null
-    status: string | null
-    date: Date | null
+    name: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
-  export type WeekDayCountAggregateOutputType = {
+  export type DaySlotCountAggregateOutputType = {
     id: number
-    day: number
-    availabilityScheduleId: number
-    timeSelectId: number
-    eventTypeId: number
-    status: number
-    date: number
+    name: number
     createdAt: number
     updatedAt: number
     _all: number
   }
 
 
-  export type WeekDayAvgAggregateInputType = {
+  export type DaySlotAvgAggregateInputType = {
     id?: true
-    day?: true
-    availabilityScheduleId?: true
-    timeSelectId?: true
-    eventTypeId?: true
   }
 
-  export type WeekDaySumAggregateInputType = {
+  export type DaySlotSumAggregateInputType = {
     id?: true
-    day?: true
-    availabilityScheduleId?: true
-    timeSelectId?: true
-    eventTypeId?: true
   }
 
-  export type WeekDayMinAggregateInputType = {
+  export type DaySlotMinAggregateInputType = {
     id?: true
-    day?: true
-    availabilityScheduleId?: true
-    timeSelectId?: true
-    eventTypeId?: true
-    status?: true
-    date?: true
+    name?: true
     createdAt?: true
     updatedAt?: true
   }
 
-  export type WeekDayMaxAggregateInputType = {
+  export type DaySlotMaxAggregateInputType = {
     id?: true
-    day?: true
-    availabilityScheduleId?: true
-    timeSelectId?: true
-    eventTypeId?: true
-    status?: true
-    date?: true
+    name?: true
     createdAt?: true
     updatedAt?: true
   }
 
-  export type WeekDayCountAggregateInputType = {
+  export type DaySlotCountAggregateInputType = {
     id?: true
-    day?: true
-    availabilityScheduleId?: true
-    timeSelectId?: true
-    eventTypeId?: true
-    status?: true
-    date?: true
+    name?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
   }
 
-  export type WeekDayAggregateArgs = {
+  export type DaySlotAggregateArgs = {
     /**
-     * Filter which WeekDay to aggregate.
+     * Filter which DaySlot to aggregate.
      */
-    where?: WeekDayWhereInput
+    where?: DaySlotWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of WeekDays to fetch.
+     * Determine the order of DaySlots to fetch.
      */
-    orderBy?: Enumerable<WeekDayOrderByWithRelationInput>
+    orderBy?: Enumerable<DaySlotOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
      */
-    cursor?: WeekDayWhereUniqueInput
+    cursor?: DaySlotWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` WeekDays from the position of the cursor.
+     * Take `±n` DaySlots from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` WeekDays.
+     * Skip the first `n` DaySlots.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Count returned WeekDays
+     * Count returned DaySlots
     **/
-    _count?: true | WeekDayCountAggregateInputType
+    _count?: true | DaySlotCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
-    _avg?: WeekDayAvgAggregateInputType
+    _avg?: DaySlotAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to sum
     **/
-    _sum?: WeekDaySumAggregateInputType
+    _sum?: DaySlotSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
-    _min?: WeekDayMinAggregateInputType
+    _min?: DaySlotMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
-    _max?: WeekDayMaxAggregateInputType
+    _max?: DaySlotMaxAggregateInputType
   }
 
-  export type GetWeekDayAggregateType<T extends WeekDayAggregateArgs> = {
-        [P in keyof T & keyof AggregateWeekDay]: P extends '_count' | 'count'
+  export type GetDaySlotAggregateType<T extends DaySlotAggregateArgs> = {
+        [P in keyof T & keyof AggregateDaySlot]: P extends '_count' | 'count'
       ? T[P] extends true
         ? number
-        : GetScalarType<T[P], AggregateWeekDay[P]>
-      : GetScalarType<T[P], AggregateWeekDay[P]>
+        : GetScalarType<T[P], AggregateDaySlot[P]>
+      : GetScalarType<T[P], AggregateDaySlot[P]>
   }
 
 
 
 
-  export type WeekDayGroupByArgs = {
-    where?: WeekDayWhereInput
-    orderBy?: Enumerable<WeekDayOrderByWithAggregationInput>
-    by: WeekDayScalarFieldEnum[]
-    having?: WeekDayScalarWhereWithAggregatesInput
+  export type DaySlotGroupByArgs = {
+    where?: DaySlotWhereInput
+    orderBy?: Enumerable<DaySlotOrderByWithAggregationInput>
+    by: DaySlotScalarFieldEnum[]
+    having?: DaySlotScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    _count?: WeekDayCountAggregateInputType | true
-    _avg?: WeekDayAvgAggregateInputType
-    _sum?: WeekDaySumAggregateInputType
-    _min?: WeekDayMinAggregateInputType
-    _max?: WeekDayMaxAggregateInputType
+    _count?: DaySlotCountAggregateInputType | true
+    _avg?: DaySlotAvgAggregateInputType
+    _sum?: DaySlotSumAggregateInputType
+    _min?: DaySlotMinAggregateInputType
+    _max?: DaySlotMaxAggregateInputType
   }
 
 
-  export type WeekDayGroupByOutputType = {
+  export type DaySlotGroupByOutputType = {
     id: number
-    day: number
-    availabilityScheduleId: number | null
-    timeSelectId: number
-    eventTypeId: number | null
-    status: string
-    date: Date
+    name: string
     createdAt: Date
     updatedAt: Date
-    _count: WeekDayCountAggregateOutputType | null
-    _avg: WeekDayAvgAggregateOutputType | null
-    _sum: WeekDaySumAggregateOutputType | null
-    _min: WeekDayMinAggregateOutputType | null
-    _max: WeekDayMaxAggregateOutputType | null
+    _count: DaySlotCountAggregateOutputType | null
+    _avg: DaySlotAvgAggregateOutputType | null
+    _sum: DaySlotSumAggregateOutputType | null
+    _min: DaySlotMinAggregateOutputType | null
+    _max: DaySlotMaxAggregateOutputType | null
   }
 
-  type GetWeekDayGroupByPayload<T extends WeekDayGroupByArgs> = Prisma.PrismaPromise<
+  type GetDaySlotGroupByPayload<T extends DaySlotGroupByArgs> = Prisma.PrismaPromise<
     Array<
-      PickArray<WeekDayGroupByOutputType, T['by']> &
+      PickArray<DaySlotGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof WeekDayGroupByOutputType))]: P extends '_count'
+          [P in ((keyof T) & (keyof DaySlotGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
               ? number
-              : GetScalarType<T[P], WeekDayGroupByOutputType[P]>
-            : GetScalarType<T[P], WeekDayGroupByOutputType[P]>
+              : GetScalarType<T[P], DaySlotGroupByOutputType[P]>
+            : GetScalarType<T[P], DaySlotGroupByOutputType[P]>
         }
       >
     >
 
 
-  export type WeekDaySelect = {
+  export type DaySlotSelect = {
     id?: boolean
-    day?: boolean
-    availabilityScheduleId?: boolean
-    timeSelectId?: boolean
-    eventTypeId?: boolean
-    status?: boolean
-    date?: boolean
+    name?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    availabilitySchedule?: boolean | AvailabilityScheduleArgs
-    timeSelect?: boolean | TimeSelectArgs
-    eventType?: boolean | EventTypeArgs
+    dateSlots?: boolean | DaySlot$dateSlotsArgs
+    _count?: boolean | DaySlotCountOutputTypeArgs
   }
 
 
-  export type WeekDayInclude = {
-    availabilitySchedule?: boolean | AvailabilityScheduleArgs
-    timeSelect?: boolean | TimeSelectArgs
-    eventType?: boolean | EventTypeArgs
+  export type DaySlotInclude = {
+    dateSlots?: boolean | DaySlot$dateSlotsArgs
+    _count?: boolean | DaySlotCountOutputTypeArgs
   }
 
-  export type WeekDayGetPayload<S extends boolean | null | undefined | WeekDayArgs> =
+  export type DaySlotGetPayload<S extends boolean | null | undefined | DaySlotArgs> =
     S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? WeekDay :
+    S extends true ? DaySlot :
     S extends undefined ? never :
-    S extends { include: any } & (WeekDayArgs | WeekDayFindManyArgs)
-    ? WeekDay  & {
+    S extends { include: any } & (DaySlotArgs | DaySlotFindManyArgs)
+    ? DaySlot  & {
     [P in TruthyKeys<S['include']>]:
-        P extends 'availabilitySchedule' ? AvailabilityScheduleGetPayload<S['include'][P]> | null :
-        P extends 'timeSelect' ? TimeSelectGetPayload<S['include'][P]> :
-        P extends 'eventType' ? EventTypeGetPayload<S['include'][P]> | null :  never
+        P extends 'dateSlots' ? Array < DateSlotGetPayload<S['include'][P]>>  :
+        P extends '_count' ? DaySlotCountOutputTypeGetPayload<S['include'][P]> :  never
   } 
-    : S extends { select: any } & (WeekDayArgs | WeekDayFindManyArgs)
+    : S extends { select: any } & (DaySlotArgs | DaySlotFindManyArgs)
       ? {
     [P in TruthyKeys<S['select']>]:
-        P extends 'availabilitySchedule' ? AvailabilityScheduleGetPayload<S['select'][P]> | null :
-        P extends 'timeSelect' ? TimeSelectGetPayload<S['select'][P]> :
-        P extends 'eventType' ? EventTypeGetPayload<S['select'][P]> | null :  P extends keyof WeekDay ? WeekDay[P] : never
+        P extends 'dateSlots' ? Array < DateSlotGetPayload<S['select'][P]>>  :
+        P extends '_count' ? DaySlotCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof DaySlot ? DaySlot[P] : never
   } 
-      : WeekDay
+      : DaySlot
 
 
-  type WeekDayCountArgs = 
-    Omit<WeekDayFindManyArgs, 'select' | 'include'> & {
-      select?: WeekDayCountAggregateInputType | true
+  type DaySlotCountArgs = 
+    Omit<DaySlotFindManyArgs, 'select' | 'include'> & {
+      select?: DaySlotCountAggregateInputType | true
     }
 
-  export interface WeekDayDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+  export interface DaySlotDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
 
     /**
-     * Find zero or one WeekDay that matches the filter.
-     * @param {WeekDayFindUniqueArgs} args - Arguments to find a WeekDay
+     * Find zero or one DaySlot that matches the filter.
+     * @param {DaySlotFindUniqueArgs} args - Arguments to find a DaySlot
      * @example
-     * // Get one WeekDay
-     * const weekDay = await prisma.weekDay.findUnique({
+     * // Get one DaySlot
+     * const daySlot = await prisma.daySlot.findUnique({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
     **/
-    findUnique<T extends WeekDayFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args: SelectSubset<T, WeekDayFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'WeekDay'> extends True ? Prisma__WeekDayClient<WeekDayGetPayload<T>> : Prisma__WeekDayClient<WeekDayGetPayload<T> | null, null>
+    findUnique<T extends DaySlotFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, DaySlotFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'DaySlot'> extends True ? Prisma__DaySlotClient<DaySlotGetPayload<T>> : Prisma__DaySlotClient<DaySlotGetPayload<T> | null, null>
 
     /**
-     * Find one WeekDay that matches the filter or throw an error  with `error.code='P2025'` 
+     * Find one DaySlot that matches the filter or throw an error  with `error.code='P2025'` 
      *     if no matches were found.
-     * @param {WeekDayFindUniqueOrThrowArgs} args - Arguments to find a WeekDay
+     * @param {DaySlotFindUniqueOrThrowArgs} args - Arguments to find a DaySlot
      * @example
-     * // Get one WeekDay
-     * const weekDay = await prisma.weekDay.findUniqueOrThrow({
+     * // Get one DaySlot
+     * const daySlot = await prisma.daySlot.findUniqueOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
     **/
-    findUniqueOrThrow<T extends WeekDayFindUniqueOrThrowArgs>(
-      args?: SelectSubset<T, WeekDayFindUniqueOrThrowArgs>
-    ): Prisma__WeekDayClient<WeekDayGetPayload<T>>
+    findUniqueOrThrow<T extends DaySlotFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, DaySlotFindUniqueOrThrowArgs>
+    ): Prisma__DaySlotClient<DaySlotGetPayload<T>>
 
     /**
-     * Find the first WeekDay that matches the filter.
+     * Find the first DaySlot that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {WeekDayFindFirstArgs} args - Arguments to find a WeekDay
+     * @param {DaySlotFindFirstArgs} args - Arguments to find a DaySlot
      * @example
-     * // Get one WeekDay
-     * const weekDay = await prisma.weekDay.findFirst({
+     * // Get one DaySlot
+     * const daySlot = await prisma.daySlot.findFirst({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
     **/
-    findFirst<T extends WeekDayFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args?: SelectSubset<T, WeekDayFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'WeekDay'> extends True ? Prisma__WeekDayClient<WeekDayGetPayload<T>> : Prisma__WeekDayClient<WeekDayGetPayload<T> | null, null>
+    findFirst<T extends DaySlotFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, DaySlotFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'DaySlot'> extends True ? Prisma__DaySlotClient<DaySlotGetPayload<T>> : Prisma__DaySlotClient<DaySlotGetPayload<T> | null, null>
 
     /**
-     * Find the first WeekDay that matches the filter or
+     * Find the first DaySlot that matches the filter or
      * throw `NotFoundError` if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {WeekDayFindFirstOrThrowArgs} args - Arguments to find a WeekDay
+     * @param {DaySlotFindFirstOrThrowArgs} args - Arguments to find a DaySlot
      * @example
-     * // Get one WeekDay
-     * const weekDay = await prisma.weekDay.findFirstOrThrow({
+     * // Get one DaySlot
+     * const daySlot = await prisma.daySlot.findFirstOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
     **/
-    findFirstOrThrow<T extends WeekDayFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, WeekDayFindFirstOrThrowArgs>
-    ): Prisma__WeekDayClient<WeekDayGetPayload<T>>
+    findFirstOrThrow<T extends DaySlotFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, DaySlotFindFirstOrThrowArgs>
+    ): Prisma__DaySlotClient<DaySlotGetPayload<T>>
 
     /**
-     * Find zero or more WeekDays that matches the filter.
+     * Find zero or more DaySlots that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {WeekDayFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @param {DaySlotFindManyArgs=} args - Arguments to filter and select certain fields only.
      * @example
-     * // Get all WeekDays
-     * const weekDays = await prisma.weekDay.findMany()
+     * // Get all DaySlots
+     * const daySlots = await prisma.daySlot.findMany()
      * 
-     * // Get first 10 WeekDays
-     * const weekDays = await prisma.weekDay.findMany({ take: 10 })
+     * // Get first 10 DaySlots
+     * const daySlots = await prisma.daySlot.findMany({ take: 10 })
      * 
      * // Only select the `id`
-     * const weekDayWithIdOnly = await prisma.weekDay.findMany({ select: { id: true } })
+     * const daySlotWithIdOnly = await prisma.daySlot.findMany({ select: { id: true } })
      * 
     **/
-    findMany<T extends WeekDayFindManyArgs>(
-      args?: SelectSubset<T, WeekDayFindManyArgs>
-    ): Prisma.PrismaPromise<Array<WeekDayGetPayload<T>>>
+    findMany<T extends DaySlotFindManyArgs>(
+      args?: SelectSubset<T, DaySlotFindManyArgs>
+    ): Prisma.PrismaPromise<Array<DaySlotGetPayload<T>>>
 
     /**
-     * Create a WeekDay.
-     * @param {WeekDayCreateArgs} args - Arguments to create a WeekDay.
+     * Create a DaySlot.
+     * @param {DaySlotCreateArgs} args - Arguments to create a DaySlot.
      * @example
-     * // Create one WeekDay
-     * const WeekDay = await prisma.weekDay.create({
+     * // Create one DaySlot
+     * const DaySlot = await prisma.daySlot.create({
      *   data: {
-     *     // ... data to create a WeekDay
+     *     // ... data to create a DaySlot
      *   }
      * })
      * 
     **/
-    create<T extends WeekDayCreateArgs>(
-      args: SelectSubset<T, WeekDayCreateArgs>
-    ): Prisma__WeekDayClient<WeekDayGetPayload<T>>
+    create<T extends DaySlotCreateArgs>(
+      args: SelectSubset<T, DaySlotCreateArgs>
+    ): Prisma__DaySlotClient<DaySlotGetPayload<T>>
 
     /**
-     * Create many WeekDays.
-     *     @param {WeekDayCreateManyArgs} args - Arguments to create many WeekDays.
+     * Create many DaySlots.
+     *     @param {DaySlotCreateManyArgs} args - Arguments to create many DaySlots.
      *     @example
-     *     // Create many WeekDays
-     *     const weekDay = await prisma.weekDay.createMany({
+     *     // Create many DaySlots
+     *     const daySlot = await prisma.daySlot.createMany({
      *       data: {
      *         // ... provide data here
      *       }
      *     })
      *     
     **/
-    createMany<T extends WeekDayCreateManyArgs>(
-      args?: SelectSubset<T, WeekDayCreateManyArgs>
+    createMany<T extends DaySlotCreateManyArgs>(
+      args?: SelectSubset<T, DaySlotCreateManyArgs>
     ): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Delete a WeekDay.
-     * @param {WeekDayDeleteArgs} args - Arguments to delete one WeekDay.
+     * Delete a DaySlot.
+     * @param {DaySlotDeleteArgs} args - Arguments to delete one DaySlot.
      * @example
-     * // Delete one WeekDay
-     * const WeekDay = await prisma.weekDay.delete({
+     * // Delete one DaySlot
+     * const DaySlot = await prisma.daySlot.delete({
      *   where: {
-     *     // ... filter to delete one WeekDay
+     *     // ... filter to delete one DaySlot
      *   }
      * })
      * 
     **/
-    delete<T extends WeekDayDeleteArgs>(
-      args: SelectSubset<T, WeekDayDeleteArgs>
-    ): Prisma__WeekDayClient<WeekDayGetPayload<T>>
+    delete<T extends DaySlotDeleteArgs>(
+      args: SelectSubset<T, DaySlotDeleteArgs>
+    ): Prisma__DaySlotClient<DaySlotGetPayload<T>>
 
     /**
-     * Update one WeekDay.
-     * @param {WeekDayUpdateArgs} args - Arguments to update one WeekDay.
+     * Update one DaySlot.
+     * @param {DaySlotUpdateArgs} args - Arguments to update one DaySlot.
      * @example
-     * // Update one WeekDay
-     * const weekDay = await prisma.weekDay.update({
+     * // Update one DaySlot
+     * const daySlot = await prisma.daySlot.update({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -7154,34 +7057,34 @@ export namespace Prisma {
      * })
      * 
     **/
-    update<T extends WeekDayUpdateArgs>(
-      args: SelectSubset<T, WeekDayUpdateArgs>
-    ): Prisma__WeekDayClient<WeekDayGetPayload<T>>
+    update<T extends DaySlotUpdateArgs>(
+      args: SelectSubset<T, DaySlotUpdateArgs>
+    ): Prisma__DaySlotClient<DaySlotGetPayload<T>>
 
     /**
-     * Delete zero or more WeekDays.
-     * @param {WeekDayDeleteManyArgs} args - Arguments to filter WeekDays to delete.
+     * Delete zero or more DaySlots.
+     * @param {DaySlotDeleteManyArgs} args - Arguments to filter DaySlots to delete.
      * @example
-     * // Delete a few WeekDays
-     * const { count } = await prisma.weekDay.deleteMany({
+     * // Delete a few DaySlots
+     * const { count } = await prisma.daySlot.deleteMany({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      * 
     **/
-    deleteMany<T extends WeekDayDeleteManyArgs>(
-      args?: SelectSubset<T, WeekDayDeleteManyArgs>
+    deleteMany<T extends DaySlotDeleteManyArgs>(
+      args?: SelectSubset<T, DaySlotDeleteManyArgs>
     ): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more WeekDays.
+     * Update zero or more DaySlots.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {WeekDayUpdateManyArgs} args - Arguments to update one or more rows.
+     * @param {DaySlotUpdateManyArgs} args - Arguments to update one or more rows.
      * @example
-     * // Update many WeekDays
-     * const weekDay = await prisma.weekDay.updateMany({
+     * // Update many DaySlots
+     * const daySlot = await prisma.daySlot.updateMany({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -7191,59 +7094,59 @@ export namespace Prisma {
      * })
      * 
     **/
-    updateMany<T extends WeekDayUpdateManyArgs>(
-      args: SelectSubset<T, WeekDayUpdateManyArgs>
+    updateMany<T extends DaySlotUpdateManyArgs>(
+      args: SelectSubset<T, DaySlotUpdateManyArgs>
     ): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Create or update one WeekDay.
-     * @param {WeekDayUpsertArgs} args - Arguments to update or create a WeekDay.
+     * Create or update one DaySlot.
+     * @param {DaySlotUpsertArgs} args - Arguments to update or create a DaySlot.
      * @example
-     * // Update or create a WeekDay
-     * const weekDay = await prisma.weekDay.upsert({
+     * // Update or create a DaySlot
+     * const daySlot = await prisma.daySlot.upsert({
      *   create: {
-     *     // ... data to create a WeekDay
+     *     // ... data to create a DaySlot
      *   },
      *   update: {
      *     // ... in case it already exists, update
      *   },
      *   where: {
-     *     // ... the filter for the WeekDay we want to update
+     *     // ... the filter for the DaySlot we want to update
      *   }
      * })
     **/
-    upsert<T extends WeekDayUpsertArgs>(
-      args: SelectSubset<T, WeekDayUpsertArgs>
-    ): Prisma__WeekDayClient<WeekDayGetPayload<T>>
+    upsert<T extends DaySlotUpsertArgs>(
+      args: SelectSubset<T, DaySlotUpsertArgs>
+    ): Prisma__DaySlotClient<DaySlotGetPayload<T>>
 
     /**
-     * Count the number of WeekDays.
+     * Count the number of DaySlots.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {WeekDayCountArgs} args - Arguments to filter WeekDays to count.
+     * @param {DaySlotCountArgs} args - Arguments to filter DaySlots to count.
      * @example
-     * // Count the number of WeekDays
-     * const count = await prisma.weekDay.count({
+     * // Count the number of DaySlots
+     * const count = await prisma.daySlot.count({
      *   where: {
-     *     // ... the filter for the WeekDays we want to count
+     *     // ... the filter for the DaySlots we want to count
      *   }
      * })
     **/
-    count<T extends WeekDayCountArgs>(
-      args?: Subset<T, WeekDayCountArgs>,
+    count<T extends DaySlotCountArgs>(
+      args?: Subset<T, DaySlotCountArgs>,
     ): Prisma.PrismaPromise<
       T extends _Record<'select', any>
         ? T['select'] extends true
           ? number
-          : GetScalarType<T['select'], WeekDayCountAggregateOutputType>
+          : GetScalarType<T['select'], DaySlotCountAggregateOutputType>
         : number
     >
 
     /**
-     * Allows you to perform aggregations operations on a WeekDay.
+     * Allows you to perform aggregations operations on a DaySlot.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {WeekDayAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @param {DaySlotAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
      * @example
      * // Ordered by age ascending
      * // Where email contains prisma.io
@@ -7263,13 +7166,13 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends WeekDayAggregateArgs>(args: Subset<T, WeekDayAggregateArgs>): Prisma.PrismaPromise<GetWeekDayAggregateType<T>>
+    aggregate<T extends DaySlotAggregateArgs>(args: Subset<T, DaySlotAggregateArgs>): Prisma.PrismaPromise<GetDaySlotAggregateType<T>>
 
     /**
-     * Group by WeekDay.
+     * Group by DaySlot.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {WeekDayGroupByArgs} args - Group by arguments.
+     * @param {DaySlotGroupByArgs} args - Group by arguments.
      * @example
      * // Group by city, order by createdAt, get count
      * const result = await prisma.user.groupBy({
@@ -7284,14 +7187,14 @@ export namespace Prisma {
      * 
     **/
     groupBy<
-      T extends WeekDayGroupByArgs,
+      T extends DaySlotGroupByArgs,
       HasSelectOrTake extends Or<
         Extends<'skip', Keys<T>>,
         Extends<'take', Keys<T>>
       >,
       OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: WeekDayGroupByArgs['orderBy'] }
-        : { orderBy?: WeekDayGroupByArgs['orderBy'] },
+        ? { orderBy: DaySlotGroupByArgs['orderBy'] }
+        : { orderBy?: DaySlotGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends TupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -7340,17 +7243,1059 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, WeekDayGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetWeekDayGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, DaySlotGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDaySlotGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
 
   }
 
   /**
-   * The delegate class that acts as a "Promise-like" for WeekDay.
+   * The delegate class that acts as a "Promise-like" for DaySlot.
    * Why is this prefixed with `Prisma__`?
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export class Prisma__WeekDayClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+  export class Prisma__DaySlotClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+    private readonly _dmmf;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+
+    dateSlots<T extends DaySlot$dateSlotsArgs= {}>(args?: Subset<T, DaySlot$dateSlotsArgs>): Prisma.PrismaPromise<Array<DateSlotGetPayload<T>>| Null>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+
+
+  // Custom InputTypes
+
+  /**
+   * DaySlot base type for findUnique actions
+   */
+  export type DaySlotFindUniqueArgsBase = {
+    /**
+     * Select specific fields to fetch from the DaySlot
+     */
+    select?: DaySlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: DaySlotInclude | null
+    /**
+     * Filter, which DaySlot to fetch.
+     */
+    where: DaySlotWhereUniqueInput
+  }
+
+  /**
+   * DaySlot findUnique
+   */
+  export interface DaySlotFindUniqueArgs extends DaySlotFindUniqueArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * DaySlot findUniqueOrThrow
+   */
+  export type DaySlotFindUniqueOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the DaySlot
+     */
+    select?: DaySlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: DaySlotInclude | null
+    /**
+     * Filter, which DaySlot to fetch.
+     */
+    where: DaySlotWhereUniqueInput
+  }
+
+
+  /**
+   * DaySlot base type for findFirst actions
+   */
+  export type DaySlotFindFirstArgsBase = {
+    /**
+     * Select specific fields to fetch from the DaySlot
+     */
+    select?: DaySlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: DaySlotInclude | null
+    /**
+     * Filter, which DaySlot to fetch.
+     */
+    where?: DaySlotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DaySlots to fetch.
+     */
+    orderBy?: Enumerable<DaySlotOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DaySlots.
+     */
+    cursor?: DaySlotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DaySlots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DaySlots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DaySlots.
+     */
+    distinct?: Enumerable<DaySlotScalarFieldEnum>
+  }
+
+  /**
+   * DaySlot findFirst
+   */
+  export interface DaySlotFindFirstArgs extends DaySlotFindFirstArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * DaySlot findFirstOrThrow
+   */
+  export type DaySlotFindFirstOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the DaySlot
+     */
+    select?: DaySlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: DaySlotInclude | null
+    /**
+     * Filter, which DaySlot to fetch.
+     */
+    where?: DaySlotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DaySlots to fetch.
+     */
+    orderBy?: Enumerable<DaySlotOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DaySlots.
+     */
+    cursor?: DaySlotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DaySlots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DaySlots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DaySlots.
+     */
+    distinct?: Enumerable<DaySlotScalarFieldEnum>
+  }
+
+
+  /**
+   * DaySlot findMany
+   */
+  export type DaySlotFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the DaySlot
+     */
+    select?: DaySlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: DaySlotInclude | null
+    /**
+     * Filter, which DaySlots to fetch.
+     */
+    where?: DaySlotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DaySlots to fetch.
+     */
+    orderBy?: Enumerable<DaySlotOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DaySlots.
+     */
+    cursor?: DaySlotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DaySlots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DaySlots.
+     */
+    skip?: number
+    distinct?: Enumerable<DaySlotScalarFieldEnum>
+  }
+
+
+  /**
+   * DaySlot create
+   */
+  export type DaySlotCreateArgs = {
+    /**
+     * Select specific fields to fetch from the DaySlot
+     */
+    select?: DaySlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: DaySlotInclude | null
+    /**
+     * The data needed to create a DaySlot.
+     */
+    data: XOR<DaySlotCreateInput, DaySlotUncheckedCreateInput>
+  }
+
+
+  /**
+   * DaySlot createMany
+   */
+  export type DaySlotCreateManyArgs = {
+    /**
+     * The data used to create many DaySlots.
+     */
+    data: Enumerable<DaySlotCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * DaySlot update
+   */
+  export type DaySlotUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the DaySlot
+     */
+    select?: DaySlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: DaySlotInclude | null
+    /**
+     * The data needed to update a DaySlot.
+     */
+    data: XOR<DaySlotUpdateInput, DaySlotUncheckedUpdateInput>
+    /**
+     * Choose, which DaySlot to update.
+     */
+    where: DaySlotWhereUniqueInput
+  }
+
+
+  /**
+   * DaySlot updateMany
+   */
+  export type DaySlotUpdateManyArgs = {
+    /**
+     * The data used to update DaySlots.
+     */
+    data: XOR<DaySlotUpdateManyMutationInput, DaySlotUncheckedUpdateManyInput>
+    /**
+     * Filter which DaySlots to update
+     */
+    where?: DaySlotWhereInput
+  }
+
+
+  /**
+   * DaySlot upsert
+   */
+  export type DaySlotUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the DaySlot
+     */
+    select?: DaySlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: DaySlotInclude | null
+    /**
+     * The filter to search for the DaySlot to update in case it exists.
+     */
+    where: DaySlotWhereUniqueInput
+    /**
+     * In case the DaySlot found by the `where` argument doesn't exist, create a new DaySlot with this data.
+     */
+    create: XOR<DaySlotCreateInput, DaySlotUncheckedCreateInput>
+    /**
+     * In case the DaySlot was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DaySlotUpdateInput, DaySlotUncheckedUpdateInput>
+  }
+
+
+  /**
+   * DaySlot delete
+   */
+  export type DaySlotDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the DaySlot
+     */
+    select?: DaySlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: DaySlotInclude | null
+    /**
+     * Filter which DaySlot to delete.
+     */
+    where: DaySlotWhereUniqueInput
+  }
+
+
+  /**
+   * DaySlot deleteMany
+   */
+  export type DaySlotDeleteManyArgs = {
+    /**
+     * Filter which DaySlots to delete
+     */
+    where?: DaySlotWhereInput
+  }
+
+
+  /**
+   * DaySlot.dateSlots
+   */
+  export type DaySlot$dateSlotsArgs = {
+    /**
+     * Select specific fields to fetch from the DateSlot
+     */
+    select?: DateSlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: DateSlotInclude | null
+    where?: DateSlotWhereInput
+    orderBy?: Enumerable<DateSlotOrderByWithRelationInput>
+    cursor?: DateSlotWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Enumerable<DateSlotScalarFieldEnum>
+  }
+
+
+  /**
+   * DaySlot without action
+   */
+  export type DaySlotArgs = {
+    /**
+     * Select specific fields to fetch from the DaySlot
+     */
+    select?: DaySlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: DaySlotInclude | null
+  }
+
+
+
+  /**
+   * Model DateSlot
+   */
+
+
+  export type AggregateDateSlot = {
+    _count: DateSlotCountAggregateOutputType | null
+    _avg: DateSlotAvgAggregateOutputType | null
+    _sum: DateSlotSumAggregateOutputType | null
+    _min: DateSlotMinAggregateOutputType | null
+    _max: DateSlotMaxAggregateOutputType | null
+  }
+
+  export type DateSlotAvgAggregateOutputType = {
+    id: number | null
+    availabilityScheduleId: number | null
+    custormerId: number | null
+    eventId: number | null
+  }
+
+  export type DateSlotSumAggregateOutputType = {
+    id: number | null
+    availabilityScheduleId: number | null
+    custormerId: number | null
+    eventId: number | null
+  }
+
+  export type DateSlotMinAggregateOutputType = {
+    id: number | null
+    availabilityScheduleId: number | null
+    name: Date | null
+    custormerId: number | null
+    eventId: number | null
+    dayName: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DateSlotMaxAggregateOutputType = {
+    id: number | null
+    availabilityScheduleId: number | null
+    name: Date | null
+    custormerId: number | null
+    eventId: number | null
+    dayName: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DateSlotCountAggregateOutputType = {
+    id: number
+    availabilityScheduleId: number
+    name: number
+    custormerId: number
+    eventId: number
+    dayName: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type DateSlotAvgAggregateInputType = {
+    id?: true
+    availabilityScheduleId?: true
+    custormerId?: true
+    eventId?: true
+  }
+
+  export type DateSlotSumAggregateInputType = {
+    id?: true
+    availabilityScheduleId?: true
+    custormerId?: true
+    eventId?: true
+  }
+
+  export type DateSlotMinAggregateInputType = {
+    id?: true
+    availabilityScheduleId?: true
+    name?: true
+    custormerId?: true
+    eventId?: true
+    dayName?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DateSlotMaxAggregateInputType = {
+    id?: true
+    availabilityScheduleId?: true
+    name?: true
+    custormerId?: true
+    eventId?: true
+    dayName?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DateSlotCountAggregateInputType = {
+    id?: true
+    availabilityScheduleId?: true
+    name?: true
+    custormerId?: true
+    eventId?: true
+    dayName?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type DateSlotAggregateArgs = {
+    /**
+     * Filter which DateSlot to aggregate.
+     */
+    where?: DateSlotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DateSlots to fetch.
+     */
+    orderBy?: Enumerable<DateSlotOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DateSlotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DateSlots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DateSlots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DateSlots
+    **/
+    _count?: true | DateSlotCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: DateSlotAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: DateSlotSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DateSlotMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DateSlotMaxAggregateInputType
+  }
+
+  export type GetDateSlotAggregateType<T extends DateSlotAggregateArgs> = {
+        [P in keyof T & keyof AggregateDateSlot]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDateSlot[P]>
+      : GetScalarType<T[P], AggregateDateSlot[P]>
+  }
+
+
+
+
+  export type DateSlotGroupByArgs = {
+    where?: DateSlotWhereInput
+    orderBy?: Enumerable<DateSlotOrderByWithAggregationInput>
+    by: DateSlotScalarFieldEnum[]
+    having?: DateSlotScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DateSlotCountAggregateInputType | true
+    _avg?: DateSlotAvgAggregateInputType
+    _sum?: DateSlotSumAggregateInputType
+    _min?: DateSlotMinAggregateInputType
+    _max?: DateSlotMaxAggregateInputType
+  }
+
+
+  export type DateSlotGroupByOutputType = {
+    id: number
+    availabilityScheduleId: number | null
+    name: Date
+    custormerId: number | null
+    eventId: number
+    dayName: string
+    createdAt: Date
+    updatedAt: Date
+    _count: DateSlotCountAggregateOutputType | null
+    _avg: DateSlotAvgAggregateOutputType | null
+    _sum: DateSlotSumAggregateOutputType | null
+    _min: DateSlotMinAggregateOutputType | null
+    _max: DateSlotMaxAggregateOutputType | null
+  }
+
+  type GetDateSlotGroupByPayload<T extends DateSlotGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickArray<DateSlotGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DateSlotGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DateSlotGroupByOutputType[P]>
+            : GetScalarType<T[P], DateSlotGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DateSlotSelect = {
+    id?: boolean
+    availabilityScheduleId?: boolean
+    name?: boolean
+    custormerId?: boolean
+    eventId?: boolean
+    dayName?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    availabilitySchedule?: boolean | AvailabilityScheduleArgs
+    custormer?: boolean | CustomerArgs
+    eventType?: boolean | EventTypeArgs
+    daySlot?: boolean | DaySlotArgs
+    dateOnTimeSlots?: boolean | DateSlot$dateOnTimeSlotsArgs
+    _count?: boolean | DateSlotCountOutputTypeArgs
+  }
+
+
+  export type DateSlotInclude = {
+    availabilitySchedule?: boolean | AvailabilityScheduleArgs
+    custormer?: boolean | CustomerArgs
+    eventType?: boolean | EventTypeArgs
+    daySlot?: boolean | DaySlotArgs
+    dateOnTimeSlots?: boolean | DateSlot$dateOnTimeSlotsArgs
+    _count?: boolean | DateSlotCountOutputTypeArgs
+  }
+
+  export type DateSlotGetPayload<S extends boolean | null | undefined | DateSlotArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? DateSlot :
+    S extends undefined ? never :
+    S extends { include: any } & (DateSlotArgs | DateSlotFindManyArgs)
+    ? DateSlot  & {
+    [P in TruthyKeys<S['include']>]:
+        P extends 'availabilitySchedule' ? AvailabilityScheduleGetPayload<S['include'][P]> | null :
+        P extends 'custormer' ? CustomerGetPayload<S['include'][P]> | null :
+        P extends 'eventType' ? EventTypeGetPayload<S['include'][P]> :
+        P extends 'daySlot' ? DaySlotGetPayload<S['include'][P]> :
+        P extends 'dateOnTimeSlots' ? Array < DateOnTimeSlotGetPayload<S['include'][P]>>  :
+        P extends '_count' ? DateSlotCountOutputTypeGetPayload<S['include'][P]> :  never
+  } 
+    : S extends { select: any } & (DateSlotArgs | DateSlotFindManyArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+        P extends 'availabilitySchedule' ? AvailabilityScheduleGetPayload<S['select'][P]> | null :
+        P extends 'custormer' ? CustomerGetPayload<S['select'][P]> | null :
+        P extends 'eventType' ? EventTypeGetPayload<S['select'][P]> :
+        P extends 'daySlot' ? DaySlotGetPayload<S['select'][P]> :
+        P extends 'dateOnTimeSlots' ? Array < DateOnTimeSlotGetPayload<S['select'][P]>>  :
+        P extends '_count' ? DateSlotCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof DateSlot ? DateSlot[P] : never
+  } 
+      : DateSlot
+
+
+  type DateSlotCountArgs = 
+    Omit<DateSlotFindManyArgs, 'select' | 'include'> & {
+      select?: DateSlotCountAggregateInputType | true
+    }
+
+  export interface DateSlotDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+
+    /**
+     * Find zero or one DateSlot that matches the filter.
+     * @param {DateSlotFindUniqueArgs} args - Arguments to find a DateSlot
+     * @example
+     * // Get one DateSlot
+     * const dateSlot = await prisma.dateSlot.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends DateSlotFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, DateSlotFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'DateSlot'> extends True ? Prisma__DateSlotClient<DateSlotGetPayload<T>> : Prisma__DateSlotClient<DateSlotGetPayload<T> | null, null>
+
+    /**
+     * Find one DateSlot that matches the filter or throw an error  with `error.code='P2025'` 
+     *     if no matches were found.
+     * @param {DateSlotFindUniqueOrThrowArgs} args - Arguments to find a DateSlot
+     * @example
+     * // Get one DateSlot
+     * const dateSlot = await prisma.dateSlot.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends DateSlotFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, DateSlotFindUniqueOrThrowArgs>
+    ): Prisma__DateSlotClient<DateSlotGetPayload<T>>
+
+    /**
+     * Find the first DateSlot that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DateSlotFindFirstArgs} args - Arguments to find a DateSlot
+     * @example
+     * // Get one DateSlot
+     * const dateSlot = await prisma.dateSlot.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends DateSlotFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, DateSlotFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'DateSlot'> extends True ? Prisma__DateSlotClient<DateSlotGetPayload<T>> : Prisma__DateSlotClient<DateSlotGetPayload<T> | null, null>
+
+    /**
+     * Find the first DateSlot that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DateSlotFindFirstOrThrowArgs} args - Arguments to find a DateSlot
+     * @example
+     * // Get one DateSlot
+     * const dateSlot = await prisma.dateSlot.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends DateSlotFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, DateSlotFindFirstOrThrowArgs>
+    ): Prisma__DateSlotClient<DateSlotGetPayload<T>>
+
+    /**
+     * Find zero or more DateSlots that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DateSlotFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DateSlots
+     * const dateSlots = await prisma.dateSlot.findMany()
+     * 
+     * // Get first 10 DateSlots
+     * const dateSlots = await prisma.dateSlot.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const dateSlotWithIdOnly = await prisma.dateSlot.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends DateSlotFindManyArgs>(
+      args?: SelectSubset<T, DateSlotFindManyArgs>
+    ): Prisma.PrismaPromise<Array<DateSlotGetPayload<T>>>
+
+    /**
+     * Create a DateSlot.
+     * @param {DateSlotCreateArgs} args - Arguments to create a DateSlot.
+     * @example
+     * // Create one DateSlot
+     * const DateSlot = await prisma.dateSlot.create({
+     *   data: {
+     *     // ... data to create a DateSlot
+     *   }
+     * })
+     * 
+    **/
+    create<T extends DateSlotCreateArgs>(
+      args: SelectSubset<T, DateSlotCreateArgs>
+    ): Prisma__DateSlotClient<DateSlotGetPayload<T>>
+
+    /**
+     * Create many DateSlots.
+     *     @param {DateSlotCreateManyArgs} args - Arguments to create many DateSlots.
+     *     @example
+     *     // Create many DateSlots
+     *     const dateSlot = await prisma.dateSlot.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends DateSlotCreateManyArgs>(
+      args?: SelectSubset<T, DateSlotCreateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a DateSlot.
+     * @param {DateSlotDeleteArgs} args - Arguments to delete one DateSlot.
+     * @example
+     * // Delete one DateSlot
+     * const DateSlot = await prisma.dateSlot.delete({
+     *   where: {
+     *     // ... filter to delete one DateSlot
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends DateSlotDeleteArgs>(
+      args: SelectSubset<T, DateSlotDeleteArgs>
+    ): Prisma__DateSlotClient<DateSlotGetPayload<T>>
+
+    /**
+     * Update one DateSlot.
+     * @param {DateSlotUpdateArgs} args - Arguments to update one DateSlot.
+     * @example
+     * // Update one DateSlot
+     * const dateSlot = await prisma.dateSlot.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends DateSlotUpdateArgs>(
+      args: SelectSubset<T, DateSlotUpdateArgs>
+    ): Prisma__DateSlotClient<DateSlotGetPayload<T>>
+
+    /**
+     * Delete zero or more DateSlots.
+     * @param {DateSlotDeleteManyArgs} args - Arguments to filter DateSlots to delete.
+     * @example
+     * // Delete a few DateSlots
+     * const { count } = await prisma.dateSlot.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends DateSlotDeleteManyArgs>(
+      args?: SelectSubset<T, DateSlotDeleteManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DateSlots.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DateSlotUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DateSlots
+     * const dateSlot = await prisma.dateSlot.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends DateSlotUpdateManyArgs>(
+      args: SelectSubset<T, DateSlotUpdateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one DateSlot.
+     * @param {DateSlotUpsertArgs} args - Arguments to update or create a DateSlot.
+     * @example
+     * // Update or create a DateSlot
+     * const dateSlot = await prisma.dateSlot.upsert({
+     *   create: {
+     *     // ... data to create a DateSlot
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DateSlot we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends DateSlotUpsertArgs>(
+      args: SelectSubset<T, DateSlotUpsertArgs>
+    ): Prisma__DateSlotClient<DateSlotGetPayload<T>>
+
+    /**
+     * Count the number of DateSlots.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DateSlotCountArgs} args - Arguments to filter DateSlots to count.
+     * @example
+     * // Count the number of DateSlots
+     * const count = await prisma.dateSlot.count({
+     *   where: {
+     *     // ... the filter for the DateSlots we want to count
+     *   }
+     * })
+    **/
+    count<T extends DateSlotCountArgs>(
+      args?: Subset<T, DateSlotCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DateSlotCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DateSlot.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DateSlotAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DateSlotAggregateArgs>(args: Subset<T, DateSlotAggregateArgs>): Prisma.PrismaPromise<GetDateSlotAggregateType<T>>
+
+    /**
+     * Group by DateSlot.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DateSlotGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DateSlotGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DateSlotGroupByArgs['orderBy'] }
+        : { orderBy?: DateSlotGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DateSlotGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDateSlotGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DateSlot.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__DateSlotClient<T, Null = never> implements Prisma.PrismaPromise<T> {
     private readonly _dmmf;
     private readonly _queryType;
     private readonly _rootField;
@@ -7367,9 +8312,13 @@ export namespace Prisma {
 
     availabilitySchedule<T extends AvailabilityScheduleArgs= {}>(args?: Subset<T, AvailabilityScheduleArgs>): Prisma__AvailabilityScheduleClient<AvailabilityScheduleGetPayload<T> | Null>;
 
-    timeSelect<T extends TimeSelectArgs= {}>(args?: Subset<T, TimeSelectArgs>): Prisma__TimeSelectClient<TimeSelectGetPayload<T> | Null>;
+    custormer<T extends CustomerArgs= {}>(args?: Subset<T, CustomerArgs>): Prisma__CustomerClient<CustomerGetPayload<T> | Null>;
 
     eventType<T extends EventTypeArgs= {}>(args?: Subset<T, EventTypeArgs>): Prisma__EventTypeClient<EventTypeGetPayload<T> | Null>;
+
+    daySlot<T extends DaySlotArgs= {}>(args?: Subset<T, DaySlotArgs>): Prisma__DaySlotClient<DaySlotGetPayload<T> | Null>;
+
+    dateOnTimeSlots<T extends DateSlot$dateOnTimeSlotsArgs= {}>(args?: Subset<T, DateSlot$dateOnTimeSlotsArgs>): Prisma.PrismaPromise<Array<DateOnTimeSlotGetPayload<T>>| Null>;
 
     private get _document();
     /**
@@ -7399,27 +8348,27 @@ export namespace Prisma {
   // Custom InputTypes
 
   /**
-   * WeekDay base type for findUnique actions
+   * DateSlot base type for findUnique actions
    */
-  export type WeekDayFindUniqueArgsBase = {
+  export type DateSlotFindUniqueArgsBase = {
     /**
-     * Select specific fields to fetch from the WeekDay
+     * Select specific fields to fetch from the DateSlot
      */
-    select?: WeekDaySelect | null
+    select?: DateSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: WeekDayInclude | null
+    include?: DateSlotInclude | null
     /**
-     * Filter, which WeekDay to fetch.
+     * Filter, which DateSlot to fetch.
      */
-    where: WeekDayWhereUniqueInput
+    where: DateSlotWhereUniqueInput
   }
 
   /**
-   * WeekDay findUnique
+   * DateSlot findUnique
    */
-  export interface WeekDayFindUniqueArgs extends WeekDayFindUniqueArgsBase {
+  export interface DateSlotFindUniqueArgs extends DateSlotFindUniqueArgsBase {
    /**
     * Throw an Error if query returns no results
     * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
@@ -7429,76 +8378,76 @@ export namespace Prisma {
       
 
   /**
-   * WeekDay findUniqueOrThrow
+   * DateSlot findUniqueOrThrow
    */
-  export type WeekDayFindUniqueOrThrowArgs = {
+  export type DateSlotFindUniqueOrThrowArgs = {
     /**
-     * Select specific fields to fetch from the WeekDay
+     * Select specific fields to fetch from the DateSlot
      */
-    select?: WeekDaySelect | null
+    select?: DateSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: WeekDayInclude | null
+    include?: DateSlotInclude | null
     /**
-     * Filter, which WeekDay to fetch.
+     * Filter, which DateSlot to fetch.
      */
-    where: WeekDayWhereUniqueInput
+    where: DateSlotWhereUniqueInput
   }
 
 
   /**
-   * WeekDay base type for findFirst actions
+   * DateSlot base type for findFirst actions
    */
-  export type WeekDayFindFirstArgsBase = {
+  export type DateSlotFindFirstArgsBase = {
     /**
-     * Select specific fields to fetch from the WeekDay
+     * Select specific fields to fetch from the DateSlot
      */
-    select?: WeekDaySelect | null
+    select?: DateSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: WeekDayInclude | null
+    include?: DateSlotInclude | null
     /**
-     * Filter, which WeekDay to fetch.
+     * Filter, which DateSlot to fetch.
      */
-    where?: WeekDayWhereInput
+    where?: DateSlotWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of WeekDays to fetch.
+     * Determine the order of DateSlots to fetch.
      */
-    orderBy?: Enumerable<WeekDayOrderByWithRelationInput>
+    orderBy?: Enumerable<DateSlotOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for WeekDays.
+     * Sets the position for searching for DateSlots.
      */
-    cursor?: WeekDayWhereUniqueInput
+    cursor?: DateSlotWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` WeekDays from the position of the cursor.
+     * Take `±n` DateSlots from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` WeekDays.
+     * Skip the first `n` DateSlots.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of WeekDays.
+     * Filter by unique combinations of DateSlots.
      */
-    distinct?: Enumerable<WeekDayScalarFieldEnum>
+    distinct?: Enumerable<DateSlotScalarFieldEnum>
   }
 
   /**
-   * WeekDay findFirst
+   * DateSlot findFirst
    */
-  export interface WeekDayFindFirstArgs extends WeekDayFindFirstArgsBase {
+  export interface DateSlotFindFirstArgs extends DateSlotFindFirstArgsBase {
    /**
     * Throw an Error if query returns no results
     * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
@@ -7508,616 +8457,653 @@ export namespace Prisma {
       
 
   /**
-   * WeekDay findFirstOrThrow
+   * DateSlot findFirstOrThrow
    */
-  export type WeekDayFindFirstOrThrowArgs = {
+  export type DateSlotFindFirstOrThrowArgs = {
     /**
-     * Select specific fields to fetch from the WeekDay
+     * Select specific fields to fetch from the DateSlot
      */
-    select?: WeekDaySelect | null
+    select?: DateSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: WeekDayInclude | null
+    include?: DateSlotInclude | null
     /**
-     * Filter, which WeekDay to fetch.
+     * Filter, which DateSlot to fetch.
      */
-    where?: WeekDayWhereInput
+    where?: DateSlotWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of WeekDays to fetch.
+     * Determine the order of DateSlots to fetch.
      */
-    orderBy?: Enumerable<WeekDayOrderByWithRelationInput>
+    orderBy?: Enumerable<DateSlotOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for WeekDays.
+     * Sets the position for searching for DateSlots.
      */
-    cursor?: WeekDayWhereUniqueInput
+    cursor?: DateSlotWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` WeekDays from the position of the cursor.
+     * Take `±n` DateSlots from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` WeekDays.
+     * Skip the first `n` DateSlots.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of WeekDays.
+     * Filter by unique combinations of DateSlots.
      */
-    distinct?: Enumerable<WeekDayScalarFieldEnum>
+    distinct?: Enumerable<DateSlotScalarFieldEnum>
   }
 
 
   /**
-   * WeekDay findMany
+   * DateSlot findMany
    */
-  export type WeekDayFindManyArgs = {
+  export type DateSlotFindManyArgs = {
     /**
-     * Select specific fields to fetch from the WeekDay
+     * Select specific fields to fetch from the DateSlot
      */
-    select?: WeekDaySelect | null
+    select?: DateSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: WeekDayInclude | null
+    include?: DateSlotInclude | null
     /**
-     * Filter, which WeekDays to fetch.
+     * Filter, which DateSlots to fetch.
      */
-    where?: WeekDayWhereInput
+    where?: DateSlotWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of WeekDays to fetch.
+     * Determine the order of DateSlots to fetch.
      */
-    orderBy?: Enumerable<WeekDayOrderByWithRelationInput>
+    orderBy?: Enumerable<DateSlotOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for listing WeekDays.
+     * Sets the position for listing DateSlots.
      */
-    cursor?: WeekDayWhereUniqueInput
+    cursor?: DateSlotWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` WeekDays from the position of the cursor.
+     * Take `±n` DateSlots from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` WeekDays.
+     * Skip the first `n` DateSlots.
      */
     skip?: number
-    distinct?: Enumerable<WeekDayScalarFieldEnum>
+    distinct?: Enumerable<DateSlotScalarFieldEnum>
   }
 
 
   /**
-   * WeekDay create
+   * DateSlot create
    */
-  export type WeekDayCreateArgs = {
+  export type DateSlotCreateArgs = {
     /**
-     * Select specific fields to fetch from the WeekDay
+     * Select specific fields to fetch from the DateSlot
      */
-    select?: WeekDaySelect | null
+    select?: DateSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: WeekDayInclude | null
+    include?: DateSlotInclude | null
     /**
-     * The data needed to create a WeekDay.
+     * The data needed to create a DateSlot.
      */
-    data: XOR<WeekDayCreateInput, WeekDayUncheckedCreateInput>
+    data: XOR<DateSlotCreateInput, DateSlotUncheckedCreateInput>
   }
 
 
   /**
-   * WeekDay createMany
+   * DateSlot createMany
    */
-  export type WeekDayCreateManyArgs = {
+  export type DateSlotCreateManyArgs = {
     /**
-     * The data used to create many WeekDays.
+     * The data used to create many DateSlots.
      */
-    data: Enumerable<WeekDayCreateManyInput>
+    data: Enumerable<DateSlotCreateManyInput>
     skipDuplicates?: boolean
   }
 
 
   /**
-   * WeekDay update
+   * DateSlot update
    */
-  export type WeekDayUpdateArgs = {
+  export type DateSlotUpdateArgs = {
     /**
-     * Select specific fields to fetch from the WeekDay
+     * Select specific fields to fetch from the DateSlot
      */
-    select?: WeekDaySelect | null
+    select?: DateSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: WeekDayInclude | null
+    include?: DateSlotInclude | null
     /**
-     * The data needed to update a WeekDay.
+     * The data needed to update a DateSlot.
      */
-    data: XOR<WeekDayUpdateInput, WeekDayUncheckedUpdateInput>
+    data: XOR<DateSlotUpdateInput, DateSlotUncheckedUpdateInput>
     /**
-     * Choose, which WeekDay to update.
+     * Choose, which DateSlot to update.
      */
-    where: WeekDayWhereUniqueInput
+    where: DateSlotWhereUniqueInput
   }
 
 
   /**
-   * WeekDay updateMany
+   * DateSlot updateMany
    */
-  export type WeekDayUpdateManyArgs = {
+  export type DateSlotUpdateManyArgs = {
     /**
-     * The data used to update WeekDays.
+     * The data used to update DateSlots.
      */
-    data: XOR<WeekDayUpdateManyMutationInput, WeekDayUncheckedUpdateManyInput>
+    data: XOR<DateSlotUpdateManyMutationInput, DateSlotUncheckedUpdateManyInput>
     /**
-     * Filter which WeekDays to update
+     * Filter which DateSlots to update
      */
-    where?: WeekDayWhereInput
+    where?: DateSlotWhereInput
   }
 
 
   /**
-   * WeekDay upsert
+   * DateSlot upsert
    */
-  export type WeekDayUpsertArgs = {
+  export type DateSlotUpsertArgs = {
     /**
-     * Select specific fields to fetch from the WeekDay
+     * Select specific fields to fetch from the DateSlot
      */
-    select?: WeekDaySelect | null
+    select?: DateSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: WeekDayInclude | null
+    include?: DateSlotInclude | null
     /**
-     * The filter to search for the WeekDay to update in case it exists.
+     * The filter to search for the DateSlot to update in case it exists.
      */
-    where: WeekDayWhereUniqueInput
+    where: DateSlotWhereUniqueInput
     /**
-     * In case the WeekDay found by the `where` argument doesn't exist, create a new WeekDay with this data.
+     * In case the DateSlot found by the `where` argument doesn't exist, create a new DateSlot with this data.
      */
-    create: XOR<WeekDayCreateInput, WeekDayUncheckedCreateInput>
+    create: XOR<DateSlotCreateInput, DateSlotUncheckedCreateInput>
     /**
-     * In case the WeekDay was found with the provided `where` argument, update it with this data.
+     * In case the DateSlot was found with the provided `where` argument, update it with this data.
      */
-    update: XOR<WeekDayUpdateInput, WeekDayUncheckedUpdateInput>
+    update: XOR<DateSlotUpdateInput, DateSlotUncheckedUpdateInput>
   }
 
 
   /**
-   * WeekDay delete
+   * DateSlot delete
    */
-  export type WeekDayDeleteArgs = {
+  export type DateSlotDeleteArgs = {
     /**
-     * Select specific fields to fetch from the WeekDay
+     * Select specific fields to fetch from the DateSlot
      */
-    select?: WeekDaySelect | null
+    select?: DateSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: WeekDayInclude | null
+    include?: DateSlotInclude | null
     /**
-     * Filter which WeekDay to delete.
+     * Filter which DateSlot to delete.
      */
-    where: WeekDayWhereUniqueInput
+    where: DateSlotWhereUniqueInput
   }
 
 
   /**
-   * WeekDay deleteMany
+   * DateSlot deleteMany
    */
-  export type WeekDayDeleteManyArgs = {
+  export type DateSlotDeleteManyArgs = {
     /**
-     * Filter which WeekDays to delete
+     * Filter which DateSlots to delete
      */
-    where?: WeekDayWhereInput
+    where?: DateSlotWhereInput
   }
 
 
   /**
-   * WeekDay without action
+   * DateSlot.dateOnTimeSlots
    */
-  export type WeekDayArgs = {
+  export type DateSlot$dateOnTimeSlotsArgs = {
     /**
-     * Select specific fields to fetch from the WeekDay
+     * Select specific fields to fetch from the DateOnTimeSlot
      */
-    select?: WeekDaySelect | null
+    select?: DateOnTimeSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: WeekDayInclude | null
+    include?: DateOnTimeSlotInclude | null
+    where?: DateOnTimeSlotWhereInput
+    orderBy?: Enumerable<DateOnTimeSlotOrderByWithRelationInput>
+    cursor?: DateOnTimeSlotWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Enumerable<DateOnTimeSlotScalarFieldEnum>
+  }
+
+
+  /**
+   * DateSlot without action
+   */
+  export type DateSlotArgs = {
+    /**
+     * Select specific fields to fetch from the DateSlot
+     */
+    select?: DateSlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: DateSlotInclude | null
   }
 
 
 
   /**
-   * Model TimeSelect
+   * Model DateOnTimeSlot
    */
 
 
-  export type AggregateTimeSelect = {
-    _count: TimeSelectCountAggregateOutputType | null
-    _avg: TimeSelectAvgAggregateOutputType | null
-    _sum: TimeSelectSumAggregateOutputType | null
-    _min: TimeSelectMinAggregateOutputType | null
-    _max: TimeSelectMaxAggregateOutputType | null
+  export type AggregateDateOnTimeSlot = {
+    _count: DateOnTimeSlotCountAggregateOutputType | null
+    _avg: DateOnTimeSlotAvgAggregateOutputType | null
+    _sum: DateOnTimeSlotSumAggregateOutputType | null
+    _min: DateOnTimeSlotMinAggregateOutputType | null
+    _max: DateOnTimeSlotMaxAggregateOutputType | null
   }
 
-  export type TimeSelectAvgAggregateOutputType = {
+  export type DateOnTimeSlotAvgAggregateOutputType = {
     id: number | null
+    timeSlotId: number | null
+    dateSlotId: number | null
   }
 
-  export type TimeSelectSumAggregateOutputType = {
+  export type DateOnTimeSlotSumAggregateOutputType = {
     id: number | null
+    timeSlotId: number | null
+    dateSlotId: number | null
   }
 
-  export type TimeSelectMinAggregateOutputType = {
+  export type DateOnTimeSlotMinAggregateOutputType = {
     id: number | null
-    startTime: Date | null
-    endTime: Date | null
+    timeSlotId: number | null
+    dateSlotId: number | null
+    status: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
-  export type TimeSelectMaxAggregateOutputType = {
+  export type DateOnTimeSlotMaxAggregateOutputType = {
     id: number | null
-    startTime: Date | null
-    endTime: Date | null
+    timeSlotId: number | null
+    dateSlotId: number | null
+    status: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
-  export type TimeSelectCountAggregateOutputType = {
+  export type DateOnTimeSlotCountAggregateOutputType = {
     id: number
-    startTime: number
-    endTime: number
+    timeSlotId: number
+    dateSlotId: number
+    status: number
     createdAt: number
     updatedAt: number
     _all: number
   }
 
 
-  export type TimeSelectAvgAggregateInputType = {
+  export type DateOnTimeSlotAvgAggregateInputType = {
     id?: true
+    timeSlotId?: true
+    dateSlotId?: true
   }
 
-  export type TimeSelectSumAggregateInputType = {
+  export type DateOnTimeSlotSumAggregateInputType = {
     id?: true
+    timeSlotId?: true
+    dateSlotId?: true
   }
 
-  export type TimeSelectMinAggregateInputType = {
+  export type DateOnTimeSlotMinAggregateInputType = {
     id?: true
-    startTime?: true
-    endTime?: true
+    timeSlotId?: true
+    dateSlotId?: true
+    status?: true
     createdAt?: true
     updatedAt?: true
   }
 
-  export type TimeSelectMaxAggregateInputType = {
+  export type DateOnTimeSlotMaxAggregateInputType = {
     id?: true
-    startTime?: true
-    endTime?: true
+    timeSlotId?: true
+    dateSlotId?: true
+    status?: true
     createdAt?: true
     updatedAt?: true
   }
 
-  export type TimeSelectCountAggregateInputType = {
+  export type DateOnTimeSlotCountAggregateInputType = {
     id?: true
-    startTime?: true
-    endTime?: true
+    timeSlotId?: true
+    dateSlotId?: true
+    status?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
   }
 
-  export type TimeSelectAggregateArgs = {
+  export type DateOnTimeSlotAggregateArgs = {
     /**
-     * Filter which TimeSelect to aggregate.
+     * Filter which DateOnTimeSlot to aggregate.
      */
-    where?: TimeSelectWhereInput
+    where?: DateOnTimeSlotWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of TimeSelects to fetch.
+     * Determine the order of DateOnTimeSlots to fetch.
      */
-    orderBy?: Enumerable<TimeSelectOrderByWithRelationInput>
+    orderBy?: Enumerable<DateOnTimeSlotOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
      */
-    cursor?: TimeSelectWhereUniqueInput
+    cursor?: DateOnTimeSlotWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` TimeSelects from the position of the cursor.
+     * Take `±n` DateOnTimeSlots from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` TimeSelects.
+     * Skip the first `n` DateOnTimeSlots.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Count returned TimeSelects
+     * Count returned DateOnTimeSlots
     **/
-    _count?: true | TimeSelectCountAggregateInputType
+    _count?: true | DateOnTimeSlotCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
-    _avg?: TimeSelectAvgAggregateInputType
+    _avg?: DateOnTimeSlotAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to sum
     **/
-    _sum?: TimeSelectSumAggregateInputType
+    _sum?: DateOnTimeSlotSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
-    _min?: TimeSelectMinAggregateInputType
+    _min?: DateOnTimeSlotMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
-    _max?: TimeSelectMaxAggregateInputType
+    _max?: DateOnTimeSlotMaxAggregateInputType
   }
 
-  export type GetTimeSelectAggregateType<T extends TimeSelectAggregateArgs> = {
-        [P in keyof T & keyof AggregateTimeSelect]: P extends '_count' | 'count'
+  export type GetDateOnTimeSlotAggregateType<T extends DateOnTimeSlotAggregateArgs> = {
+        [P in keyof T & keyof AggregateDateOnTimeSlot]: P extends '_count' | 'count'
       ? T[P] extends true
         ? number
-        : GetScalarType<T[P], AggregateTimeSelect[P]>
-      : GetScalarType<T[P], AggregateTimeSelect[P]>
+        : GetScalarType<T[P], AggregateDateOnTimeSlot[P]>
+      : GetScalarType<T[P], AggregateDateOnTimeSlot[P]>
   }
 
 
 
 
-  export type TimeSelectGroupByArgs = {
-    where?: TimeSelectWhereInput
-    orderBy?: Enumerable<TimeSelectOrderByWithAggregationInput>
-    by: TimeSelectScalarFieldEnum[]
-    having?: TimeSelectScalarWhereWithAggregatesInput
+  export type DateOnTimeSlotGroupByArgs = {
+    where?: DateOnTimeSlotWhereInput
+    orderBy?: Enumerable<DateOnTimeSlotOrderByWithAggregationInput>
+    by: DateOnTimeSlotScalarFieldEnum[]
+    having?: DateOnTimeSlotScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    _count?: TimeSelectCountAggregateInputType | true
-    _avg?: TimeSelectAvgAggregateInputType
-    _sum?: TimeSelectSumAggregateInputType
-    _min?: TimeSelectMinAggregateInputType
-    _max?: TimeSelectMaxAggregateInputType
+    _count?: DateOnTimeSlotCountAggregateInputType | true
+    _avg?: DateOnTimeSlotAvgAggregateInputType
+    _sum?: DateOnTimeSlotSumAggregateInputType
+    _min?: DateOnTimeSlotMinAggregateInputType
+    _max?: DateOnTimeSlotMaxAggregateInputType
   }
 
 
-  export type TimeSelectGroupByOutputType = {
+  export type DateOnTimeSlotGroupByOutputType = {
     id: number
-    startTime: Date
-    endTime: Date
+    timeSlotId: number
+    dateSlotId: number
+    status: string
     createdAt: Date
     updatedAt: Date
-    _count: TimeSelectCountAggregateOutputType | null
-    _avg: TimeSelectAvgAggregateOutputType | null
-    _sum: TimeSelectSumAggregateOutputType | null
-    _min: TimeSelectMinAggregateOutputType | null
-    _max: TimeSelectMaxAggregateOutputType | null
+    _count: DateOnTimeSlotCountAggregateOutputType | null
+    _avg: DateOnTimeSlotAvgAggregateOutputType | null
+    _sum: DateOnTimeSlotSumAggregateOutputType | null
+    _min: DateOnTimeSlotMinAggregateOutputType | null
+    _max: DateOnTimeSlotMaxAggregateOutputType | null
   }
 
-  type GetTimeSelectGroupByPayload<T extends TimeSelectGroupByArgs> = Prisma.PrismaPromise<
+  type GetDateOnTimeSlotGroupByPayload<T extends DateOnTimeSlotGroupByArgs> = Prisma.PrismaPromise<
     Array<
-      PickArray<TimeSelectGroupByOutputType, T['by']> &
+      PickArray<DateOnTimeSlotGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof TimeSelectGroupByOutputType))]: P extends '_count'
+          [P in ((keyof T) & (keyof DateOnTimeSlotGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
               ? number
-              : GetScalarType<T[P], TimeSelectGroupByOutputType[P]>
-            : GetScalarType<T[P], TimeSelectGroupByOutputType[P]>
+              : GetScalarType<T[P], DateOnTimeSlotGroupByOutputType[P]>
+            : GetScalarType<T[P], DateOnTimeSlotGroupByOutputType[P]>
         }
       >
     >
 
 
-  export type TimeSelectSelect = {
+  export type DateOnTimeSlotSelect = {
     id?: boolean
-    startTime?: boolean
-    endTime?: boolean
+    timeSlotId?: boolean
+    dateSlotId?: boolean
+    status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    weekDays?: boolean | TimeSelect$weekDaysArgs
-    _count?: boolean | TimeSelectCountOutputTypeArgs
+    timeSlot?: boolean | TimeSlotArgs
+    dateSlot?: boolean | DateSlotArgs
   }
 
 
-  export type TimeSelectInclude = {
-    weekDays?: boolean | TimeSelect$weekDaysArgs
-    _count?: boolean | TimeSelectCountOutputTypeArgs
+  export type DateOnTimeSlotInclude = {
+    timeSlot?: boolean | TimeSlotArgs
+    dateSlot?: boolean | DateSlotArgs
   }
 
-  export type TimeSelectGetPayload<S extends boolean | null | undefined | TimeSelectArgs> =
+  export type DateOnTimeSlotGetPayload<S extends boolean | null | undefined | DateOnTimeSlotArgs> =
     S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? TimeSelect :
+    S extends true ? DateOnTimeSlot :
     S extends undefined ? never :
-    S extends { include: any } & (TimeSelectArgs | TimeSelectFindManyArgs)
-    ? TimeSelect  & {
+    S extends { include: any } & (DateOnTimeSlotArgs | DateOnTimeSlotFindManyArgs)
+    ? DateOnTimeSlot  & {
     [P in TruthyKeys<S['include']>]:
-        P extends 'weekDays' ? Array < WeekDayGetPayload<S['include'][P]>>  :
-        P extends '_count' ? TimeSelectCountOutputTypeGetPayload<S['include'][P]> :  never
+        P extends 'timeSlot' ? TimeSlotGetPayload<S['include'][P]> :
+        P extends 'dateSlot' ? DateSlotGetPayload<S['include'][P]> :  never
   } 
-    : S extends { select: any } & (TimeSelectArgs | TimeSelectFindManyArgs)
+    : S extends { select: any } & (DateOnTimeSlotArgs | DateOnTimeSlotFindManyArgs)
       ? {
     [P in TruthyKeys<S['select']>]:
-        P extends 'weekDays' ? Array < WeekDayGetPayload<S['select'][P]>>  :
-        P extends '_count' ? TimeSelectCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof TimeSelect ? TimeSelect[P] : never
+        P extends 'timeSlot' ? TimeSlotGetPayload<S['select'][P]> :
+        P extends 'dateSlot' ? DateSlotGetPayload<S['select'][P]> :  P extends keyof DateOnTimeSlot ? DateOnTimeSlot[P] : never
   } 
-      : TimeSelect
+      : DateOnTimeSlot
 
 
-  type TimeSelectCountArgs = 
-    Omit<TimeSelectFindManyArgs, 'select' | 'include'> & {
-      select?: TimeSelectCountAggregateInputType | true
+  type DateOnTimeSlotCountArgs = 
+    Omit<DateOnTimeSlotFindManyArgs, 'select' | 'include'> & {
+      select?: DateOnTimeSlotCountAggregateInputType | true
     }
 
-  export interface TimeSelectDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+  export interface DateOnTimeSlotDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
 
     /**
-     * Find zero or one TimeSelect that matches the filter.
-     * @param {TimeSelectFindUniqueArgs} args - Arguments to find a TimeSelect
+     * Find zero or one DateOnTimeSlot that matches the filter.
+     * @param {DateOnTimeSlotFindUniqueArgs} args - Arguments to find a DateOnTimeSlot
      * @example
-     * // Get one TimeSelect
-     * const timeSelect = await prisma.timeSelect.findUnique({
+     * // Get one DateOnTimeSlot
+     * const dateOnTimeSlot = await prisma.dateOnTimeSlot.findUnique({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
     **/
-    findUnique<T extends TimeSelectFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args: SelectSubset<T, TimeSelectFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'TimeSelect'> extends True ? Prisma__TimeSelectClient<TimeSelectGetPayload<T>> : Prisma__TimeSelectClient<TimeSelectGetPayload<T> | null, null>
+    findUnique<T extends DateOnTimeSlotFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, DateOnTimeSlotFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'DateOnTimeSlot'> extends True ? Prisma__DateOnTimeSlotClient<DateOnTimeSlotGetPayload<T>> : Prisma__DateOnTimeSlotClient<DateOnTimeSlotGetPayload<T> | null, null>
 
     /**
-     * Find one TimeSelect that matches the filter or throw an error  with `error.code='P2025'` 
+     * Find one DateOnTimeSlot that matches the filter or throw an error  with `error.code='P2025'` 
      *     if no matches were found.
-     * @param {TimeSelectFindUniqueOrThrowArgs} args - Arguments to find a TimeSelect
+     * @param {DateOnTimeSlotFindUniqueOrThrowArgs} args - Arguments to find a DateOnTimeSlot
      * @example
-     * // Get one TimeSelect
-     * const timeSelect = await prisma.timeSelect.findUniqueOrThrow({
+     * // Get one DateOnTimeSlot
+     * const dateOnTimeSlot = await prisma.dateOnTimeSlot.findUniqueOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
     **/
-    findUniqueOrThrow<T extends TimeSelectFindUniqueOrThrowArgs>(
-      args?: SelectSubset<T, TimeSelectFindUniqueOrThrowArgs>
-    ): Prisma__TimeSelectClient<TimeSelectGetPayload<T>>
+    findUniqueOrThrow<T extends DateOnTimeSlotFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, DateOnTimeSlotFindUniqueOrThrowArgs>
+    ): Prisma__DateOnTimeSlotClient<DateOnTimeSlotGetPayload<T>>
 
     /**
-     * Find the first TimeSelect that matches the filter.
+     * Find the first DateOnTimeSlot that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TimeSelectFindFirstArgs} args - Arguments to find a TimeSelect
+     * @param {DateOnTimeSlotFindFirstArgs} args - Arguments to find a DateOnTimeSlot
      * @example
-     * // Get one TimeSelect
-     * const timeSelect = await prisma.timeSelect.findFirst({
+     * // Get one DateOnTimeSlot
+     * const dateOnTimeSlot = await prisma.dateOnTimeSlot.findFirst({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
     **/
-    findFirst<T extends TimeSelectFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args?: SelectSubset<T, TimeSelectFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'TimeSelect'> extends True ? Prisma__TimeSelectClient<TimeSelectGetPayload<T>> : Prisma__TimeSelectClient<TimeSelectGetPayload<T> | null, null>
+    findFirst<T extends DateOnTimeSlotFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, DateOnTimeSlotFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'DateOnTimeSlot'> extends True ? Prisma__DateOnTimeSlotClient<DateOnTimeSlotGetPayload<T>> : Prisma__DateOnTimeSlotClient<DateOnTimeSlotGetPayload<T> | null, null>
 
     /**
-     * Find the first TimeSelect that matches the filter or
+     * Find the first DateOnTimeSlot that matches the filter or
      * throw `NotFoundError` if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TimeSelectFindFirstOrThrowArgs} args - Arguments to find a TimeSelect
+     * @param {DateOnTimeSlotFindFirstOrThrowArgs} args - Arguments to find a DateOnTimeSlot
      * @example
-     * // Get one TimeSelect
-     * const timeSelect = await prisma.timeSelect.findFirstOrThrow({
+     * // Get one DateOnTimeSlot
+     * const dateOnTimeSlot = await prisma.dateOnTimeSlot.findFirstOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
     **/
-    findFirstOrThrow<T extends TimeSelectFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, TimeSelectFindFirstOrThrowArgs>
-    ): Prisma__TimeSelectClient<TimeSelectGetPayload<T>>
+    findFirstOrThrow<T extends DateOnTimeSlotFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, DateOnTimeSlotFindFirstOrThrowArgs>
+    ): Prisma__DateOnTimeSlotClient<DateOnTimeSlotGetPayload<T>>
 
     /**
-     * Find zero or more TimeSelects that matches the filter.
+     * Find zero or more DateOnTimeSlots that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TimeSelectFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @param {DateOnTimeSlotFindManyArgs=} args - Arguments to filter and select certain fields only.
      * @example
-     * // Get all TimeSelects
-     * const timeSelects = await prisma.timeSelect.findMany()
+     * // Get all DateOnTimeSlots
+     * const dateOnTimeSlots = await prisma.dateOnTimeSlot.findMany()
      * 
-     * // Get first 10 TimeSelects
-     * const timeSelects = await prisma.timeSelect.findMany({ take: 10 })
+     * // Get first 10 DateOnTimeSlots
+     * const dateOnTimeSlots = await prisma.dateOnTimeSlot.findMany({ take: 10 })
      * 
      * // Only select the `id`
-     * const timeSelectWithIdOnly = await prisma.timeSelect.findMany({ select: { id: true } })
+     * const dateOnTimeSlotWithIdOnly = await prisma.dateOnTimeSlot.findMany({ select: { id: true } })
      * 
     **/
-    findMany<T extends TimeSelectFindManyArgs>(
-      args?: SelectSubset<T, TimeSelectFindManyArgs>
-    ): Prisma.PrismaPromise<Array<TimeSelectGetPayload<T>>>
+    findMany<T extends DateOnTimeSlotFindManyArgs>(
+      args?: SelectSubset<T, DateOnTimeSlotFindManyArgs>
+    ): Prisma.PrismaPromise<Array<DateOnTimeSlotGetPayload<T>>>
 
     /**
-     * Create a TimeSelect.
-     * @param {TimeSelectCreateArgs} args - Arguments to create a TimeSelect.
+     * Create a DateOnTimeSlot.
+     * @param {DateOnTimeSlotCreateArgs} args - Arguments to create a DateOnTimeSlot.
      * @example
-     * // Create one TimeSelect
-     * const TimeSelect = await prisma.timeSelect.create({
+     * // Create one DateOnTimeSlot
+     * const DateOnTimeSlot = await prisma.dateOnTimeSlot.create({
      *   data: {
-     *     // ... data to create a TimeSelect
+     *     // ... data to create a DateOnTimeSlot
      *   }
      * })
      * 
     **/
-    create<T extends TimeSelectCreateArgs>(
-      args: SelectSubset<T, TimeSelectCreateArgs>
-    ): Prisma__TimeSelectClient<TimeSelectGetPayload<T>>
+    create<T extends DateOnTimeSlotCreateArgs>(
+      args: SelectSubset<T, DateOnTimeSlotCreateArgs>
+    ): Prisma__DateOnTimeSlotClient<DateOnTimeSlotGetPayload<T>>
 
     /**
-     * Create many TimeSelects.
-     *     @param {TimeSelectCreateManyArgs} args - Arguments to create many TimeSelects.
+     * Create many DateOnTimeSlots.
+     *     @param {DateOnTimeSlotCreateManyArgs} args - Arguments to create many DateOnTimeSlots.
      *     @example
-     *     // Create many TimeSelects
-     *     const timeSelect = await prisma.timeSelect.createMany({
+     *     // Create many DateOnTimeSlots
+     *     const dateOnTimeSlot = await prisma.dateOnTimeSlot.createMany({
      *       data: {
      *         // ... provide data here
      *       }
      *     })
      *     
     **/
-    createMany<T extends TimeSelectCreateManyArgs>(
-      args?: SelectSubset<T, TimeSelectCreateManyArgs>
+    createMany<T extends DateOnTimeSlotCreateManyArgs>(
+      args?: SelectSubset<T, DateOnTimeSlotCreateManyArgs>
     ): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Delete a TimeSelect.
-     * @param {TimeSelectDeleteArgs} args - Arguments to delete one TimeSelect.
+     * Delete a DateOnTimeSlot.
+     * @param {DateOnTimeSlotDeleteArgs} args - Arguments to delete one DateOnTimeSlot.
      * @example
-     * // Delete one TimeSelect
-     * const TimeSelect = await prisma.timeSelect.delete({
+     * // Delete one DateOnTimeSlot
+     * const DateOnTimeSlot = await prisma.dateOnTimeSlot.delete({
      *   where: {
-     *     // ... filter to delete one TimeSelect
+     *     // ... filter to delete one DateOnTimeSlot
      *   }
      * })
      * 
     **/
-    delete<T extends TimeSelectDeleteArgs>(
-      args: SelectSubset<T, TimeSelectDeleteArgs>
-    ): Prisma__TimeSelectClient<TimeSelectGetPayload<T>>
+    delete<T extends DateOnTimeSlotDeleteArgs>(
+      args: SelectSubset<T, DateOnTimeSlotDeleteArgs>
+    ): Prisma__DateOnTimeSlotClient<DateOnTimeSlotGetPayload<T>>
 
     /**
-     * Update one TimeSelect.
-     * @param {TimeSelectUpdateArgs} args - Arguments to update one TimeSelect.
+     * Update one DateOnTimeSlot.
+     * @param {DateOnTimeSlotUpdateArgs} args - Arguments to update one DateOnTimeSlot.
      * @example
-     * // Update one TimeSelect
-     * const timeSelect = await prisma.timeSelect.update({
+     * // Update one DateOnTimeSlot
+     * const dateOnTimeSlot = await prisma.dateOnTimeSlot.update({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -8127,34 +9113,34 @@ export namespace Prisma {
      * })
      * 
     **/
-    update<T extends TimeSelectUpdateArgs>(
-      args: SelectSubset<T, TimeSelectUpdateArgs>
-    ): Prisma__TimeSelectClient<TimeSelectGetPayload<T>>
+    update<T extends DateOnTimeSlotUpdateArgs>(
+      args: SelectSubset<T, DateOnTimeSlotUpdateArgs>
+    ): Prisma__DateOnTimeSlotClient<DateOnTimeSlotGetPayload<T>>
 
     /**
-     * Delete zero or more TimeSelects.
-     * @param {TimeSelectDeleteManyArgs} args - Arguments to filter TimeSelects to delete.
+     * Delete zero or more DateOnTimeSlots.
+     * @param {DateOnTimeSlotDeleteManyArgs} args - Arguments to filter DateOnTimeSlots to delete.
      * @example
-     * // Delete a few TimeSelects
-     * const { count } = await prisma.timeSelect.deleteMany({
+     * // Delete a few DateOnTimeSlots
+     * const { count } = await prisma.dateOnTimeSlot.deleteMany({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      * 
     **/
-    deleteMany<T extends TimeSelectDeleteManyArgs>(
-      args?: SelectSubset<T, TimeSelectDeleteManyArgs>
+    deleteMany<T extends DateOnTimeSlotDeleteManyArgs>(
+      args?: SelectSubset<T, DateOnTimeSlotDeleteManyArgs>
     ): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more TimeSelects.
+     * Update zero or more DateOnTimeSlots.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TimeSelectUpdateManyArgs} args - Arguments to update one or more rows.
+     * @param {DateOnTimeSlotUpdateManyArgs} args - Arguments to update one or more rows.
      * @example
-     * // Update many TimeSelects
-     * const timeSelect = await prisma.timeSelect.updateMany({
+     * // Update many DateOnTimeSlots
+     * const dateOnTimeSlot = await prisma.dateOnTimeSlot.updateMany({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -8164,59 +9150,59 @@ export namespace Prisma {
      * })
      * 
     **/
-    updateMany<T extends TimeSelectUpdateManyArgs>(
-      args: SelectSubset<T, TimeSelectUpdateManyArgs>
+    updateMany<T extends DateOnTimeSlotUpdateManyArgs>(
+      args: SelectSubset<T, DateOnTimeSlotUpdateManyArgs>
     ): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Create or update one TimeSelect.
-     * @param {TimeSelectUpsertArgs} args - Arguments to update or create a TimeSelect.
+     * Create or update one DateOnTimeSlot.
+     * @param {DateOnTimeSlotUpsertArgs} args - Arguments to update or create a DateOnTimeSlot.
      * @example
-     * // Update or create a TimeSelect
-     * const timeSelect = await prisma.timeSelect.upsert({
+     * // Update or create a DateOnTimeSlot
+     * const dateOnTimeSlot = await prisma.dateOnTimeSlot.upsert({
      *   create: {
-     *     // ... data to create a TimeSelect
+     *     // ... data to create a DateOnTimeSlot
      *   },
      *   update: {
      *     // ... in case it already exists, update
      *   },
      *   where: {
-     *     // ... the filter for the TimeSelect we want to update
+     *     // ... the filter for the DateOnTimeSlot we want to update
      *   }
      * })
     **/
-    upsert<T extends TimeSelectUpsertArgs>(
-      args: SelectSubset<T, TimeSelectUpsertArgs>
-    ): Prisma__TimeSelectClient<TimeSelectGetPayload<T>>
+    upsert<T extends DateOnTimeSlotUpsertArgs>(
+      args: SelectSubset<T, DateOnTimeSlotUpsertArgs>
+    ): Prisma__DateOnTimeSlotClient<DateOnTimeSlotGetPayload<T>>
 
     /**
-     * Count the number of TimeSelects.
+     * Count the number of DateOnTimeSlots.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TimeSelectCountArgs} args - Arguments to filter TimeSelects to count.
+     * @param {DateOnTimeSlotCountArgs} args - Arguments to filter DateOnTimeSlots to count.
      * @example
-     * // Count the number of TimeSelects
-     * const count = await prisma.timeSelect.count({
+     * // Count the number of DateOnTimeSlots
+     * const count = await prisma.dateOnTimeSlot.count({
      *   where: {
-     *     // ... the filter for the TimeSelects we want to count
+     *     // ... the filter for the DateOnTimeSlots we want to count
      *   }
      * })
     **/
-    count<T extends TimeSelectCountArgs>(
-      args?: Subset<T, TimeSelectCountArgs>,
+    count<T extends DateOnTimeSlotCountArgs>(
+      args?: Subset<T, DateOnTimeSlotCountArgs>,
     ): Prisma.PrismaPromise<
       T extends _Record<'select', any>
         ? T['select'] extends true
           ? number
-          : GetScalarType<T['select'], TimeSelectCountAggregateOutputType>
+          : GetScalarType<T['select'], DateOnTimeSlotCountAggregateOutputType>
         : number
     >
 
     /**
-     * Allows you to perform aggregations operations on a TimeSelect.
+     * Allows you to perform aggregations operations on a DateOnTimeSlot.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TimeSelectAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @param {DateOnTimeSlotAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
      * @example
      * // Ordered by age ascending
      * // Where email contains prisma.io
@@ -8236,13 +9222,13 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends TimeSelectAggregateArgs>(args: Subset<T, TimeSelectAggregateArgs>): Prisma.PrismaPromise<GetTimeSelectAggregateType<T>>
+    aggregate<T extends DateOnTimeSlotAggregateArgs>(args: Subset<T, DateOnTimeSlotAggregateArgs>): Prisma.PrismaPromise<GetDateOnTimeSlotAggregateType<T>>
 
     /**
-     * Group by TimeSelect.
+     * Group by DateOnTimeSlot.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TimeSelectGroupByArgs} args - Group by arguments.
+     * @param {DateOnTimeSlotGroupByArgs} args - Group by arguments.
      * @example
      * // Group by city, order by createdAt, get count
      * const result = await prisma.user.groupBy({
@@ -8257,14 +9243,14 @@ export namespace Prisma {
      * 
     **/
     groupBy<
-      T extends TimeSelectGroupByArgs,
+      T extends DateOnTimeSlotGroupByArgs,
       HasSelectOrTake extends Or<
         Extends<'skip', Keys<T>>,
         Extends<'take', Keys<T>>
       >,
       OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: TimeSelectGroupByArgs['orderBy'] }
-        : { orderBy?: TimeSelectGroupByArgs['orderBy'] },
+        ? { orderBy: DateOnTimeSlotGroupByArgs['orderBy'] }
+        : { orderBy?: DateOnTimeSlotGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends TupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -8313,17 +9299,17 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, TimeSelectGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTimeSelectGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, DateOnTimeSlotGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDateOnTimeSlotGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
 
   }
 
   /**
-   * The delegate class that acts as a "Promise-like" for TimeSelect.
+   * The delegate class that acts as a "Promise-like" for DateOnTimeSlot.
    * Why is this prefixed with `Prisma__`?
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export class Prisma__TimeSelectClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+  export class Prisma__DateOnTimeSlotClient<T, Null = never> implements Prisma.PrismaPromise<T> {
     private readonly _dmmf;
     private readonly _queryType;
     private readonly _rootField;
@@ -8338,7 +9324,9 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
     constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
 
-    weekDays<T extends TimeSelect$weekDaysArgs= {}>(args?: Subset<T, TimeSelect$weekDaysArgs>): Prisma.PrismaPromise<Array<WeekDayGetPayload<T>>| Null>;
+    timeSlot<T extends TimeSlotArgs= {}>(args?: Subset<T, TimeSlotArgs>): Prisma__TimeSlotClient<TimeSlotGetPayload<T> | Null>;
+
+    dateSlot<T extends DateSlotArgs= {}>(args?: Subset<T, DateSlotArgs>): Prisma__DateSlotClient<DateSlotGetPayload<T> | Null>;
 
     private get _document();
     /**
@@ -8368,27 +9356,27 @@ export namespace Prisma {
   // Custom InputTypes
 
   /**
-   * TimeSelect base type for findUnique actions
+   * DateOnTimeSlot base type for findUnique actions
    */
-  export type TimeSelectFindUniqueArgsBase = {
+  export type DateOnTimeSlotFindUniqueArgsBase = {
     /**
-     * Select specific fields to fetch from the TimeSelect
+     * Select specific fields to fetch from the DateOnTimeSlot
      */
-    select?: TimeSelectSelect | null
+    select?: DateOnTimeSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: TimeSelectInclude | null
+    include?: DateOnTimeSlotInclude | null
     /**
-     * Filter, which TimeSelect to fetch.
+     * Filter, which DateOnTimeSlot to fetch.
      */
-    where: TimeSelectWhereUniqueInput
+    where: DateOnTimeSlotWhereUniqueInput
   }
 
   /**
-   * TimeSelect findUnique
+   * DateOnTimeSlot findUnique
    */
-  export interface TimeSelectFindUniqueArgs extends TimeSelectFindUniqueArgsBase {
+  export interface DateOnTimeSlotFindUniqueArgs extends DateOnTimeSlotFindUniqueArgsBase {
    /**
     * Throw an Error if query returns no results
     * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
@@ -8398,76 +9386,76 @@ export namespace Prisma {
       
 
   /**
-   * TimeSelect findUniqueOrThrow
+   * DateOnTimeSlot findUniqueOrThrow
    */
-  export type TimeSelectFindUniqueOrThrowArgs = {
+  export type DateOnTimeSlotFindUniqueOrThrowArgs = {
     /**
-     * Select specific fields to fetch from the TimeSelect
+     * Select specific fields to fetch from the DateOnTimeSlot
      */
-    select?: TimeSelectSelect | null
+    select?: DateOnTimeSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: TimeSelectInclude | null
+    include?: DateOnTimeSlotInclude | null
     /**
-     * Filter, which TimeSelect to fetch.
+     * Filter, which DateOnTimeSlot to fetch.
      */
-    where: TimeSelectWhereUniqueInput
+    where: DateOnTimeSlotWhereUniqueInput
   }
 
 
   /**
-   * TimeSelect base type for findFirst actions
+   * DateOnTimeSlot base type for findFirst actions
    */
-  export type TimeSelectFindFirstArgsBase = {
+  export type DateOnTimeSlotFindFirstArgsBase = {
     /**
-     * Select specific fields to fetch from the TimeSelect
+     * Select specific fields to fetch from the DateOnTimeSlot
      */
-    select?: TimeSelectSelect | null
+    select?: DateOnTimeSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: TimeSelectInclude | null
+    include?: DateOnTimeSlotInclude | null
     /**
-     * Filter, which TimeSelect to fetch.
+     * Filter, which DateOnTimeSlot to fetch.
      */
-    where?: TimeSelectWhereInput
+    where?: DateOnTimeSlotWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of TimeSelects to fetch.
+     * Determine the order of DateOnTimeSlots to fetch.
      */
-    orderBy?: Enumerable<TimeSelectOrderByWithRelationInput>
+    orderBy?: Enumerable<DateOnTimeSlotOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for TimeSelects.
+     * Sets the position for searching for DateOnTimeSlots.
      */
-    cursor?: TimeSelectWhereUniqueInput
+    cursor?: DateOnTimeSlotWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` TimeSelects from the position of the cursor.
+     * Take `±n` DateOnTimeSlots from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` TimeSelects.
+     * Skip the first `n` DateOnTimeSlots.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of TimeSelects.
+     * Filter by unique combinations of DateOnTimeSlots.
      */
-    distinct?: Enumerable<TimeSelectScalarFieldEnum>
+    distinct?: Enumerable<DateOnTimeSlotScalarFieldEnum>
   }
 
   /**
-   * TimeSelect findFirst
+   * DateOnTimeSlot findFirst
    */
-  export interface TimeSelectFindFirstArgs extends TimeSelectFindFirstArgsBase {
+  export interface DateOnTimeSlotFindFirstArgs extends DateOnTimeSlotFindFirstArgsBase {
    /**
     * Throw an Error if query returns no results
     * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
@@ -8477,257 +9465,1234 @@ export namespace Prisma {
       
 
   /**
-   * TimeSelect findFirstOrThrow
+   * DateOnTimeSlot findFirstOrThrow
    */
-  export type TimeSelectFindFirstOrThrowArgs = {
+  export type DateOnTimeSlotFindFirstOrThrowArgs = {
     /**
-     * Select specific fields to fetch from the TimeSelect
+     * Select specific fields to fetch from the DateOnTimeSlot
      */
-    select?: TimeSelectSelect | null
+    select?: DateOnTimeSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: TimeSelectInclude | null
+    include?: DateOnTimeSlotInclude | null
     /**
-     * Filter, which TimeSelect to fetch.
+     * Filter, which DateOnTimeSlot to fetch.
      */
-    where?: TimeSelectWhereInput
+    where?: DateOnTimeSlotWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of TimeSelects to fetch.
+     * Determine the order of DateOnTimeSlots to fetch.
      */
-    orderBy?: Enumerable<TimeSelectOrderByWithRelationInput>
+    orderBy?: Enumerable<DateOnTimeSlotOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for TimeSelects.
+     * Sets the position for searching for DateOnTimeSlots.
      */
-    cursor?: TimeSelectWhereUniqueInput
+    cursor?: DateOnTimeSlotWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` TimeSelects from the position of the cursor.
+     * Take `±n` DateOnTimeSlots from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` TimeSelects.
+     * Skip the first `n` DateOnTimeSlots.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of TimeSelects.
+     * Filter by unique combinations of DateOnTimeSlots.
      */
-    distinct?: Enumerable<TimeSelectScalarFieldEnum>
+    distinct?: Enumerable<DateOnTimeSlotScalarFieldEnum>
   }
 
 
   /**
-   * TimeSelect findMany
+   * DateOnTimeSlot findMany
    */
-  export type TimeSelectFindManyArgs = {
+  export type DateOnTimeSlotFindManyArgs = {
     /**
-     * Select specific fields to fetch from the TimeSelect
+     * Select specific fields to fetch from the DateOnTimeSlot
      */
-    select?: TimeSelectSelect | null
+    select?: DateOnTimeSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: TimeSelectInclude | null
+    include?: DateOnTimeSlotInclude | null
     /**
-     * Filter, which TimeSelects to fetch.
+     * Filter, which DateOnTimeSlots to fetch.
      */
-    where?: TimeSelectWhereInput
+    where?: DateOnTimeSlotWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of TimeSelects to fetch.
+     * Determine the order of DateOnTimeSlots to fetch.
      */
-    orderBy?: Enumerable<TimeSelectOrderByWithRelationInput>
+    orderBy?: Enumerable<DateOnTimeSlotOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for listing TimeSelects.
+     * Sets the position for listing DateOnTimeSlots.
      */
-    cursor?: TimeSelectWhereUniqueInput
+    cursor?: DateOnTimeSlotWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` TimeSelects from the position of the cursor.
+     * Take `±n` DateOnTimeSlots from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` TimeSelects.
+     * Skip the first `n` DateOnTimeSlots.
      */
     skip?: number
-    distinct?: Enumerable<TimeSelectScalarFieldEnum>
+    distinct?: Enumerable<DateOnTimeSlotScalarFieldEnum>
   }
 
 
   /**
-   * TimeSelect create
+   * DateOnTimeSlot create
    */
-  export type TimeSelectCreateArgs = {
+  export type DateOnTimeSlotCreateArgs = {
     /**
-     * Select specific fields to fetch from the TimeSelect
+     * Select specific fields to fetch from the DateOnTimeSlot
      */
-    select?: TimeSelectSelect | null
+    select?: DateOnTimeSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: TimeSelectInclude | null
+    include?: DateOnTimeSlotInclude | null
     /**
-     * The data needed to create a TimeSelect.
+     * The data needed to create a DateOnTimeSlot.
      */
-    data: XOR<TimeSelectCreateInput, TimeSelectUncheckedCreateInput>
+    data: XOR<DateOnTimeSlotCreateInput, DateOnTimeSlotUncheckedCreateInput>
   }
 
 
   /**
-   * TimeSelect createMany
+   * DateOnTimeSlot createMany
    */
-  export type TimeSelectCreateManyArgs = {
+  export type DateOnTimeSlotCreateManyArgs = {
     /**
-     * The data used to create many TimeSelects.
+     * The data used to create many DateOnTimeSlots.
      */
-    data: Enumerable<TimeSelectCreateManyInput>
+    data: Enumerable<DateOnTimeSlotCreateManyInput>
     skipDuplicates?: boolean
   }
 
 
   /**
-   * TimeSelect update
+   * DateOnTimeSlot update
    */
-  export type TimeSelectUpdateArgs = {
+  export type DateOnTimeSlotUpdateArgs = {
     /**
-     * Select specific fields to fetch from the TimeSelect
+     * Select specific fields to fetch from the DateOnTimeSlot
      */
-    select?: TimeSelectSelect | null
+    select?: DateOnTimeSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: TimeSelectInclude | null
+    include?: DateOnTimeSlotInclude | null
     /**
-     * The data needed to update a TimeSelect.
+     * The data needed to update a DateOnTimeSlot.
      */
-    data: XOR<TimeSelectUpdateInput, TimeSelectUncheckedUpdateInput>
+    data: XOR<DateOnTimeSlotUpdateInput, DateOnTimeSlotUncheckedUpdateInput>
     /**
-     * Choose, which TimeSelect to update.
+     * Choose, which DateOnTimeSlot to update.
      */
-    where: TimeSelectWhereUniqueInput
+    where: DateOnTimeSlotWhereUniqueInput
   }
 
 
   /**
-   * TimeSelect updateMany
+   * DateOnTimeSlot updateMany
    */
-  export type TimeSelectUpdateManyArgs = {
+  export type DateOnTimeSlotUpdateManyArgs = {
     /**
-     * The data used to update TimeSelects.
+     * The data used to update DateOnTimeSlots.
      */
-    data: XOR<TimeSelectUpdateManyMutationInput, TimeSelectUncheckedUpdateManyInput>
+    data: XOR<DateOnTimeSlotUpdateManyMutationInput, DateOnTimeSlotUncheckedUpdateManyInput>
     /**
-     * Filter which TimeSelects to update
+     * Filter which DateOnTimeSlots to update
      */
-    where?: TimeSelectWhereInput
+    where?: DateOnTimeSlotWhereInput
   }
 
 
   /**
-   * TimeSelect upsert
+   * DateOnTimeSlot upsert
    */
-  export type TimeSelectUpsertArgs = {
+  export type DateOnTimeSlotUpsertArgs = {
     /**
-     * Select specific fields to fetch from the TimeSelect
+     * Select specific fields to fetch from the DateOnTimeSlot
      */
-    select?: TimeSelectSelect | null
+    select?: DateOnTimeSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: TimeSelectInclude | null
+    include?: DateOnTimeSlotInclude | null
     /**
-     * The filter to search for the TimeSelect to update in case it exists.
+     * The filter to search for the DateOnTimeSlot to update in case it exists.
      */
-    where: TimeSelectWhereUniqueInput
+    where: DateOnTimeSlotWhereUniqueInput
     /**
-     * In case the TimeSelect found by the `where` argument doesn't exist, create a new TimeSelect with this data.
+     * In case the DateOnTimeSlot found by the `where` argument doesn't exist, create a new DateOnTimeSlot with this data.
      */
-    create: XOR<TimeSelectCreateInput, TimeSelectUncheckedCreateInput>
+    create: XOR<DateOnTimeSlotCreateInput, DateOnTimeSlotUncheckedCreateInput>
     /**
-     * In case the TimeSelect was found with the provided `where` argument, update it with this data.
+     * In case the DateOnTimeSlot was found with the provided `where` argument, update it with this data.
      */
-    update: XOR<TimeSelectUpdateInput, TimeSelectUncheckedUpdateInput>
+    update: XOR<DateOnTimeSlotUpdateInput, DateOnTimeSlotUncheckedUpdateInput>
   }
 
 
   /**
-   * TimeSelect delete
+   * DateOnTimeSlot delete
    */
-  export type TimeSelectDeleteArgs = {
+  export type DateOnTimeSlotDeleteArgs = {
     /**
-     * Select specific fields to fetch from the TimeSelect
+     * Select specific fields to fetch from the DateOnTimeSlot
      */
-    select?: TimeSelectSelect | null
+    select?: DateOnTimeSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: TimeSelectInclude | null
+    include?: DateOnTimeSlotInclude | null
     /**
-     * Filter which TimeSelect to delete.
+     * Filter which DateOnTimeSlot to delete.
      */
-    where: TimeSelectWhereUniqueInput
+    where: DateOnTimeSlotWhereUniqueInput
   }
 
 
   /**
-   * TimeSelect deleteMany
+   * DateOnTimeSlot deleteMany
    */
-  export type TimeSelectDeleteManyArgs = {
+  export type DateOnTimeSlotDeleteManyArgs = {
     /**
-     * Filter which TimeSelects to delete
+     * Filter which DateOnTimeSlots to delete
      */
-    where?: TimeSelectWhereInput
+    where?: DateOnTimeSlotWhereInput
   }
 
 
   /**
-   * TimeSelect.weekDays
+   * DateOnTimeSlot without action
    */
-  export type TimeSelect$weekDaysArgs = {
+  export type DateOnTimeSlotArgs = {
     /**
-     * Select specific fields to fetch from the WeekDay
+     * Select specific fields to fetch from the DateOnTimeSlot
      */
-    select?: WeekDaySelect | null
+    select?: DateOnTimeSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: WeekDayInclude | null
-    where?: WeekDayWhereInput
-    orderBy?: Enumerable<WeekDayOrderByWithRelationInput>
-    cursor?: WeekDayWhereUniqueInput
+    include?: DateOnTimeSlotInclude | null
+  }
+
+
+
+  /**
+   * Model TimeSlot
+   */
+
+
+  export type AggregateTimeSlot = {
+    _count: TimeSlotCountAggregateOutputType | null
+    _avg: TimeSlotAvgAggregateOutputType | null
+    _sum: TimeSlotSumAggregateOutputType | null
+    _min: TimeSlotMinAggregateOutputType | null
+    _max: TimeSlotMaxAggregateOutputType | null
+  }
+
+  export type TimeSlotAvgAggregateOutputType = {
+    id: number | null
+    startTime: number | null
+    endTime: number | null
+  }
+
+  export type TimeSlotSumAggregateOutputType = {
+    id: number | null
+    startTime: number | null
+    endTime: number | null
+  }
+
+  export type TimeSlotMinAggregateOutputType = {
+    id: number | null
+    startTime: number | null
+    endTime: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TimeSlotMaxAggregateOutputType = {
+    id: number | null
+    startTime: number | null
+    endTime: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TimeSlotCountAggregateOutputType = {
+    id: number
+    startTime: number
+    endTime: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type TimeSlotAvgAggregateInputType = {
+    id?: true
+    startTime?: true
+    endTime?: true
+  }
+
+  export type TimeSlotSumAggregateInputType = {
+    id?: true
+    startTime?: true
+    endTime?: true
+  }
+
+  export type TimeSlotMinAggregateInputType = {
+    id?: true
+    startTime?: true
+    endTime?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TimeSlotMaxAggregateInputType = {
+    id?: true
+    startTime?: true
+    endTime?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TimeSlotCountAggregateInputType = {
+    id?: true
+    startTime?: true
+    endTime?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type TimeSlotAggregateArgs = {
+    /**
+     * Filter which TimeSlot to aggregate.
+     */
+    where?: TimeSlotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TimeSlots to fetch.
+     */
+    orderBy?: Enumerable<TimeSlotOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TimeSlotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TimeSlots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TimeSlots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TimeSlots
+    **/
+    _count?: true | TimeSlotCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: TimeSlotAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TimeSlotSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TimeSlotMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TimeSlotMaxAggregateInputType
+  }
+
+  export type GetTimeSlotAggregateType<T extends TimeSlotAggregateArgs> = {
+        [P in keyof T & keyof AggregateTimeSlot]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTimeSlot[P]>
+      : GetScalarType<T[P], AggregateTimeSlot[P]>
+  }
+
+
+
+
+  export type TimeSlotGroupByArgs = {
+    where?: TimeSlotWhereInput
+    orderBy?: Enumerable<TimeSlotOrderByWithAggregationInput>
+    by: TimeSlotScalarFieldEnum[]
+    having?: TimeSlotScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    distinct?: Enumerable<WeekDayScalarFieldEnum>
+    _count?: TimeSlotCountAggregateInputType | true
+    _avg?: TimeSlotAvgAggregateInputType
+    _sum?: TimeSlotSumAggregateInputType
+    _min?: TimeSlotMinAggregateInputType
+    _max?: TimeSlotMaxAggregateInputType
+  }
+
+
+  export type TimeSlotGroupByOutputType = {
+    id: number
+    startTime: number
+    endTime: number
+    createdAt: Date
+    updatedAt: Date
+    _count: TimeSlotCountAggregateOutputType | null
+    _avg: TimeSlotAvgAggregateOutputType | null
+    _sum: TimeSlotSumAggregateOutputType | null
+    _min: TimeSlotMinAggregateOutputType | null
+    _max: TimeSlotMaxAggregateOutputType | null
+  }
+
+  type GetTimeSlotGroupByPayload<T extends TimeSlotGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickArray<TimeSlotGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TimeSlotGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TimeSlotGroupByOutputType[P]>
+            : GetScalarType<T[P], TimeSlotGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TimeSlotSelect = {
+    id?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    dateOnTimeSlots?: boolean | TimeSlot$dateOnTimeSlotsArgs
+    _count?: boolean | TimeSlotCountOutputTypeArgs
+  }
+
+
+  export type TimeSlotInclude = {
+    dateOnTimeSlots?: boolean | TimeSlot$dateOnTimeSlotsArgs
+    _count?: boolean | TimeSlotCountOutputTypeArgs
+  }
+
+  export type TimeSlotGetPayload<S extends boolean | null | undefined | TimeSlotArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? TimeSlot :
+    S extends undefined ? never :
+    S extends { include: any } & (TimeSlotArgs | TimeSlotFindManyArgs)
+    ? TimeSlot  & {
+    [P in TruthyKeys<S['include']>]:
+        P extends 'dateOnTimeSlots' ? Array < DateOnTimeSlotGetPayload<S['include'][P]>>  :
+        P extends '_count' ? TimeSlotCountOutputTypeGetPayload<S['include'][P]> :  never
+  } 
+    : S extends { select: any } & (TimeSlotArgs | TimeSlotFindManyArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+        P extends 'dateOnTimeSlots' ? Array < DateOnTimeSlotGetPayload<S['select'][P]>>  :
+        P extends '_count' ? TimeSlotCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof TimeSlot ? TimeSlot[P] : never
+  } 
+      : TimeSlot
+
+
+  type TimeSlotCountArgs = 
+    Omit<TimeSlotFindManyArgs, 'select' | 'include'> & {
+      select?: TimeSlotCountAggregateInputType | true
+    }
+
+  export interface TimeSlotDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+
+    /**
+     * Find zero or one TimeSlot that matches the filter.
+     * @param {TimeSlotFindUniqueArgs} args - Arguments to find a TimeSlot
+     * @example
+     * // Get one TimeSlot
+     * const timeSlot = await prisma.timeSlot.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends TimeSlotFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, TimeSlotFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'TimeSlot'> extends True ? Prisma__TimeSlotClient<TimeSlotGetPayload<T>> : Prisma__TimeSlotClient<TimeSlotGetPayload<T> | null, null>
+
+    /**
+     * Find one TimeSlot that matches the filter or throw an error  with `error.code='P2025'` 
+     *     if no matches were found.
+     * @param {TimeSlotFindUniqueOrThrowArgs} args - Arguments to find a TimeSlot
+     * @example
+     * // Get one TimeSlot
+     * const timeSlot = await prisma.timeSlot.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends TimeSlotFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, TimeSlotFindUniqueOrThrowArgs>
+    ): Prisma__TimeSlotClient<TimeSlotGetPayload<T>>
+
+    /**
+     * Find the first TimeSlot that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeSlotFindFirstArgs} args - Arguments to find a TimeSlot
+     * @example
+     * // Get one TimeSlot
+     * const timeSlot = await prisma.timeSlot.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends TimeSlotFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, TimeSlotFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'TimeSlot'> extends True ? Prisma__TimeSlotClient<TimeSlotGetPayload<T>> : Prisma__TimeSlotClient<TimeSlotGetPayload<T> | null, null>
+
+    /**
+     * Find the first TimeSlot that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeSlotFindFirstOrThrowArgs} args - Arguments to find a TimeSlot
+     * @example
+     * // Get one TimeSlot
+     * const timeSlot = await prisma.timeSlot.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends TimeSlotFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, TimeSlotFindFirstOrThrowArgs>
+    ): Prisma__TimeSlotClient<TimeSlotGetPayload<T>>
+
+    /**
+     * Find zero or more TimeSlots that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeSlotFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TimeSlots
+     * const timeSlots = await prisma.timeSlot.findMany()
+     * 
+     * // Get first 10 TimeSlots
+     * const timeSlots = await prisma.timeSlot.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const timeSlotWithIdOnly = await prisma.timeSlot.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends TimeSlotFindManyArgs>(
+      args?: SelectSubset<T, TimeSlotFindManyArgs>
+    ): Prisma.PrismaPromise<Array<TimeSlotGetPayload<T>>>
+
+    /**
+     * Create a TimeSlot.
+     * @param {TimeSlotCreateArgs} args - Arguments to create a TimeSlot.
+     * @example
+     * // Create one TimeSlot
+     * const TimeSlot = await prisma.timeSlot.create({
+     *   data: {
+     *     // ... data to create a TimeSlot
+     *   }
+     * })
+     * 
+    **/
+    create<T extends TimeSlotCreateArgs>(
+      args: SelectSubset<T, TimeSlotCreateArgs>
+    ): Prisma__TimeSlotClient<TimeSlotGetPayload<T>>
+
+    /**
+     * Create many TimeSlots.
+     *     @param {TimeSlotCreateManyArgs} args - Arguments to create many TimeSlots.
+     *     @example
+     *     // Create many TimeSlots
+     *     const timeSlot = await prisma.timeSlot.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends TimeSlotCreateManyArgs>(
+      args?: SelectSubset<T, TimeSlotCreateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a TimeSlot.
+     * @param {TimeSlotDeleteArgs} args - Arguments to delete one TimeSlot.
+     * @example
+     * // Delete one TimeSlot
+     * const TimeSlot = await prisma.timeSlot.delete({
+     *   where: {
+     *     // ... filter to delete one TimeSlot
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends TimeSlotDeleteArgs>(
+      args: SelectSubset<T, TimeSlotDeleteArgs>
+    ): Prisma__TimeSlotClient<TimeSlotGetPayload<T>>
+
+    /**
+     * Update one TimeSlot.
+     * @param {TimeSlotUpdateArgs} args - Arguments to update one TimeSlot.
+     * @example
+     * // Update one TimeSlot
+     * const timeSlot = await prisma.timeSlot.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends TimeSlotUpdateArgs>(
+      args: SelectSubset<T, TimeSlotUpdateArgs>
+    ): Prisma__TimeSlotClient<TimeSlotGetPayload<T>>
+
+    /**
+     * Delete zero or more TimeSlots.
+     * @param {TimeSlotDeleteManyArgs} args - Arguments to filter TimeSlots to delete.
+     * @example
+     * // Delete a few TimeSlots
+     * const { count } = await prisma.timeSlot.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends TimeSlotDeleteManyArgs>(
+      args?: SelectSubset<T, TimeSlotDeleteManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TimeSlots.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeSlotUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TimeSlots
+     * const timeSlot = await prisma.timeSlot.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends TimeSlotUpdateManyArgs>(
+      args: SelectSubset<T, TimeSlotUpdateManyArgs>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one TimeSlot.
+     * @param {TimeSlotUpsertArgs} args - Arguments to update or create a TimeSlot.
+     * @example
+     * // Update or create a TimeSlot
+     * const timeSlot = await prisma.timeSlot.upsert({
+     *   create: {
+     *     // ... data to create a TimeSlot
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TimeSlot we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends TimeSlotUpsertArgs>(
+      args: SelectSubset<T, TimeSlotUpsertArgs>
+    ): Prisma__TimeSlotClient<TimeSlotGetPayload<T>>
+
+    /**
+     * Count the number of TimeSlots.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeSlotCountArgs} args - Arguments to filter TimeSlots to count.
+     * @example
+     * // Count the number of TimeSlots
+     * const count = await prisma.timeSlot.count({
+     *   where: {
+     *     // ... the filter for the TimeSlots we want to count
+     *   }
+     * })
+    **/
+    count<T extends TimeSlotCountArgs>(
+      args?: Subset<T, TimeSlotCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TimeSlotCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TimeSlot.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeSlotAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TimeSlotAggregateArgs>(args: Subset<T, TimeSlotAggregateArgs>): Prisma.PrismaPromise<GetTimeSlotAggregateType<T>>
+
+    /**
+     * Group by TimeSlot.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeSlotGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TimeSlotGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TimeSlotGroupByArgs['orderBy'] }
+        : { orderBy?: TimeSlotGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TimeSlotGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTimeSlotGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TimeSlot.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__TimeSlotClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+    private readonly _dmmf;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+
+    dateOnTimeSlots<T extends TimeSlot$dateOnTimeSlotsArgs= {}>(args?: Subset<T, TimeSlot$dateOnTimeSlotsArgs>): Prisma.PrismaPromise<Array<DateOnTimeSlotGetPayload<T>>| Null>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+
+
+  // Custom InputTypes
+
+  /**
+   * TimeSlot base type for findUnique actions
+   */
+  export type TimeSlotFindUniqueArgsBase = {
+    /**
+     * Select specific fields to fetch from the TimeSlot
+     */
+    select?: TimeSlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSlotInclude | null
+    /**
+     * Filter, which TimeSlot to fetch.
+     */
+    where: TimeSlotWhereUniqueInput
+  }
+
+  /**
+   * TimeSlot findUnique
+   */
+  export interface TimeSlotFindUniqueArgs extends TimeSlotFindUniqueArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * TimeSlot findUniqueOrThrow
+   */
+  export type TimeSlotFindUniqueOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the TimeSlot
+     */
+    select?: TimeSlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSlotInclude | null
+    /**
+     * Filter, which TimeSlot to fetch.
+     */
+    where: TimeSlotWhereUniqueInput
   }
 
 
   /**
-   * TimeSelect without action
+   * TimeSlot base type for findFirst actions
    */
-  export type TimeSelectArgs = {
+  export type TimeSlotFindFirstArgsBase = {
     /**
-     * Select specific fields to fetch from the TimeSelect
+     * Select specific fields to fetch from the TimeSlot
      */
-    select?: TimeSelectSelect | null
+    select?: TimeSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: TimeSelectInclude | null
+    include?: TimeSlotInclude | null
+    /**
+     * Filter, which TimeSlot to fetch.
+     */
+    where?: TimeSlotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TimeSlots to fetch.
+     */
+    orderBy?: Enumerable<TimeSlotOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TimeSlots.
+     */
+    cursor?: TimeSlotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TimeSlots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TimeSlots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TimeSlots.
+     */
+    distinct?: Enumerable<TimeSlotScalarFieldEnum>
+  }
+
+  /**
+   * TimeSlot findFirst
+   */
+  export interface TimeSlotFindFirstArgs extends TimeSlotFindFirstArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * TimeSlot findFirstOrThrow
+   */
+  export type TimeSlotFindFirstOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the TimeSlot
+     */
+    select?: TimeSlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSlotInclude | null
+    /**
+     * Filter, which TimeSlot to fetch.
+     */
+    where?: TimeSlotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TimeSlots to fetch.
+     */
+    orderBy?: Enumerable<TimeSlotOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TimeSlots.
+     */
+    cursor?: TimeSlotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TimeSlots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TimeSlots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TimeSlots.
+     */
+    distinct?: Enumerable<TimeSlotScalarFieldEnum>
+  }
+
+
+  /**
+   * TimeSlot findMany
+   */
+  export type TimeSlotFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the TimeSlot
+     */
+    select?: TimeSlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSlotInclude | null
+    /**
+     * Filter, which TimeSlots to fetch.
+     */
+    where?: TimeSlotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TimeSlots to fetch.
+     */
+    orderBy?: Enumerable<TimeSlotOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TimeSlots.
+     */
+    cursor?: TimeSlotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TimeSlots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TimeSlots.
+     */
+    skip?: number
+    distinct?: Enumerable<TimeSlotScalarFieldEnum>
+  }
+
+
+  /**
+   * TimeSlot create
+   */
+  export type TimeSlotCreateArgs = {
+    /**
+     * Select specific fields to fetch from the TimeSlot
+     */
+    select?: TimeSlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSlotInclude | null
+    /**
+     * The data needed to create a TimeSlot.
+     */
+    data: XOR<TimeSlotCreateInput, TimeSlotUncheckedCreateInput>
+  }
+
+
+  /**
+   * TimeSlot createMany
+   */
+  export type TimeSlotCreateManyArgs = {
+    /**
+     * The data used to create many TimeSlots.
+     */
+    data: Enumerable<TimeSlotCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * TimeSlot update
+   */
+  export type TimeSlotUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the TimeSlot
+     */
+    select?: TimeSlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSlotInclude | null
+    /**
+     * The data needed to update a TimeSlot.
+     */
+    data: XOR<TimeSlotUpdateInput, TimeSlotUncheckedUpdateInput>
+    /**
+     * Choose, which TimeSlot to update.
+     */
+    where: TimeSlotWhereUniqueInput
+  }
+
+
+  /**
+   * TimeSlot updateMany
+   */
+  export type TimeSlotUpdateManyArgs = {
+    /**
+     * The data used to update TimeSlots.
+     */
+    data: XOR<TimeSlotUpdateManyMutationInput, TimeSlotUncheckedUpdateManyInput>
+    /**
+     * Filter which TimeSlots to update
+     */
+    where?: TimeSlotWhereInput
+  }
+
+
+  /**
+   * TimeSlot upsert
+   */
+  export type TimeSlotUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the TimeSlot
+     */
+    select?: TimeSlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSlotInclude | null
+    /**
+     * The filter to search for the TimeSlot to update in case it exists.
+     */
+    where: TimeSlotWhereUniqueInput
+    /**
+     * In case the TimeSlot found by the `where` argument doesn't exist, create a new TimeSlot with this data.
+     */
+    create: XOR<TimeSlotCreateInput, TimeSlotUncheckedCreateInput>
+    /**
+     * In case the TimeSlot was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TimeSlotUpdateInput, TimeSlotUncheckedUpdateInput>
+  }
+
+
+  /**
+   * TimeSlot delete
+   */
+  export type TimeSlotDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the TimeSlot
+     */
+    select?: TimeSlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSlotInclude | null
+    /**
+     * Filter which TimeSlot to delete.
+     */
+    where: TimeSlotWhereUniqueInput
+  }
+
+
+  /**
+   * TimeSlot deleteMany
+   */
+  export type TimeSlotDeleteManyArgs = {
+    /**
+     * Filter which TimeSlots to delete
+     */
+    where?: TimeSlotWhereInput
+  }
+
+
+  /**
+   * TimeSlot.dateOnTimeSlots
+   */
+  export type TimeSlot$dateOnTimeSlotsArgs = {
+    /**
+     * Select specific fields to fetch from the DateOnTimeSlot
+     */
+    select?: DateOnTimeSlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: DateOnTimeSlotInclude | null
+    where?: DateOnTimeSlotWhereInput
+    orderBy?: Enumerable<DateOnTimeSlotOrderByWithRelationInput>
+    cursor?: DateOnTimeSlotWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Enumerable<DateOnTimeSlotScalarFieldEnum>
+  }
+
+
+  /**
+   * TimeSlot without action
+   */
+  export type TimeSlotArgs = {
+    /**
+     * Select specific fields to fetch from the TimeSlot
+     */
+    select?: TimeSlotSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: TimeSlotInclude | null
   }
 
 
@@ -8932,17 +10897,15 @@ export namespace Prisma {
     email?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    eventTypes?: boolean | Customer$eventTypesArgs
     groupMeetings?: boolean | Customer$groupMeetingsArgs
-    eventSelects?: boolean | Customer$eventSelectsArgs
+    dateSlots?: boolean | Customer$dateSlotsArgs
     _count?: boolean | CustomerCountOutputTypeArgs
   }
 
 
   export type CustomerInclude = {
-    eventTypes?: boolean | Customer$eventTypesArgs
     groupMeetings?: boolean | Customer$groupMeetingsArgs
-    eventSelects?: boolean | Customer$eventSelectsArgs
+    dateSlots?: boolean | Customer$dateSlotsArgs
     _count?: boolean | CustomerCountOutputTypeArgs
   }
 
@@ -8953,17 +10916,15 @@ export namespace Prisma {
     S extends { include: any } & (CustomerArgs | CustomerFindManyArgs)
     ? Customer  & {
     [P in TruthyKeys<S['include']>]:
-        P extends 'eventTypes' ? Array < EventTypeGetPayload<S['include'][P]>>  :
         P extends 'groupMeetings' ? Array < GroupMeetingGetPayload<S['include'][P]>>  :
-        P extends 'eventSelects' ? Array < EventSelectGetPayload<S['include'][P]>>  :
+        P extends 'dateSlots' ? Array < DateSlotGetPayload<S['include'][P]>>  :
         P extends '_count' ? CustomerCountOutputTypeGetPayload<S['include'][P]> :  never
   } 
     : S extends { select: any } & (CustomerArgs | CustomerFindManyArgs)
       ? {
     [P in TruthyKeys<S['select']>]:
-        P extends 'eventTypes' ? Array < EventTypeGetPayload<S['select'][P]>>  :
         P extends 'groupMeetings' ? Array < GroupMeetingGetPayload<S['select'][P]>>  :
-        P extends 'eventSelects' ? Array < EventSelectGetPayload<S['select'][P]>>  :
+        P extends 'dateSlots' ? Array < DateSlotGetPayload<S['select'][P]>>  :
         P extends '_count' ? CustomerCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof Customer ? Customer[P] : never
   } 
       : Customer
@@ -9336,11 +11297,9 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
     constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
 
-    eventTypes<T extends Customer$eventTypesArgs= {}>(args?: Subset<T, Customer$eventTypesArgs>): Prisma.PrismaPromise<Array<EventTypeGetPayload<T>>| Null>;
-
     groupMeetings<T extends Customer$groupMeetingsArgs= {}>(args?: Subset<T, Customer$groupMeetingsArgs>): Prisma.PrismaPromise<Array<GroupMeetingGetPayload<T>>| Null>;
 
-    eventSelects<T extends Customer$eventSelectsArgs= {}>(args?: Subset<T, Customer$eventSelectsArgs>): Prisma.PrismaPromise<Array<EventSelectGetPayload<T>>| Null>;
+    dateSlots<T extends Customer$dateSlotsArgs= {}>(args?: Subset<T, Customer$dateSlotsArgs>): Prisma.PrismaPromise<Array<DateSlotGetPayload<T>>| Null>;
 
     private get _document();
     /**
@@ -9698,27 +11657,6 @@ export namespace Prisma {
 
 
   /**
-   * Customer.eventTypes
-   */
-  export type Customer$eventTypesArgs = {
-    /**
-     * Select specific fields to fetch from the EventType
-     */
-    select?: EventTypeSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: EventTypeInclude | null
-    where?: EventTypeWhereInput
-    orderBy?: Enumerable<EventTypeOrderByWithRelationInput>
-    cursor?: EventTypeWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: Enumerable<EventTypeScalarFieldEnum>
-  }
-
-
-  /**
    * Customer.groupMeetings
    */
   export type Customer$groupMeetingsArgs = {
@@ -9740,23 +11678,23 @@ export namespace Prisma {
 
 
   /**
-   * Customer.eventSelects
+   * Customer.dateSlots
    */
-  export type Customer$eventSelectsArgs = {
+  export type Customer$dateSlotsArgs = {
     /**
-     * Select specific fields to fetch from the EventSelect
+     * Select specific fields to fetch from the DateSlot
      */
-    select?: EventSelectSelect | null
+    select?: DateSlotSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      */
-    include?: EventSelectInclude | null
-    where?: EventSelectWhereInput
-    orderBy?: Enumerable<EventSelectOrderByWithRelationInput>
-    cursor?: EventSelectWhereUniqueInput
+    include?: DateSlotInclude | null
+    where?: DateSlotWhereInput
+    orderBy?: Enumerable<DateSlotOrderByWithRelationInput>
+    cursor?: DateSlotWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: Enumerable<EventSelectScalarFieldEnum>
+    distinct?: Enumerable<DateSlotScalarFieldEnum>
   }
 
 
@@ -9772,996 +11710,6 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well.
      */
     include?: CustomerInclude | null
-  }
-
-
-
-  /**
-   * Model CalendarSelect
-   */
-
-
-  export type AggregateCalendarSelect = {
-    _count: CalendarSelectCountAggregateOutputType | null
-    _avg: CalendarSelectAvgAggregateOutputType | null
-    _sum: CalendarSelectSumAggregateOutputType | null
-    _min: CalendarSelectMinAggregateOutputType | null
-    _max: CalendarSelectMaxAggregateOutputType | null
-  }
-
-  export type CalendarSelectAvgAggregateOutputType = {
-    id: number | null
-  }
-
-  export type CalendarSelectSumAggregateOutputType = {
-    id: number | null
-  }
-
-  export type CalendarSelectMinAggregateOutputType = {
-    id: number | null
-    startDate: Date | null
-    endDate: Date | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type CalendarSelectMaxAggregateOutputType = {
-    id: number | null
-    startDate: Date | null
-    endDate: Date | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type CalendarSelectCountAggregateOutputType = {
-    id: number
-    startDate: number
-    endDate: number
-    createdAt: number
-    updatedAt: number
-    _all: number
-  }
-
-
-  export type CalendarSelectAvgAggregateInputType = {
-    id?: true
-  }
-
-  export type CalendarSelectSumAggregateInputType = {
-    id?: true
-  }
-
-  export type CalendarSelectMinAggregateInputType = {
-    id?: true
-    startDate?: true
-    endDate?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type CalendarSelectMaxAggregateInputType = {
-    id?: true
-    startDate?: true
-    endDate?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type CalendarSelectCountAggregateInputType = {
-    id?: true
-    startDate?: true
-    endDate?: true
-    createdAt?: true
-    updatedAt?: true
-    _all?: true
-  }
-
-  export type CalendarSelectAggregateArgs = {
-    /**
-     * Filter which CalendarSelect to aggregate.
-     */
-    where?: CalendarSelectWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of CalendarSelects to fetch.
-     */
-    orderBy?: Enumerable<CalendarSelectOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: CalendarSelectWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` CalendarSelects from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` CalendarSelects.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned CalendarSelects
-    **/
-    _count?: true | CalendarSelectCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: CalendarSelectAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: CalendarSelectSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: CalendarSelectMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: CalendarSelectMaxAggregateInputType
-  }
-
-  export type GetCalendarSelectAggregateType<T extends CalendarSelectAggregateArgs> = {
-        [P in keyof T & keyof AggregateCalendarSelect]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateCalendarSelect[P]>
-      : GetScalarType<T[P], AggregateCalendarSelect[P]>
-  }
-
-
-
-
-  export type CalendarSelectGroupByArgs = {
-    where?: CalendarSelectWhereInput
-    orderBy?: Enumerable<CalendarSelectOrderByWithAggregationInput>
-    by: CalendarSelectScalarFieldEnum[]
-    having?: CalendarSelectScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: CalendarSelectCountAggregateInputType | true
-    _avg?: CalendarSelectAvgAggregateInputType
-    _sum?: CalendarSelectSumAggregateInputType
-    _min?: CalendarSelectMinAggregateInputType
-    _max?: CalendarSelectMaxAggregateInputType
-  }
-
-
-  export type CalendarSelectGroupByOutputType = {
-    id: number
-    startDate: Date
-    endDate: Date
-    createdAt: Date
-    updatedAt: Date
-    _count: CalendarSelectCountAggregateOutputType | null
-    _avg: CalendarSelectAvgAggregateOutputType | null
-    _sum: CalendarSelectSumAggregateOutputType | null
-    _min: CalendarSelectMinAggregateOutputType | null
-    _max: CalendarSelectMaxAggregateOutputType | null
-  }
-
-  type GetCalendarSelectGroupByPayload<T extends CalendarSelectGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickArray<CalendarSelectGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof CalendarSelectGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], CalendarSelectGroupByOutputType[P]>
-            : GetScalarType<T[P], CalendarSelectGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type CalendarSelectSelect = {
-    id?: boolean
-    startDate?: boolean
-    endDate?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    eventTypes?: boolean | CalendarSelect$eventTypesArgs
-    _count?: boolean | CalendarSelectCountOutputTypeArgs
-  }
-
-
-  export type CalendarSelectInclude = {
-    eventTypes?: boolean | CalendarSelect$eventTypesArgs
-    _count?: boolean | CalendarSelectCountOutputTypeArgs
-  }
-
-  export type CalendarSelectGetPayload<S extends boolean | null | undefined | CalendarSelectArgs> =
-    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? CalendarSelect :
-    S extends undefined ? never :
-    S extends { include: any } & (CalendarSelectArgs | CalendarSelectFindManyArgs)
-    ? CalendarSelect  & {
-    [P in TruthyKeys<S['include']>]:
-        P extends 'eventTypes' ? Array < EventTypeGetPayload<S['include'][P]>>  :
-        P extends '_count' ? CalendarSelectCountOutputTypeGetPayload<S['include'][P]> :  never
-  } 
-    : S extends { select: any } & (CalendarSelectArgs | CalendarSelectFindManyArgs)
-      ? {
-    [P in TruthyKeys<S['select']>]:
-        P extends 'eventTypes' ? Array < EventTypeGetPayload<S['select'][P]>>  :
-        P extends '_count' ? CalendarSelectCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof CalendarSelect ? CalendarSelect[P] : never
-  } 
-      : CalendarSelect
-
-
-  type CalendarSelectCountArgs = 
-    Omit<CalendarSelectFindManyArgs, 'select' | 'include'> & {
-      select?: CalendarSelectCountAggregateInputType | true
-    }
-
-  export interface CalendarSelectDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
-
-    /**
-     * Find zero or one CalendarSelect that matches the filter.
-     * @param {CalendarSelectFindUniqueArgs} args - Arguments to find a CalendarSelect
-     * @example
-     * // Get one CalendarSelect
-     * const calendarSelect = await prisma.calendarSelect.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUnique<T extends CalendarSelectFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args: SelectSubset<T, CalendarSelectFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'CalendarSelect'> extends True ? Prisma__CalendarSelectClient<CalendarSelectGetPayload<T>> : Prisma__CalendarSelectClient<CalendarSelectGetPayload<T> | null, null>
-
-    /**
-     * Find one CalendarSelect that matches the filter or throw an error  with `error.code='P2025'` 
-     *     if no matches were found.
-     * @param {CalendarSelectFindUniqueOrThrowArgs} args - Arguments to find a CalendarSelect
-     * @example
-     * // Get one CalendarSelect
-     * const calendarSelect = await prisma.calendarSelect.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUniqueOrThrow<T extends CalendarSelectFindUniqueOrThrowArgs>(
-      args?: SelectSubset<T, CalendarSelectFindUniqueOrThrowArgs>
-    ): Prisma__CalendarSelectClient<CalendarSelectGetPayload<T>>
-
-    /**
-     * Find the first CalendarSelect that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {CalendarSelectFindFirstArgs} args - Arguments to find a CalendarSelect
-     * @example
-     * // Get one CalendarSelect
-     * const calendarSelect = await prisma.calendarSelect.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirst<T extends CalendarSelectFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args?: SelectSubset<T, CalendarSelectFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'CalendarSelect'> extends True ? Prisma__CalendarSelectClient<CalendarSelectGetPayload<T>> : Prisma__CalendarSelectClient<CalendarSelectGetPayload<T> | null, null>
-
-    /**
-     * Find the first CalendarSelect that matches the filter or
-     * throw `NotFoundError` if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {CalendarSelectFindFirstOrThrowArgs} args - Arguments to find a CalendarSelect
-     * @example
-     * // Get one CalendarSelect
-     * const calendarSelect = await prisma.calendarSelect.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirstOrThrow<T extends CalendarSelectFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, CalendarSelectFindFirstOrThrowArgs>
-    ): Prisma__CalendarSelectClient<CalendarSelectGetPayload<T>>
-
-    /**
-     * Find zero or more CalendarSelects that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {CalendarSelectFindManyArgs=} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all CalendarSelects
-     * const calendarSelects = await prisma.calendarSelect.findMany()
-     * 
-     * // Get first 10 CalendarSelects
-     * const calendarSelects = await prisma.calendarSelect.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const calendarSelectWithIdOnly = await prisma.calendarSelect.findMany({ select: { id: true } })
-     * 
-    **/
-    findMany<T extends CalendarSelectFindManyArgs>(
-      args?: SelectSubset<T, CalendarSelectFindManyArgs>
-    ): Prisma.PrismaPromise<Array<CalendarSelectGetPayload<T>>>
-
-    /**
-     * Create a CalendarSelect.
-     * @param {CalendarSelectCreateArgs} args - Arguments to create a CalendarSelect.
-     * @example
-     * // Create one CalendarSelect
-     * const CalendarSelect = await prisma.calendarSelect.create({
-     *   data: {
-     *     // ... data to create a CalendarSelect
-     *   }
-     * })
-     * 
-    **/
-    create<T extends CalendarSelectCreateArgs>(
-      args: SelectSubset<T, CalendarSelectCreateArgs>
-    ): Prisma__CalendarSelectClient<CalendarSelectGetPayload<T>>
-
-    /**
-     * Create many CalendarSelects.
-     *     @param {CalendarSelectCreateManyArgs} args - Arguments to create many CalendarSelects.
-     *     @example
-     *     // Create many CalendarSelects
-     *     const calendarSelect = await prisma.calendarSelect.createMany({
-     *       data: {
-     *         // ... provide data here
-     *       }
-     *     })
-     *     
-    **/
-    createMany<T extends CalendarSelectCreateManyArgs>(
-      args?: SelectSubset<T, CalendarSelectCreateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Delete a CalendarSelect.
-     * @param {CalendarSelectDeleteArgs} args - Arguments to delete one CalendarSelect.
-     * @example
-     * // Delete one CalendarSelect
-     * const CalendarSelect = await prisma.calendarSelect.delete({
-     *   where: {
-     *     // ... filter to delete one CalendarSelect
-     *   }
-     * })
-     * 
-    **/
-    delete<T extends CalendarSelectDeleteArgs>(
-      args: SelectSubset<T, CalendarSelectDeleteArgs>
-    ): Prisma__CalendarSelectClient<CalendarSelectGetPayload<T>>
-
-    /**
-     * Update one CalendarSelect.
-     * @param {CalendarSelectUpdateArgs} args - Arguments to update one CalendarSelect.
-     * @example
-     * // Update one CalendarSelect
-     * const calendarSelect = await prisma.calendarSelect.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    update<T extends CalendarSelectUpdateArgs>(
-      args: SelectSubset<T, CalendarSelectUpdateArgs>
-    ): Prisma__CalendarSelectClient<CalendarSelectGetPayload<T>>
-
-    /**
-     * Delete zero or more CalendarSelects.
-     * @param {CalendarSelectDeleteManyArgs} args - Arguments to filter CalendarSelects to delete.
-     * @example
-     * // Delete a few CalendarSelects
-     * const { count } = await prisma.calendarSelect.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-    **/
-    deleteMany<T extends CalendarSelectDeleteManyArgs>(
-      args?: SelectSubset<T, CalendarSelectDeleteManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more CalendarSelects.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {CalendarSelectUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many CalendarSelects
-     * const calendarSelect = await prisma.calendarSelect.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    updateMany<T extends CalendarSelectUpdateManyArgs>(
-      args: SelectSubset<T, CalendarSelectUpdateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one CalendarSelect.
-     * @param {CalendarSelectUpsertArgs} args - Arguments to update or create a CalendarSelect.
-     * @example
-     * // Update or create a CalendarSelect
-     * const calendarSelect = await prisma.calendarSelect.upsert({
-     *   create: {
-     *     // ... data to create a CalendarSelect
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the CalendarSelect we want to update
-     *   }
-     * })
-    **/
-    upsert<T extends CalendarSelectUpsertArgs>(
-      args: SelectSubset<T, CalendarSelectUpsertArgs>
-    ): Prisma__CalendarSelectClient<CalendarSelectGetPayload<T>>
-
-    /**
-     * Count the number of CalendarSelects.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {CalendarSelectCountArgs} args - Arguments to filter CalendarSelects to count.
-     * @example
-     * // Count the number of CalendarSelects
-     * const count = await prisma.calendarSelect.count({
-     *   where: {
-     *     // ... the filter for the CalendarSelects we want to count
-     *   }
-     * })
-    **/
-    count<T extends CalendarSelectCountArgs>(
-      args?: Subset<T, CalendarSelectCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends _Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], CalendarSelectCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a CalendarSelect.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {CalendarSelectAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends CalendarSelectAggregateArgs>(args: Subset<T, CalendarSelectAggregateArgs>): Prisma.PrismaPromise<GetCalendarSelectAggregateType<T>>
-
-    /**
-     * Group by CalendarSelect.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {CalendarSelectGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends CalendarSelectGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: CalendarSelectGroupByArgs['orderBy'] }
-        : { orderBy?: CalendarSelectGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends TupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, CalendarSelectGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCalendarSelectGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for CalendarSelect.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export class Prisma__CalendarSelectClient<T, Null = never> implements Prisma.PrismaPromise<T> {
-    private readonly _dmmf;
-    private readonly _queryType;
-    private readonly _rootField;
-    private readonly _clientMethod;
-    private readonly _args;
-    private readonly _dataPath;
-    private readonly _errorFormat;
-    private readonly _measurePerformance?;
-    private _isList;
-    private _callsite;
-    private _requestPromise?;
-    readonly [Symbol.toStringTag]: 'PrismaPromise';
-    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
-
-    eventTypes<T extends CalendarSelect$eventTypesArgs= {}>(args?: Subset<T, CalendarSelect$eventTypesArgs>): Prisma.PrismaPromise<Array<EventTypeGetPayload<T>>| Null>;
-
-    private get _document();
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
-  }
-
-
-
-  // Custom InputTypes
-
-  /**
-   * CalendarSelect base type for findUnique actions
-   */
-  export type CalendarSelectFindUniqueArgsBase = {
-    /**
-     * Select specific fields to fetch from the CalendarSelect
-     */
-    select?: CalendarSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: CalendarSelectInclude | null
-    /**
-     * Filter, which CalendarSelect to fetch.
-     */
-    where: CalendarSelectWhereUniqueInput
-  }
-
-  /**
-   * CalendarSelect findUnique
-   */
-  export interface CalendarSelectFindUniqueArgs extends CalendarSelectFindUniqueArgsBase {
-   /**
-    * Throw an Error if query returns no results
-    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
-    */
-    rejectOnNotFound?: RejectOnNotFound
-  }
-      
-
-  /**
-   * CalendarSelect findUniqueOrThrow
-   */
-  export type CalendarSelectFindUniqueOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the CalendarSelect
-     */
-    select?: CalendarSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: CalendarSelectInclude | null
-    /**
-     * Filter, which CalendarSelect to fetch.
-     */
-    where: CalendarSelectWhereUniqueInput
-  }
-
-
-  /**
-   * CalendarSelect base type for findFirst actions
-   */
-  export type CalendarSelectFindFirstArgsBase = {
-    /**
-     * Select specific fields to fetch from the CalendarSelect
-     */
-    select?: CalendarSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: CalendarSelectInclude | null
-    /**
-     * Filter, which CalendarSelect to fetch.
-     */
-    where?: CalendarSelectWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of CalendarSelects to fetch.
-     */
-    orderBy?: Enumerable<CalendarSelectOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for CalendarSelects.
-     */
-    cursor?: CalendarSelectWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` CalendarSelects from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` CalendarSelects.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of CalendarSelects.
-     */
-    distinct?: Enumerable<CalendarSelectScalarFieldEnum>
-  }
-
-  /**
-   * CalendarSelect findFirst
-   */
-  export interface CalendarSelectFindFirstArgs extends CalendarSelectFindFirstArgsBase {
-   /**
-    * Throw an Error if query returns no results
-    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
-    */
-    rejectOnNotFound?: RejectOnNotFound
-  }
-      
-
-  /**
-   * CalendarSelect findFirstOrThrow
-   */
-  export type CalendarSelectFindFirstOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the CalendarSelect
-     */
-    select?: CalendarSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: CalendarSelectInclude | null
-    /**
-     * Filter, which CalendarSelect to fetch.
-     */
-    where?: CalendarSelectWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of CalendarSelects to fetch.
-     */
-    orderBy?: Enumerable<CalendarSelectOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for CalendarSelects.
-     */
-    cursor?: CalendarSelectWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` CalendarSelects from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` CalendarSelects.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of CalendarSelects.
-     */
-    distinct?: Enumerable<CalendarSelectScalarFieldEnum>
-  }
-
-
-  /**
-   * CalendarSelect findMany
-   */
-  export type CalendarSelectFindManyArgs = {
-    /**
-     * Select specific fields to fetch from the CalendarSelect
-     */
-    select?: CalendarSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: CalendarSelectInclude | null
-    /**
-     * Filter, which CalendarSelects to fetch.
-     */
-    where?: CalendarSelectWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of CalendarSelects to fetch.
-     */
-    orderBy?: Enumerable<CalendarSelectOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing CalendarSelects.
-     */
-    cursor?: CalendarSelectWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` CalendarSelects from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` CalendarSelects.
-     */
-    skip?: number
-    distinct?: Enumerable<CalendarSelectScalarFieldEnum>
-  }
-
-
-  /**
-   * CalendarSelect create
-   */
-  export type CalendarSelectCreateArgs = {
-    /**
-     * Select specific fields to fetch from the CalendarSelect
-     */
-    select?: CalendarSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: CalendarSelectInclude | null
-    /**
-     * The data needed to create a CalendarSelect.
-     */
-    data: XOR<CalendarSelectCreateInput, CalendarSelectUncheckedCreateInput>
-  }
-
-
-  /**
-   * CalendarSelect createMany
-   */
-  export type CalendarSelectCreateManyArgs = {
-    /**
-     * The data used to create many CalendarSelects.
-     */
-    data: Enumerable<CalendarSelectCreateManyInput>
-    skipDuplicates?: boolean
-  }
-
-
-  /**
-   * CalendarSelect update
-   */
-  export type CalendarSelectUpdateArgs = {
-    /**
-     * Select specific fields to fetch from the CalendarSelect
-     */
-    select?: CalendarSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: CalendarSelectInclude | null
-    /**
-     * The data needed to update a CalendarSelect.
-     */
-    data: XOR<CalendarSelectUpdateInput, CalendarSelectUncheckedUpdateInput>
-    /**
-     * Choose, which CalendarSelect to update.
-     */
-    where: CalendarSelectWhereUniqueInput
-  }
-
-
-  /**
-   * CalendarSelect updateMany
-   */
-  export type CalendarSelectUpdateManyArgs = {
-    /**
-     * The data used to update CalendarSelects.
-     */
-    data: XOR<CalendarSelectUpdateManyMutationInput, CalendarSelectUncheckedUpdateManyInput>
-    /**
-     * Filter which CalendarSelects to update
-     */
-    where?: CalendarSelectWhereInput
-  }
-
-
-  /**
-   * CalendarSelect upsert
-   */
-  export type CalendarSelectUpsertArgs = {
-    /**
-     * Select specific fields to fetch from the CalendarSelect
-     */
-    select?: CalendarSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: CalendarSelectInclude | null
-    /**
-     * The filter to search for the CalendarSelect to update in case it exists.
-     */
-    where: CalendarSelectWhereUniqueInput
-    /**
-     * In case the CalendarSelect found by the `where` argument doesn't exist, create a new CalendarSelect with this data.
-     */
-    create: XOR<CalendarSelectCreateInput, CalendarSelectUncheckedCreateInput>
-    /**
-     * In case the CalendarSelect was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<CalendarSelectUpdateInput, CalendarSelectUncheckedUpdateInput>
-  }
-
-
-  /**
-   * CalendarSelect delete
-   */
-  export type CalendarSelectDeleteArgs = {
-    /**
-     * Select specific fields to fetch from the CalendarSelect
-     */
-    select?: CalendarSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: CalendarSelectInclude | null
-    /**
-     * Filter which CalendarSelect to delete.
-     */
-    where: CalendarSelectWhereUniqueInput
-  }
-
-
-  /**
-   * CalendarSelect deleteMany
-   */
-  export type CalendarSelectDeleteManyArgs = {
-    /**
-     * Filter which CalendarSelects to delete
-     */
-    where?: CalendarSelectWhereInput
-  }
-
-
-  /**
-   * CalendarSelect.eventTypes
-   */
-  export type CalendarSelect$eventTypesArgs = {
-    /**
-     * Select specific fields to fetch from the EventType
-     */
-    select?: EventTypeSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: EventTypeInclude | null
-    where?: EventTypeWhereInput
-    orderBy?: Enumerable<EventTypeOrderByWithRelationInput>
-    cursor?: EventTypeWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: Enumerable<EventTypeScalarFieldEnum>
-  }
-
-
-  /**
-   * CalendarSelect without action
-   */
-  export type CalendarSelectArgs = {
-    /**
-     * Select specific fields to fetch from the CalendarSelect
-     */
-    select?: CalendarSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: CalendarSelectInclude | null
   }
 
 
@@ -12808,1009 +13756,6 @@ export namespace Prisma {
 
 
   /**
-   * Model EventSelect
-   */
-
-
-  export type AggregateEventSelect = {
-    _count: EventSelectCountAggregateOutputType | null
-    _avg: EventSelectAvgAggregateOutputType | null
-    _sum: EventSelectSumAggregateOutputType | null
-    _min: EventSelectMinAggregateOutputType | null
-    _max: EventSelectMaxAggregateOutputType | null
-  }
-
-  export type EventSelectAvgAggregateOutputType = {
-    id: number | null
-    eventTypeId: number | null
-    customerId: number | null
-  }
-
-  export type EventSelectSumAggregateOutputType = {
-    id: number | null
-    eventTypeId: number | null
-    customerId: number | null
-  }
-
-  export type EventSelectMinAggregateOutputType = {
-    id: number | null
-    eventTypeId: number | null
-    customerId: number | null
-    selectDate: string | null
-    selectTime: Date | null
-    status: string | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type EventSelectMaxAggregateOutputType = {
-    id: number | null
-    eventTypeId: number | null
-    customerId: number | null
-    selectDate: string | null
-    selectTime: Date | null
-    status: string | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type EventSelectCountAggregateOutputType = {
-    id: number
-    eventTypeId: number
-    customerId: number
-    selectDate: number
-    selectTime: number
-    status: number
-    createdAt: number
-    updatedAt: number
-    _all: number
-  }
-
-
-  export type EventSelectAvgAggregateInputType = {
-    id?: true
-    eventTypeId?: true
-    customerId?: true
-  }
-
-  export type EventSelectSumAggregateInputType = {
-    id?: true
-    eventTypeId?: true
-    customerId?: true
-  }
-
-  export type EventSelectMinAggregateInputType = {
-    id?: true
-    eventTypeId?: true
-    customerId?: true
-    selectDate?: true
-    selectTime?: true
-    status?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type EventSelectMaxAggregateInputType = {
-    id?: true
-    eventTypeId?: true
-    customerId?: true
-    selectDate?: true
-    selectTime?: true
-    status?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type EventSelectCountAggregateInputType = {
-    id?: true
-    eventTypeId?: true
-    customerId?: true
-    selectDate?: true
-    selectTime?: true
-    status?: true
-    createdAt?: true
-    updatedAt?: true
-    _all?: true
-  }
-
-  export type EventSelectAggregateArgs = {
-    /**
-     * Filter which EventSelect to aggregate.
-     */
-    where?: EventSelectWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of EventSelects to fetch.
-     */
-    orderBy?: Enumerable<EventSelectOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: EventSelectWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` EventSelects from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` EventSelects.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned EventSelects
-    **/
-    _count?: true | EventSelectCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: EventSelectAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: EventSelectSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: EventSelectMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: EventSelectMaxAggregateInputType
-  }
-
-  export type GetEventSelectAggregateType<T extends EventSelectAggregateArgs> = {
-        [P in keyof T & keyof AggregateEventSelect]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateEventSelect[P]>
-      : GetScalarType<T[P], AggregateEventSelect[P]>
-  }
-
-
-
-
-  export type EventSelectGroupByArgs = {
-    where?: EventSelectWhereInput
-    orderBy?: Enumerable<EventSelectOrderByWithAggregationInput>
-    by: EventSelectScalarFieldEnum[]
-    having?: EventSelectScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: EventSelectCountAggregateInputType | true
-    _avg?: EventSelectAvgAggregateInputType
-    _sum?: EventSelectSumAggregateInputType
-    _min?: EventSelectMinAggregateInputType
-    _max?: EventSelectMaxAggregateInputType
-  }
-
-
-  export type EventSelectGroupByOutputType = {
-    id: number
-    eventTypeId: number
-    customerId: number
-    selectDate: string
-    selectTime: Date
-    status: string
-    createdAt: Date
-    updatedAt: Date
-    _count: EventSelectCountAggregateOutputType | null
-    _avg: EventSelectAvgAggregateOutputType | null
-    _sum: EventSelectSumAggregateOutputType | null
-    _min: EventSelectMinAggregateOutputType | null
-    _max: EventSelectMaxAggregateOutputType | null
-  }
-
-  type GetEventSelectGroupByPayload<T extends EventSelectGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickArray<EventSelectGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof EventSelectGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], EventSelectGroupByOutputType[P]>
-            : GetScalarType<T[P], EventSelectGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type EventSelectSelect = {
-    id?: boolean
-    eventTypeId?: boolean
-    customerId?: boolean
-    selectDate?: boolean
-    selectTime?: boolean
-    status?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    eventType?: boolean | EventTypeArgs
-    customer?: boolean | CustomerArgs
-  }
-
-
-  export type EventSelectInclude = {
-    eventType?: boolean | EventTypeArgs
-    customer?: boolean | CustomerArgs
-  }
-
-  export type EventSelectGetPayload<S extends boolean | null | undefined | EventSelectArgs> =
-    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? EventSelect :
-    S extends undefined ? never :
-    S extends { include: any } & (EventSelectArgs | EventSelectFindManyArgs)
-    ? EventSelect  & {
-    [P in TruthyKeys<S['include']>]:
-        P extends 'eventType' ? EventTypeGetPayload<S['include'][P]> :
-        P extends 'customer' ? CustomerGetPayload<S['include'][P]> :  never
-  } 
-    : S extends { select: any } & (EventSelectArgs | EventSelectFindManyArgs)
-      ? {
-    [P in TruthyKeys<S['select']>]:
-        P extends 'eventType' ? EventTypeGetPayload<S['select'][P]> :
-        P extends 'customer' ? CustomerGetPayload<S['select'][P]> :  P extends keyof EventSelect ? EventSelect[P] : never
-  } 
-      : EventSelect
-
-
-  type EventSelectCountArgs = 
-    Omit<EventSelectFindManyArgs, 'select' | 'include'> & {
-      select?: EventSelectCountAggregateInputType | true
-    }
-
-  export interface EventSelectDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
-
-    /**
-     * Find zero or one EventSelect that matches the filter.
-     * @param {EventSelectFindUniqueArgs} args - Arguments to find a EventSelect
-     * @example
-     * // Get one EventSelect
-     * const eventSelect = await prisma.eventSelect.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUnique<T extends EventSelectFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args: SelectSubset<T, EventSelectFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'EventSelect'> extends True ? Prisma__EventSelectClient<EventSelectGetPayload<T>> : Prisma__EventSelectClient<EventSelectGetPayload<T> | null, null>
-
-    /**
-     * Find one EventSelect that matches the filter or throw an error  with `error.code='P2025'` 
-     *     if no matches were found.
-     * @param {EventSelectFindUniqueOrThrowArgs} args - Arguments to find a EventSelect
-     * @example
-     * // Get one EventSelect
-     * const eventSelect = await prisma.eventSelect.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUniqueOrThrow<T extends EventSelectFindUniqueOrThrowArgs>(
-      args?: SelectSubset<T, EventSelectFindUniqueOrThrowArgs>
-    ): Prisma__EventSelectClient<EventSelectGetPayload<T>>
-
-    /**
-     * Find the first EventSelect that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {EventSelectFindFirstArgs} args - Arguments to find a EventSelect
-     * @example
-     * // Get one EventSelect
-     * const eventSelect = await prisma.eventSelect.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirst<T extends EventSelectFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args?: SelectSubset<T, EventSelectFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'EventSelect'> extends True ? Prisma__EventSelectClient<EventSelectGetPayload<T>> : Prisma__EventSelectClient<EventSelectGetPayload<T> | null, null>
-
-    /**
-     * Find the first EventSelect that matches the filter or
-     * throw `NotFoundError` if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {EventSelectFindFirstOrThrowArgs} args - Arguments to find a EventSelect
-     * @example
-     * // Get one EventSelect
-     * const eventSelect = await prisma.eventSelect.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirstOrThrow<T extends EventSelectFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, EventSelectFindFirstOrThrowArgs>
-    ): Prisma__EventSelectClient<EventSelectGetPayload<T>>
-
-    /**
-     * Find zero or more EventSelects that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {EventSelectFindManyArgs=} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all EventSelects
-     * const eventSelects = await prisma.eventSelect.findMany()
-     * 
-     * // Get first 10 EventSelects
-     * const eventSelects = await prisma.eventSelect.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const eventSelectWithIdOnly = await prisma.eventSelect.findMany({ select: { id: true } })
-     * 
-    **/
-    findMany<T extends EventSelectFindManyArgs>(
-      args?: SelectSubset<T, EventSelectFindManyArgs>
-    ): Prisma.PrismaPromise<Array<EventSelectGetPayload<T>>>
-
-    /**
-     * Create a EventSelect.
-     * @param {EventSelectCreateArgs} args - Arguments to create a EventSelect.
-     * @example
-     * // Create one EventSelect
-     * const EventSelect = await prisma.eventSelect.create({
-     *   data: {
-     *     // ... data to create a EventSelect
-     *   }
-     * })
-     * 
-    **/
-    create<T extends EventSelectCreateArgs>(
-      args: SelectSubset<T, EventSelectCreateArgs>
-    ): Prisma__EventSelectClient<EventSelectGetPayload<T>>
-
-    /**
-     * Create many EventSelects.
-     *     @param {EventSelectCreateManyArgs} args - Arguments to create many EventSelects.
-     *     @example
-     *     // Create many EventSelects
-     *     const eventSelect = await prisma.eventSelect.createMany({
-     *       data: {
-     *         // ... provide data here
-     *       }
-     *     })
-     *     
-    **/
-    createMany<T extends EventSelectCreateManyArgs>(
-      args?: SelectSubset<T, EventSelectCreateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Delete a EventSelect.
-     * @param {EventSelectDeleteArgs} args - Arguments to delete one EventSelect.
-     * @example
-     * // Delete one EventSelect
-     * const EventSelect = await prisma.eventSelect.delete({
-     *   where: {
-     *     // ... filter to delete one EventSelect
-     *   }
-     * })
-     * 
-    **/
-    delete<T extends EventSelectDeleteArgs>(
-      args: SelectSubset<T, EventSelectDeleteArgs>
-    ): Prisma__EventSelectClient<EventSelectGetPayload<T>>
-
-    /**
-     * Update one EventSelect.
-     * @param {EventSelectUpdateArgs} args - Arguments to update one EventSelect.
-     * @example
-     * // Update one EventSelect
-     * const eventSelect = await prisma.eventSelect.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    update<T extends EventSelectUpdateArgs>(
-      args: SelectSubset<T, EventSelectUpdateArgs>
-    ): Prisma__EventSelectClient<EventSelectGetPayload<T>>
-
-    /**
-     * Delete zero or more EventSelects.
-     * @param {EventSelectDeleteManyArgs} args - Arguments to filter EventSelects to delete.
-     * @example
-     * // Delete a few EventSelects
-     * const { count } = await prisma.eventSelect.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-    **/
-    deleteMany<T extends EventSelectDeleteManyArgs>(
-      args?: SelectSubset<T, EventSelectDeleteManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more EventSelects.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {EventSelectUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many EventSelects
-     * const eventSelect = await prisma.eventSelect.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    updateMany<T extends EventSelectUpdateManyArgs>(
-      args: SelectSubset<T, EventSelectUpdateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one EventSelect.
-     * @param {EventSelectUpsertArgs} args - Arguments to update or create a EventSelect.
-     * @example
-     * // Update or create a EventSelect
-     * const eventSelect = await prisma.eventSelect.upsert({
-     *   create: {
-     *     // ... data to create a EventSelect
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the EventSelect we want to update
-     *   }
-     * })
-    **/
-    upsert<T extends EventSelectUpsertArgs>(
-      args: SelectSubset<T, EventSelectUpsertArgs>
-    ): Prisma__EventSelectClient<EventSelectGetPayload<T>>
-
-    /**
-     * Count the number of EventSelects.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {EventSelectCountArgs} args - Arguments to filter EventSelects to count.
-     * @example
-     * // Count the number of EventSelects
-     * const count = await prisma.eventSelect.count({
-     *   where: {
-     *     // ... the filter for the EventSelects we want to count
-     *   }
-     * })
-    **/
-    count<T extends EventSelectCountArgs>(
-      args?: Subset<T, EventSelectCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends _Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], EventSelectCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a EventSelect.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {EventSelectAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends EventSelectAggregateArgs>(args: Subset<T, EventSelectAggregateArgs>): Prisma.PrismaPromise<GetEventSelectAggregateType<T>>
-
-    /**
-     * Group by EventSelect.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {EventSelectGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends EventSelectGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: EventSelectGroupByArgs['orderBy'] }
-        : { orderBy?: EventSelectGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends TupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, EventSelectGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetEventSelectGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for EventSelect.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export class Prisma__EventSelectClient<T, Null = never> implements Prisma.PrismaPromise<T> {
-    private readonly _dmmf;
-    private readonly _queryType;
-    private readonly _rootField;
-    private readonly _clientMethod;
-    private readonly _args;
-    private readonly _dataPath;
-    private readonly _errorFormat;
-    private readonly _measurePerformance?;
-    private _isList;
-    private _callsite;
-    private _requestPromise?;
-    readonly [Symbol.toStringTag]: 'PrismaPromise';
-    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
-
-    eventType<T extends EventTypeArgs= {}>(args?: Subset<T, EventTypeArgs>): Prisma__EventTypeClient<EventTypeGetPayload<T> | Null>;
-
-    customer<T extends CustomerArgs= {}>(args?: Subset<T, CustomerArgs>): Prisma__CustomerClient<CustomerGetPayload<T> | Null>;
-
-    private get _document();
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
-  }
-
-
-
-  // Custom InputTypes
-
-  /**
-   * EventSelect base type for findUnique actions
-   */
-  export type EventSelectFindUniqueArgsBase = {
-    /**
-     * Select specific fields to fetch from the EventSelect
-     */
-    select?: EventSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: EventSelectInclude | null
-    /**
-     * Filter, which EventSelect to fetch.
-     */
-    where: EventSelectWhereUniqueInput
-  }
-
-  /**
-   * EventSelect findUnique
-   */
-  export interface EventSelectFindUniqueArgs extends EventSelectFindUniqueArgsBase {
-   /**
-    * Throw an Error if query returns no results
-    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
-    */
-    rejectOnNotFound?: RejectOnNotFound
-  }
-      
-
-  /**
-   * EventSelect findUniqueOrThrow
-   */
-  export type EventSelectFindUniqueOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the EventSelect
-     */
-    select?: EventSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: EventSelectInclude | null
-    /**
-     * Filter, which EventSelect to fetch.
-     */
-    where: EventSelectWhereUniqueInput
-  }
-
-
-  /**
-   * EventSelect base type for findFirst actions
-   */
-  export type EventSelectFindFirstArgsBase = {
-    /**
-     * Select specific fields to fetch from the EventSelect
-     */
-    select?: EventSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: EventSelectInclude | null
-    /**
-     * Filter, which EventSelect to fetch.
-     */
-    where?: EventSelectWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of EventSelects to fetch.
-     */
-    orderBy?: Enumerable<EventSelectOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for EventSelects.
-     */
-    cursor?: EventSelectWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` EventSelects from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` EventSelects.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of EventSelects.
-     */
-    distinct?: Enumerable<EventSelectScalarFieldEnum>
-  }
-
-  /**
-   * EventSelect findFirst
-   */
-  export interface EventSelectFindFirstArgs extends EventSelectFindFirstArgsBase {
-   /**
-    * Throw an Error if query returns no results
-    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
-    */
-    rejectOnNotFound?: RejectOnNotFound
-  }
-      
-
-  /**
-   * EventSelect findFirstOrThrow
-   */
-  export type EventSelectFindFirstOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the EventSelect
-     */
-    select?: EventSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: EventSelectInclude | null
-    /**
-     * Filter, which EventSelect to fetch.
-     */
-    where?: EventSelectWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of EventSelects to fetch.
-     */
-    orderBy?: Enumerable<EventSelectOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for EventSelects.
-     */
-    cursor?: EventSelectWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` EventSelects from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` EventSelects.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of EventSelects.
-     */
-    distinct?: Enumerable<EventSelectScalarFieldEnum>
-  }
-
-
-  /**
-   * EventSelect findMany
-   */
-  export type EventSelectFindManyArgs = {
-    /**
-     * Select specific fields to fetch from the EventSelect
-     */
-    select?: EventSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: EventSelectInclude | null
-    /**
-     * Filter, which EventSelects to fetch.
-     */
-    where?: EventSelectWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of EventSelects to fetch.
-     */
-    orderBy?: Enumerable<EventSelectOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing EventSelects.
-     */
-    cursor?: EventSelectWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` EventSelects from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` EventSelects.
-     */
-    skip?: number
-    distinct?: Enumerable<EventSelectScalarFieldEnum>
-  }
-
-
-  /**
-   * EventSelect create
-   */
-  export type EventSelectCreateArgs = {
-    /**
-     * Select specific fields to fetch from the EventSelect
-     */
-    select?: EventSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: EventSelectInclude | null
-    /**
-     * The data needed to create a EventSelect.
-     */
-    data: XOR<EventSelectCreateInput, EventSelectUncheckedCreateInput>
-  }
-
-
-  /**
-   * EventSelect createMany
-   */
-  export type EventSelectCreateManyArgs = {
-    /**
-     * The data used to create many EventSelects.
-     */
-    data: Enumerable<EventSelectCreateManyInput>
-    skipDuplicates?: boolean
-  }
-
-
-  /**
-   * EventSelect update
-   */
-  export type EventSelectUpdateArgs = {
-    /**
-     * Select specific fields to fetch from the EventSelect
-     */
-    select?: EventSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: EventSelectInclude | null
-    /**
-     * The data needed to update a EventSelect.
-     */
-    data: XOR<EventSelectUpdateInput, EventSelectUncheckedUpdateInput>
-    /**
-     * Choose, which EventSelect to update.
-     */
-    where: EventSelectWhereUniqueInput
-  }
-
-
-  /**
-   * EventSelect updateMany
-   */
-  export type EventSelectUpdateManyArgs = {
-    /**
-     * The data used to update EventSelects.
-     */
-    data: XOR<EventSelectUpdateManyMutationInput, EventSelectUncheckedUpdateManyInput>
-    /**
-     * Filter which EventSelects to update
-     */
-    where?: EventSelectWhereInput
-  }
-
-
-  /**
-   * EventSelect upsert
-   */
-  export type EventSelectUpsertArgs = {
-    /**
-     * Select specific fields to fetch from the EventSelect
-     */
-    select?: EventSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: EventSelectInclude | null
-    /**
-     * The filter to search for the EventSelect to update in case it exists.
-     */
-    where: EventSelectWhereUniqueInput
-    /**
-     * In case the EventSelect found by the `where` argument doesn't exist, create a new EventSelect with this data.
-     */
-    create: XOR<EventSelectCreateInput, EventSelectUncheckedCreateInput>
-    /**
-     * In case the EventSelect was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<EventSelectUpdateInput, EventSelectUncheckedUpdateInput>
-  }
-
-
-  /**
-   * EventSelect delete
-   */
-  export type EventSelectDeleteArgs = {
-    /**
-     * Select specific fields to fetch from the EventSelect
-     */
-    select?: EventSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: EventSelectInclude | null
-    /**
-     * Filter which EventSelect to delete.
-     */
-    where: EventSelectWhereUniqueInput
-  }
-
-
-  /**
-   * EventSelect deleteMany
-   */
-  export type EventSelectDeleteManyArgs = {
-    /**
-     * Filter which EventSelects to delete
-     */
-    where?: EventSelectWhereInput
-  }
-
-
-  /**
-   * EventSelect without action
-   */
-  export type EventSelectArgs = {
-    /**
-     * Select specific fields to fetch from the EventSelect
-     */
-    select?: EventSelectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: EventSelectInclude | null
-  }
-
-
-
-  /**
    * Model UserOnGroupMeeting
    */
 
@@ -14799,7 +14744,6 @@ export namespace Prisma {
   export const AvailabilityScheduleScalarFieldEnum: {
     id: 'id',
     name: 'name',
-    eventTypeId: 'eventTypeId',
     timezone: 'timezone',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -14821,17 +14765,6 @@ export namespace Prisma {
   export type BillingScalarFieldEnum = (typeof BillingScalarFieldEnum)[keyof typeof BillingScalarFieldEnum]
 
 
-  export const CalendarSelectScalarFieldEnum: {
-    id: 'id',
-    startDate: 'startDate',
-    endDate: 'endDate',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
-  };
-
-  export type CalendarSelectScalarFieldEnum = (typeof CalendarSelectScalarFieldEnum)[keyof typeof CalendarSelectScalarFieldEnum]
-
-
   export const CustomerScalarFieldEnum: {
     id: 'id',
     name: 'name',
@@ -14843,18 +14776,40 @@ export namespace Prisma {
   export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
 
 
-  export const EventSelectScalarFieldEnum: {
+  export const DateOnTimeSlotScalarFieldEnum: {
     id: 'id',
-    eventTypeId: 'eventTypeId',
-    customerId: 'customerId',
-    selectDate: 'selectDate',
-    selectTime: 'selectTime',
+    timeSlotId: 'timeSlotId',
+    dateSlotId: 'dateSlotId',
     status: 'status',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
 
-  export type EventSelectScalarFieldEnum = (typeof EventSelectScalarFieldEnum)[keyof typeof EventSelectScalarFieldEnum]
+  export type DateOnTimeSlotScalarFieldEnum = (typeof DateOnTimeSlotScalarFieldEnum)[keyof typeof DateOnTimeSlotScalarFieldEnum]
+
+
+  export const DateSlotScalarFieldEnum: {
+    id: 'id',
+    availabilityScheduleId: 'availabilityScheduleId',
+    name: 'name',
+    custormerId: 'custormerId',
+    eventId: 'eventId',
+    dayName: 'dayName',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type DateSlotScalarFieldEnum = (typeof DateSlotScalarFieldEnum)[keyof typeof DateSlotScalarFieldEnum]
+
+
+  export const DaySlotScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type DaySlotScalarFieldEnum = (typeof DaySlotScalarFieldEnum)[keyof typeof DaySlotScalarFieldEnum]
 
 
   export const EventTypeOnLocationScalarFieldEnum: {
@@ -14875,9 +14830,7 @@ export namespace Prisma {
     description: 'description',
     price: 'price',
     timeDuration: 'timeDuration',
-    calendarSelectId: 'calendarSelectId',
-    customerId: 'customerId',
-    status: 'status',
+    availabilityScheduleId: 'availabilityScheduleId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -14925,7 +14878,7 @@ export namespace Prisma {
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
-  export const TimeSelectScalarFieldEnum: {
+  export const TimeSlotScalarFieldEnum: {
     id: 'id',
     startTime: 'startTime',
     endTime: 'endTime',
@@ -14933,7 +14886,7 @@ export namespace Prisma {
     updatedAt: 'updatedAt'
   };
 
-  export type TimeSelectScalarFieldEnum = (typeof TimeSelectScalarFieldEnum)[keyof typeof TimeSelectScalarFieldEnum]
+  export type TimeSlotScalarFieldEnum = (typeof TimeSlotScalarFieldEnum)[keyof typeof TimeSlotScalarFieldEnum]
 
 
   export const TransactionIsolationLevel: {
@@ -14972,21 +14925,6 @@ export namespace Prisma {
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
-
-
-  export const WeekDayScalarFieldEnum: {
-    id: 'id',
-    day: 'day',
-    availabilityScheduleId: 'availabilityScheduleId',
-    timeSelectId: 'timeSelectId',
-    eventTypeId: 'eventTypeId',
-    status: 'status',
-    date: 'date',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
-  };
-
-  export type WeekDayScalarFieldEnum = (typeof WeekDayScalarFieldEnum)[keyof typeof WeekDayScalarFieldEnum]
 
 
   /**
@@ -15035,6 +14973,8 @@ export namespace Prisma {
     id?: number
     username?: string
     firebaseUid?: string
+    mobileNumber?: string
+    userLink?: string
   }
 
   export type UserOrderByWithAggregationInput = {
@@ -15083,19 +15023,14 @@ export namespace Prisma {
     description?: StringFilter | string
     price?: IntFilter | number
     timeDuration?: IntFilter | number
-    calendarSelectId?: IntFilter | number
-    customerId?: IntFilter | number
-    status?: StringFilter | string
+    availabilityScheduleId?: IntNullableFilter | number | null
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
     user?: XOR<UserRelationFilter, UserWhereInput>
     eventTypeOnLocations?: EventTypeOnLocationListRelationFilter
-    availabilitySchedules?: AvailabilityScheduleListRelationFilter
-    weekDays?: WeekDayListRelationFilter
-    calendarSelect?: XOR<CalendarSelectRelationFilter, CalendarSelectWhereInput>
-    customer?: XOR<CustomerRelationFilter, CustomerWhereInput>
+    availabilitySchedule?: XOR<AvailabilityScheduleRelationFilter, AvailabilityScheduleWhereInput> | null
+    dateSlots?: DateSlotListRelationFilter
     groupMeetings?: GroupMeetingListRelationFilter
-    eventSelects?: EventSelectListRelationFilter
   }
 
   export type EventTypeOrderByWithRelationInput = {
@@ -15105,23 +15040,19 @@ export namespace Prisma {
     description?: SortOrder
     price?: SortOrder
     timeDuration?: SortOrder
-    calendarSelectId?: SortOrder
-    customerId?: SortOrder
-    status?: SortOrder
+    availabilityScheduleId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
     eventTypeOnLocations?: EventTypeOnLocationOrderByRelationAggregateInput
-    availabilitySchedules?: AvailabilityScheduleOrderByRelationAggregateInput
-    weekDays?: WeekDayOrderByRelationAggregateInput
-    calendarSelect?: CalendarSelectOrderByWithRelationInput
-    customer?: CustomerOrderByWithRelationInput
+    availabilitySchedule?: AvailabilityScheduleOrderByWithRelationInput
+    dateSlots?: DateSlotOrderByRelationAggregateInput
     groupMeetings?: GroupMeetingOrderByRelationAggregateInput
-    eventSelects?: EventSelectOrderByRelationAggregateInput
   }
 
   export type EventTypeWhereUniqueInput = {
     id?: number
+    userId_name?: EventTypeUserIdNameCompoundUniqueInput
   }
 
   export type EventTypeOrderByWithAggregationInput = {
@@ -15131,9 +15062,7 @@ export namespace Prisma {
     description?: SortOrder
     price?: SortOrder
     timeDuration?: SortOrder
-    calendarSelectId?: SortOrder
-    customerId?: SortOrder
-    status?: SortOrder
+    availabilityScheduleId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: EventTypeCountOrderByAggregateInput
@@ -15153,9 +15082,7 @@ export namespace Prisma {
     description?: StringWithAggregatesFilter | string
     price?: IntWithAggregatesFilter | number
     timeDuration?: IntWithAggregatesFilter | number
-    calendarSelectId?: IntWithAggregatesFilter | number
-    customerId?: IntWithAggregatesFilter | number
-    status?: StringWithAggregatesFilter | string
+    availabilityScheduleId?: IntNullableWithAggregatesFilter | number | null
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
   }
@@ -15183,6 +15110,7 @@ export namespace Prisma {
 
   export type LocationWhereUniqueInput = {
     id?: number
+    name?: string
   }
 
   export type LocationOrderByWithAggregationInput = {
@@ -15264,33 +15192,31 @@ export namespace Prisma {
     NOT?: Enumerable<AvailabilityScheduleWhereInput>
     id?: IntFilter | number
     name?: StringFilter | string
-    eventTypeId?: IntFilter | number
     timezone?: StringFilter | string
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
-    eventType?: XOR<EventTypeRelationFilter, EventTypeWhereInput>
-    weekDays?: WeekDayListRelationFilter
+    eventTypes?: EventTypeListRelationFilter
+    dateSlots?: DateSlotListRelationFilter
   }
 
   export type AvailabilityScheduleOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
-    eventTypeId?: SortOrder
     timezone?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    eventType?: EventTypeOrderByWithRelationInput
-    weekDays?: WeekDayOrderByRelationAggregateInput
+    eventTypes?: EventTypeOrderByRelationAggregateInput
+    dateSlots?: DateSlotOrderByRelationAggregateInput
   }
 
   export type AvailabilityScheduleWhereUniqueInput = {
     id?: number
+    name?: string
   }
 
   export type AvailabilityScheduleOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
-    eventTypeId?: SortOrder
     timezone?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -15307,126 +15233,227 @@ export namespace Prisma {
     NOT?: Enumerable<AvailabilityScheduleScalarWhereWithAggregatesInput>
     id?: IntWithAggregatesFilter | number
     name?: StringWithAggregatesFilter | string
-    eventTypeId?: IntWithAggregatesFilter | number
     timezone?: StringWithAggregatesFilter | string
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
   }
 
-  export type WeekDayWhereInput = {
-    AND?: Enumerable<WeekDayWhereInput>
-    OR?: Enumerable<WeekDayWhereInput>
-    NOT?: Enumerable<WeekDayWhereInput>
+  export type DaySlotWhereInput = {
+    AND?: Enumerable<DaySlotWhereInput>
+    OR?: Enumerable<DaySlotWhereInput>
+    NOT?: Enumerable<DaySlotWhereInput>
     id?: IntFilter | number
-    day?: IntFilter | number
-    availabilityScheduleId?: IntNullableFilter | number | null
-    timeSelectId?: IntFilter | number
-    eventTypeId?: IntNullableFilter | number | null
-    status?: StringFilter | string
-    date?: DateTimeFilter | Date | string
+    name?: StringFilter | string
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
-    availabilitySchedule?: XOR<AvailabilityScheduleRelationFilter, AvailabilityScheduleWhereInput> | null
-    timeSelect?: XOR<TimeSelectRelationFilter, TimeSelectWhereInput>
-    eventType?: XOR<EventTypeRelationFilter, EventTypeWhereInput> | null
+    dateSlots?: DateSlotListRelationFilter
   }
 
-  export type WeekDayOrderByWithRelationInput = {
+  export type DaySlotOrderByWithRelationInput = {
     id?: SortOrder
-    day?: SortOrder
-    availabilityScheduleId?: SortOrder
-    timeSelectId?: SortOrder
-    eventTypeId?: SortOrder
-    status?: SortOrder
-    date?: SortOrder
+    name?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    availabilitySchedule?: AvailabilityScheduleOrderByWithRelationInput
-    timeSelect?: TimeSelectOrderByWithRelationInput
-    eventType?: EventTypeOrderByWithRelationInput
+    dateSlots?: DateSlotOrderByRelationAggregateInput
   }
 
-  export type WeekDayWhereUniqueInput = {
+  export type DaySlotWhereUniqueInput = {
     id?: number
+    name?: string
   }
 
-  export type WeekDayOrderByWithAggregationInput = {
+  export type DaySlotOrderByWithAggregationInput = {
     id?: SortOrder
-    day?: SortOrder
-    availabilityScheduleId?: SortOrder
-    timeSelectId?: SortOrder
-    eventTypeId?: SortOrder
-    status?: SortOrder
-    date?: SortOrder
+    name?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    _count?: WeekDayCountOrderByAggregateInput
-    _avg?: WeekDayAvgOrderByAggregateInput
-    _max?: WeekDayMaxOrderByAggregateInput
-    _min?: WeekDayMinOrderByAggregateInput
-    _sum?: WeekDaySumOrderByAggregateInput
+    _count?: DaySlotCountOrderByAggregateInput
+    _avg?: DaySlotAvgOrderByAggregateInput
+    _max?: DaySlotMaxOrderByAggregateInput
+    _min?: DaySlotMinOrderByAggregateInput
+    _sum?: DaySlotSumOrderByAggregateInput
   }
 
-  export type WeekDayScalarWhereWithAggregatesInput = {
-    AND?: Enumerable<WeekDayScalarWhereWithAggregatesInput>
-    OR?: Enumerable<WeekDayScalarWhereWithAggregatesInput>
-    NOT?: Enumerable<WeekDayScalarWhereWithAggregatesInput>
+  export type DaySlotScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<DaySlotScalarWhereWithAggregatesInput>
+    OR?: Enumerable<DaySlotScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<DaySlotScalarWhereWithAggregatesInput>
     id?: IntWithAggregatesFilter | number
-    day?: IntWithAggregatesFilter | number
-    availabilityScheduleId?: IntNullableWithAggregatesFilter | number | null
-    timeSelectId?: IntWithAggregatesFilter | number
-    eventTypeId?: IntNullableWithAggregatesFilter | number | null
-    status?: StringWithAggregatesFilter | string
-    date?: DateTimeWithAggregatesFilter | Date | string
+    name?: StringWithAggregatesFilter | string
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
   }
 
-  export type TimeSelectWhereInput = {
-    AND?: Enumerable<TimeSelectWhereInput>
-    OR?: Enumerable<TimeSelectWhereInput>
-    NOT?: Enumerable<TimeSelectWhereInput>
+  export type DateSlotWhereInput = {
+    AND?: Enumerable<DateSlotWhereInput>
+    OR?: Enumerable<DateSlotWhereInput>
+    NOT?: Enumerable<DateSlotWhereInput>
     id?: IntFilter | number
-    startTime?: DateTimeFilter | Date | string
-    endTime?: DateTimeFilter | Date | string
+    availabilityScheduleId?: IntNullableFilter | number | null
+    name?: DateTimeFilter | Date | string
+    custormerId?: IntNullableFilter | number | null
+    eventId?: IntFilter | number
+    dayName?: StringFilter | string
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
-    weekDays?: WeekDayListRelationFilter
+    availabilitySchedule?: XOR<AvailabilityScheduleRelationFilter, AvailabilityScheduleWhereInput> | null
+    custormer?: XOR<CustomerRelationFilter, CustomerWhereInput> | null
+    eventType?: XOR<EventTypeRelationFilter, EventTypeWhereInput>
+    daySlot?: XOR<DaySlotRelationFilter, DaySlotWhereInput>
+    dateOnTimeSlots?: DateOnTimeSlotListRelationFilter
   }
 
-  export type TimeSelectOrderByWithRelationInput = {
+  export type DateSlotOrderByWithRelationInput = {
     id?: SortOrder
-    startTime?: SortOrder
-    endTime?: SortOrder
+    availabilityScheduleId?: SortOrder
+    name?: SortOrder
+    custormerId?: SortOrder
+    eventId?: SortOrder
+    dayName?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    weekDays?: WeekDayOrderByRelationAggregateInput
+    availabilitySchedule?: AvailabilityScheduleOrderByWithRelationInput
+    custormer?: CustomerOrderByWithRelationInput
+    eventType?: EventTypeOrderByWithRelationInput
+    daySlot?: DaySlotOrderByWithRelationInput
+    dateOnTimeSlots?: DateOnTimeSlotOrderByRelationAggregateInput
   }
 
-  export type TimeSelectWhereUniqueInput = {
+  export type DateSlotWhereUniqueInput = {
     id?: number
   }
 
-  export type TimeSelectOrderByWithAggregationInput = {
+  export type DateSlotOrderByWithAggregationInput = {
+    id?: SortOrder
+    availabilityScheduleId?: SortOrder
+    name?: SortOrder
+    custormerId?: SortOrder
+    eventId?: SortOrder
+    dayName?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: DateSlotCountOrderByAggregateInput
+    _avg?: DateSlotAvgOrderByAggregateInput
+    _max?: DateSlotMaxOrderByAggregateInput
+    _min?: DateSlotMinOrderByAggregateInput
+    _sum?: DateSlotSumOrderByAggregateInput
+  }
+
+  export type DateSlotScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<DateSlotScalarWhereWithAggregatesInput>
+    OR?: Enumerable<DateSlotScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<DateSlotScalarWhereWithAggregatesInput>
+    id?: IntWithAggregatesFilter | number
+    availabilityScheduleId?: IntNullableWithAggregatesFilter | number | null
+    name?: DateTimeWithAggregatesFilter | Date | string
+    custormerId?: IntNullableWithAggregatesFilter | number | null
+    eventId?: IntWithAggregatesFilter | number
+    dayName?: StringWithAggregatesFilter | string
+    createdAt?: DateTimeWithAggregatesFilter | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter | Date | string
+  }
+
+  export type DateOnTimeSlotWhereInput = {
+    AND?: Enumerable<DateOnTimeSlotWhereInput>
+    OR?: Enumerable<DateOnTimeSlotWhereInput>
+    NOT?: Enumerable<DateOnTimeSlotWhereInput>
+    id?: IntFilter | number
+    timeSlotId?: IntFilter | number
+    dateSlotId?: IntFilter | number
+    status?: StringFilter | string
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+    timeSlot?: XOR<TimeSlotRelationFilter, TimeSlotWhereInput>
+    dateSlot?: XOR<DateSlotRelationFilter, DateSlotWhereInput>
+  }
+
+  export type DateOnTimeSlotOrderByWithRelationInput = {
+    id?: SortOrder
+    timeSlotId?: SortOrder
+    dateSlotId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    timeSlot?: TimeSlotOrderByWithRelationInput
+    dateSlot?: DateSlotOrderByWithRelationInput
+  }
+
+  export type DateOnTimeSlotWhereUniqueInput = {
+    id?: number
+  }
+
+  export type DateOnTimeSlotOrderByWithAggregationInput = {
+    id?: SortOrder
+    timeSlotId?: SortOrder
+    dateSlotId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: DateOnTimeSlotCountOrderByAggregateInput
+    _avg?: DateOnTimeSlotAvgOrderByAggregateInput
+    _max?: DateOnTimeSlotMaxOrderByAggregateInput
+    _min?: DateOnTimeSlotMinOrderByAggregateInput
+    _sum?: DateOnTimeSlotSumOrderByAggregateInput
+  }
+
+  export type DateOnTimeSlotScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<DateOnTimeSlotScalarWhereWithAggregatesInput>
+    OR?: Enumerable<DateOnTimeSlotScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<DateOnTimeSlotScalarWhereWithAggregatesInput>
+    id?: IntWithAggregatesFilter | number
+    timeSlotId?: IntWithAggregatesFilter | number
+    dateSlotId?: IntWithAggregatesFilter | number
+    status?: StringWithAggregatesFilter | string
+    createdAt?: DateTimeWithAggregatesFilter | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter | Date | string
+  }
+
+  export type TimeSlotWhereInput = {
+    AND?: Enumerable<TimeSlotWhereInput>
+    OR?: Enumerable<TimeSlotWhereInput>
+    NOT?: Enumerable<TimeSlotWhereInput>
+    id?: IntFilter | number
+    startTime?: IntFilter | number
+    endTime?: IntFilter | number
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+    dateOnTimeSlots?: DateOnTimeSlotListRelationFilter
+  }
+
+  export type TimeSlotOrderByWithRelationInput = {
     id?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    _count?: TimeSelectCountOrderByAggregateInput
-    _avg?: TimeSelectAvgOrderByAggregateInput
-    _max?: TimeSelectMaxOrderByAggregateInput
-    _min?: TimeSelectMinOrderByAggregateInput
-    _sum?: TimeSelectSumOrderByAggregateInput
+    dateOnTimeSlots?: DateOnTimeSlotOrderByRelationAggregateInput
   }
 
-  export type TimeSelectScalarWhereWithAggregatesInput = {
-    AND?: Enumerable<TimeSelectScalarWhereWithAggregatesInput>
-    OR?: Enumerable<TimeSelectScalarWhereWithAggregatesInput>
-    NOT?: Enumerable<TimeSelectScalarWhereWithAggregatesInput>
+  export type TimeSlotWhereUniqueInput = {
+    id?: number
+    startTime_endTime?: TimeSlotStartTimeEndTimeCompoundUniqueInput
+  }
+
+  export type TimeSlotOrderByWithAggregationInput = {
+    id?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: TimeSlotCountOrderByAggregateInput
+    _avg?: TimeSlotAvgOrderByAggregateInput
+    _max?: TimeSlotMaxOrderByAggregateInput
+    _min?: TimeSlotMinOrderByAggregateInput
+    _sum?: TimeSlotSumOrderByAggregateInput
+  }
+
+  export type TimeSlotScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<TimeSlotScalarWhereWithAggregatesInput>
+    OR?: Enumerable<TimeSlotScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<TimeSlotScalarWhereWithAggregatesInput>
     id?: IntWithAggregatesFilter | number
-    startTime?: DateTimeWithAggregatesFilter | Date | string
-    endTime?: DateTimeWithAggregatesFilter | Date | string
+    startTime?: IntWithAggregatesFilter | number
+    endTime?: IntWithAggregatesFilter | number
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
   }
@@ -15440,9 +15467,8 @@ export namespace Prisma {
     email?: StringFilter | string
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
-    eventTypes?: EventTypeListRelationFilter
     groupMeetings?: GroupMeetingListRelationFilter
-    eventSelects?: EventSelectListRelationFilter
+    dateSlots?: DateSlotListRelationFilter
   }
 
   export type CustomerOrderByWithRelationInput = {
@@ -15451,13 +15477,13 @@ export namespace Prisma {
     email?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    eventTypes?: EventTypeOrderByRelationAggregateInput
     groupMeetings?: GroupMeetingOrderByRelationAggregateInput
-    eventSelects?: EventSelectOrderByRelationAggregateInput
+    dateSlots?: DateSlotOrderByRelationAggregateInput
   }
 
   export type CustomerWhereUniqueInput = {
     id?: number
+    email?: string
   }
 
   export type CustomerOrderByWithAggregationInput = {
@@ -15480,55 +15506,6 @@ export namespace Prisma {
     id?: IntWithAggregatesFilter | number
     name?: StringWithAggregatesFilter | string
     email?: StringWithAggregatesFilter | string
-    createdAt?: DateTimeWithAggregatesFilter | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter | Date | string
-  }
-
-  export type CalendarSelectWhereInput = {
-    AND?: Enumerable<CalendarSelectWhereInput>
-    OR?: Enumerable<CalendarSelectWhereInput>
-    NOT?: Enumerable<CalendarSelectWhereInput>
-    id?: IntFilter | number
-    startDate?: DateTimeFilter | Date | string
-    endDate?: DateTimeFilter | Date | string
-    createdAt?: DateTimeFilter | Date | string
-    updatedAt?: DateTimeFilter | Date | string
-    eventTypes?: EventTypeListRelationFilter
-  }
-
-  export type CalendarSelectOrderByWithRelationInput = {
-    id?: SortOrder
-    startDate?: SortOrder
-    endDate?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    eventTypes?: EventTypeOrderByRelationAggregateInput
-  }
-
-  export type CalendarSelectWhereUniqueInput = {
-    id?: number
-  }
-
-  export type CalendarSelectOrderByWithAggregationInput = {
-    id?: SortOrder
-    startDate?: SortOrder
-    endDate?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    _count?: CalendarSelectCountOrderByAggregateInput
-    _avg?: CalendarSelectAvgOrderByAggregateInput
-    _max?: CalendarSelectMaxOrderByAggregateInput
-    _min?: CalendarSelectMinOrderByAggregateInput
-    _sum?: CalendarSelectSumOrderByAggregateInput
-  }
-
-  export type CalendarSelectScalarWhereWithAggregatesInput = {
-    AND?: Enumerable<CalendarSelectScalarWhereWithAggregatesInput>
-    OR?: Enumerable<CalendarSelectScalarWhereWithAggregatesInput>
-    NOT?: Enumerable<CalendarSelectScalarWhereWithAggregatesInput>
-    id?: IntWithAggregatesFilter | number
-    startDate?: DateTimeWithAggregatesFilter | Date | string
-    endDate?: DateTimeWithAggregatesFilter | Date | string
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
   }
@@ -15653,69 +15630,6 @@ export namespace Prisma {
     totalPrice?: IntWithAggregatesFilter | number
     timezone?: StringWithAggregatesFilter | string
     eventTypeId?: IntWithAggregatesFilter | number
-    createdAt?: DateTimeWithAggregatesFilter | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter | Date | string
-  }
-
-  export type EventSelectWhereInput = {
-    AND?: Enumerable<EventSelectWhereInput>
-    OR?: Enumerable<EventSelectWhereInput>
-    NOT?: Enumerable<EventSelectWhereInput>
-    id?: IntFilter | number
-    eventTypeId?: IntFilter | number
-    customerId?: IntFilter | number
-    selectDate?: StringFilter | string
-    selectTime?: DateTimeFilter | Date | string
-    status?: StringFilter | string
-    createdAt?: DateTimeFilter | Date | string
-    updatedAt?: DateTimeFilter | Date | string
-    eventType?: XOR<EventTypeRelationFilter, EventTypeWhereInput>
-    customer?: XOR<CustomerRelationFilter, CustomerWhereInput>
-  }
-
-  export type EventSelectOrderByWithRelationInput = {
-    id?: SortOrder
-    eventTypeId?: SortOrder
-    customerId?: SortOrder
-    selectDate?: SortOrder
-    selectTime?: SortOrder
-    status?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    eventType?: EventTypeOrderByWithRelationInput
-    customer?: CustomerOrderByWithRelationInput
-  }
-
-  export type EventSelectWhereUniqueInput = {
-    id?: number
-  }
-
-  export type EventSelectOrderByWithAggregationInput = {
-    id?: SortOrder
-    eventTypeId?: SortOrder
-    customerId?: SortOrder
-    selectDate?: SortOrder
-    selectTime?: SortOrder
-    status?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    _count?: EventSelectCountOrderByAggregateInput
-    _avg?: EventSelectAvgOrderByAggregateInput
-    _max?: EventSelectMaxOrderByAggregateInput
-    _min?: EventSelectMinOrderByAggregateInput
-    _sum?: EventSelectSumOrderByAggregateInput
-  }
-
-  export type EventSelectScalarWhereWithAggregatesInput = {
-    AND?: Enumerable<EventSelectScalarWhereWithAggregatesInput>
-    OR?: Enumerable<EventSelectScalarWhereWithAggregatesInput>
-    NOT?: Enumerable<EventSelectScalarWhereWithAggregatesInput>
-    id?: IntWithAggregatesFilter | number
-    eventTypeId?: IntWithAggregatesFilter | number
-    customerId?: IntWithAggregatesFilter | number
-    selectDate?: StringWithAggregatesFilter | string
-    selectTime?: DateTimeWithAggregatesFilter | Date | string
-    status?: StringWithAggregatesFilter | string
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
   }
@@ -15883,17 +15797,13 @@ export namespace Prisma {
     description: string
     price: number
     timeDuration: number
-    status: string
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutEventTypesInput
     eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutEventTypeInput
-    availabilitySchedules?: AvailabilityScheduleCreateNestedManyWithoutEventTypeInput
-    weekDays?: WeekDayCreateNestedManyWithoutEventTypeInput
-    calendarSelect: CalendarSelectCreateNestedOneWithoutEventTypesInput
-    customer: CustomerCreateNestedOneWithoutEventTypesInput
+    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutEventTypesInput
+    dateSlots?: DateSlotCreateNestedManyWithoutEventTypeInput
     groupMeetings?: GroupMeetingCreateNestedManyWithoutEventTypeInput
-    eventSelects?: EventSelectCreateNestedManyWithoutEventTypeInput
   }
 
   export type EventTypeUncheckedCreateInput = {
@@ -15903,16 +15813,12 @@ export namespace Prisma {
     description: string
     price: number
     timeDuration: number
-    calendarSelectId: number
-    customerId: number
-    status: string
+    availabilityScheduleId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput
-    availabilitySchedules?: AvailabilityScheduleUncheckedCreateNestedManyWithoutEventTypeInput
-    weekDays?: WeekDayUncheckedCreateNestedManyWithoutEventTypeInput
+    dateSlots?: DateSlotUncheckedCreateNestedManyWithoutEventTypeInput
     groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput
-    eventSelects?: EventSelectUncheckedCreateNestedManyWithoutEventTypeInput
   }
 
   export type EventTypeUpdateInput = {
@@ -15920,17 +15826,13 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     price?: IntFieldUpdateOperationsInput | number
     timeDuration?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
     eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
-    availabilitySchedules?: AvailabilityScheduleUpdateManyWithoutEventTypeNestedInput
-    weekDays?: WeekDayUpdateManyWithoutEventTypeNestedInput
-    calendarSelect?: CalendarSelectUpdateOneRequiredWithoutEventTypesNestedInput
-    customer?: CustomerUpdateOneRequiredWithoutEventTypesNestedInput
+    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutEventTypesNestedInput
+    dateSlots?: DateSlotUpdateManyWithoutEventTypeNestedInput
     groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
-    eventSelects?: EventSelectUpdateManyWithoutEventTypeNestedInput
   }
 
   export type EventTypeUncheckedUpdateInput = {
@@ -15940,16 +15842,12 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     price?: IntFieldUpdateOperationsInput | number
     timeDuration?: IntFieldUpdateOperationsInput | number
-    calendarSelectId?: IntFieldUpdateOperationsInput | number
-    customerId?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
+    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
-    availabilitySchedules?: AvailabilityScheduleUncheckedUpdateManyWithoutEventTypeNestedInput
-    weekDays?: WeekDayUncheckedUpdateManyWithoutEventTypeNestedInput
+    dateSlots?: DateSlotUncheckedUpdateManyWithoutEventTypeNestedInput
     groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
-    eventSelects?: EventSelectUncheckedUpdateManyWithoutEventTypeNestedInput
   }
 
   export type EventTypeCreateManyInput = {
@@ -15959,9 +15857,7 @@ export namespace Prisma {
     description: string
     price: number
     timeDuration: number
-    calendarSelectId: number
-    customerId: number
-    status: string
+    availabilityScheduleId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -15971,7 +15867,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     price?: IntFieldUpdateOperationsInput | number
     timeDuration?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -15983,9 +15878,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     price?: IntFieldUpdateOperationsInput | number
     timeDuration?: IntFieldUpdateOperationsInput | number
-    calendarSelectId?: IntFieldUpdateOperationsInput | number
-    customerId?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
+    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -16100,18 +15993,18 @@ export namespace Prisma {
     timezone: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    eventType: EventTypeCreateNestedOneWithoutAvailabilitySchedulesInput
-    weekDays?: WeekDayCreateNestedManyWithoutAvailabilityScheduleInput
+    eventTypes?: EventTypeCreateNestedManyWithoutAvailabilityScheduleInput
+    dateSlots?: DateSlotCreateNestedManyWithoutAvailabilityScheduleInput
   }
 
   export type AvailabilityScheduleUncheckedCreateInput = {
     id?: number
     name: string
-    eventTypeId: number
     timezone: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    weekDays?: WeekDayUncheckedCreateNestedManyWithoutAvailabilityScheduleInput
+    eventTypes?: EventTypeUncheckedCreateNestedManyWithoutAvailabilityScheduleInput
+    dateSlots?: DateSlotUncheckedCreateNestedManyWithoutAvailabilityScheduleInput
   }
 
   export type AvailabilityScheduleUpdateInput = {
@@ -16119,24 +16012,23 @@ export namespace Prisma {
     timezone?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    eventType?: EventTypeUpdateOneRequiredWithoutAvailabilitySchedulesNestedInput
-    weekDays?: WeekDayUpdateManyWithoutAvailabilityScheduleNestedInput
+    eventTypes?: EventTypeUpdateManyWithoutAvailabilityScheduleNestedInput
+    dateSlots?: DateSlotUpdateManyWithoutAvailabilityScheduleNestedInput
   }
 
   export type AvailabilityScheduleUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
-    eventTypeId?: IntFieldUpdateOperationsInput | number
     timezone?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    weekDays?: WeekDayUncheckedUpdateManyWithoutAvailabilityScheduleNestedInput
+    eventTypes?: EventTypeUncheckedUpdateManyWithoutAvailabilityScheduleNestedInput
+    dateSlots?: DateSlotUncheckedUpdateManyWithoutAvailabilityScheduleNestedInput
   }
 
   export type AvailabilityScheduleCreateManyInput = {
     id?: number
     name: string
-    eventTypeId: number
     timezone: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -16152,143 +16044,246 @@ export namespace Prisma {
   export type AvailabilityScheduleUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
-    eventTypeId?: IntFieldUpdateOperationsInput | number
     timezone?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type WeekDayCreateInput = {
-    day: number
-    status: string
-    date: Date | string
+  export type DaySlotCreateInput = {
+    name: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutWeekDaysInput
-    timeSelect: TimeSelectCreateNestedOneWithoutWeekDaysInput
-    eventType?: EventTypeCreateNestedOneWithoutWeekDaysInput
+    dateSlots?: DateSlotCreateNestedManyWithoutDaySlotInput
   }
 
-  export type WeekDayUncheckedCreateInput = {
+  export type DaySlotUncheckedCreateInput = {
     id?: number
-    day: number
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dateSlots?: DateSlotUncheckedCreateNestedManyWithoutDaySlotInput
+  }
+
+  export type DaySlotUpdateInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dateSlots?: DateSlotUpdateManyWithoutDaySlotNestedInput
+  }
+
+  export type DaySlotUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dateSlots?: DateSlotUncheckedUpdateManyWithoutDaySlotNestedInput
+  }
+
+  export type DaySlotCreateManyInput = {
+    id?: number
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DaySlotUpdateManyMutationInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DaySlotUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DateSlotCreateInput = {
+    name: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutDateSlotsInput
+    custormer?: CustomerCreateNestedOneWithoutDateSlotsInput
+    eventType: EventTypeCreateNestedOneWithoutDateSlotsInput
+    daySlot: DaySlotCreateNestedOneWithoutDateSlotsInput
+    dateOnTimeSlots?: DateOnTimeSlotCreateNestedManyWithoutDateSlotInput
+  }
+
+  export type DateSlotUncheckedCreateInput = {
+    id?: number
     availabilityScheduleId?: number | null
-    timeSelectId: number
-    eventTypeId?: number | null
-    status: string
-    date: Date | string
+    name: Date | string
+    custormerId?: number | null
+    eventId: number
+    dayName: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    dateOnTimeSlots?: DateOnTimeSlotUncheckedCreateNestedManyWithoutDateSlotInput
   }
 
-  export type WeekDayUpdateInput = {
-    day?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
+  export type DateSlotUpdateInput = {
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutWeekDaysNestedInput
-    timeSelect?: TimeSelectUpdateOneRequiredWithoutWeekDaysNestedInput
-    eventType?: EventTypeUpdateOneWithoutWeekDaysNestedInput
+    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutDateSlotsNestedInput
+    custormer?: CustomerUpdateOneWithoutDateSlotsNestedInput
+    eventType?: EventTypeUpdateOneRequiredWithoutDateSlotsNestedInput
+    daySlot?: DaySlotUpdateOneRequiredWithoutDateSlotsNestedInput
+    dateOnTimeSlots?: DateOnTimeSlotUpdateManyWithoutDateSlotNestedInput
   }
 
-  export type WeekDayUncheckedUpdateInput = {
+  export type DateSlotUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
-    day?: IntFieldUpdateOperationsInput | number
     availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    timeSelectId?: IntFieldUpdateOperationsInput | number
-    eventTypeId?: NullableIntFieldUpdateOperationsInput | number | null
-    status?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
+    custormerId?: NullableIntFieldUpdateOperationsInput | number | null
+    eventId?: IntFieldUpdateOperationsInput | number
+    dayName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dateOnTimeSlots?: DateOnTimeSlotUncheckedUpdateManyWithoutDateSlotNestedInput
   }
 
-  export type WeekDayCreateManyInput = {
+  export type DateSlotCreateManyInput = {
     id?: number
-    day: number
     availabilityScheduleId?: number | null
-    timeSelectId: number
-    eventTypeId?: number | null
-    status: string
-    date: Date | string
+    name: Date | string
+    custormerId?: number | null
+    eventId: number
+    dayName: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type WeekDayUpdateManyMutationInput = {
-    day?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
+  export type DateSlotUpdateManyMutationInput = {
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type WeekDayUncheckedUpdateManyInput = {
+  export type DateSlotUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
-    day?: IntFieldUpdateOperationsInput | number
     availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    timeSelectId?: IntFieldUpdateOperationsInput | number
-    eventTypeId?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
+    custormerId?: NullableIntFieldUpdateOperationsInput | number | null
+    eventId?: IntFieldUpdateOperationsInput | number
+    dayName?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DateOnTimeSlotCreateInput = {
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    timeSlot: TimeSlotCreateNestedOneWithoutDateOnTimeSlotsInput
+    dateSlot: DateSlotCreateNestedOneWithoutDateOnTimeSlotsInput
+  }
+
+  export type DateOnTimeSlotUncheckedCreateInput = {
+    id?: number
+    timeSlotId: number
+    dateSlotId: number
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DateOnTimeSlotUpdateInput = {
     status?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeSlot?: TimeSlotUpdateOneRequiredWithoutDateOnTimeSlotsNestedInput
+    dateSlot?: DateSlotUpdateOneRequiredWithoutDateOnTimeSlotsNestedInput
   }
 
-  export type TimeSelectCreateInput = {
-    startTime: Date | string
-    endTime: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    weekDays?: WeekDayCreateNestedManyWithoutTimeSelectInput
-  }
-
-  export type TimeSelectUncheckedCreateInput = {
-    id?: number
-    startTime: Date | string
-    endTime: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    weekDays?: WeekDayUncheckedCreateNestedManyWithoutTimeSelectInput
-  }
-
-  export type TimeSelectUpdateInput = {
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    weekDays?: WeekDayUpdateManyWithoutTimeSelectNestedInput
-  }
-
-  export type TimeSelectUncheckedUpdateInput = {
+  export type DateOnTimeSlotUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeSlotId?: IntFieldUpdateOperationsInput | number
+    dateSlotId?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    weekDays?: WeekDayUncheckedUpdateManyWithoutTimeSelectNestedInput
   }
 
-  export type TimeSelectCreateManyInput = {
+  export type DateOnTimeSlotCreateManyInput = {
     id?: number
-    startTime: Date | string
-    endTime: Date | string
+    timeSlotId: number
+    dateSlotId: number
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type TimeSelectUpdateManyMutationInput = {
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+  export type DateOnTimeSlotUpdateManyMutationInput = {
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type TimeSelectUncheckedUpdateManyInput = {
+  export type DateOnTimeSlotUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeSlotId?: IntFieldUpdateOperationsInput | number
+    dateSlotId?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TimeSlotCreateInput = {
+    startTime: number
+    endTime: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dateOnTimeSlots?: DateOnTimeSlotCreateNestedManyWithoutTimeSlotInput
+  }
+
+  export type TimeSlotUncheckedCreateInput = {
+    id?: number
+    startTime: number
+    endTime: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dateOnTimeSlots?: DateOnTimeSlotUncheckedCreateNestedManyWithoutTimeSlotInput
+  }
+
+  export type TimeSlotUpdateInput = {
+    startTime?: IntFieldUpdateOperationsInput | number
+    endTime?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dateOnTimeSlots?: DateOnTimeSlotUpdateManyWithoutTimeSlotNestedInput
+  }
+
+  export type TimeSlotUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    startTime?: IntFieldUpdateOperationsInput | number
+    endTime?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dateOnTimeSlots?: DateOnTimeSlotUncheckedUpdateManyWithoutTimeSlotNestedInput
+  }
+
+  export type TimeSlotCreateManyInput = {
+    id?: number
+    startTime: number
+    endTime: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TimeSlotUpdateManyMutationInput = {
+    startTime?: IntFieldUpdateOperationsInput | number
+    endTime?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TimeSlotUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    startTime?: IntFieldUpdateOperationsInput | number
+    endTime?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -16298,9 +16293,8 @@ export namespace Prisma {
     email: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    eventTypes?: EventTypeCreateNestedManyWithoutCustomerInput
     groupMeetings?: GroupMeetingCreateNestedManyWithoutCustomerInput
-    eventSelects?: EventSelectCreateNestedManyWithoutCustomerInput
+    dateSlots?: DateSlotCreateNestedManyWithoutCustormerInput
   }
 
   export type CustomerUncheckedCreateInput = {
@@ -16309,9 +16303,8 @@ export namespace Prisma {
     email: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    eventTypes?: EventTypeUncheckedCreateNestedManyWithoutCustomerInput
     groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutCustomerInput
-    eventSelects?: EventSelectUncheckedCreateNestedManyWithoutCustomerInput
+    dateSlots?: DateSlotUncheckedCreateNestedManyWithoutCustormerInput
   }
 
   export type CustomerUpdateInput = {
@@ -16319,9 +16312,8 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    eventTypes?: EventTypeUpdateManyWithoutCustomerNestedInput
     groupMeetings?: GroupMeetingUpdateManyWithoutCustomerNestedInput
-    eventSelects?: EventSelectUpdateManyWithoutCustomerNestedInput
+    dateSlots?: DateSlotUpdateManyWithoutCustormerNestedInput
   }
 
   export type CustomerUncheckedUpdateInput = {
@@ -16330,9 +16322,8 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    eventTypes?: EventTypeUncheckedUpdateManyWithoutCustomerNestedInput
     groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutCustomerNestedInput
-    eventSelects?: EventSelectUncheckedUpdateManyWithoutCustomerNestedInput
+    dateSlots?: DateSlotUncheckedUpdateManyWithoutCustormerNestedInput
   }
 
   export type CustomerCreateManyInput = {
@@ -16354,63 +16345,6 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type CalendarSelectCreateInput = {
-    startDate: Date | string
-    endDate: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    eventTypes?: EventTypeCreateNestedManyWithoutCalendarSelectInput
-  }
-
-  export type CalendarSelectUncheckedCreateInput = {
-    id?: number
-    startDate: Date | string
-    endDate: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    eventTypes?: EventTypeUncheckedCreateNestedManyWithoutCalendarSelectInput
-  }
-
-  export type CalendarSelectUpdateInput = {
-    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    eventTypes?: EventTypeUpdateManyWithoutCalendarSelectNestedInput
-  }
-
-  export type CalendarSelectUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    eventTypes?: EventTypeUncheckedUpdateManyWithoutCalendarSelectNestedInput
-  }
-
-  export type CalendarSelectCreateManyInput = {
-    id?: number
-    startDate: Date | string
-    endDate: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type CalendarSelectUpdateManyMutationInput = {
-    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type CalendarSelectUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -16552,78 +16486,6 @@ export namespace Prisma {
     totalPrice?: IntFieldUpdateOperationsInput | number
     timezone?: StringFieldUpdateOperationsInput | string
     eventTypeId?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type EventSelectCreateInput = {
-    selectDate: string
-    selectTime: Date | string
-    status: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    eventType: EventTypeCreateNestedOneWithoutEventSelectsInput
-    customer: CustomerCreateNestedOneWithoutEventSelectsInput
-  }
-
-  export type EventSelectUncheckedCreateInput = {
-    id?: number
-    eventTypeId: number
-    customerId: number
-    selectDate: string
-    selectTime: Date | string
-    status: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type EventSelectUpdateInput = {
-    selectDate?: StringFieldUpdateOperationsInput | string
-    selectTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    eventType?: EventTypeUpdateOneRequiredWithoutEventSelectsNestedInput
-    customer?: CustomerUpdateOneRequiredWithoutEventSelectsNestedInput
-  }
-
-  export type EventSelectUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    eventTypeId?: IntFieldUpdateOperationsInput | number
-    customerId?: IntFieldUpdateOperationsInput | number
-    selectDate?: StringFieldUpdateOperationsInput | string
-    selectTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type EventSelectCreateManyInput = {
-    id?: number
-    eventTypeId: number
-    customerId: number
-    selectDate: string
-    selectTime: Date | string
-    status: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type EventSelectUpdateManyMutationInput = {
-    selectDate?: StringFieldUpdateOperationsInput | string
-    selectTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type EventSelectUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    eventTypeId?: IntFieldUpdateOperationsInput | number
-    customerId?: IntFieldUpdateOperationsInput | number
-    selectDate?: StringFieldUpdateOperationsInput | string
-    selectTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -16877,6 +16739,17 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter
   }
 
+  export type IntNullableFilter = {
+    equals?: number | null
+    in?: Enumerable<number> | null
+    notIn?: Enumerable<number> | null
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntNullableFilter | number | null
+  }
+
   export type UserRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
@@ -16888,26 +16761,15 @@ export namespace Prisma {
     none?: EventTypeOnLocationWhereInput
   }
 
-  export type AvailabilityScheduleListRelationFilter = {
-    every?: AvailabilityScheduleWhereInput
-    some?: AvailabilityScheduleWhereInput
-    none?: AvailabilityScheduleWhereInput
+  export type AvailabilityScheduleRelationFilter = {
+    is?: AvailabilityScheduleWhereInput | null
+    isNot?: AvailabilityScheduleWhereInput | null
   }
 
-  export type WeekDayListRelationFilter = {
-    every?: WeekDayWhereInput
-    some?: WeekDayWhereInput
-    none?: WeekDayWhereInput
-  }
-
-  export type CalendarSelectRelationFilter = {
-    is?: CalendarSelectWhereInput
-    isNot?: CalendarSelectWhereInput
-  }
-
-  export type CustomerRelationFilter = {
-    is?: CustomerWhereInput
-    isNot?: CustomerWhereInput
+  export type DateSlotListRelationFilter = {
+    every?: DateSlotWhereInput
+    some?: DateSlotWhereInput
+    none?: DateSlotWhereInput
   }
 
   export type GroupMeetingListRelationFilter = {
@@ -16916,21 +16778,11 @@ export namespace Prisma {
     none?: GroupMeetingWhereInput
   }
 
-  export type EventSelectListRelationFilter = {
-    every?: EventSelectWhereInput
-    some?: EventSelectWhereInput
-    none?: EventSelectWhereInput
-  }
-
   export type EventTypeOnLocationOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
-  export type AvailabilityScheduleOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type WeekDayOrderByRelationAggregateInput = {
+  export type DateSlotOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -16938,8 +16790,9 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
-  export type EventSelectOrderByRelationAggregateInput = {
-    _count?: SortOrder
+  export type EventTypeUserIdNameCompoundUniqueInput = {
+    userId: number
+    name: string
   }
 
   export type EventTypeCountOrderByAggregateInput = {
@@ -16949,9 +16802,7 @@ export namespace Prisma {
     description?: SortOrder
     price?: SortOrder
     timeDuration?: SortOrder
-    calendarSelectId?: SortOrder
-    customerId?: SortOrder
-    status?: SortOrder
+    availabilityScheduleId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -16961,8 +16812,7 @@ export namespace Prisma {
     userId?: SortOrder
     price?: SortOrder
     timeDuration?: SortOrder
-    calendarSelectId?: SortOrder
-    customerId?: SortOrder
+    availabilityScheduleId?: SortOrder
   }
 
   export type EventTypeMaxOrderByAggregateInput = {
@@ -16972,9 +16822,7 @@ export namespace Prisma {
     description?: SortOrder
     price?: SortOrder
     timeDuration?: SortOrder
-    calendarSelectId?: SortOrder
-    customerId?: SortOrder
-    status?: SortOrder
+    availabilityScheduleId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -16986,9 +16834,7 @@ export namespace Prisma {
     description?: SortOrder
     price?: SortOrder
     timeDuration?: SortOrder
-    calendarSelectId?: SortOrder
-    customerId?: SortOrder
-    status?: SortOrder
+    availabilityScheduleId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -16998,8 +16844,23 @@ export namespace Prisma {
     userId?: SortOrder
     price?: SortOrder
     timeDuration?: SortOrder
-    calendarSelectId?: SortOrder
-    customerId?: SortOrder
+    availabilityScheduleId?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter = {
+    equals?: number | null
+    in?: Enumerable<number> | null
+    notIn?: Enumerable<number> | null
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntNullableWithAggregatesFilter | number | null
+    _count?: NestedIntNullableFilter
+    _avg?: NestedFloatNullableFilter
+    _sum?: NestedIntNullableFilter
+    _min?: NestedIntNullableFilter
+    _max?: NestedIntNullableFilter
   }
 
   export type LocationCountOrderByAggregateInput = {
@@ -17080,7 +16941,6 @@ export namespace Prisma {
   export type AvailabilityScheduleCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
-    eventTypeId?: SortOrder
     timezone?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -17088,13 +16948,11 @@ export namespace Prisma {
 
   export type AvailabilityScheduleAvgOrderByAggregateInput = {
     id?: SortOrder
-    eventTypeId?: SortOrder
   }
 
   export type AvailabilityScheduleMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
-    eventTypeId?: SortOrder
     timezone?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -17103,7 +16961,6 @@ export namespace Prisma {
   export type AvailabilityScheduleMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
-    eventTypeId?: SortOrder
     timezone?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -17111,99 +16968,159 @@ export namespace Prisma {
 
   export type AvailabilityScheduleSumOrderByAggregateInput = {
     id?: SortOrder
-    eventTypeId?: SortOrder
   }
 
-  export type IntNullableFilter = {
-    equals?: number | null
-    in?: Enumerable<number> | null
-    notIn?: Enumerable<number> | null
-    lt?: number
-    lte?: number
-    gt?: number
-    gte?: number
-    not?: NestedIntNullableFilter | number | null
-  }
-
-  export type AvailabilityScheduleRelationFilter = {
-    is?: AvailabilityScheduleWhereInput | null
-    isNot?: AvailabilityScheduleWhereInput | null
-  }
-
-  export type TimeSelectRelationFilter = {
-    is?: TimeSelectWhereInput
-    isNot?: TimeSelectWhereInput
-  }
-
-  export type WeekDayCountOrderByAggregateInput = {
+  export type DaySlotCountOrderByAggregateInput = {
     id?: SortOrder
-    day?: SortOrder
-    availabilityScheduleId?: SortOrder
-    timeSelectId?: SortOrder
-    eventTypeId?: SortOrder
-    status?: SortOrder
-    date?: SortOrder
+    name?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
-  export type WeekDayAvgOrderByAggregateInput = {
+  export type DaySlotAvgOrderByAggregateInput = {
     id?: SortOrder
-    day?: SortOrder
-    availabilityScheduleId?: SortOrder
-    timeSelectId?: SortOrder
-    eventTypeId?: SortOrder
   }
 
-  export type WeekDayMaxOrderByAggregateInput = {
+  export type DaySlotMaxOrderByAggregateInput = {
     id?: SortOrder
-    day?: SortOrder
-    availabilityScheduleId?: SortOrder
-    timeSelectId?: SortOrder
-    eventTypeId?: SortOrder
-    status?: SortOrder
-    date?: SortOrder
+    name?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
-  export type WeekDayMinOrderByAggregateInput = {
+  export type DaySlotMinOrderByAggregateInput = {
     id?: SortOrder
-    day?: SortOrder
-    availabilityScheduleId?: SortOrder
-    timeSelectId?: SortOrder
-    eventTypeId?: SortOrder
-    status?: SortOrder
-    date?: SortOrder
+    name?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
-  export type WeekDaySumOrderByAggregateInput = {
+  export type DaySlotSumOrderByAggregateInput = {
     id?: SortOrder
-    day?: SortOrder
+  }
+
+  export type CustomerRelationFilter = {
+    is?: CustomerWhereInput | null
+    isNot?: CustomerWhereInput | null
+  }
+
+  export type DaySlotRelationFilter = {
+    is?: DaySlotWhereInput
+    isNot?: DaySlotWhereInput
+  }
+
+  export type DateOnTimeSlotListRelationFilter = {
+    every?: DateOnTimeSlotWhereInput
+    some?: DateOnTimeSlotWhereInput
+    none?: DateOnTimeSlotWhereInput
+  }
+
+  export type DateOnTimeSlotOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DateSlotCountOrderByAggregateInput = {
+    id?: SortOrder
     availabilityScheduleId?: SortOrder
-    timeSelectId?: SortOrder
-    eventTypeId?: SortOrder
+    name?: SortOrder
+    custormerId?: SortOrder
+    eventId?: SortOrder
+    dayName?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
-  export type IntNullableWithAggregatesFilter = {
-    equals?: number | null
-    in?: Enumerable<number> | null
-    notIn?: Enumerable<number> | null
-    lt?: number
-    lte?: number
-    gt?: number
-    gte?: number
-    not?: NestedIntNullableWithAggregatesFilter | number | null
-    _count?: NestedIntNullableFilter
-    _avg?: NestedFloatNullableFilter
-    _sum?: NestedIntNullableFilter
-    _min?: NestedIntNullableFilter
-    _max?: NestedIntNullableFilter
+  export type DateSlotAvgOrderByAggregateInput = {
+    id?: SortOrder
+    availabilityScheduleId?: SortOrder
+    custormerId?: SortOrder
+    eventId?: SortOrder
   }
 
-  export type TimeSelectCountOrderByAggregateInput = {
+  export type DateSlotMaxOrderByAggregateInput = {
+    id?: SortOrder
+    availabilityScheduleId?: SortOrder
+    name?: SortOrder
+    custormerId?: SortOrder
+    eventId?: SortOrder
+    dayName?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DateSlotMinOrderByAggregateInput = {
+    id?: SortOrder
+    availabilityScheduleId?: SortOrder
+    name?: SortOrder
+    custormerId?: SortOrder
+    eventId?: SortOrder
+    dayName?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DateSlotSumOrderByAggregateInput = {
+    id?: SortOrder
+    availabilityScheduleId?: SortOrder
+    custormerId?: SortOrder
+    eventId?: SortOrder
+  }
+
+  export type TimeSlotRelationFilter = {
+    is?: TimeSlotWhereInput
+    isNot?: TimeSlotWhereInput
+  }
+
+  export type DateSlotRelationFilter = {
+    is?: DateSlotWhereInput
+    isNot?: DateSlotWhereInput
+  }
+
+  export type DateOnTimeSlotCountOrderByAggregateInput = {
+    id?: SortOrder
+    timeSlotId?: SortOrder
+    dateSlotId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DateOnTimeSlotAvgOrderByAggregateInput = {
+    id?: SortOrder
+    timeSlotId?: SortOrder
+    dateSlotId?: SortOrder
+  }
+
+  export type DateOnTimeSlotMaxOrderByAggregateInput = {
+    id?: SortOrder
+    timeSlotId?: SortOrder
+    dateSlotId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DateOnTimeSlotMinOrderByAggregateInput = {
+    id?: SortOrder
+    timeSlotId?: SortOrder
+    dateSlotId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DateOnTimeSlotSumOrderByAggregateInput = {
+    id?: SortOrder
+    timeSlotId?: SortOrder
+    dateSlotId?: SortOrder
+  }
+
+  export type TimeSlotStartTimeEndTimeCompoundUniqueInput = {
+    startTime: number
+    endTime: number
+  }
+
+  export type TimeSlotCountOrderByAggregateInput = {
     id?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
@@ -17211,11 +17128,13 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
-  export type TimeSelectAvgOrderByAggregateInput = {
+  export type TimeSlotAvgOrderByAggregateInput = {
     id?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
   }
 
-  export type TimeSelectMaxOrderByAggregateInput = {
+  export type TimeSlotMaxOrderByAggregateInput = {
     id?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
@@ -17223,7 +17142,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
-  export type TimeSelectMinOrderByAggregateInput = {
+  export type TimeSlotMinOrderByAggregateInput = {
     id?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
@@ -17231,8 +17150,10 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
-  export type TimeSelectSumOrderByAggregateInput = {
+  export type TimeSlotSumOrderByAggregateInput = {
     id?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
   }
 
   export type CustomerCountOrderByAggregateInput = {
@@ -17264,38 +17185,6 @@ export namespace Prisma {
   }
 
   export type CustomerSumOrderByAggregateInput = {
-    id?: SortOrder
-  }
-
-  export type CalendarSelectCountOrderByAggregateInput = {
-    id?: SortOrder
-    startDate?: SortOrder
-    endDate?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type CalendarSelectAvgOrderByAggregateInput = {
-    id?: SortOrder
-  }
-
-  export type CalendarSelectMaxOrderByAggregateInput = {
-    id?: SortOrder
-    startDate?: SortOrder
-    endDate?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type CalendarSelectMinOrderByAggregateInput = {
-    id?: SortOrder
-    startDate?: SortOrder
-    endDate?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type CalendarSelectSumOrderByAggregateInput = {
     id?: SortOrder
   }
 
@@ -17390,51 +17279,6 @@ export namespace Prisma {
     customerId?: SortOrder
     totalPrice?: SortOrder
     eventTypeId?: SortOrder
-  }
-
-  export type EventSelectCountOrderByAggregateInput = {
-    id?: SortOrder
-    eventTypeId?: SortOrder
-    customerId?: SortOrder
-    selectDate?: SortOrder
-    selectTime?: SortOrder
-    status?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type EventSelectAvgOrderByAggregateInput = {
-    id?: SortOrder
-    eventTypeId?: SortOrder
-    customerId?: SortOrder
-  }
-
-  export type EventSelectMaxOrderByAggregateInput = {
-    id?: SortOrder
-    eventTypeId?: SortOrder
-    customerId?: SortOrder
-    selectDate?: SortOrder
-    selectTime?: SortOrder
-    status?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type EventSelectMinOrderByAggregateInput = {
-    id?: SortOrder
-    eventTypeId?: SortOrder
-    customerId?: SortOrder
-    selectDate?: SortOrder
-    selectTime?: SortOrder
-    status?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type EventSelectSumOrderByAggregateInput = {
-    id?: SortOrder
-    eventTypeId?: SortOrder
-    customerId?: SortOrder
   }
 
   export type GroupMeetingRelationFilter = {
@@ -17637,30 +17481,17 @@ export namespace Prisma {
     connect?: Enumerable<EventTypeOnLocationWhereUniqueInput>
   }
 
-  export type AvailabilityScheduleCreateNestedManyWithoutEventTypeInput = {
-    create?: XOR<Enumerable<AvailabilityScheduleCreateWithoutEventTypeInput>, Enumerable<AvailabilityScheduleUncheckedCreateWithoutEventTypeInput>>
-    connectOrCreate?: Enumerable<AvailabilityScheduleCreateOrConnectWithoutEventTypeInput>
-    createMany?: AvailabilityScheduleCreateManyEventTypeInputEnvelope
-    connect?: Enumerable<AvailabilityScheduleWhereUniqueInput>
+  export type AvailabilityScheduleCreateNestedOneWithoutEventTypesInput = {
+    create?: XOR<AvailabilityScheduleCreateWithoutEventTypesInput, AvailabilityScheduleUncheckedCreateWithoutEventTypesInput>
+    connectOrCreate?: AvailabilityScheduleCreateOrConnectWithoutEventTypesInput
+    connect?: AvailabilityScheduleWhereUniqueInput
   }
 
-  export type WeekDayCreateNestedManyWithoutEventTypeInput = {
-    create?: XOR<Enumerable<WeekDayCreateWithoutEventTypeInput>, Enumerable<WeekDayUncheckedCreateWithoutEventTypeInput>>
-    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutEventTypeInput>
-    createMany?: WeekDayCreateManyEventTypeInputEnvelope
-    connect?: Enumerable<WeekDayWhereUniqueInput>
-  }
-
-  export type CalendarSelectCreateNestedOneWithoutEventTypesInput = {
-    create?: XOR<CalendarSelectCreateWithoutEventTypesInput, CalendarSelectUncheckedCreateWithoutEventTypesInput>
-    connectOrCreate?: CalendarSelectCreateOrConnectWithoutEventTypesInput
-    connect?: CalendarSelectWhereUniqueInput
-  }
-
-  export type CustomerCreateNestedOneWithoutEventTypesInput = {
-    create?: XOR<CustomerCreateWithoutEventTypesInput, CustomerUncheckedCreateWithoutEventTypesInput>
-    connectOrCreate?: CustomerCreateOrConnectWithoutEventTypesInput
-    connect?: CustomerWhereUniqueInput
+  export type DateSlotCreateNestedManyWithoutEventTypeInput = {
+    create?: XOR<Enumerable<DateSlotCreateWithoutEventTypeInput>, Enumerable<DateSlotUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<DateSlotCreateOrConnectWithoutEventTypeInput>
+    createMany?: DateSlotCreateManyEventTypeInputEnvelope
+    connect?: Enumerable<DateSlotWhereUniqueInput>
   }
 
   export type GroupMeetingCreateNestedManyWithoutEventTypeInput = {
@@ -17670,13 +17501,6 @@ export namespace Prisma {
     connect?: Enumerable<GroupMeetingWhereUniqueInput>
   }
 
-  export type EventSelectCreateNestedManyWithoutEventTypeInput = {
-    create?: XOR<Enumerable<EventSelectCreateWithoutEventTypeInput>, Enumerable<EventSelectUncheckedCreateWithoutEventTypeInput>>
-    connectOrCreate?: Enumerable<EventSelectCreateOrConnectWithoutEventTypeInput>
-    createMany?: EventSelectCreateManyEventTypeInputEnvelope
-    connect?: Enumerable<EventSelectWhereUniqueInput>
-  }
-
   export type EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput = {
     create?: XOR<Enumerable<EventTypeOnLocationCreateWithoutEventTypeInput>, Enumerable<EventTypeOnLocationUncheckedCreateWithoutEventTypeInput>>
     connectOrCreate?: Enumerable<EventTypeOnLocationCreateOrConnectWithoutEventTypeInput>
@@ -17684,18 +17508,11 @@ export namespace Prisma {
     connect?: Enumerable<EventTypeOnLocationWhereUniqueInput>
   }
 
-  export type AvailabilityScheduleUncheckedCreateNestedManyWithoutEventTypeInput = {
-    create?: XOR<Enumerable<AvailabilityScheduleCreateWithoutEventTypeInput>, Enumerable<AvailabilityScheduleUncheckedCreateWithoutEventTypeInput>>
-    connectOrCreate?: Enumerable<AvailabilityScheduleCreateOrConnectWithoutEventTypeInput>
-    createMany?: AvailabilityScheduleCreateManyEventTypeInputEnvelope
-    connect?: Enumerable<AvailabilityScheduleWhereUniqueInput>
-  }
-
-  export type WeekDayUncheckedCreateNestedManyWithoutEventTypeInput = {
-    create?: XOR<Enumerable<WeekDayCreateWithoutEventTypeInput>, Enumerable<WeekDayUncheckedCreateWithoutEventTypeInput>>
-    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutEventTypeInput>
-    createMany?: WeekDayCreateManyEventTypeInputEnvelope
-    connect?: Enumerable<WeekDayWhereUniqueInput>
+  export type DateSlotUncheckedCreateNestedManyWithoutEventTypeInput = {
+    create?: XOR<Enumerable<DateSlotCreateWithoutEventTypeInput>, Enumerable<DateSlotUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<DateSlotCreateOrConnectWithoutEventTypeInput>
+    createMany?: DateSlotCreateManyEventTypeInputEnvelope
+    connect?: Enumerable<DateSlotWhereUniqueInput>
   }
 
   export type GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput = {
@@ -17703,13 +17520,6 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<GroupMeetingCreateOrConnectWithoutEventTypeInput>
     createMany?: GroupMeetingCreateManyEventTypeInputEnvelope
     connect?: Enumerable<GroupMeetingWhereUniqueInput>
-  }
-
-  export type EventSelectUncheckedCreateNestedManyWithoutEventTypeInput = {
-    create?: XOR<Enumerable<EventSelectCreateWithoutEventTypeInput>, Enumerable<EventSelectUncheckedCreateWithoutEventTypeInput>>
-    connectOrCreate?: Enumerable<EventSelectCreateOrConnectWithoutEventTypeInput>
-    createMany?: EventSelectCreateManyEventTypeInputEnvelope
-    connect?: Enumerable<EventSelectWhereUniqueInput>
   }
 
   export type UserUpdateOneRequiredWithoutEventTypesNestedInput = {
@@ -17734,48 +17544,28 @@ export namespace Prisma {
     deleteMany?: Enumerable<EventTypeOnLocationScalarWhereInput>
   }
 
-  export type AvailabilityScheduleUpdateManyWithoutEventTypeNestedInput = {
-    create?: XOR<Enumerable<AvailabilityScheduleCreateWithoutEventTypeInput>, Enumerable<AvailabilityScheduleUncheckedCreateWithoutEventTypeInput>>
-    connectOrCreate?: Enumerable<AvailabilityScheduleCreateOrConnectWithoutEventTypeInput>
-    upsert?: Enumerable<AvailabilityScheduleUpsertWithWhereUniqueWithoutEventTypeInput>
-    createMany?: AvailabilityScheduleCreateManyEventTypeInputEnvelope
-    set?: Enumerable<AvailabilityScheduleWhereUniqueInput>
-    disconnect?: Enumerable<AvailabilityScheduleWhereUniqueInput>
-    delete?: Enumerable<AvailabilityScheduleWhereUniqueInput>
-    connect?: Enumerable<AvailabilityScheduleWhereUniqueInput>
-    update?: Enumerable<AvailabilityScheduleUpdateWithWhereUniqueWithoutEventTypeInput>
-    updateMany?: Enumerable<AvailabilityScheduleUpdateManyWithWhereWithoutEventTypeInput>
-    deleteMany?: Enumerable<AvailabilityScheduleScalarWhereInput>
+  export type AvailabilityScheduleUpdateOneWithoutEventTypesNestedInput = {
+    create?: XOR<AvailabilityScheduleCreateWithoutEventTypesInput, AvailabilityScheduleUncheckedCreateWithoutEventTypesInput>
+    connectOrCreate?: AvailabilityScheduleCreateOrConnectWithoutEventTypesInput
+    upsert?: AvailabilityScheduleUpsertWithoutEventTypesInput
+    disconnect?: boolean
+    delete?: boolean
+    connect?: AvailabilityScheduleWhereUniqueInput
+    update?: XOR<AvailabilityScheduleUpdateWithoutEventTypesInput, AvailabilityScheduleUncheckedUpdateWithoutEventTypesInput>
   }
 
-  export type WeekDayUpdateManyWithoutEventTypeNestedInput = {
-    create?: XOR<Enumerable<WeekDayCreateWithoutEventTypeInput>, Enumerable<WeekDayUncheckedCreateWithoutEventTypeInput>>
-    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutEventTypeInput>
-    upsert?: Enumerable<WeekDayUpsertWithWhereUniqueWithoutEventTypeInput>
-    createMany?: WeekDayCreateManyEventTypeInputEnvelope
-    set?: Enumerable<WeekDayWhereUniqueInput>
-    disconnect?: Enumerable<WeekDayWhereUniqueInput>
-    delete?: Enumerable<WeekDayWhereUniqueInput>
-    connect?: Enumerable<WeekDayWhereUniqueInput>
-    update?: Enumerable<WeekDayUpdateWithWhereUniqueWithoutEventTypeInput>
-    updateMany?: Enumerable<WeekDayUpdateManyWithWhereWithoutEventTypeInput>
-    deleteMany?: Enumerable<WeekDayScalarWhereInput>
-  }
-
-  export type CalendarSelectUpdateOneRequiredWithoutEventTypesNestedInput = {
-    create?: XOR<CalendarSelectCreateWithoutEventTypesInput, CalendarSelectUncheckedCreateWithoutEventTypesInput>
-    connectOrCreate?: CalendarSelectCreateOrConnectWithoutEventTypesInput
-    upsert?: CalendarSelectUpsertWithoutEventTypesInput
-    connect?: CalendarSelectWhereUniqueInput
-    update?: XOR<CalendarSelectUpdateWithoutEventTypesInput, CalendarSelectUncheckedUpdateWithoutEventTypesInput>
-  }
-
-  export type CustomerUpdateOneRequiredWithoutEventTypesNestedInput = {
-    create?: XOR<CustomerCreateWithoutEventTypesInput, CustomerUncheckedCreateWithoutEventTypesInput>
-    connectOrCreate?: CustomerCreateOrConnectWithoutEventTypesInput
-    upsert?: CustomerUpsertWithoutEventTypesInput
-    connect?: CustomerWhereUniqueInput
-    update?: XOR<CustomerUpdateWithoutEventTypesInput, CustomerUncheckedUpdateWithoutEventTypesInput>
+  export type DateSlotUpdateManyWithoutEventTypeNestedInput = {
+    create?: XOR<Enumerable<DateSlotCreateWithoutEventTypeInput>, Enumerable<DateSlotUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<DateSlotCreateOrConnectWithoutEventTypeInput>
+    upsert?: Enumerable<DateSlotUpsertWithWhereUniqueWithoutEventTypeInput>
+    createMany?: DateSlotCreateManyEventTypeInputEnvelope
+    set?: Enumerable<DateSlotWhereUniqueInput>
+    disconnect?: Enumerable<DateSlotWhereUniqueInput>
+    delete?: Enumerable<DateSlotWhereUniqueInput>
+    connect?: Enumerable<DateSlotWhereUniqueInput>
+    update?: Enumerable<DateSlotUpdateWithWhereUniqueWithoutEventTypeInput>
+    updateMany?: Enumerable<DateSlotUpdateManyWithWhereWithoutEventTypeInput>
+    deleteMany?: Enumerable<DateSlotScalarWhereInput>
   }
 
   export type GroupMeetingUpdateManyWithoutEventTypeNestedInput = {
@@ -17792,18 +17582,12 @@ export namespace Prisma {
     deleteMany?: Enumerable<GroupMeetingScalarWhereInput>
   }
 
-  export type EventSelectUpdateManyWithoutEventTypeNestedInput = {
-    create?: XOR<Enumerable<EventSelectCreateWithoutEventTypeInput>, Enumerable<EventSelectUncheckedCreateWithoutEventTypeInput>>
-    connectOrCreate?: Enumerable<EventSelectCreateOrConnectWithoutEventTypeInput>
-    upsert?: Enumerable<EventSelectUpsertWithWhereUniqueWithoutEventTypeInput>
-    createMany?: EventSelectCreateManyEventTypeInputEnvelope
-    set?: Enumerable<EventSelectWhereUniqueInput>
-    disconnect?: Enumerable<EventSelectWhereUniqueInput>
-    delete?: Enumerable<EventSelectWhereUniqueInput>
-    connect?: Enumerable<EventSelectWhereUniqueInput>
-    update?: Enumerable<EventSelectUpdateWithWhereUniqueWithoutEventTypeInput>
-    updateMany?: Enumerable<EventSelectUpdateManyWithWhereWithoutEventTypeInput>
-    deleteMany?: Enumerable<EventSelectScalarWhereInput>
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput = {
@@ -17820,32 +17604,18 @@ export namespace Prisma {
     deleteMany?: Enumerable<EventTypeOnLocationScalarWhereInput>
   }
 
-  export type AvailabilityScheduleUncheckedUpdateManyWithoutEventTypeNestedInput = {
-    create?: XOR<Enumerable<AvailabilityScheduleCreateWithoutEventTypeInput>, Enumerable<AvailabilityScheduleUncheckedCreateWithoutEventTypeInput>>
-    connectOrCreate?: Enumerable<AvailabilityScheduleCreateOrConnectWithoutEventTypeInput>
-    upsert?: Enumerable<AvailabilityScheduleUpsertWithWhereUniqueWithoutEventTypeInput>
-    createMany?: AvailabilityScheduleCreateManyEventTypeInputEnvelope
-    set?: Enumerable<AvailabilityScheduleWhereUniqueInput>
-    disconnect?: Enumerable<AvailabilityScheduleWhereUniqueInput>
-    delete?: Enumerable<AvailabilityScheduleWhereUniqueInput>
-    connect?: Enumerable<AvailabilityScheduleWhereUniqueInput>
-    update?: Enumerable<AvailabilityScheduleUpdateWithWhereUniqueWithoutEventTypeInput>
-    updateMany?: Enumerable<AvailabilityScheduleUpdateManyWithWhereWithoutEventTypeInput>
-    deleteMany?: Enumerable<AvailabilityScheduleScalarWhereInput>
-  }
-
-  export type WeekDayUncheckedUpdateManyWithoutEventTypeNestedInput = {
-    create?: XOR<Enumerable<WeekDayCreateWithoutEventTypeInput>, Enumerable<WeekDayUncheckedCreateWithoutEventTypeInput>>
-    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutEventTypeInput>
-    upsert?: Enumerable<WeekDayUpsertWithWhereUniqueWithoutEventTypeInput>
-    createMany?: WeekDayCreateManyEventTypeInputEnvelope
-    set?: Enumerable<WeekDayWhereUniqueInput>
-    disconnect?: Enumerable<WeekDayWhereUniqueInput>
-    delete?: Enumerable<WeekDayWhereUniqueInput>
-    connect?: Enumerable<WeekDayWhereUniqueInput>
-    update?: Enumerable<WeekDayUpdateWithWhereUniqueWithoutEventTypeInput>
-    updateMany?: Enumerable<WeekDayUpdateManyWithWhereWithoutEventTypeInput>
-    deleteMany?: Enumerable<WeekDayScalarWhereInput>
+  export type DateSlotUncheckedUpdateManyWithoutEventTypeNestedInput = {
+    create?: XOR<Enumerable<DateSlotCreateWithoutEventTypeInput>, Enumerable<DateSlotUncheckedCreateWithoutEventTypeInput>>
+    connectOrCreate?: Enumerable<DateSlotCreateOrConnectWithoutEventTypeInput>
+    upsert?: Enumerable<DateSlotUpsertWithWhereUniqueWithoutEventTypeInput>
+    createMany?: DateSlotCreateManyEventTypeInputEnvelope
+    set?: Enumerable<DateSlotWhereUniqueInput>
+    disconnect?: Enumerable<DateSlotWhereUniqueInput>
+    delete?: Enumerable<DateSlotWhereUniqueInput>
+    connect?: Enumerable<DateSlotWhereUniqueInput>
+    update?: Enumerable<DateSlotUpdateWithWhereUniqueWithoutEventTypeInput>
+    updateMany?: Enumerable<DateSlotUpdateManyWithWhereWithoutEventTypeInput>
+    deleteMany?: Enumerable<DateSlotScalarWhereInput>
   }
 
   export type GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput = {
@@ -17860,20 +17630,6 @@ export namespace Prisma {
     update?: Enumerable<GroupMeetingUpdateWithWhereUniqueWithoutEventTypeInput>
     updateMany?: Enumerable<GroupMeetingUpdateManyWithWhereWithoutEventTypeInput>
     deleteMany?: Enumerable<GroupMeetingScalarWhereInput>
-  }
-
-  export type EventSelectUncheckedUpdateManyWithoutEventTypeNestedInput = {
-    create?: XOR<Enumerable<EventSelectCreateWithoutEventTypeInput>, Enumerable<EventSelectUncheckedCreateWithoutEventTypeInput>>
-    connectOrCreate?: Enumerable<EventSelectCreateOrConnectWithoutEventTypeInput>
-    upsert?: Enumerable<EventSelectUpsertWithWhereUniqueWithoutEventTypeInput>
-    createMany?: EventSelectCreateManyEventTypeInputEnvelope
-    set?: Enumerable<EventSelectWhereUniqueInput>
-    disconnect?: Enumerable<EventSelectWhereUniqueInput>
-    delete?: Enumerable<EventSelectWhereUniqueInput>
-    connect?: Enumerable<EventSelectWhereUniqueInput>
-    update?: Enumerable<EventSelectUpdateWithWhereUniqueWithoutEventTypeInput>
-    updateMany?: Enumerable<EventSelectUpdateManyWithWhereWithoutEventTypeInput>
-    deleteMany?: Enumerable<EventSelectScalarWhereInput>
   }
 
   export type EventTypeOnLocationCreateNestedManyWithoutLocationInput = {
@@ -17988,163 +17744,302 @@ export namespace Prisma {
     update?: XOR<LocationUpdateWithoutEventTypeOnLocationsInput, LocationUncheckedUpdateWithoutEventTypeOnLocationsInput>
   }
 
-  export type EventTypeCreateNestedOneWithoutAvailabilitySchedulesInput = {
-    create?: XOR<EventTypeCreateWithoutAvailabilitySchedulesInput, EventTypeUncheckedCreateWithoutAvailabilitySchedulesInput>
-    connectOrCreate?: EventTypeCreateOrConnectWithoutAvailabilitySchedulesInput
-    connect?: EventTypeWhereUniqueInput
-  }
-
-  export type WeekDayCreateNestedManyWithoutAvailabilityScheduleInput = {
-    create?: XOR<Enumerable<WeekDayCreateWithoutAvailabilityScheduleInput>, Enumerable<WeekDayUncheckedCreateWithoutAvailabilityScheduleInput>>
-    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutAvailabilityScheduleInput>
-    createMany?: WeekDayCreateManyAvailabilityScheduleInputEnvelope
-    connect?: Enumerable<WeekDayWhereUniqueInput>
-  }
-
-  export type WeekDayUncheckedCreateNestedManyWithoutAvailabilityScheduleInput = {
-    create?: XOR<Enumerable<WeekDayCreateWithoutAvailabilityScheduleInput>, Enumerable<WeekDayUncheckedCreateWithoutAvailabilityScheduleInput>>
-    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutAvailabilityScheduleInput>
-    createMany?: WeekDayCreateManyAvailabilityScheduleInputEnvelope
-    connect?: Enumerable<WeekDayWhereUniqueInput>
-  }
-
-  export type EventTypeUpdateOneRequiredWithoutAvailabilitySchedulesNestedInput = {
-    create?: XOR<EventTypeCreateWithoutAvailabilitySchedulesInput, EventTypeUncheckedCreateWithoutAvailabilitySchedulesInput>
-    connectOrCreate?: EventTypeCreateOrConnectWithoutAvailabilitySchedulesInput
-    upsert?: EventTypeUpsertWithoutAvailabilitySchedulesInput
-    connect?: EventTypeWhereUniqueInput
-    update?: XOR<EventTypeUpdateWithoutAvailabilitySchedulesInput, EventTypeUncheckedUpdateWithoutAvailabilitySchedulesInput>
-  }
-
-  export type WeekDayUpdateManyWithoutAvailabilityScheduleNestedInput = {
-    create?: XOR<Enumerable<WeekDayCreateWithoutAvailabilityScheduleInput>, Enumerable<WeekDayUncheckedCreateWithoutAvailabilityScheduleInput>>
-    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutAvailabilityScheduleInput>
-    upsert?: Enumerable<WeekDayUpsertWithWhereUniqueWithoutAvailabilityScheduleInput>
-    createMany?: WeekDayCreateManyAvailabilityScheduleInputEnvelope
-    set?: Enumerable<WeekDayWhereUniqueInput>
-    disconnect?: Enumerable<WeekDayWhereUniqueInput>
-    delete?: Enumerable<WeekDayWhereUniqueInput>
-    connect?: Enumerable<WeekDayWhereUniqueInput>
-    update?: Enumerable<WeekDayUpdateWithWhereUniqueWithoutAvailabilityScheduleInput>
-    updateMany?: Enumerable<WeekDayUpdateManyWithWhereWithoutAvailabilityScheduleInput>
-    deleteMany?: Enumerable<WeekDayScalarWhereInput>
-  }
-
-  export type WeekDayUncheckedUpdateManyWithoutAvailabilityScheduleNestedInput = {
-    create?: XOR<Enumerable<WeekDayCreateWithoutAvailabilityScheduleInput>, Enumerable<WeekDayUncheckedCreateWithoutAvailabilityScheduleInput>>
-    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutAvailabilityScheduleInput>
-    upsert?: Enumerable<WeekDayUpsertWithWhereUniqueWithoutAvailabilityScheduleInput>
-    createMany?: WeekDayCreateManyAvailabilityScheduleInputEnvelope
-    set?: Enumerable<WeekDayWhereUniqueInput>
-    disconnect?: Enumerable<WeekDayWhereUniqueInput>
-    delete?: Enumerable<WeekDayWhereUniqueInput>
-    connect?: Enumerable<WeekDayWhereUniqueInput>
-    update?: Enumerable<WeekDayUpdateWithWhereUniqueWithoutAvailabilityScheduleInput>
-    updateMany?: Enumerable<WeekDayUpdateManyWithWhereWithoutAvailabilityScheduleInput>
-    deleteMany?: Enumerable<WeekDayScalarWhereInput>
-  }
-
-  export type AvailabilityScheduleCreateNestedOneWithoutWeekDaysInput = {
-    create?: XOR<AvailabilityScheduleCreateWithoutWeekDaysInput, AvailabilityScheduleUncheckedCreateWithoutWeekDaysInput>
-    connectOrCreate?: AvailabilityScheduleCreateOrConnectWithoutWeekDaysInput
-    connect?: AvailabilityScheduleWhereUniqueInput
-  }
-
-  export type TimeSelectCreateNestedOneWithoutWeekDaysInput = {
-    create?: XOR<TimeSelectCreateWithoutWeekDaysInput, TimeSelectUncheckedCreateWithoutWeekDaysInput>
-    connectOrCreate?: TimeSelectCreateOrConnectWithoutWeekDaysInput
-    connect?: TimeSelectWhereUniqueInput
-  }
-
-  export type EventTypeCreateNestedOneWithoutWeekDaysInput = {
-    create?: XOR<EventTypeCreateWithoutWeekDaysInput, EventTypeUncheckedCreateWithoutWeekDaysInput>
-    connectOrCreate?: EventTypeCreateOrConnectWithoutWeekDaysInput
-    connect?: EventTypeWhereUniqueInput
-  }
-
-  export type AvailabilityScheduleUpdateOneWithoutWeekDaysNestedInput = {
-    create?: XOR<AvailabilityScheduleCreateWithoutWeekDaysInput, AvailabilityScheduleUncheckedCreateWithoutWeekDaysInput>
-    connectOrCreate?: AvailabilityScheduleCreateOrConnectWithoutWeekDaysInput
-    upsert?: AvailabilityScheduleUpsertWithoutWeekDaysInput
-    disconnect?: boolean
-    delete?: boolean
-    connect?: AvailabilityScheduleWhereUniqueInput
-    update?: XOR<AvailabilityScheduleUpdateWithoutWeekDaysInput, AvailabilityScheduleUncheckedUpdateWithoutWeekDaysInput>
-  }
-
-  export type TimeSelectUpdateOneRequiredWithoutWeekDaysNestedInput = {
-    create?: XOR<TimeSelectCreateWithoutWeekDaysInput, TimeSelectUncheckedCreateWithoutWeekDaysInput>
-    connectOrCreate?: TimeSelectCreateOrConnectWithoutWeekDaysInput
-    upsert?: TimeSelectUpsertWithoutWeekDaysInput
-    connect?: TimeSelectWhereUniqueInput
-    update?: XOR<TimeSelectUpdateWithoutWeekDaysInput, TimeSelectUncheckedUpdateWithoutWeekDaysInput>
-  }
-
-  export type EventTypeUpdateOneWithoutWeekDaysNestedInput = {
-    create?: XOR<EventTypeCreateWithoutWeekDaysInput, EventTypeUncheckedCreateWithoutWeekDaysInput>
-    connectOrCreate?: EventTypeCreateOrConnectWithoutWeekDaysInput
-    upsert?: EventTypeUpsertWithoutWeekDaysInput
-    disconnect?: boolean
-    delete?: boolean
-    connect?: EventTypeWhereUniqueInput
-    update?: XOR<EventTypeUpdateWithoutWeekDaysInput, EventTypeUncheckedUpdateWithoutWeekDaysInput>
-  }
-
-  export type NullableIntFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-  }
-
-  export type WeekDayCreateNestedManyWithoutTimeSelectInput = {
-    create?: XOR<Enumerable<WeekDayCreateWithoutTimeSelectInput>, Enumerable<WeekDayUncheckedCreateWithoutTimeSelectInput>>
-    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutTimeSelectInput>
-    createMany?: WeekDayCreateManyTimeSelectInputEnvelope
-    connect?: Enumerable<WeekDayWhereUniqueInput>
-  }
-
-  export type WeekDayUncheckedCreateNestedManyWithoutTimeSelectInput = {
-    create?: XOR<Enumerable<WeekDayCreateWithoutTimeSelectInput>, Enumerable<WeekDayUncheckedCreateWithoutTimeSelectInput>>
-    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutTimeSelectInput>
-    createMany?: WeekDayCreateManyTimeSelectInputEnvelope
-    connect?: Enumerable<WeekDayWhereUniqueInput>
-  }
-
-  export type WeekDayUpdateManyWithoutTimeSelectNestedInput = {
-    create?: XOR<Enumerable<WeekDayCreateWithoutTimeSelectInput>, Enumerable<WeekDayUncheckedCreateWithoutTimeSelectInput>>
-    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutTimeSelectInput>
-    upsert?: Enumerable<WeekDayUpsertWithWhereUniqueWithoutTimeSelectInput>
-    createMany?: WeekDayCreateManyTimeSelectInputEnvelope
-    set?: Enumerable<WeekDayWhereUniqueInput>
-    disconnect?: Enumerable<WeekDayWhereUniqueInput>
-    delete?: Enumerable<WeekDayWhereUniqueInput>
-    connect?: Enumerable<WeekDayWhereUniqueInput>
-    update?: Enumerable<WeekDayUpdateWithWhereUniqueWithoutTimeSelectInput>
-    updateMany?: Enumerable<WeekDayUpdateManyWithWhereWithoutTimeSelectInput>
-    deleteMany?: Enumerable<WeekDayScalarWhereInput>
-  }
-
-  export type WeekDayUncheckedUpdateManyWithoutTimeSelectNestedInput = {
-    create?: XOR<Enumerable<WeekDayCreateWithoutTimeSelectInput>, Enumerable<WeekDayUncheckedCreateWithoutTimeSelectInput>>
-    connectOrCreate?: Enumerable<WeekDayCreateOrConnectWithoutTimeSelectInput>
-    upsert?: Enumerable<WeekDayUpsertWithWhereUniqueWithoutTimeSelectInput>
-    createMany?: WeekDayCreateManyTimeSelectInputEnvelope
-    set?: Enumerable<WeekDayWhereUniqueInput>
-    disconnect?: Enumerable<WeekDayWhereUniqueInput>
-    delete?: Enumerable<WeekDayWhereUniqueInput>
-    connect?: Enumerable<WeekDayWhereUniqueInput>
-    update?: Enumerable<WeekDayUpdateWithWhereUniqueWithoutTimeSelectInput>
-    updateMany?: Enumerable<WeekDayUpdateManyWithWhereWithoutTimeSelectInput>
-    deleteMany?: Enumerable<WeekDayScalarWhereInput>
-  }
-
-  export type EventTypeCreateNestedManyWithoutCustomerInput = {
-    create?: XOR<Enumerable<EventTypeCreateWithoutCustomerInput>, Enumerable<EventTypeUncheckedCreateWithoutCustomerInput>>
-    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutCustomerInput>
-    createMany?: EventTypeCreateManyCustomerInputEnvelope
+  export type EventTypeCreateNestedManyWithoutAvailabilityScheduleInput = {
+    create?: XOR<Enumerable<EventTypeCreateWithoutAvailabilityScheduleInput>, Enumerable<EventTypeUncheckedCreateWithoutAvailabilityScheduleInput>>
+    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutAvailabilityScheduleInput>
+    createMany?: EventTypeCreateManyAvailabilityScheduleInputEnvelope
     connect?: Enumerable<EventTypeWhereUniqueInput>
+  }
+
+  export type DateSlotCreateNestedManyWithoutAvailabilityScheduleInput = {
+    create?: XOR<Enumerable<DateSlotCreateWithoutAvailabilityScheduleInput>, Enumerable<DateSlotUncheckedCreateWithoutAvailabilityScheduleInput>>
+    connectOrCreate?: Enumerable<DateSlotCreateOrConnectWithoutAvailabilityScheduleInput>
+    createMany?: DateSlotCreateManyAvailabilityScheduleInputEnvelope
+    connect?: Enumerable<DateSlotWhereUniqueInput>
+  }
+
+  export type EventTypeUncheckedCreateNestedManyWithoutAvailabilityScheduleInput = {
+    create?: XOR<Enumerable<EventTypeCreateWithoutAvailabilityScheduleInput>, Enumerable<EventTypeUncheckedCreateWithoutAvailabilityScheduleInput>>
+    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutAvailabilityScheduleInput>
+    createMany?: EventTypeCreateManyAvailabilityScheduleInputEnvelope
+    connect?: Enumerable<EventTypeWhereUniqueInput>
+  }
+
+  export type DateSlotUncheckedCreateNestedManyWithoutAvailabilityScheduleInput = {
+    create?: XOR<Enumerable<DateSlotCreateWithoutAvailabilityScheduleInput>, Enumerable<DateSlotUncheckedCreateWithoutAvailabilityScheduleInput>>
+    connectOrCreate?: Enumerable<DateSlotCreateOrConnectWithoutAvailabilityScheduleInput>
+    createMany?: DateSlotCreateManyAvailabilityScheduleInputEnvelope
+    connect?: Enumerable<DateSlotWhereUniqueInput>
+  }
+
+  export type EventTypeUpdateManyWithoutAvailabilityScheduleNestedInput = {
+    create?: XOR<Enumerable<EventTypeCreateWithoutAvailabilityScheduleInput>, Enumerable<EventTypeUncheckedCreateWithoutAvailabilityScheduleInput>>
+    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutAvailabilityScheduleInput>
+    upsert?: Enumerable<EventTypeUpsertWithWhereUniqueWithoutAvailabilityScheduleInput>
+    createMany?: EventTypeCreateManyAvailabilityScheduleInputEnvelope
+    set?: Enumerable<EventTypeWhereUniqueInput>
+    disconnect?: Enumerable<EventTypeWhereUniqueInput>
+    delete?: Enumerable<EventTypeWhereUniqueInput>
+    connect?: Enumerable<EventTypeWhereUniqueInput>
+    update?: Enumerable<EventTypeUpdateWithWhereUniqueWithoutAvailabilityScheduleInput>
+    updateMany?: Enumerable<EventTypeUpdateManyWithWhereWithoutAvailabilityScheduleInput>
+    deleteMany?: Enumerable<EventTypeScalarWhereInput>
+  }
+
+  export type DateSlotUpdateManyWithoutAvailabilityScheduleNestedInput = {
+    create?: XOR<Enumerable<DateSlotCreateWithoutAvailabilityScheduleInput>, Enumerable<DateSlotUncheckedCreateWithoutAvailabilityScheduleInput>>
+    connectOrCreate?: Enumerable<DateSlotCreateOrConnectWithoutAvailabilityScheduleInput>
+    upsert?: Enumerable<DateSlotUpsertWithWhereUniqueWithoutAvailabilityScheduleInput>
+    createMany?: DateSlotCreateManyAvailabilityScheduleInputEnvelope
+    set?: Enumerable<DateSlotWhereUniqueInput>
+    disconnect?: Enumerable<DateSlotWhereUniqueInput>
+    delete?: Enumerable<DateSlotWhereUniqueInput>
+    connect?: Enumerable<DateSlotWhereUniqueInput>
+    update?: Enumerable<DateSlotUpdateWithWhereUniqueWithoutAvailabilityScheduleInput>
+    updateMany?: Enumerable<DateSlotUpdateManyWithWhereWithoutAvailabilityScheduleInput>
+    deleteMany?: Enumerable<DateSlotScalarWhereInput>
+  }
+
+  export type EventTypeUncheckedUpdateManyWithoutAvailabilityScheduleNestedInput = {
+    create?: XOR<Enumerable<EventTypeCreateWithoutAvailabilityScheduleInput>, Enumerable<EventTypeUncheckedCreateWithoutAvailabilityScheduleInput>>
+    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutAvailabilityScheduleInput>
+    upsert?: Enumerable<EventTypeUpsertWithWhereUniqueWithoutAvailabilityScheduleInput>
+    createMany?: EventTypeCreateManyAvailabilityScheduleInputEnvelope
+    set?: Enumerable<EventTypeWhereUniqueInput>
+    disconnect?: Enumerable<EventTypeWhereUniqueInput>
+    delete?: Enumerable<EventTypeWhereUniqueInput>
+    connect?: Enumerable<EventTypeWhereUniqueInput>
+    update?: Enumerable<EventTypeUpdateWithWhereUniqueWithoutAvailabilityScheduleInput>
+    updateMany?: Enumerable<EventTypeUpdateManyWithWhereWithoutAvailabilityScheduleInput>
+    deleteMany?: Enumerable<EventTypeScalarWhereInput>
+  }
+
+  export type DateSlotUncheckedUpdateManyWithoutAvailabilityScheduleNestedInput = {
+    create?: XOR<Enumerable<DateSlotCreateWithoutAvailabilityScheduleInput>, Enumerable<DateSlotUncheckedCreateWithoutAvailabilityScheduleInput>>
+    connectOrCreate?: Enumerable<DateSlotCreateOrConnectWithoutAvailabilityScheduleInput>
+    upsert?: Enumerable<DateSlotUpsertWithWhereUniqueWithoutAvailabilityScheduleInput>
+    createMany?: DateSlotCreateManyAvailabilityScheduleInputEnvelope
+    set?: Enumerable<DateSlotWhereUniqueInput>
+    disconnect?: Enumerable<DateSlotWhereUniqueInput>
+    delete?: Enumerable<DateSlotWhereUniqueInput>
+    connect?: Enumerable<DateSlotWhereUniqueInput>
+    update?: Enumerable<DateSlotUpdateWithWhereUniqueWithoutAvailabilityScheduleInput>
+    updateMany?: Enumerable<DateSlotUpdateManyWithWhereWithoutAvailabilityScheduleInput>
+    deleteMany?: Enumerable<DateSlotScalarWhereInput>
+  }
+
+  export type DateSlotCreateNestedManyWithoutDaySlotInput = {
+    create?: XOR<Enumerable<DateSlotCreateWithoutDaySlotInput>, Enumerable<DateSlotUncheckedCreateWithoutDaySlotInput>>
+    connectOrCreate?: Enumerable<DateSlotCreateOrConnectWithoutDaySlotInput>
+    createMany?: DateSlotCreateManyDaySlotInputEnvelope
+    connect?: Enumerable<DateSlotWhereUniqueInput>
+  }
+
+  export type DateSlotUncheckedCreateNestedManyWithoutDaySlotInput = {
+    create?: XOR<Enumerable<DateSlotCreateWithoutDaySlotInput>, Enumerable<DateSlotUncheckedCreateWithoutDaySlotInput>>
+    connectOrCreate?: Enumerable<DateSlotCreateOrConnectWithoutDaySlotInput>
+    createMany?: DateSlotCreateManyDaySlotInputEnvelope
+    connect?: Enumerable<DateSlotWhereUniqueInput>
+  }
+
+  export type DateSlotUpdateManyWithoutDaySlotNestedInput = {
+    create?: XOR<Enumerable<DateSlotCreateWithoutDaySlotInput>, Enumerable<DateSlotUncheckedCreateWithoutDaySlotInput>>
+    connectOrCreate?: Enumerable<DateSlotCreateOrConnectWithoutDaySlotInput>
+    upsert?: Enumerable<DateSlotUpsertWithWhereUniqueWithoutDaySlotInput>
+    createMany?: DateSlotCreateManyDaySlotInputEnvelope
+    set?: Enumerable<DateSlotWhereUniqueInput>
+    disconnect?: Enumerable<DateSlotWhereUniqueInput>
+    delete?: Enumerable<DateSlotWhereUniqueInput>
+    connect?: Enumerable<DateSlotWhereUniqueInput>
+    update?: Enumerable<DateSlotUpdateWithWhereUniqueWithoutDaySlotInput>
+    updateMany?: Enumerable<DateSlotUpdateManyWithWhereWithoutDaySlotInput>
+    deleteMany?: Enumerable<DateSlotScalarWhereInput>
+  }
+
+  export type DateSlotUncheckedUpdateManyWithoutDaySlotNestedInput = {
+    create?: XOR<Enumerable<DateSlotCreateWithoutDaySlotInput>, Enumerable<DateSlotUncheckedCreateWithoutDaySlotInput>>
+    connectOrCreate?: Enumerable<DateSlotCreateOrConnectWithoutDaySlotInput>
+    upsert?: Enumerable<DateSlotUpsertWithWhereUniqueWithoutDaySlotInput>
+    createMany?: DateSlotCreateManyDaySlotInputEnvelope
+    set?: Enumerable<DateSlotWhereUniqueInput>
+    disconnect?: Enumerable<DateSlotWhereUniqueInput>
+    delete?: Enumerable<DateSlotWhereUniqueInput>
+    connect?: Enumerable<DateSlotWhereUniqueInput>
+    update?: Enumerable<DateSlotUpdateWithWhereUniqueWithoutDaySlotInput>
+    updateMany?: Enumerable<DateSlotUpdateManyWithWhereWithoutDaySlotInput>
+    deleteMany?: Enumerable<DateSlotScalarWhereInput>
+  }
+
+  export type AvailabilityScheduleCreateNestedOneWithoutDateSlotsInput = {
+    create?: XOR<AvailabilityScheduleCreateWithoutDateSlotsInput, AvailabilityScheduleUncheckedCreateWithoutDateSlotsInput>
+    connectOrCreate?: AvailabilityScheduleCreateOrConnectWithoutDateSlotsInput
+    connect?: AvailabilityScheduleWhereUniqueInput
+  }
+
+  export type CustomerCreateNestedOneWithoutDateSlotsInput = {
+    create?: XOR<CustomerCreateWithoutDateSlotsInput, CustomerUncheckedCreateWithoutDateSlotsInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutDateSlotsInput
+    connect?: CustomerWhereUniqueInput
+  }
+
+  export type EventTypeCreateNestedOneWithoutDateSlotsInput = {
+    create?: XOR<EventTypeCreateWithoutDateSlotsInput, EventTypeUncheckedCreateWithoutDateSlotsInput>
+    connectOrCreate?: EventTypeCreateOrConnectWithoutDateSlotsInput
+    connect?: EventTypeWhereUniqueInput
+  }
+
+  export type DaySlotCreateNestedOneWithoutDateSlotsInput = {
+    create?: XOR<DaySlotCreateWithoutDateSlotsInput, DaySlotUncheckedCreateWithoutDateSlotsInput>
+    connectOrCreate?: DaySlotCreateOrConnectWithoutDateSlotsInput
+    connect?: DaySlotWhereUniqueInput
+  }
+
+  export type DateOnTimeSlotCreateNestedManyWithoutDateSlotInput = {
+    create?: XOR<Enumerable<DateOnTimeSlotCreateWithoutDateSlotInput>, Enumerable<DateOnTimeSlotUncheckedCreateWithoutDateSlotInput>>
+    connectOrCreate?: Enumerable<DateOnTimeSlotCreateOrConnectWithoutDateSlotInput>
+    createMany?: DateOnTimeSlotCreateManyDateSlotInputEnvelope
+    connect?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+  }
+
+  export type DateOnTimeSlotUncheckedCreateNestedManyWithoutDateSlotInput = {
+    create?: XOR<Enumerable<DateOnTimeSlotCreateWithoutDateSlotInput>, Enumerable<DateOnTimeSlotUncheckedCreateWithoutDateSlotInput>>
+    connectOrCreate?: Enumerable<DateOnTimeSlotCreateOrConnectWithoutDateSlotInput>
+    createMany?: DateOnTimeSlotCreateManyDateSlotInputEnvelope
+    connect?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+  }
+
+  export type AvailabilityScheduleUpdateOneWithoutDateSlotsNestedInput = {
+    create?: XOR<AvailabilityScheduleCreateWithoutDateSlotsInput, AvailabilityScheduleUncheckedCreateWithoutDateSlotsInput>
+    connectOrCreate?: AvailabilityScheduleCreateOrConnectWithoutDateSlotsInput
+    upsert?: AvailabilityScheduleUpsertWithoutDateSlotsInput
+    disconnect?: boolean
+    delete?: boolean
+    connect?: AvailabilityScheduleWhereUniqueInput
+    update?: XOR<AvailabilityScheduleUpdateWithoutDateSlotsInput, AvailabilityScheduleUncheckedUpdateWithoutDateSlotsInput>
+  }
+
+  export type CustomerUpdateOneWithoutDateSlotsNestedInput = {
+    create?: XOR<CustomerCreateWithoutDateSlotsInput, CustomerUncheckedCreateWithoutDateSlotsInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutDateSlotsInput
+    upsert?: CustomerUpsertWithoutDateSlotsInput
+    disconnect?: boolean
+    delete?: boolean
+    connect?: CustomerWhereUniqueInput
+    update?: XOR<CustomerUpdateWithoutDateSlotsInput, CustomerUncheckedUpdateWithoutDateSlotsInput>
+  }
+
+  export type EventTypeUpdateOneRequiredWithoutDateSlotsNestedInput = {
+    create?: XOR<EventTypeCreateWithoutDateSlotsInput, EventTypeUncheckedCreateWithoutDateSlotsInput>
+    connectOrCreate?: EventTypeCreateOrConnectWithoutDateSlotsInput
+    upsert?: EventTypeUpsertWithoutDateSlotsInput
+    connect?: EventTypeWhereUniqueInput
+    update?: XOR<EventTypeUpdateWithoutDateSlotsInput, EventTypeUncheckedUpdateWithoutDateSlotsInput>
+  }
+
+  export type DaySlotUpdateOneRequiredWithoutDateSlotsNestedInput = {
+    create?: XOR<DaySlotCreateWithoutDateSlotsInput, DaySlotUncheckedCreateWithoutDateSlotsInput>
+    connectOrCreate?: DaySlotCreateOrConnectWithoutDateSlotsInput
+    upsert?: DaySlotUpsertWithoutDateSlotsInput
+    connect?: DaySlotWhereUniqueInput
+    update?: XOR<DaySlotUpdateWithoutDateSlotsInput, DaySlotUncheckedUpdateWithoutDateSlotsInput>
+  }
+
+  export type DateOnTimeSlotUpdateManyWithoutDateSlotNestedInput = {
+    create?: XOR<Enumerable<DateOnTimeSlotCreateWithoutDateSlotInput>, Enumerable<DateOnTimeSlotUncheckedCreateWithoutDateSlotInput>>
+    connectOrCreate?: Enumerable<DateOnTimeSlotCreateOrConnectWithoutDateSlotInput>
+    upsert?: Enumerable<DateOnTimeSlotUpsertWithWhereUniqueWithoutDateSlotInput>
+    createMany?: DateOnTimeSlotCreateManyDateSlotInputEnvelope
+    set?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    disconnect?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    delete?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    connect?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    update?: Enumerable<DateOnTimeSlotUpdateWithWhereUniqueWithoutDateSlotInput>
+    updateMany?: Enumerable<DateOnTimeSlotUpdateManyWithWhereWithoutDateSlotInput>
+    deleteMany?: Enumerable<DateOnTimeSlotScalarWhereInput>
+  }
+
+  export type DateOnTimeSlotUncheckedUpdateManyWithoutDateSlotNestedInput = {
+    create?: XOR<Enumerable<DateOnTimeSlotCreateWithoutDateSlotInput>, Enumerable<DateOnTimeSlotUncheckedCreateWithoutDateSlotInput>>
+    connectOrCreate?: Enumerable<DateOnTimeSlotCreateOrConnectWithoutDateSlotInput>
+    upsert?: Enumerable<DateOnTimeSlotUpsertWithWhereUniqueWithoutDateSlotInput>
+    createMany?: DateOnTimeSlotCreateManyDateSlotInputEnvelope
+    set?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    disconnect?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    delete?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    connect?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    update?: Enumerable<DateOnTimeSlotUpdateWithWhereUniqueWithoutDateSlotInput>
+    updateMany?: Enumerable<DateOnTimeSlotUpdateManyWithWhereWithoutDateSlotInput>
+    deleteMany?: Enumerable<DateOnTimeSlotScalarWhereInput>
+  }
+
+  export type TimeSlotCreateNestedOneWithoutDateOnTimeSlotsInput = {
+    create?: XOR<TimeSlotCreateWithoutDateOnTimeSlotsInput, TimeSlotUncheckedCreateWithoutDateOnTimeSlotsInput>
+    connectOrCreate?: TimeSlotCreateOrConnectWithoutDateOnTimeSlotsInput
+    connect?: TimeSlotWhereUniqueInput
+  }
+
+  export type DateSlotCreateNestedOneWithoutDateOnTimeSlotsInput = {
+    create?: XOR<DateSlotCreateWithoutDateOnTimeSlotsInput, DateSlotUncheckedCreateWithoutDateOnTimeSlotsInput>
+    connectOrCreate?: DateSlotCreateOrConnectWithoutDateOnTimeSlotsInput
+    connect?: DateSlotWhereUniqueInput
+  }
+
+  export type TimeSlotUpdateOneRequiredWithoutDateOnTimeSlotsNestedInput = {
+    create?: XOR<TimeSlotCreateWithoutDateOnTimeSlotsInput, TimeSlotUncheckedCreateWithoutDateOnTimeSlotsInput>
+    connectOrCreate?: TimeSlotCreateOrConnectWithoutDateOnTimeSlotsInput
+    upsert?: TimeSlotUpsertWithoutDateOnTimeSlotsInput
+    connect?: TimeSlotWhereUniqueInput
+    update?: XOR<TimeSlotUpdateWithoutDateOnTimeSlotsInput, TimeSlotUncheckedUpdateWithoutDateOnTimeSlotsInput>
+  }
+
+  export type DateSlotUpdateOneRequiredWithoutDateOnTimeSlotsNestedInput = {
+    create?: XOR<DateSlotCreateWithoutDateOnTimeSlotsInput, DateSlotUncheckedCreateWithoutDateOnTimeSlotsInput>
+    connectOrCreate?: DateSlotCreateOrConnectWithoutDateOnTimeSlotsInput
+    upsert?: DateSlotUpsertWithoutDateOnTimeSlotsInput
+    connect?: DateSlotWhereUniqueInput
+    update?: XOR<DateSlotUpdateWithoutDateOnTimeSlotsInput, DateSlotUncheckedUpdateWithoutDateOnTimeSlotsInput>
+  }
+
+  export type DateOnTimeSlotCreateNestedManyWithoutTimeSlotInput = {
+    create?: XOR<Enumerable<DateOnTimeSlotCreateWithoutTimeSlotInput>, Enumerable<DateOnTimeSlotUncheckedCreateWithoutTimeSlotInput>>
+    connectOrCreate?: Enumerable<DateOnTimeSlotCreateOrConnectWithoutTimeSlotInput>
+    createMany?: DateOnTimeSlotCreateManyTimeSlotInputEnvelope
+    connect?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+  }
+
+  export type DateOnTimeSlotUncheckedCreateNestedManyWithoutTimeSlotInput = {
+    create?: XOR<Enumerable<DateOnTimeSlotCreateWithoutTimeSlotInput>, Enumerable<DateOnTimeSlotUncheckedCreateWithoutTimeSlotInput>>
+    connectOrCreate?: Enumerable<DateOnTimeSlotCreateOrConnectWithoutTimeSlotInput>
+    createMany?: DateOnTimeSlotCreateManyTimeSlotInputEnvelope
+    connect?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+  }
+
+  export type DateOnTimeSlotUpdateManyWithoutTimeSlotNestedInput = {
+    create?: XOR<Enumerable<DateOnTimeSlotCreateWithoutTimeSlotInput>, Enumerable<DateOnTimeSlotUncheckedCreateWithoutTimeSlotInput>>
+    connectOrCreate?: Enumerable<DateOnTimeSlotCreateOrConnectWithoutTimeSlotInput>
+    upsert?: Enumerable<DateOnTimeSlotUpsertWithWhereUniqueWithoutTimeSlotInput>
+    createMany?: DateOnTimeSlotCreateManyTimeSlotInputEnvelope
+    set?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    disconnect?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    delete?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    connect?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    update?: Enumerable<DateOnTimeSlotUpdateWithWhereUniqueWithoutTimeSlotInput>
+    updateMany?: Enumerable<DateOnTimeSlotUpdateManyWithWhereWithoutTimeSlotInput>
+    deleteMany?: Enumerable<DateOnTimeSlotScalarWhereInput>
+  }
+
+  export type DateOnTimeSlotUncheckedUpdateManyWithoutTimeSlotNestedInput = {
+    create?: XOR<Enumerable<DateOnTimeSlotCreateWithoutTimeSlotInput>, Enumerable<DateOnTimeSlotUncheckedCreateWithoutTimeSlotInput>>
+    connectOrCreate?: Enumerable<DateOnTimeSlotCreateOrConnectWithoutTimeSlotInput>
+    upsert?: Enumerable<DateOnTimeSlotUpsertWithWhereUniqueWithoutTimeSlotInput>
+    createMany?: DateOnTimeSlotCreateManyTimeSlotInputEnvelope
+    set?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    disconnect?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    delete?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    connect?: Enumerable<DateOnTimeSlotWhereUniqueInput>
+    update?: Enumerable<DateOnTimeSlotUpdateWithWhereUniqueWithoutTimeSlotInput>
+    updateMany?: Enumerable<DateOnTimeSlotUpdateManyWithWhereWithoutTimeSlotInput>
+    deleteMany?: Enumerable<DateOnTimeSlotScalarWhereInput>
   }
 
   export type GroupMeetingCreateNestedManyWithoutCustomerInput = {
@@ -18154,18 +18049,11 @@ export namespace Prisma {
     connect?: Enumerable<GroupMeetingWhereUniqueInput>
   }
 
-  export type EventSelectCreateNestedManyWithoutCustomerInput = {
-    create?: XOR<Enumerable<EventSelectCreateWithoutCustomerInput>, Enumerable<EventSelectUncheckedCreateWithoutCustomerInput>>
-    connectOrCreate?: Enumerable<EventSelectCreateOrConnectWithoutCustomerInput>
-    createMany?: EventSelectCreateManyCustomerInputEnvelope
-    connect?: Enumerable<EventSelectWhereUniqueInput>
-  }
-
-  export type EventTypeUncheckedCreateNestedManyWithoutCustomerInput = {
-    create?: XOR<Enumerable<EventTypeCreateWithoutCustomerInput>, Enumerable<EventTypeUncheckedCreateWithoutCustomerInput>>
-    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutCustomerInput>
-    createMany?: EventTypeCreateManyCustomerInputEnvelope
-    connect?: Enumerable<EventTypeWhereUniqueInput>
+  export type DateSlotCreateNestedManyWithoutCustormerInput = {
+    create?: XOR<Enumerable<DateSlotCreateWithoutCustormerInput>, Enumerable<DateSlotUncheckedCreateWithoutCustormerInput>>
+    connectOrCreate?: Enumerable<DateSlotCreateOrConnectWithoutCustormerInput>
+    createMany?: DateSlotCreateManyCustormerInputEnvelope
+    connect?: Enumerable<DateSlotWhereUniqueInput>
   }
 
   export type GroupMeetingUncheckedCreateNestedManyWithoutCustomerInput = {
@@ -18175,25 +18063,11 @@ export namespace Prisma {
     connect?: Enumerable<GroupMeetingWhereUniqueInput>
   }
 
-  export type EventSelectUncheckedCreateNestedManyWithoutCustomerInput = {
-    create?: XOR<Enumerable<EventSelectCreateWithoutCustomerInput>, Enumerable<EventSelectUncheckedCreateWithoutCustomerInput>>
-    connectOrCreate?: Enumerable<EventSelectCreateOrConnectWithoutCustomerInput>
-    createMany?: EventSelectCreateManyCustomerInputEnvelope
-    connect?: Enumerable<EventSelectWhereUniqueInput>
-  }
-
-  export type EventTypeUpdateManyWithoutCustomerNestedInput = {
-    create?: XOR<Enumerable<EventTypeCreateWithoutCustomerInput>, Enumerable<EventTypeUncheckedCreateWithoutCustomerInput>>
-    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutCustomerInput>
-    upsert?: Enumerable<EventTypeUpsertWithWhereUniqueWithoutCustomerInput>
-    createMany?: EventTypeCreateManyCustomerInputEnvelope
-    set?: Enumerable<EventTypeWhereUniqueInput>
-    disconnect?: Enumerable<EventTypeWhereUniqueInput>
-    delete?: Enumerable<EventTypeWhereUniqueInput>
-    connect?: Enumerable<EventTypeWhereUniqueInput>
-    update?: Enumerable<EventTypeUpdateWithWhereUniqueWithoutCustomerInput>
-    updateMany?: Enumerable<EventTypeUpdateManyWithWhereWithoutCustomerInput>
-    deleteMany?: Enumerable<EventTypeScalarWhereInput>
+  export type DateSlotUncheckedCreateNestedManyWithoutCustormerInput = {
+    create?: XOR<Enumerable<DateSlotCreateWithoutCustormerInput>, Enumerable<DateSlotUncheckedCreateWithoutCustormerInput>>
+    connectOrCreate?: Enumerable<DateSlotCreateOrConnectWithoutCustormerInput>
+    createMany?: DateSlotCreateManyCustormerInputEnvelope
+    connect?: Enumerable<DateSlotWhereUniqueInput>
   }
 
   export type GroupMeetingUpdateManyWithoutCustomerNestedInput = {
@@ -18210,32 +18084,18 @@ export namespace Prisma {
     deleteMany?: Enumerable<GroupMeetingScalarWhereInput>
   }
 
-  export type EventSelectUpdateManyWithoutCustomerNestedInput = {
-    create?: XOR<Enumerable<EventSelectCreateWithoutCustomerInput>, Enumerable<EventSelectUncheckedCreateWithoutCustomerInput>>
-    connectOrCreate?: Enumerable<EventSelectCreateOrConnectWithoutCustomerInput>
-    upsert?: Enumerable<EventSelectUpsertWithWhereUniqueWithoutCustomerInput>
-    createMany?: EventSelectCreateManyCustomerInputEnvelope
-    set?: Enumerable<EventSelectWhereUniqueInput>
-    disconnect?: Enumerable<EventSelectWhereUniqueInput>
-    delete?: Enumerable<EventSelectWhereUniqueInput>
-    connect?: Enumerable<EventSelectWhereUniqueInput>
-    update?: Enumerable<EventSelectUpdateWithWhereUniqueWithoutCustomerInput>
-    updateMany?: Enumerable<EventSelectUpdateManyWithWhereWithoutCustomerInput>
-    deleteMany?: Enumerable<EventSelectScalarWhereInput>
-  }
-
-  export type EventTypeUncheckedUpdateManyWithoutCustomerNestedInput = {
-    create?: XOR<Enumerable<EventTypeCreateWithoutCustomerInput>, Enumerable<EventTypeUncheckedCreateWithoutCustomerInput>>
-    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutCustomerInput>
-    upsert?: Enumerable<EventTypeUpsertWithWhereUniqueWithoutCustomerInput>
-    createMany?: EventTypeCreateManyCustomerInputEnvelope
-    set?: Enumerable<EventTypeWhereUniqueInput>
-    disconnect?: Enumerable<EventTypeWhereUniqueInput>
-    delete?: Enumerable<EventTypeWhereUniqueInput>
-    connect?: Enumerable<EventTypeWhereUniqueInput>
-    update?: Enumerable<EventTypeUpdateWithWhereUniqueWithoutCustomerInput>
-    updateMany?: Enumerable<EventTypeUpdateManyWithWhereWithoutCustomerInput>
-    deleteMany?: Enumerable<EventTypeScalarWhereInput>
+  export type DateSlotUpdateManyWithoutCustormerNestedInput = {
+    create?: XOR<Enumerable<DateSlotCreateWithoutCustormerInput>, Enumerable<DateSlotUncheckedCreateWithoutCustormerInput>>
+    connectOrCreate?: Enumerable<DateSlotCreateOrConnectWithoutCustormerInput>
+    upsert?: Enumerable<DateSlotUpsertWithWhereUniqueWithoutCustormerInput>
+    createMany?: DateSlotCreateManyCustormerInputEnvelope
+    set?: Enumerable<DateSlotWhereUniqueInput>
+    disconnect?: Enumerable<DateSlotWhereUniqueInput>
+    delete?: Enumerable<DateSlotWhereUniqueInput>
+    connect?: Enumerable<DateSlotWhereUniqueInput>
+    update?: Enumerable<DateSlotUpdateWithWhereUniqueWithoutCustormerInput>
+    updateMany?: Enumerable<DateSlotUpdateManyWithWhereWithoutCustormerInput>
+    deleteMany?: Enumerable<DateSlotScalarWhereInput>
   }
 
   export type GroupMeetingUncheckedUpdateManyWithoutCustomerNestedInput = {
@@ -18252,60 +18112,18 @@ export namespace Prisma {
     deleteMany?: Enumerable<GroupMeetingScalarWhereInput>
   }
 
-  export type EventSelectUncheckedUpdateManyWithoutCustomerNestedInput = {
-    create?: XOR<Enumerable<EventSelectCreateWithoutCustomerInput>, Enumerable<EventSelectUncheckedCreateWithoutCustomerInput>>
-    connectOrCreate?: Enumerable<EventSelectCreateOrConnectWithoutCustomerInput>
-    upsert?: Enumerable<EventSelectUpsertWithWhereUniqueWithoutCustomerInput>
-    createMany?: EventSelectCreateManyCustomerInputEnvelope
-    set?: Enumerable<EventSelectWhereUniqueInput>
-    disconnect?: Enumerable<EventSelectWhereUniqueInput>
-    delete?: Enumerable<EventSelectWhereUniqueInput>
-    connect?: Enumerable<EventSelectWhereUniqueInput>
-    update?: Enumerable<EventSelectUpdateWithWhereUniqueWithoutCustomerInput>
-    updateMany?: Enumerable<EventSelectUpdateManyWithWhereWithoutCustomerInput>
-    deleteMany?: Enumerable<EventSelectScalarWhereInput>
-  }
-
-  export type EventTypeCreateNestedManyWithoutCalendarSelectInput = {
-    create?: XOR<Enumerable<EventTypeCreateWithoutCalendarSelectInput>, Enumerable<EventTypeUncheckedCreateWithoutCalendarSelectInput>>
-    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutCalendarSelectInput>
-    createMany?: EventTypeCreateManyCalendarSelectInputEnvelope
-    connect?: Enumerable<EventTypeWhereUniqueInput>
-  }
-
-  export type EventTypeUncheckedCreateNestedManyWithoutCalendarSelectInput = {
-    create?: XOR<Enumerable<EventTypeCreateWithoutCalendarSelectInput>, Enumerable<EventTypeUncheckedCreateWithoutCalendarSelectInput>>
-    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutCalendarSelectInput>
-    createMany?: EventTypeCreateManyCalendarSelectInputEnvelope
-    connect?: Enumerable<EventTypeWhereUniqueInput>
-  }
-
-  export type EventTypeUpdateManyWithoutCalendarSelectNestedInput = {
-    create?: XOR<Enumerable<EventTypeCreateWithoutCalendarSelectInput>, Enumerable<EventTypeUncheckedCreateWithoutCalendarSelectInput>>
-    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutCalendarSelectInput>
-    upsert?: Enumerable<EventTypeUpsertWithWhereUniqueWithoutCalendarSelectInput>
-    createMany?: EventTypeCreateManyCalendarSelectInputEnvelope
-    set?: Enumerable<EventTypeWhereUniqueInput>
-    disconnect?: Enumerable<EventTypeWhereUniqueInput>
-    delete?: Enumerable<EventTypeWhereUniqueInput>
-    connect?: Enumerable<EventTypeWhereUniqueInput>
-    update?: Enumerable<EventTypeUpdateWithWhereUniqueWithoutCalendarSelectInput>
-    updateMany?: Enumerable<EventTypeUpdateManyWithWhereWithoutCalendarSelectInput>
-    deleteMany?: Enumerable<EventTypeScalarWhereInput>
-  }
-
-  export type EventTypeUncheckedUpdateManyWithoutCalendarSelectNestedInput = {
-    create?: XOR<Enumerable<EventTypeCreateWithoutCalendarSelectInput>, Enumerable<EventTypeUncheckedCreateWithoutCalendarSelectInput>>
-    connectOrCreate?: Enumerable<EventTypeCreateOrConnectWithoutCalendarSelectInput>
-    upsert?: Enumerable<EventTypeUpsertWithWhereUniqueWithoutCalendarSelectInput>
-    createMany?: EventTypeCreateManyCalendarSelectInputEnvelope
-    set?: Enumerable<EventTypeWhereUniqueInput>
-    disconnect?: Enumerable<EventTypeWhereUniqueInput>
-    delete?: Enumerable<EventTypeWhereUniqueInput>
-    connect?: Enumerable<EventTypeWhereUniqueInput>
-    update?: Enumerable<EventTypeUpdateWithWhereUniqueWithoutCalendarSelectInput>
-    updateMany?: Enumerable<EventTypeUpdateManyWithWhereWithoutCalendarSelectInput>
-    deleteMany?: Enumerable<EventTypeScalarWhereInput>
+  export type DateSlotUncheckedUpdateManyWithoutCustormerNestedInput = {
+    create?: XOR<Enumerable<DateSlotCreateWithoutCustormerInput>, Enumerable<DateSlotUncheckedCreateWithoutCustormerInput>>
+    connectOrCreate?: Enumerable<DateSlotCreateOrConnectWithoutCustormerInput>
+    upsert?: Enumerable<DateSlotUpsertWithWhereUniqueWithoutCustormerInput>
+    createMany?: DateSlotCreateManyCustormerInputEnvelope
+    set?: Enumerable<DateSlotWhereUniqueInput>
+    disconnect?: Enumerable<DateSlotWhereUniqueInput>
+    delete?: Enumerable<DateSlotWhereUniqueInput>
+    connect?: Enumerable<DateSlotWhereUniqueInput>
+    update?: Enumerable<DateSlotUpdateWithWhereUniqueWithoutCustormerInput>
+    updateMany?: Enumerable<DateSlotUpdateManyWithWhereWithoutCustormerInput>
+    deleteMany?: Enumerable<DateSlotScalarWhereInput>
   }
 
   export type UserCreateNestedOneWithoutBillingsInput = {
@@ -18404,34 +18222,6 @@ export namespace Prisma {
     update?: Enumerable<UserOnGroupMeetingUpdateWithWhereUniqueWithoutGroupMeetingInput>
     updateMany?: Enumerable<UserOnGroupMeetingUpdateManyWithWhereWithoutGroupMeetingInput>
     deleteMany?: Enumerable<UserOnGroupMeetingScalarWhereInput>
-  }
-
-  export type EventTypeCreateNestedOneWithoutEventSelectsInput = {
-    create?: XOR<EventTypeCreateWithoutEventSelectsInput, EventTypeUncheckedCreateWithoutEventSelectsInput>
-    connectOrCreate?: EventTypeCreateOrConnectWithoutEventSelectsInput
-    connect?: EventTypeWhereUniqueInput
-  }
-
-  export type CustomerCreateNestedOneWithoutEventSelectsInput = {
-    create?: XOR<CustomerCreateWithoutEventSelectsInput, CustomerUncheckedCreateWithoutEventSelectsInput>
-    connectOrCreate?: CustomerCreateOrConnectWithoutEventSelectsInput
-    connect?: CustomerWhereUniqueInput
-  }
-
-  export type EventTypeUpdateOneRequiredWithoutEventSelectsNestedInput = {
-    create?: XOR<EventTypeCreateWithoutEventSelectsInput, EventTypeUncheckedCreateWithoutEventSelectsInput>
-    connectOrCreate?: EventTypeCreateOrConnectWithoutEventSelectsInput
-    upsert?: EventTypeUpsertWithoutEventSelectsInput
-    connect?: EventTypeWhereUniqueInput
-    update?: XOR<EventTypeUpdateWithoutEventSelectsInput, EventTypeUncheckedUpdateWithoutEventSelectsInput>
-  }
-
-  export type CustomerUpdateOneRequiredWithoutEventSelectsNestedInput = {
-    create?: XOR<CustomerCreateWithoutEventSelectsInput, CustomerUncheckedCreateWithoutEventSelectsInput>
-    connectOrCreate?: CustomerCreateOrConnectWithoutEventSelectsInput
-    upsert?: CustomerUpsertWithoutEventSelectsInput
-    connect?: CustomerWhereUniqueInput
-    update?: XOR<CustomerUpdateWithoutEventSelectsInput, CustomerUncheckedUpdateWithoutEventSelectsInput>
   }
 
   export type UserCreateNestedOneWithoutUserOnGroupMeetingsInput = {
@@ -18630,16 +18420,12 @@ export namespace Prisma {
     description: string
     price: number
     timeDuration: number
-    status: string
     createdAt?: Date | string
     updatedAt?: Date | string
     eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutEventTypeInput
-    availabilitySchedules?: AvailabilityScheduleCreateNestedManyWithoutEventTypeInput
-    weekDays?: WeekDayCreateNestedManyWithoutEventTypeInput
-    calendarSelect: CalendarSelectCreateNestedOneWithoutEventTypesInput
-    customer: CustomerCreateNestedOneWithoutEventTypesInput
+    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutEventTypesInput
+    dateSlots?: DateSlotCreateNestedManyWithoutEventTypeInput
     groupMeetings?: GroupMeetingCreateNestedManyWithoutEventTypeInput
-    eventSelects?: EventSelectCreateNestedManyWithoutEventTypeInput
   }
 
   export type EventTypeUncheckedCreateWithoutUserInput = {
@@ -18648,16 +18434,12 @@ export namespace Prisma {
     description: string
     price: number
     timeDuration: number
-    calendarSelectId: number
-    customerId: number
-    status: string
+    availabilityScheduleId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput
-    availabilitySchedules?: AvailabilityScheduleUncheckedCreateNestedManyWithoutEventTypeInput
-    weekDays?: WeekDayUncheckedCreateNestedManyWithoutEventTypeInput
+    dateSlots?: DateSlotUncheckedCreateNestedManyWithoutEventTypeInput
     groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput
-    eventSelects?: EventSelectUncheckedCreateNestedManyWithoutEventTypeInput
   }
 
   export type EventTypeCreateOrConnectWithoutUserInput = {
@@ -18746,9 +18528,7 @@ export namespace Prisma {
     description?: StringFilter | string
     price?: IntFilter | number
     timeDuration?: IntFilter | number
-    calendarSelectId?: IntFilter | number
-    customerId?: IntFilter | number
-    status?: StringFilter | string
+    availabilityScheduleId?: IntNullableFilter | number | null
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
   }
@@ -18868,106 +18648,57 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type AvailabilityScheduleCreateWithoutEventTypeInput = {
+  export type AvailabilityScheduleCreateWithoutEventTypesInput = {
     name: string
     timezone: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    weekDays?: WeekDayCreateNestedManyWithoutAvailabilityScheduleInput
+    dateSlots?: DateSlotCreateNestedManyWithoutAvailabilityScheduleInput
   }
 
-  export type AvailabilityScheduleUncheckedCreateWithoutEventTypeInput = {
+  export type AvailabilityScheduleUncheckedCreateWithoutEventTypesInput = {
     id?: number
     name: string
     timezone: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    weekDays?: WeekDayUncheckedCreateNestedManyWithoutAvailabilityScheduleInput
+    dateSlots?: DateSlotUncheckedCreateNestedManyWithoutAvailabilityScheduleInput
   }
 
-  export type AvailabilityScheduleCreateOrConnectWithoutEventTypeInput = {
+  export type AvailabilityScheduleCreateOrConnectWithoutEventTypesInput = {
     where: AvailabilityScheduleWhereUniqueInput
-    create: XOR<AvailabilityScheduleCreateWithoutEventTypeInput, AvailabilityScheduleUncheckedCreateWithoutEventTypeInput>
+    create: XOR<AvailabilityScheduleCreateWithoutEventTypesInput, AvailabilityScheduleUncheckedCreateWithoutEventTypesInput>
   }
 
-  export type AvailabilityScheduleCreateManyEventTypeInputEnvelope = {
-    data: Enumerable<AvailabilityScheduleCreateManyEventTypeInput>
-    skipDuplicates?: boolean
-  }
-
-  export type WeekDayCreateWithoutEventTypeInput = {
-    day: number
-    status: string
-    date: Date | string
+  export type DateSlotCreateWithoutEventTypeInput = {
+    name: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
-    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutWeekDaysInput
-    timeSelect: TimeSelectCreateNestedOneWithoutWeekDaysInput
+    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutDateSlotsInput
+    custormer?: CustomerCreateNestedOneWithoutDateSlotsInput
+    daySlot: DaySlotCreateNestedOneWithoutDateSlotsInput
+    dateOnTimeSlots?: DateOnTimeSlotCreateNestedManyWithoutDateSlotInput
   }
 
-  export type WeekDayUncheckedCreateWithoutEventTypeInput = {
+  export type DateSlotUncheckedCreateWithoutEventTypeInput = {
     id?: number
-    day: number
     availabilityScheduleId?: number | null
-    timeSelectId: number
-    status: string
-    date: Date | string
+    name: Date | string
+    custormerId?: number | null
+    dayName: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    dateOnTimeSlots?: DateOnTimeSlotUncheckedCreateNestedManyWithoutDateSlotInput
   }
 
-  export type WeekDayCreateOrConnectWithoutEventTypeInput = {
-    where: WeekDayWhereUniqueInput
-    create: XOR<WeekDayCreateWithoutEventTypeInput, WeekDayUncheckedCreateWithoutEventTypeInput>
+  export type DateSlotCreateOrConnectWithoutEventTypeInput = {
+    where: DateSlotWhereUniqueInput
+    create: XOR<DateSlotCreateWithoutEventTypeInput, DateSlotUncheckedCreateWithoutEventTypeInput>
   }
 
-  export type WeekDayCreateManyEventTypeInputEnvelope = {
-    data: Enumerable<WeekDayCreateManyEventTypeInput>
+  export type DateSlotCreateManyEventTypeInputEnvelope = {
+    data: Enumerable<DateSlotCreateManyEventTypeInput>
     skipDuplicates?: boolean
-  }
-
-  export type CalendarSelectCreateWithoutEventTypesInput = {
-    startDate: Date | string
-    endDate: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type CalendarSelectUncheckedCreateWithoutEventTypesInput = {
-    id?: number
-    startDate: Date | string
-    endDate: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type CalendarSelectCreateOrConnectWithoutEventTypesInput = {
-    where: CalendarSelectWhereUniqueInput
-    create: XOR<CalendarSelectCreateWithoutEventTypesInput, CalendarSelectUncheckedCreateWithoutEventTypesInput>
-  }
-
-  export type CustomerCreateWithoutEventTypesInput = {
-    name: string
-    email: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    groupMeetings?: GroupMeetingCreateNestedManyWithoutCustomerInput
-    eventSelects?: EventSelectCreateNestedManyWithoutCustomerInput
-  }
-
-  export type CustomerUncheckedCreateWithoutEventTypesInput = {
-    id?: number
-    name: string
-    email: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutCustomerInput
-    eventSelects?: EventSelectUncheckedCreateNestedManyWithoutCustomerInput
-  }
-
-  export type CustomerCreateOrConnectWithoutEventTypesInput = {
-    where: CustomerWhereUniqueInput
-    create: XOR<CustomerCreateWithoutEventTypesInput, CustomerUncheckedCreateWithoutEventTypesInput>
   }
 
   export type GroupMeetingCreateWithoutEventTypeInput = {
@@ -18998,35 +18729,6 @@ export namespace Prisma {
 
   export type GroupMeetingCreateManyEventTypeInputEnvelope = {
     data: Enumerable<GroupMeetingCreateManyEventTypeInput>
-    skipDuplicates?: boolean
-  }
-
-  export type EventSelectCreateWithoutEventTypeInput = {
-    selectDate: string
-    selectTime: Date | string
-    status: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    customer: CustomerCreateNestedOneWithoutEventSelectsInput
-  }
-
-  export type EventSelectUncheckedCreateWithoutEventTypeInput = {
-    id?: number
-    customerId: number
-    selectDate: string
-    selectTime: Date | string
-    status: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type EventSelectCreateOrConnectWithoutEventTypeInput = {
-    where: EventSelectWhereUniqueInput
-    create: XOR<EventSelectCreateWithoutEventTypeInput, EventSelectUncheckedCreateWithoutEventTypeInput>
-  }
-
-  export type EventSelectCreateManyEventTypeInputEnvelope = {
-    data: Enumerable<EventSelectCreateManyEventTypeInput>
     skipDuplicates?: boolean
   }
 
@@ -19093,107 +18795,56 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter | Date | string
   }
 
-  export type AvailabilityScheduleUpsertWithWhereUniqueWithoutEventTypeInput = {
-    where: AvailabilityScheduleWhereUniqueInput
-    update: XOR<AvailabilityScheduleUpdateWithoutEventTypeInput, AvailabilityScheduleUncheckedUpdateWithoutEventTypeInput>
-    create: XOR<AvailabilityScheduleCreateWithoutEventTypeInput, AvailabilityScheduleUncheckedCreateWithoutEventTypeInput>
+  export type AvailabilityScheduleUpsertWithoutEventTypesInput = {
+    update: XOR<AvailabilityScheduleUpdateWithoutEventTypesInput, AvailabilityScheduleUncheckedUpdateWithoutEventTypesInput>
+    create: XOR<AvailabilityScheduleCreateWithoutEventTypesInput, AvailabilityScheduleUncheckedCreateWithoutEventTypesInput>
   }
 
-  export type AvailabilityScheduleUpdateWithWhereUniqueWithoutEventTypeInput = {
-    where: AvailabilityScheduleWhereUniqueInput
-    data: XOR<AvailabilityScheduleUpdateWithoutEventTypeInput, AvailabilityScheduleUncheckedUpdateWithoutEventTypeInput>
+  export type AvailabilityScheduleUpdateWithoutEventTypesInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    timezone?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dateSlots?: DateSlotUpdateManyWithoutAvailabilityScheduleNestedInput
   }
 
-  export type AvailabilityScheduleUpdateManyWithWhereWithoutEventTypeInput = {
-    where: AvailabilityScheduleScalarWhereInput
-    data: XOR<AvailabilityScheduleUpdateManyMutationInput, AvailabilityScheduleUncheckedUpdateManyWithoutAvailabilitySchedulesInput>
+  export type AvailabilityScheduleUncheckedUpdateWithoutEventTypesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    timezone?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dateSlots?: DateSlotUncheckedUpdateManyWithoutAvailabilityScheduleNestedInput
   }
 
-  export type AvailabilityScheduleScalarWhereInput = {
-    AND?: Enumerable<AvailabilityScheduleScalarWhereInput>
-    OR?: Enumerable<AvailabilityScheduleScalarWhereInput>
-    NOT?: Enumerable<AvailabilityScheduleScalarWhereInput>
+  export type DateSlotUpsertWithWhereUniqueWithoutEventTypeInput = {
+    where: DateSlotWhereUniqueInput
+    update: XOR<DateSlotUpdateWithoutEventTypeInput, DateSlotUncheckedUpdateWithoutEventTypeInput>
+    create: XOR<DateSlotCreateWithoutEventTypeInput, DateSlotUncheckedCreateWithoutEventTypeInput>
+  }
+
+  export type DateSlotUpdateWithWhereUniqueWithoutEventTypeInput = {
+    where: DateSlotWhereUniqueInput
+    data: XOR<DateSlotUpdateWithoutEventTypeInput, DateSlotUncheckedUpdateWithoutEventTypeInput>
+  }
+
+  export type DateSlotUpdateManyWithWhereWithoutEventTypeInput = {
+    where: DateSlotScalarWhereInput
+    data: XOR<DateSlotUpdateManyMutationInput, DateSlotUncheckedUpdateManyWithoutDateSlotsInput>
+  }
+
+  export type DateSlotScalarWhereInput = {
+    AND?: Enumerable<DateSlotScalarWhereInput>
+    OR?: Enumerable<DateSlotScalarWhereInput>
+    NOT?: Enumerable<DateSlotScalarWhereInput>
     id?: IntFilter | number
-    name?: StringFilter | string
-    eventTypeId?: IntFilter | number
-    timezone?: StringFilter | string
-    createdAt?: DateTimeFilter | Date | string
-    updatedAt?: DateTimeFilter | Date | string
-  }
-
-  export type WeekDayUpsertWithWhereUniqueWithoutEventTypeInput = {
-    where: WeekDayWhereUniqueInput
-    update: XOR<WeekDayUpdateWithoutEventTypeInput, WeekDayUncheckedUpdateWithoutEventTypeInput>
-    create: XOR<WeekDayCreateWithoutEventTypeInput, WeekDayUncheckedCreateWithoutEventTypeInput>
-  }
-
-  export type WeekDayUpdateWithWhereUniqueWithoutEventTypeInput = {
-    where: WeekDayWhereUniqueInput
-    data: XOR<WeekDayUpdateWithoutEventTypeInput, WeekDayUncheckedUpdateWithoutEventTypeInput>
-  }
-
-  export type WeekDayUpdateManyWithWhereWithoutEventTypeInput = {
-    where: WeekDayScalarWhereInput
-    data: XOR<WeekDayUpdateManyMutationInput, WeekDayUncheckedUpdateManyWithoutWeekDaysInput>
-  }
-
-  export type WeekDayScalarWhereInput = {
-    AND?: Enumerable<WeekDayScalarWhereInput>
-    OR?: Enumerable<WeekDayScalarWhereInput>
-    NOT?: Enumerable<WeekDayScalarWhereInput>
-    id?: IntFilter | number
-    day?: IntFilter | number
     availabilityScheduleId?: IntNullableFilter | number | null
-    timeSelectId?: IntFilter | number
-    eventTypeId?: IntNullableFilter | number | null
-    status?: StringFilter | string
-    date?: DateTimeFilter | Date | string
+    name?: DateTimeFilter | Date | string
+    custormerId?: IntNullableFilter | number | null
+    eventId?: IntFilter | number
+    dayName?: StringFilter | string
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
-  }
-
-  export type CalendarSelectUpsertWithoutEventTypesInput = {
-    update: XOR<CalendarSelectUpdateWithoutEventTypesInput, CalendarSelectUncheckedUpdateWithoutEventTypesInput>
-    create: XOR<CalendarSelectCreateWithoutEventTypesInput, CalendarSelectUncheckedCreateWithoutEventTypesInput>
-  }
-
-  export type CalendarSelectUpdateWithoutEventTypesInput = {
-    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type CalendarSelectUncheckedUpdateWithoutEventTypesInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type CustomerUpsertWithoutEventTypesInput = {
-    update: XOR<CustomerUpdateWithoutEventTypesInput, CustomerUncheckedUpdateWithoutEventTypesInput>
-    create: XOR<CustomerCreateWithoutEventTypesInput, CustomerUncheckedCreateWithoutEventTypesInput>
-  }
-
-  export type CustomerUpdateWithoutEventTypesInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    groupMeetings?: GroupMeetingUpdateManyWithoutCustomerNestedInput
-    eventSelects?: EventSelectUpdateManyWithoutCustomerNestedInput
-  }
-
-  export type CustomerUncheckedUpdateWithoutEventTypesInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutCustomerNestedInput
-    eventSelects?: EventSelectUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type GroupMeetingUpsertWithWhereUniqueWithoutEventTypeInput = {
@@ -19222,36 +18873,6 @@ export namespace Prisma {
     totalPrice?: IntFilter | number
     timezone?: StringFilter | string
     eventTypeId?: IntFilter | number
-    createdAt?: DateTimeFilter | Date | string
-    updatedAt?: DateTimeFilter | Date | string
-  }
-
-  export type EventSelectUpsertWithWhereUniqueWithoutEventTypeInput = {
-    where: EventSelectWhereUniqueInput
-    update: XOR<EventSelectUpdateWithoutEventTypeInput, EventSelectUncheckedUpdateWithoutEventTypeInput>
-    create: XOR<EventSelectCreateWithoutEventTypeInput, EventSelectUncheckedCreateWithoutEventTypeInput>
-  }
-
-  export type EventSelectUpdateWithWhereUniqueWithoutEventTypeInput = {
-    where: EventSelectWhereUniqueInput
-    data: XOR<EventSelectUpdateWithoutEventTypeInput, EventSelectUncheckedUpdateWithoutEventTypeInput>
-  }
-
-  export type EventSelectUpdateManyWithWhereWithoutEventTypeInput = {
-    where: EventSelectScalarWhereInput
-    data: XOR<EventSelectUpdateManyMutationInput, EventSelectUncheckedUpdateManyWithoutEventSelectsInput>
-  }
-
-  export type EventSelectScalarWhereInput = {
-    AND?: Enumerable<EventSelectScalarWhereInput>
-    OR?: Enumerable<EventSelectScalarWhereInput>
-    NOT?: Enumerable<EventSelectScalarWhereInput>
-    id?: IntFilter | number
-    eventTypeId?: IntFilter | number
-    customerId?: IntFilter | number
-    selectDate?: StringFilter | string
-    selectTime?: DateTimeFilter | Date | string
-    status?: StringFilter | string
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
   }
@@ -19347,16 +18968,12 @@ export namespace Prisma {
     description: string
     price: number
     timeDuration: number
-    status: string
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutEventTypesInput
-    availabilitySchedules?: AvailabilityScheduleCreateNestedManyWithoutEventTypeInput
-    weekDays?: WeekDayCreateNestedManyWithoutEventTypeInput
-    calendarSelect: CalendarSelectCreateNestedOneWithoutEventTypesInput
-    customer: CustomerCreateNestedOneWithoutEventTypesInput
+    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutEventTypesInput
+    dateSlots?: DateSlotCreateNestedManyWithoutEventTypeInput
     groupMeetings?: GroupMeetingCreateNestedManyWithoutEventTypeInput
-    eventSelects?: EventSelectCreateNestedManyWithoutEventTypeInput
   }
 
   export type EventTypeUncheckedCreateWithoutEventTypeOnLocationsInput = {
@@ -19366,15 +18983,11 @@ export namespace Prisma {
     description: string
     price: number
     timeDuration: number
-    calendarSelectId: number
-    customerId: number
-    status: string
+    availabilityScheduleId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    availabilitySchedules?: AvailabilityScheduleUncheckedCreateNestedManyWithoutEventTypeInput
-    weekDays?: WeekDayUncheckedCreateNestedManyWithoutEventTypeInput
+    dateSlots?: DateSlotUncheckedCreateNestedManyWithoutEventTypeInput
     groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput
-    eventSelects?: EventSelectUncheckedCreateNestedManyWithoutEventTypeInput
   }
 
   export type EventTypeCreateOrConnectWithoutEventTypeOnLocationsInput = {
@@ -19412,16 +19025,12 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     price?: IntFieldUpdateOperationsInput | number
     timeDuration?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
-    availabilitySchedules?: AvailabilityScheduleUpdateManyWithoutEventTypeNestedInput
-    weekDays?: WeekDayUpdateManyWithoutEventTypeNestedInput
-    calendarSelect?: CalendarSelectUpdateOneRequiredWithoutEventTypesNestedInput
-    customer?: CustomerUpdateOneRequiredWithoutEventTypesNestedInput
+    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutEventTypesNestedInput
+    dateSlots?: DateSlotUpdateManyWithoutEventTypeNestedInput
     groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
-    eventSelects?: EventSelectUpdateManyWithoutEventTypeNestedInput
   }
 
   export type EventTypeUncheckedUpdateWithoutEventTypeOnLocationsInput = {
@@ -19431,15 +19040,11 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     price?: IntFieldUpdateOperationsInput | number
     timeDuration?: IntFieldUpdateOperationsInput | number
-    calendarSelectId?: IntFieldUpdateOperationsInput | number
-    customerId?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
+    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    availabilitySchedules?: AvailabilityScheduleUncheckedUpdateManyWithoutEventTypeNestedInput
-    weekDays?: WeekDayUncheckedUpdateManyWithoutEventTypeNestedInput
+    dateSlots?: DateSlotUncheckedUpdateManyWithoutEventTypeNestedInput
     groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
-    eventSelects?: EventSelectUncheckedUpdateManyWithoutEventTypeNestedInput
   }
 
   export type LocationUpsertWithoutEventTypeOnLocationsInput = {
@@ -19462,387 +19067,525 @@ export namespace Prisma {
     groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutLocationNestedInput
   }
 
-  export type EventTypeCreateWithoutAvailabilitySchedulesInput = {
+  export type EventTypeCreateWithoutAvailabilityScheduleInput = {
     name: string
     description: string
     price: number
     timeDuration: number
-    status: string
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutEventTypesInput
     eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutEventTypeInput
-    weekDays?: WeekDayCreateNestedManyWithoutEventTypeInput
-    calendarSelect: CalendarSelectCreateNestedOneWithoutEventTypesInput
-    customer: CustomerCreateNestedOneWithoutEventTypesInput
+    dateSlots?: DateSlotCreateNestedManyWithoutEventTypeInput
     groupMeetings?: GroupMeetingCreateNestedManyWithoutEventTypeInput
-    eventSelects?: EventSelectCreateNestedManyWithoutEventTypeInput
   }
 
-  export type EventTypeUncheckedCreateWithoutAvailabilitySchedulesInput = {
+  export type EventTypeUncheckedCreateWithoutAvailabilityScheduleInput = {
     id?: number
     name: string
     userId: number
     description: string
     price: number
     timeDuration: number
-    calendarSelectId: number
-    customerId: number
-    status: string
     createdAt?: Date | string
     updatedAt?: Date | string
     eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput
-    weekDays?: WeekDayUncheckedCreateNestedManyWithoutEventTypeInput
+    dateSlots?: DateSlotUncheckedCreateNestedManyWithoutEventTypeInput
     groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput
-    eventSelects?: EventSelectUncheckedCreateNestedManyWithoutEventTypeInput
   }
 
-  export type EventTypeCreateOrConnectWithoutAvailabilitySchedulesInput = {
+  export type EventTypeCreateOrConnectWithoutAvailabilityScheduleInput = {
     where: EventTypeWhereUniqueInput
-    create: XOR<EventTypeCreateWithoutAvailabilitySchedulesInput, EventTypeUncheckedCreateWithoutAvailabilitySchedulesInput>
+    create: XOR<EventTypeCreateWithoutAvailabilityScheduleInput, EventTypeUncheckedCreateWithoutAvailabilityScheduleInput>
   }
 
-  export type WeekDayCreateWithoutAvailabilityScheduleInput = {
-    day: number
-    status: string
-    date: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    timeSelect: TimeSelectCreateNestedOneWithoutWeekDaysInput
-    eventType?: EventTypeCreateNestedOneWithoutWeekDaysInput
-  }
-
-  export type WeekDayUncheckedCreateWithoutAvailabilityScheduleInput = {
-    id?: number
-    day: number
-    timeSelectId: number
-    eventTypeId?: number | null
-    status: string
-    date: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type WeekDayCreateOrConnectWithoutAvailabilityScheduleInput = {
-    where: WeekDayWhereUniqueInput
-    create: XOR<WeekDayCreateWithoutAvailabilityScheduleInput, WeekDayUncheckedCreateWithoutAvailabilityScheduleInput>
-  }
-
-  export type WeekDayCreateManyAvailabilityScheduleInputEnvelope = {
-    data: Enumerable<WeekDayCreateManyAvailabilityScheduleInput>
+  export type EventTypeCreateManyAvailabilityScheduleInputEnvelope = {
+    data: Enumerable<EventTypeCreateManyAvailabilityScheduleInput>
     skipDuplicates?: boolean
   }
 
-  export type EventTypeUpsertWithoutAvailabilitySchedulesInput = {
-    update: XOR<EventTypeUpdateWithoutAvailabilitySchedulesInput, EventTypeUncheckedUpdateWithoutAvailabilitySchedulesInput>
-    create: XOR<EventTypeCreateWithoutAvailabilitySchedulesInput, EventTypeUncheckedCreateWithoutAvailabilitySchedulesInput>
-  }
-
-  export type EventTypeUpdateWithoutAvailabilitySchedulesInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
-    price?: IntFieldUpdateOperationsInput | number
-    timeDuration?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
-    eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
-    weekDays?: WeekDayUpdateManyWithoutEventTypeNestedInput
-    calendarSelect?: CalendarSelectUpdateOneRequiredWithoutEventTypesNestedInput
-    customer?: CustomerUpdateOneRequiredWithoutEventTypesNestedInput
-    groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
-    eventSelects?: EventSelectUpdateManyWithoutEventTypeNestedInput
-  }
-
-  export type EventTypeUncheckedUpdateWithoutAvailabilitySchedulesInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    userId?: IntFieldUpdateOperationsInput | number
-    description?: StringFieldUpdateOperationsInput | string
-    price?: IntFieldUpdateOperationsInput | number
-    timeDuration?: IntFieldUpdateOperationsInput | number
-    calendarSelectId?: IntFieldUpdateOperationsInput | number
-    customerId?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
-    weekDays?: WeekDayUncheckedUpdateManyWithoutEventTypeNestedInput
-    groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
-    eventSelects?: EventSelectUncheckedUpdateManyWithoutEventTypeNestedInput
-  }
-
-  export type WeekDayUpsertWithWhereUniqueWithoutAvailabilityScheduleInput = {
-    where: WeekDayWhereUniqueInput
-    update: XOR<WeekDayUpdateWithoutAvailabilityScheduleInput, WeekDayUncheckedUpdateWithoutAvailabilityScheduleInput>
-    create: XOR<WeekDayCreateWithoutAvailabilityScheduleInput, WeekDayUncheckedCreateWithoutAvailabilityScheduleInput>
-  }
-
-  export type WeekDayUpdateWithWhereUniqueWithoutAvailabilityScheduleInput = {
-    where: WeekDayWhereUniqueInput
-    data: XOR<WeekDayUpdateWithoutAvailabilityScheduleInput, WeekDayUncheckedUpdateWithoutAvailabilityScheduleInput>
-  }
-
-  export type WeekDayUpdateManyWithWhereWithoutAvailabilityScheduleInput = {
-    where: WeekDayScalarWhereInput
-    data: XOR<WeekDayUpdateManyMutationInput, WeekDayUncheckedUpdateManyWithoutWeekDaysInput>
-  }
-
-  export type AvailabilityScheduleCreateWithoutWeekDaysInput = {
-    name: string
-    timezone: string
+  export type DateSlotCreateWithoutAvailabilityScheduleInput = {
+    name: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
-    eventType: EventTypeCreateNestedOneWithoutAvailabilitySchedulesInput
+    custormer?: CustomerCreateNestedOneWithoutDateSlotsInput
+    eventType: EventTypeCreateNestedOneWithoutDateSlotsInput
+    daySlot: DaySlotCreateNestedOneWithoutDateSlotsInput
+    dateOnTimeSlots?: DateOnTimeSlotCreateNestedManyWithoutDateSlotInput
   }
 
-  export type AvailabilityScheduleUncheckedCreateWithoutWeekDaysInput = {
+  export type DateSlotUncheckedCreateWithoutAvailabilityScheduleInput = {
     id?: number
-    name: string
-    eventTypeId: number
-    timezone: string
+    name: Date | string
+    custormerId?: number | null
+    eventId: number
+    dayName: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    dateOnTimeSlots?: DateOnTimeSlotUncheckedCreateNestedManyWithoutDateSlotInput
   }
 
-  export type AvailabilityScheduleCreateOrConnectWithoutWeekDaysInput = {
-    where: AvailabilityScheduleWhereUniqueInput
-    create: XOR<AvailabilityScheduleCreateWithoutWeekDaysInput, AvailabilityScheduleUncheckedCreateWithoutWeekDaysInput>
+  export type DateSlotCreateOrConnectWithoutAvailabilityScheduleInput = {
+    where: DateSlotWhereUniqueInput
+    create: XOR<DateSlotCreateWithoutAvailabilityScheduleInput, DateSlotUncheckedCreateWithoutAvailabilityScheduleInput>
   }
 
-  export type TimeSelectCreateWithoutWeekDaysInput = {
-    startTime: Date | string
-    endTime: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
+  export type DateSlotCreateManyAvailabilityScheduleInputEnvelope = {
+    data: Enumerable<DateSlotCreateManyAvailabilityScheduleInput>
+    skipDuplicates?: boolean
   }
 
-  export type TimeSelectUncheckedCreateWithoutWeekDaysInput = {
-    id?: number
-    startTime: Date | string
-    endTime: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type TimeSelectCreateOrConnectWithoutWeekDaysInput = {
-    where: TimeSelectWhereUniqueInput
-    create: XOR<TimeSelectCreateWithoutWeekDaysInput, TimeSelectUncheckedCreateWithoutWeekDaysInput>
-  }
-
-  export type EventTypeCreateWithoutWeekDaysInput = {
-    name: string
-    description: string
-    price: number
-    timeDuration: number
-    status: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    user: UserCreateNestedOneWithoutEventTypesInput
-    eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutEventTypeInput
-    availabilitySchedules?: AvailabilityScheduleCreateNestedManyWithoutEventTypeInput
-    calendarSelect: CalendarSelectCreateNestedOneWithoutEventTypesInput
-    customer: CustomerCreateNestedOneWithoutEventTypesInput
-    groupMeetings?: GroupMeetingCreateNestedManyWithoutEventTypeInput
-    eventSelects?: EventSelectCreateNestedManyWithoutEventTypeInput
-  }
-
-  export type EventTypeUncheckedCreateWithoutWeekDaysInput = {
-    id?: number
-    name: string
-    userId: number
-    description: string
-    price: number
-    timeDuration: number
-    calendarSelectId: number
-    customerId: number
-    status: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput
-    availabilitySchedules?: AvailabilityScheduleUncheckedCreateNestedManyWithoutEventTypeInput
-    groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput
-    eventSelects?: EventSelectUncheckedCreateNestedManyWithoutEventTypeInput
-  }
-
-  export type EventTypeCreateOrConnectWithoutWeekDaysInput = {
+  export type EventTypeUpsertWithWhereUniqueWithoutAvailabilityScheduleInput = {
     where: EventTypeWhereUniqueInput
-    create: XOR<EventTypeCreateWithoutWeekDaysInput, EventTypeUncheckedCreateWithoutWeekDaysInput>
+    update: XOR<EventTypeUpdateWithoutAvailabilityScheduleInput, EventTypeUncheckedUpdateWithoutAvailabilityScheduleInput>
+    create: XOR<EventTypeCreateWithoutAvailabilityScheduleInput, EventTypeUncheckedCreateWithoutAvailabilityScheduleInput>
   }
 
-  export type AvailabilityScheduleUpsertWithoutWeekDaysInput = {
-    update: XOR<AvailabilityScheduleUpdateWithoutWeekDaysInput, AvailabilityScheduleUncheckedUpdateWithoutWeekDaysInput>
-    create: XOR<AvailabilityScheduleCreateWithoutWeekDaysInput, AvailabilityScheduleUncheckedCreateWithoutWeekDaysInput>
+  export type EventTypeUpdateWithWhereUniqueWithoutAvailabilityScheduleInput = {
+    where: EventTypeWhereUniqueInput
+    data: XOR<EventTypeUpdateWithoutAvailabilityScheduleInput, EventTypeUncheckedUpdateWithoutAvailabilityScheduleInput>
   }
 
-  export type AvailabilityScheduleUpdateWithoutWeekDaysInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    timezone?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    eventType?: EventTypeUpdateOneRequiredWithoutAvailabilitySchedulesNestedInput
+  export type EventTypeUpdateManyWithWhereWithoutAvailabilityScheduleInput = {
+    where: EventTypeScalarWhereInput
+    data: XOR<EventTypeUpdateManyMutationInput, EventTypeUncheckedUpdateManyWithoutEventTypesInput>
   }
 
-  export type AvailabilityScheduleUncheckedUpdateWithoutWeekDaysInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    eventTypeId?: IntFieldUpdateOperationsInput | number
-    timezone?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  export type DateSlotUpsertWithWhereUniqueWithoutAvailabilityScheduleInput = {
+    where: DateSlotWhereUniqueInput
+    update: XOR<DateSlotUpdateWithoutAvailabilityScheduleInput, DateSlotUncheckedUpdateWithoutAvailabilityScheduleInput>
+    create: XOR<DateSlotCreateWithoutAvailabilityScheduleInput, DateSlotUncheckedCreateWithoutAvailabilityScheduleInput>
   }
 
-  export type TimeSelectUpsertWithoutWeekDaysInput = {
-    update: XOR<TimeSelectUpdateWithoutWeekDaysInput, TimeSelectUncheckedUpdateWithoutWeekDaysInput>
-    create: XOR<TimeSelectCreateWithoutWeekDaysInput, TimeSelectUncheckedCreateWithoutWeekDaysInput>
+  export type DateSlotUpdateWithWhereUniqueWithoutAvailabilityScheduleInput = {
+    where: DateSlotWhereUniqueInput
+    data: XOR<DateSlotUpdateWithoutAvailabilityScheduleInput, DateSlotUncheckedUpdateWithoutAvailabilityScheduleInput>
   }
 
-  export type TimeSelectUpdateWithoutWeekDaysInput = {
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  export type DateSlotUpdateManyWithWhereWithoutAvailabilityScheduleInput = {
+    where: DateSlotScalarWhereInput
+    data: XOR<DateSlotUpdateManyMutationInput, DateSlotUncheckedUpdateManyWithoutDateSlotsInput>
   }
 
-  export type TimeSelectUncheckedUpdateWithoutWeekDaysInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type EventTypeUpsertWithoutWeekDaysInput = {
-    update: XOR<EventTypeUpdateWithoutWeekDaysInput, EventTypeUncheckedUpdateWithoutWeekDaysInput>
-    create: XOR<EventTypeCreateWithoutWeekDaysInput, EventTypeUncheckedCreateWithoutWeekDaysInput>
-  }
-
-  export type EventTypeUpdateWithoutWeekDaysInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
-    price?: IntFieldUpdateOperationsInput | number
-    timeDuration?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
-    eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
-    availabilitySchedules?: AvailabilityScheduleUpdateManyWithoutEventTypeNestedInput
-    calendarSelect?: CalendarSelectUpdateOneRequiredWithoutEventTypesNestedInput
-    customer?: CustomerUpdateOneRequiredWithoutEventTypesNestedInput
-    groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
-    eventSelects?: EventSelectUpdateManyWithoutEventTypeNestedInput
-  }
-
-  export type EventTypeUncheckedUpdateWithoutWeekDaysInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    userId?: IntFieldUpdateOperationsInput | number
-    description?: StringFieldUpdateOperationsInput | string
-    price?: IntFieldUpdateOperationsInput | number
-    timeDuration?: IntFieldUpdateOperationsInput | number
-    calendarSelectId?: IntFieldUpdateOperationsInput | number
-    customerId?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
-    availabilitySchedules?: AvailabilityScheduleUncheckedUpdateManyWithoutEventTypeNestedInput
-    groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
-    eventSelects?: EventSelectUncheckedUpdateManyWithoutEventTypeNestedInput
-  }
-
-  export type WeekDayCreateWithoutTimeSelectInput = {
-    day: number
-    status: string
-    date: Date | string
+  export type DateSlotCreateWithoutDaySlotInput = {
+    name: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
-    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutWeekDaysInput
-    eventType?: EventTypeCreateNestedOneWithoutWeekDaysInput
+    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutDateSlotsInput
+    custormer?: CustomerCreateNestedOneWithoutDateSlotsInput
+    eventType: EventTypeCreateNestedOneWithoutDateSlotsInput
+    dateOnTimeSlots?: DateOnTimeSlotCreateNestedManyWithoutDateSlotInput
   }
 
-  export type WeekDayUncheckedCreateWithoutTimeSelectInput = {
+  export type DateSlotUncheckedCreateWithoutDaySlotInput = {
     id?: number
-    day: number
     availabilityScheduleId?: number | null
-    eventTypeId?: number | null
-    status: string
-    date: Date | string
+    name: Date | string
+    custormerId?: number | null
+    eventId: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    dateOnTimeSlots?: DateOnTimeSlotUncheckedCreateNestedManyWithoutDateSlotInput
   }
 
-  export type WeekDayCreateOrConnectWithoutTimeSelectInput = {
-    where: WeekDayWhereUniqueInput
-    create: XOR<WeekDayCreateWithoutTimeSelectInput, WeekDayUncheckedCreateWithoutTimeSelectInput>
+  export type DateSlotCreateOrConnectWithoutDaySlotInput = {
+    where: DateSlotWhereUniqueInput
+    create: XOR<DateSlotCreateWithoutDaySlotInput, DateSlotUncheckedCreateWithoutDaySlotInput>
   }
 
-  export type WeekDayCreateManyTimeSelectInputEnvelope = {
-    data: Enumerable<WeekDayCreateManyTimeSelectInput>
+  export type DateSlotCreateManyDaySlotInputEnvelope = {
+    data: Enumerable<DateSlotCreateManyDaySlotInput>
     skipDuplicates?: boolean
   }
 
-  export type WeekDayUpsertWithWhereUniqueWithoutTimeSelectInput = {
-    where: WeekDayWhereUniqueInput
-    update: XOR<WeekDayUpdateWithoutTimeSelectInput, WeekDayUncheckedUpdateWithoutTimeSelectInput>
-    create: XOR<WeekDayCreateWithoutTimeSelectInput, WeekDayUncheckedCreateWithoutTimeSelectInput>
+  export type DateSlotUpsertWithWhereUniqueWithoutDaySlotInput = {
+    where: DateSlotWhereUniqueInput
+    update: XOR<DateSlotUpdateWithoutDaySlotInput, DateSlotUncheckedUpdateWithoutDaySlotInput>
+    create: XOR<DateSlotCreateWithoutDaySlotInput, DateSlotUncheckedCreateWithoutDaySlotInput>
   }
 
-  export type WeekDayUpdateWithWhereUniqueWithoutTimeSelectInput = {
-    where: WeekDayWhereUniqueInput
-    data: XOR<WeekDayUpdateWithoutTimeSelectInput, WeekDayUncheckedUpdateWithoutTimeSelectInput>
+  export type DateSlotUpdateWithWhereUniqueWithoutDaySlotInput = {
+    where: DateSlotWhereUniqueInput
+    data: XOR<DateSlotUpdateWithoutDaySlotInput, DateSlotUncheckedUpdateWithoutDaySlotInput>
   }
 
-  export type WeekDayUpdateManyWithWhereWithoutTimeSelectInput = {
-    where: WeekDayScalarWhereInput
-    data: XOR<WeekDayUpdateManyMutationInput, WeekDayUncheckedUpdateManyWithoutWeekDaysInput>
+  export type DateSlotUpdateManyWithWhereWithoutDaySlotInput = {
+    where: DateSlotScalarWhereInput
+    data: XOR<DateSlotUpdateManyMutationInput, DateSlotUncheckedUpdateManyWithoutDateSlotsInput>
   }
 
-  export type EventTypeCreateWithoutCustomerInput = {
+  export type AvailabilityScheduleCreateWithoutDateSlotsInput = {
+    name: string
+    timezone: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventTypes?: EventTypeCreateNestedManyWithoutAvailabilityScheduleInput
+  }
+
+  export type AvailabilityScheduleUncheckedCreateWithoutDateSlotsInput = {
+    id?: number
+    name: string
+    timezone: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventTypes?: EventTypeUncheckedCreateNestedManyWithoutAvailabilityScheduleInput
+  }
+
+  export type AvailabilityScheduleCreateOrConnectWithoutDateSlotsInput = {
+    where: AvailabilityScheduleWhereUniqueInput
+    create: XOR<AvailabilityScheduleCreateWithoutDateSlotsInput, AvailabilityScheduleUncheckedCreateWithoutDateSlotsInput>
+  }
+
+  export type CustomerCreateWithoutDateSlotsInput = {
+    name: string
+    email: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    groupMeetings?: GroupMeetingCreateNestedManyWithoutCustomerInput
+  }
+
+  export type CustomerUncheckedCreateWithoutDateSlotsInput = {
+    id?: number
+    name: string
+    email: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutCustomerInput
+  }
+
+  export type CustomerCreateOrConnectWithoutDateSlotsInput = {
+    where: CustomerWhereUniqueInput
+    create: XOR<CustomerCreateWithoutDateSlotsInput, CustomerUncheckedCreateWithoutDateSlotsInput>
+  }
+
+  export type EventTypeCreateWithoutDateSlotsInput = {
     name: string
     description: string
     price: number
     timeDuration: number
-    status: string
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutEventTypesInput
     eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutEventTypeInput
-    availabilitySchedules?: AvailabilityScheduleCreateNestedManyWithoutEventTypeInput
-    weekDays?: WeekDayCreateNestedManyWithoutEventTypeInput
-    calendarSelect: CalendarSelectCreateNestedOneWithoutEventTypesInput
+    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutEventTypesInput
     groupMeetings?: GroupMeetingCreateNestedManyWithoutEventTypeInput
-    eventSelects?: EventSelectCreateNestedManyWithoutEventTypeInput
   }
 
-  export type EventTypeUncheckedCreateWithoutCustomerInput = {
+  export type EventTypeUncheckedCreateWithoutDateSlotsInput = {
     id?: number
     name: string
     userId: number
     description: string
     price: number
     timeDuration: number
-    calendarSelectId: number
-    status: string
+    availabilityScheduleId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput
-    availabilitySchedules?: AvailabilityScheduleUncheckedCreateNestedManyWithoutEventTypeInput
-    weekDays?: WeekDayUncheckedCreateNestedManyWithoutEventTypeInput
     groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput
-    eventSelects?: EventSelectUncheckedCreateNestedManyWithoutEventTypeInput
   }
 
-  export type EventTypeCreateOrConnectWithoutCustomerInput = {
+  export type EventTypeCreateOrConnectWithoutDateSlotsInput = {
     where: EventTypeWhereUniqueInput
-    create: XOR<EventTypeCreateWithoutCustomerInput, EventTypeUncheckedCreateWithoutCustomerInput>
+    create: XOR<EventTypeCreateWithoutDateSlotsInput, EventTypeUncheckedCreateWithoutDateSlotsInput>
   }
 
-  export type EventTypeCreateManyCustomerInputEnvelope = {
-    data: Enumerable<EventTypeCreateManyCustomerInput>
+  export type DaySlotCreateWithoutDateSlotsInput = {
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DaySlotUncheckedCreateWithoutDateSlotsInput = {
+    id?: number
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DaySlotCreateOrConnectWithoutDateSlotsInput = {
+    where: DaySlotWhereUniqueInput
+    create: XOR<DaySlotCreateWithoutDateSlotsInput, DaySlotUncheckedCreateWithoutDateSlotsInput>
+  }
+
+  export type DateOnTimeSlotCreateWithoutDateSlotInput = {
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    timeSlot: TimeSlotCreateNestedOneWithoutDateOnTimeSlotsInput
+  }
+
+  export type DateOnTimeSlotUncheckedCreateWithoutDateSlotInput = {
+    id?: number
+    timeSlotId: number
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DateOnTimeSlotCreateOrConnectWithoutDateSlotInput = {
+    where: DateOnTimeSlotWhereUniqueInput
+    create: XOR<DateOnTimeSlotCreateWithoutDateSlotInput, DateOnTimeSlotUncheckedCreateWithoutDateSlotInput>
+  }
+
+  export type DateOnTimeSlotCreateManyDateSlotInputEnvelope = {
+    data: Enumerable<DateOnTimeSlotCreateManyDateSlotInput>
     skipDuplicates?: boolean
+  }
+
+  export type AvailabilityScheduleUpsertWithoutDateSlotsInput = {
+    update: XOR<AvailabilityScheduleUpdateWithoutDateSlotsInput, AvailabilityScheduleUncheckedUpdateWithoutDateSlotsInput>
+    create: XOR<AvailabilityScheduleCreateWithoutDateSlotsInput, AvailabilityScheduleUncheckedCreateWithoutDateSlotsInput>
+  }
+
+  export type AvailabilityScheduleUpdateWithoutDateSlotsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    timezone?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypes?: EventTypeUpdateManyWithoutAvailabilityScheduleNestedInput
+  }
+
+  export type AvailabilityScheduleUncheckedUpdateWithoutDateSlotsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    timezone?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypes?: EventTypeUncheckedUpdateManyWithoutAvailabilityScheduleNestedInput
+  }
+
+  export type CustomerUpsertWithoutDateSlotsInput = {
+    update: XOR<CustomerUpdateWithoutDateSlotsInput, CustomerUncheckedUpdateWithoutDateSlotsInput>
+    create: XOR<CustomerCreateWithoutDateSlotsInput, CustomerUncheckedCreateWithoutDateSlotsInput>
+  }
+
+  export type CustomerUpdateWithoutDateSlotsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    groupMeetings?: GroupMeetingUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type CustomerUncheckedUpdateWithoutDateSlotsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type EventTypeUpsertWithoutDateSlotsInput = {
+    update: XOR<EventTypeUpdateWithoutDateSlotsInput, EventTypeUncheckedUpdateWithoutDateSlotsInput>
+    create: XOR<EventTypeCreateWithoutDateSlotsInput, EventTypeUncheckedCreateWithoutDateSlotsInput>
+  }
+
+  export type EventTypeUpdateWithoutDateSlotsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
+    eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
+    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutEventTypesNestedInput
+    groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
+  }
+
+  export type EventTypeUncheckedUpdateWithoutDateSlotsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    userId?: IntFieldUpdateOperationsInput | number
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
+    groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
+  }
+
+  export type DaySlotUpsertWithoutDateSlotsInput = {
+    update: XOR<DaySlotUpdateWithoutDateSlotsInput, DaySlotUncheckedUpdateWithoutDateSlotsInput>
+    create: XOR<DaySlotCreateWithoutDateSlotsInput, DaySlotUncheckedCreateWithoutDateSlotsInput>
+  }
+
+  export type DaySlotUpdateWithoutDateSlotsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DaySlotUncheckedUpdateWithoutDateSlotsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DateOnTimeSlotUpsertWithWhereUniqueWithoutDateSlotInput = {
+    where: DateOnTimeSlotWhereUniqueInput
+    update: XOR<DateOnTimeSlotUpdateWithoutDateSlotInput, DateOnTimeSlotUncheckedUpdateWithoutDateSlotInput>
+    create: XOR<DateOnTimeSlotCreateWithoutDateSlotInput, DateOnTimeSlotUncheckedCreateWithoutDateSlotInput>
+  }
+
+  export type DateOnTimeSlotUpdateWithWhereUniqueWithoutDateSlotInput = {
+    where: DateOnTimeSlotWhereUniqueInput
+    data: XOR<DateOnTimeSlotUpdateWithoutDateSlotInput, DateOnTimeSlotUncheckedUpdateWithoutDateSlotInput>
+  }
+
+  export type DateOnTimeSlotUpdateManyWithWhereWithoutDateSlotInput = {
+    where: DateOnTimeSlotScalarWhereInput
+    data: XOR<DateOnTimeSlotUpdateManyMutationInput, DateOnTimeSlotUncheckedUpdateManyWithoutDateOnTimeSlotsInput>
+  }
+
+  export type DateOnTimeSlotScalarWhereInput = {
+    AND?: Enumerable<DateOnTimeSlotScalarWhereInput>
+    OR?: Enumerable<DateOnTimeSlotScalarWhereInput>
+    NOT?: Enumerable<DateOnTimeSlotScalarWhereInput>
+    id?: IntFilter | number
+    timeSlotId?: IntFilter | number
+    dateSlotId?: IntFilter | number
+    status?: StringFilter | string
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+  }
+
+  export type TimeSlotCreateWithoutDateOnTimeSlotsInput = {
+    startTime: number
+    endTime: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TimeSlotUncheckedCreateWithoutDateOnTimeSlotsInput = {
+    id?: number
+    startTime: number
+    endTime: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TimeSlotCreateOrConnectWithoutDateOnTimeSlotsInput = {
+    where: TimeSlotWhereUniqueInput
+    create: XOR<TimeSlotCreateWithoutDateOnTimeSlotsInput, TimeSlotUncheckedCreateWithoutDateOnTimeSlotsInput>
+  }
+
+  export type DateSlotCreateWithoutDateOnTimeSlotsInput = {
+    name: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutDateSlotsInput
+    custormer?: CustomerCreateNestedOneWithoutDateSlotsInput
+    eventType: EventTypeCreateNestedOneWithoutDateSlotsInput
+    daySlot: DaySlotCreateNestedOneWithoutDateSlotsInput
+  }
+
+  export type DateSlotUncheckedCreateWithoutDateOnTimeSlotsInput = {
+    id?: number
+    availabilityScheduleId?: number | null
+    name: Date | string
+    custormerId?: number | null
+    eventId: number
+    dayName: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DateSlotCreateOrConnectWithoutDateOnTimeSlotsInput = {
+    where: DateSlotWhereUniqueInput
+    create: XOR<DateSlotCreateWithoutDateOnTimeSlotsInput, DateSlotUncheckedCreateWithoutDateOnTimeSlotsInput>
+  }
+
+  export type TimeSlotUpsertWithoutDateOnTimeSlotsInput = {
+    update: XOR<TimeSlotUpdateWithoutDateOnTimeSlotsInput, TimeSlotUncheckedUpdateWithoutDateOnTimeSlotsInput>
+    create: XOR<TimeSlotCreateWithoutDateOnTimeSlotsInput, TimeSlotUncheckedCreateWithoutDateOnTimeSlotsInput>
+  }
+
+  export type TimeSlotUpdateWithoutDateOnTimeSlotsInput = {
+    startTime?: IntFieldUpdateOperationsInput | number
+    endTime?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TimeSlotUncheckedUpdateWithoutDateOnTimeSlotsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    startTime?: IntFieldUpdateOperationsInput | number
+    endTime?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DateSlotUpsertWithoutDateOnTimeSlotsInput = {
+    update: XOR<DateSlotUpdateWithoutDateOnTimeSlotsInput, DateSlotUncheckedUpdateWithoutDateOnTimeSlotsInput>
+    create: XOR<DateSlotCreateWithoutDateOnTimeSlotsInput, DateSlotUncheckedCreateWithoutDateOnTimeSlotsInput>
+  }
+
+  export type DateSlotUpdateWithoutDateOnTimeSlotsInput = {
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutDateSlotsNestedInput
+    custormer?: CustomerUpdateOneWithoutDateSlotsNestedInput
+    eventType?: EventTypeUpdateOneRequiredWithoutDateSlotsNestedInput
+    daySlot?: DaySlotUpdateOneRequiredWithoutDateSlotsNestedInput
+  }
+
+  export type DateSlotUncheckedUpdateWithoutDateOnTimeSlotsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
+    custormerId?: NullableIntFieldUpdateOperationsInput | number | null
+    eventId?: IntFieldUpdateOperationsInput | number
+    dayName?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DateOnTimeSlotCreateWithoutTimeSlotInput = {
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dateSlot: DateSlotCreateNestedOneWithoutDateOnTimeSlotsInput
+  }
+
+  export type DateOnTimeSlotUncheckedCreateWithoutTimeSlotInput = {
+    id?: number
+    dateSlotId: number
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DateOnTimeSlotCreateOrConnectWithoutTimeSlotInput = {
+    where: DateOnTimeSlotWhereUniqueInput
+    create: XOR<DateOnTimeSlotCreateWithoutTimeSlotInput, DateOnTimeSlotUncheckedCreateWithoutTimeSlotInput>
+  }
+
+  export type DateOnTimeSlotCreateManyTimeSlotInputEnvelope = {
+    data: Enumerable<DateOnTimeSlotCreateManyTimeSlotInput>
+    skipDuplicates?: boolean
+  }
+
+  export type DateOnTimeSlotUpsertWithWhereUniqueWithoutTimeSlotInput = {
+    where: DateOnTimeSlotWhereUniqueInput
+    update: XOR<DateOnTimeSlotUpdateWithoutTimeSlotInput, DateOnTimeSlotUncheckedUpdateWithoutTimeSlotInput>
+    create: XOR<DateOnTimeSlotCreateWithoutTimeSlotInput, DateOnTimeSlotUncheckedCreateWithoutTimeSlotInput>
+  }
+
+  export type DateOnTimeSlotUpdateWithWhereUniqueWithoutTimeSlotInput = {
+    where: DateOnTimeSlotWhereUniqueInput
+    data: XOR<DateOnTimeSlotUpdateWithoutTimeSlotInput, DateOnTimeSlotUncheckedUpdateWithoutTimeSlotInput>
+  }
+
+  export type DateOnTimeSlotUpdateManyWithWhereWithoutTimeSlotInput = {
+    where: DateOnTimeSlotScalarWhereInput
+    data: XOR<DateOnTimeSlotUpdateManyMutationInput, DateOnTimeSlotUncheckedUpdateManyWithoutDateOnTimeSlotsInput>
   }
 
   export type GroupMeetingCreateWithoutCustomerInput = {
@@ -19876,49 +19619,35 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type EventSelectCreateWithoutCustomerInput = {
-    selectDate: string
-    selectTime: Date | string
-    status: string
+  export type DateSlotCreateWithoutCustormerInput = {
+    name: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
-    eventType: EventTypeCreateNestedOneWithoutEventSelectsInput
+    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutDateSlotsInput
+    eventType: EventTypeCreateNestedOneWithoutDateSlotsInput
+    daySlot: DaySlotCreateNestedOneWithoutDateSlotsInput
+    dateOnTimeSlots?: DateOnTimeSlotCreateNestedManyWithoutDateSlotInput
   }
 
-  export type EventSelectUncheckedCreateWithoutCustomerInput = {
+  export type DateSlotUncheckedCreateWithoutCustormerInput = {
     id?: number
-    eventTypeId: number
-    selectDate: string
-    selectTime: Date | string
-    status: string
+    availabilityScheduleId?: number | null
+    name: Date | string
+    eventId: number
+    dayName: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    dateOnTimeSlots?: DateOnTimeSlotUncheckedCreateNestedManyWithoutDateSlotInput
   }
 
-  export type EventSelectCreateOrConnectWithoutCustomerInput = {
-    where: EventSelectWhereUniqueInput
-    create: XOR<EventSelectCreateWithoutCustomerInput, EventSelectUncheckedCreateWithoutCustomerInput>
+  export type DateSlotCreateOrConnectWithoutCustormerInput = {
+    where: DateSlotWhereUniqueInput
+    create: XOR<DateSlotCreateWithoutCustormerInput, DateSlotUncheckedCreateWithoutCustormerInput>
   }
 
-  export type EventSelectCreateManyCustomerInputEnvelope = {
-    data: Enumerable<EventSelectCreateManyCustomerInput>
+  export type DateSlotCreateManyCustormerInputEnvelope = {
+    data: Enumerable<DateSlotCreateManyCustormerInput>
     skipDuplicates?: boolean
-  }
-
-  export type EventTypeUpsertWithWhereUniqueWithoutCustomerInput = {
-    where: EventTypeWhereUniqueInput
-    update: XOR<EventTypeUpdateWithoutCustomerInput, EventTypeUncheckedUpdateWithoutCustomerInput>
-    create: XOR<EventTypeCreateWithoutCustomerInput, EventTypeUncheckedCreateWithoutCustomerInput>
-  }
-
-  export type EventTypeUpdateWithWhereUniqueWithoutCustomerInput = {
-    where: EventTypeWhereUniqueInput
-    data: XOR<EventTypeUpdateWithoutCustomerInput, EventTypeUncheckedUpdateWithoutCustomerInput>
-  }
-
-  export type EventTypeUpdateManyWithWhereWithoutCustomerInput = {
-    where: EventTypeScalarWhereInput
-    data: XOR<EventTypeUpdateManyMutationInput, EventTypeUncheckedUpdateManyWithoutEventTypesInput>
   }
 
   export type GroupMeetingUpsertWithWhereUniqueWithoutCustomerInput = {
@@ -19937,81 +19666,20 @@ export namespace Prisma {
     data: XOR<GroupMeetingUpdateManyMutationInput, GroupMeetingUncheckedUpdateManyWithoutGroupMeetingsInput>
   }
 
-  export type EventSelectUpsertWithWhereUniqueWithoutCustomerInput = {
-    where: EventSelectWhereUniqueInput
-    update: XOR<EventSelectUpdateWithoutCustomerInput, EventSelectUncheckedUpdateWithoutCustomerInput>
-    create: XOR<EventSelectCreateWithoutCustomerInput, EventSelectUncheckedCreateWithoutCustomerInput>
+  export type DateSlotUpsertWithWhereUniqueWithoutCustormerInput = {
+    where: DateSlotWhereUniqueInput
+    update: XOR<DateSlotUpdateWithoutCustormerInput, DateSlotUncheckedUpdateWithoutCustormerInput>
+    create: XOR<DateSlotCreateWithoutCustormerInput, DateSlotUncheckedCreateWithoutCustormerInput>
   }
 
-  export type EventSelectUpdateWithWhereUniqueWithoutCustomerInput = {
-    where: EventSelectWhereUniqueInput
-    data: XOR<EventSelectUpdateWithoutCustomerInput, EventSelectUncheckedUpdateWithoutCustomerInput>
+  export type DateSlotUpdateWithWhereUniqueWithoutCustormerInput = {
+    where: DateSlotWhereUniqueInput
+    data: XOR<DateSlotUpdateWithoutCustormerInput, DateSlotUncheckedUpdateWithoutCustormerInput>
   }
 
-  export type EventSelectUpdateManyWithWhereWithoutCustomerInput = {
-    where: EventSelectScalarWhereInput
-    data: XOR<EventSelectUpdateManyMutationInput, EventSelectUncheckedUpdateManyWithoutEventSelectsInput>
-  }
-
-  export type EventTypeCreateWithoutCalendarSelectInput = {
-    name: string
-    description: string
-    price: number
-    timeDuration: number
-    status: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    user: UserCreateNestedOneWithoutEventTypesInput
-    eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutEventTypeInput
-    availabilitySchedules?: AvailabilityScheduleCreateNestedManyWithoutEventTypeInput
-    weekDays?: WeekDayCreateNestedManyWithoutEventTypeInput
-    customer: CustomerCreateNestedOneWithoutEventTypesInput
-    groupMeetings?: GroupMeetingCreateNestedManyWithoutEventTypeInput
-    eventSelects?: EventSelectCreateNestedManyWithoutEventTypeInput
-  }
-
-  export type EventTypeUncheckedCreateWithoutCalendarSelectInput = {
-    id?: number
-    name: string
-    userId: number
-    description: string
-    price: number
-    timeDuration: number
-    customerId: number
-    status: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput
-    availabilitySchedules?: AvailabilityScheduleUncheckedCreateNestedManyWithoutEventTypeInput
-    weekDays?: WeekDayUncheckedCreateNestedManyWithoutEventTypeInput
-    groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput
-    eventSelects?: EventSelectUncheckedCreateNestedManyWithoutEventTypeInput
-  }
-
-  export type EventTypeCreateOrConnectWithoutCalendarSelectInput = {
-    where: EventTypeWhereUniqueInput
-    create: XOR<EventTypeCreateWithoutCalendarSelectInput, EventTypeUncheckedCreateWithoutCalendarSelectInput>
-  }
-
-  export type EventTypeCreateManyCalendarSelectInputEnvelope = {
-    data: Enumerable<EventTypeCreateManyCalendarSelectInput>
-    skipDuplicates?: boolean
-  }
-
-  export type EventTypeUpsertWithWhereUniqueWithoutCalendarSelectInput = {
-    where: EventTypeWhereUniqueInput
-    update: XOR<EventTypeUpdateWithoutCalendarSelectInput, EventTypeUncheckedUpdateWithoutCalendarSelectInput>
-    create: XOR<EventTypeCreateWithoutCalendarSelectInput, EventTypeUncheckedCreateWithoutCalendarSelectInput>
-  }
-
-  export type EventTypeUpdateWithWhereUniqueWithoutCalendarSelectInput = {
-    where: EventTypeWhereUniqueInput
-    data: XOR<EventTypeUpdateWithoutCalendarSelectInput, EventTypeUncheckedUpdateWithoutCalendarSelectInput>
-  }
-
-  export type EventTypeUpdateManyWithWhereWithoutCalendarSelectInput = {
-    where: EventTypeScalarWhereInput
-    data: XOR<EventTypeUpdateManyMutationInput, EventTypeUncheckedUpdateManyWithoutEventTypesInput>
+  export type DateSlotUpdateManyWithWhereWithoutCustormerInput = {
+    where: DateSlotScalarWhereInput
+    data: XOR<DateSlotUpdateManyMutationInput, DateSlotUncheckedUpdateManyWithoutDateSlotsInput>
   }
 
   export type UserCreateWithoutBillingsInput = {
@@ -20111,8 +19779,7 @@ export namespace Prisma {
     email: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    eventTypes?: EventTypeCreateNestedManyWithoutCustomerInput
-    eventSelects?: EventSelectCreateNestedManyWithoutCustomerInput
+    dateSlots?: DateSlotCreateNestedManyWithoutCustormerInput
   }
 
   export type CustomerUncheckedCreateWithoutGroupMeetingsInput = {
@@ -20121,8 +19788,7 @@ export namespace Prisma {
     email: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    eventTypes?: EventTypeUncheckedCreateNestedManyWithoutCustomerInput
-    eventSelects?: EventSelectUncheckedCreateNestedManyWithoutCustomerInput
+    dateSlots?: DateSlotUncheckedCreateNestedManyWithoutCustormerInput
   }
 
   export type CustomerCreateOrConnectWithoutGroupMeetingsInput = {
@@ -20135,16 +19801,12 @@ export namespace Prisma {
     description: string
     price: number
     timeDuration: number
-    status: string
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutEventTypesInput
     eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutEventTypeInput
-    availabilitySchedules?: AvailabilityScheduleCreateNestedManyWithoutEventTypeInput
-    weekDays?: WeekDayCreateNestedManyWithoutEventTypeInput
-    calendarSelect: CalendarSelectCreateNestedOneWithoutEventTypesInput
-    customer: CustomerCreateNestedOneWithoutEventTypesInput
-    eventSelects?: EventSelectCreateNestedManyWithoutEventTypeInput
+    availabilitySchedule?: AvailabilityScheduleCreateNestedOneWithoutEventTypesInput
+    dateSlots?: DateSlotCreateNestedManyWithoutEventTypeInput
   }
 
   export type EventTypeUncheckedCreateWithoutGroupMeetingsInput = {
@@ -20154,15 +19816,11 @@ export namespace Prisma {
     description: string
     price: number
     timeDuration: number
-    calendarSelectId: number
-    customerId: number
-    status: string
+    availabilityScheduleId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput
-    availabilitySchedules?: AvailabilityScheduleUncheckedCreateNestedManyWithoutEventTypeInput
-    weekDays?: WeekDayUncheckedCreateNestedManyWithoutEventTypeInput
-    eventSelects?: EventSelectUncheckedCreateNestedManyWithoutEventTypeInput
+    dateSlots?: DateSlotUncheckedCreateNestedManyWithoutEventTypeInput
   }
 
   export type EventTypeCreateOrConnectWithoutGroupMeetingsInput = {
@@ -20223,8 +19881,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    eventTypes?: EventTypeUpdateManyWithoutCustomerNestedInput
-    eventSelects?: EventSelectUpdateManyWithoutCustomerNestedInput
+    dateSlots?: DateSlotUpdateManyWithoutCustormerNestedInput
   }
 
   export type CustomerUncheckedUpdateWithoutGroupMeetingsInput = {
@@ -20233,8 +19890,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    eventTypes?: EventTypeUncheckedUpdateManyWithoutCustomerNestedInput
-    eventSelects?: EventSelectUncheckedUpdateManyWithoutCustomerNestedInput
+    dateSlots?: DateSlotUncheckedUpdateManyWithoutCustormerNestedInput
   }
 
   export type EventTypeUpsertWithoutGroupMeetingsInput = {
@@ -20247,16 +19903,12 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     price?: IntFieldUpdateOperationsInput | number
     timeDuration?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
     eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
-    availabilitySchedules?: AvailabilityScheduleUpdateManyWithoutEventTypeNestedInput
-    weekDays?: WeekDayUpdateManyWithoutEventTypeNestedInput
-    calendarSelect?: CalendarSelectUpdateOneRequiredWithoutEventTypesNestedInput
-    customer?: CustomerUpdateOneRequiredWithoutEventTypesNestedInput
-    eventSelects?: EventSelectUpdateManyWithoutEventTypeNestedInput
+    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutEventTypesNestedInput
+    dateSlots?: DateSlotUpdateManyWithoutEventTypeNestedInput
   }
 
   export type EventTypeUncheckedUpdateWithoutGroupMeetingsInput = {
@@ -20266,15 +19918,11 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     price?: IntFieldUpdateOperationsInput | number
     timeDuration?: IntFieldUpdateOperationsInput | number
-    calendarSelectId?: IntFieldUpdateOperationsInput | number
-    customerId?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
+    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
-    availabilitySchedules?: AvailabilityScheduleUncheckedUpdateManyWithoutEventTypeNestedInput
-    weekDays?: WeekDayUncheckedUpdateManyWithoutEventTypeNestedInput
-    eventSelects?: EventSelectUncheckedUpdateManyWithoutEventTypeNestedInput
+    dateSlots?: DateSlotUncheckedUpdateManyWithoutEventTypeNestedInput
   }
 
   export type UserOnGroupMeetingUpsertWithWhereUniqueWithoutGroupMeetingInput = {
@@ -20291,134 +19939,6 @@ export namespace Prisma {
   export type UserOnGroupMeetingUpdateManyWithWhereWithoutGroupMeetingInput = {
     where: UserOnGroupMeetingScalarWhereInput
     data: XOR<UserOnGroupMeetingUpdateManyMutationInput, UserOnGroupMeetingUncheckedUpdateManyWithoutUserOnGroupMeetingsInput>
-  }
-
-  export type EventTypeCreateWithoutEventSelectsInput = {
-    name: string
-    description: string
-    price: number
-    timeDuration: number
-    status: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    user: UserCreateNestedOneWithoutEventTypesInput
-    eventTypeOnLocations?: EventTypeOnLocationCreateNestedManyWithoutEventTypeInput
-    availabilitySchedules?: AvailabilityScheduleCreateNestedManyWithoutEventTypeInput
-    weekDays?: WeekDayCreateNestedManyWithoutEventTypeInput
-    calendarSelect: CalendarSelectCreateNestedOneWithoutEventTypesInput
-    customer: CustomerCreateNestedOneWithoutEventTypesInput
-    groupMeetings?: GroupMeetingCreateNestedManyWithoutEventTypeInput
-  }
-
-  export type EventTypeUncheckedCreateWithoutEventSelectsInput = {
-    id?: number
-    name: string
-    userId: number
-    description: string
-    price: number
-    timeDuration: number
-    calendarSelectId: number
-    customerId: number
-    status: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    eventTypeOnLocations?: EventTypeOnLocationUncheckedCreateNestedManyWithoutEventTypeInput
-    availabilitySchedules?: AvailabilityScheduleUncheckedCreateNestedManyWithoutEventTypeInput
-    weekDays?: WeekDayUncheckedCreateNestedManyWithoutEventTypeInput
-    groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutEventTypeInput
-  }
-
-  export type EventTypeCreateOrConnectWithoutEventSelectsInput = {
-    where: EventTypeWhereUniqueInput
-    create: XOR<EventTypeCreateWithoutEventSelectsInput, EventTypeUncheckedCreateWithoutEventSelectsInput>
-  }
-
-  export type CustomerCreateWithoutEventSelectsInput = {
-    name: string
-    email: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    eventTypes?: EventTypeCreateNestedManyWithoutCustomerInput
-    groupMeetings?: GroupMeetingCreateNestedManyWithoutCustomerInput
-  }
-
-  export type CustomerUncheckedCreateWithoutEventSelectsInput = {
-    id?: number
-    name: string
-    email: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    eventTypes?: EventTypeUncheckedCreateNestedManyWithoutCustomerInput
-    groupMeetings?: GroupMeetingUncheckedCreateNestedManyWithoutCustomerInput
-  }
-
-  export type CustomerCreateOrConnectWithoutEventSelectsInput = {
-    where: CustomerWhereUniqueInput
-    create: XOR<CustomerCreateWithoutEventSelectsInput, CustomerUncheckedCreateWithoutEventSelectsInput>
-  }
-
-  export type EventTypeUpsertWithoutEventSelectsInput = {
-    update: XOR<EventTypeUpdateWithoutEventSelectsInput, EventTypeUncheckedUpdateWithoutEventSelectsInput>
-    create: XOR<EventTypeCreateWithoutEventSelectsInput, EventTypeUncheckedCreateWithoutEventSelectsInput>
-  }
-
-  export type EventTypeUpdateWithoutEventSelectsInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
-    price?: IntFieldUpdateOperationsInput | number
-    timeDuration?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
-    eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
-    availabilitySchedules?: AvailabilityScheduleUpdateManyWithoutEventTypeNestedInput
-    weekDays?: WeekDayUpdateManyWithoutEventTypeNestedInput
-    calendarSelect?: CalendarSelectUpdateOneRequiredWithoutEventTypesNestedInput
-    customer?: CustomerUpdateOneRequiredWithoutEventTypesNestedInput
-    groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
-  }
-
-  export type EventTypeUncheckedUpdateWithoutEventSelectsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    userId?: IntFieldUpdateOperationsInput | number
-    description?: StringFieldUpdateOperationsInput | string
-    price?: IntFieldUpdateOperationsInput | number
-    timeDuration?: IntFieldUpdateOperationsInput | number
-    calendarSelectId?: IntFieldUpdateOperationsInput | number
-    customerId?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
-    availabilitySchedules?: AvailabilityScheduleUncheckedUpdateManyWithoutEventTypeNestedInput
-    weekDays?: WeekDayUncheckedUpdateManyWithoutEventTypeNestedInput
-    groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
-  }
-
-  export type CustomerUpsertWithoutEventSelectsInput = {
-    update: XOR<CustomerUpdateWithoutEventSelectsInput, CustomerUncheckedUpdateWithoutEventSelectsInput>
-    create: XOR<CustomerCreateWithoutEventSelectsInput, CustomerUncheckedCreateWithoutEventSelectsInput>
-  }
-
-  export type CustomerUpdateWithoutEventSelectsInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    eventTypes?: EventTypeUpdateManyWithoutCustomerNestedInput
-    groupMeetings?: GroupMeetingUpdateManyWithoutCustomerNestedInput
-  }
-
-  export type CustomerUncheckedUpdateWithoutEventSelectsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    eventTypes?: EventTypeUncheckedUpdateManyWithoutCustomerNestedInput
-    groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type UserCreateWithoutUserOnGroupMeetingsInput = {
@@ -20551,9 +20071,7 @@ export namespace Prisma {
     description: string
     price: number
     timeDuration: number
-    calendarSelectId: number
-    customerId: number
-    status: string
+    availabilityScheduleId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -20579,16 +20097,12 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     price?: IntFieldUpdateOperationsInput | number
     timeDuration?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
-    availabilitySchedules?: AvailabilityScheduleUpdateManyWithoutEventTypeNestedInput
-    weekDays?: WeekDayUpdateManyWithoutEventTypeNestedInput
-    calendarSelect?: CalendarSelectUpdateOneRequiredWithoutEventTypesNestedInput
-    customer?: CustomerUpdateOneRequiredWithoutEventTypesNestedInput
+    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutEventTypesNestedInput
+    dateSlots?: DateSlotUpdateManyWithoutEventTypeNestedInput
     groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
-    eventSelects?: EventSelectUpdateManyWithoutEventTypeNestedInput
   }
 
   export type EventTypeUncheckedUpdateWithoutUserInput = {
@@ -20597,16 +20111,12 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     price?: IntFieldUpdateOperationsInput | number
     timeDuration?: IntFieldUpdateOperationsInput | number
-    calendarSelectId?: IntFieldUpdateOperationsInput | number
-    customerId?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
+    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
-    availabilitySchedules?: AvailabilityScheduleUncheckedUpdateManyWithoutEventTypeNestedInput
-    weekDays?: WeekDayUncheckedUpdateManyWithoutEventTypeNestedInput
+    dateSlots?: DateSlotUncheckedUpdateManyWithoutEventTypeNestedInput
     groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
-    eventSelects?: EventSelectUncheckedUpdateManyWithoutEventTypeNestedInput
   }
 
   export type EventTypeUncheckedUpdateManyWithoutEventTypesInput = {
@@ -20615,9 +20125,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     price?: IntFieldUpdateOperationsInput | number
     timeDuration?: IntFieldUpdateOperationsInput | number
-    calendarSelectId?: IntFieldUpdateOperationsInput | number
-    customerId?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
+    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -20675,21 +20183,12 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
-  export type AvailabilityScheduleCreateManyEventTypeInput = {
+  export type DateSlotCreateManyEventTypeInput = {
     id?: number
-    name: string
-    timezone: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type WeekDayCreateManyEventTypeInput = {
-    id?: number
-    day: number
     availabilityScheduleId?: number | null
-    timeSelectId: number
-    status: string
-    date: Date | string
+    name: Date | string
+    custormerId?: number | null
+    dayName: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -20700,16 +20199,6 @@ export namespace Prisma {
     customerId: number
     totalPrice: number
     timezone: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type EventSelectCreateManyEventTypeInput = {
-    id?: number
-    customerId: number
-    selectDate: string
-    selectTime: Date | string
-    status: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -20734,59 +20223,33 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type AvailabilityScheduleUpdateWithoutEventTypeInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    timezone?: StringFieldUpdateOperationsInput | string
+  export type DateSlotUpdateWithoutEventTypeInput = {
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    weekDays?: WeekDayUpdateManyWithoutAvailabilityScheduleNestedInput
+    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutDateSlotsNestedInput
+    custormer?: CustomerUpdateOneWithoutDateSlotsNestedInput
+    daySlot?: DaySlotUpdateOneRequiredWithoutDateSlotsNestedInput
+    dateOnTimeSlots?: DateOnTimeSlotUpdateManyWithoutDateSlotNestedInput
   }
 
-  export type AvailabilityScheduleUncheckedUpdateWithoutEventTypeInput = {
+  export type DateSlotUncheckedUpdateWithoutEventTypeInput = {
     id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    timezone?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    weekDays?: WeekDayUncheckedUpdateManyWithoutAvailabilityScheduleNestedInput
-  }
-
-  export type AvailabilityScheduleUncheckedUpdateManyWithoutAvailabilitySchedulesInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    timezone?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type WeekDayUpdateWithoutEventTypeInput = {
-    day?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutWeekDaysNestedInput
-    timeSelect?: TimeSelectUpdateOneRequiredWithoutWeekDaysNestedInput
-  }
-
-  export type WeekDayUncheckedUpdateWithoutEventTypeInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    day?: IntFieldUpdateOperationsInput | number
     availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    timeSelectId?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
+    custormerId?: NullableIntFieldUpdateOperationsInput | number | null
+    dayName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dateOnTimeSlots?: DateOnTimeSlotUncheckedUpdateManyWithoutDateSlotNestedInput
   }
 
-  export type WeekDayUncheckedUpdateManyWithoutWeekDaysInput = {
+  export type DateSlotUncheckedUpdateManyWithoutDateSlotsInput = {
     id?: IntFieldUpdateOperationsInput | number
-    day?: IntFieldUpdateOperationsInput | number
     availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    timeSelectId?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
+    custormerId?: NullableIntFieldUpdateOperationsInput | number | null
+    dayName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -20818,35 +20281,6 @@ export namespace Prisma {
     customerId?: IntFieldUpdateOperationsInput | number
     totalPrice?: IntFieldUpdateOperationsInput | number
     timezone?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type EventSelectUpdateWithoutEventTypeInput = {
-    selectDate?: StringFieldUpdateOperationsInput | string
-    selectTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    customer?: CustomerUpdateOneRequiredWithoutEventSelectsNestedInput
-  }
-
-  export type EventSelectUncheckedUpdateWithoutEventTypeInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    customerId?: IntFieldUpdateOperationsInput | number
-    selectDate?: StringFieldUpdateOperationsInput | string
-    selectTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type EventSelectUncheckedUpdateManyWithoutEventSelectsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    customerId?: IntFieldUpdateOperationsInput | number
-    selectDate?: StringFieldUpdateOperationsInput | string
-    selectTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -20902,81 +20336,158 @@ export namespace Prisma {
     userOnGroupMeetings?: UserOnGroupMeetingUncheckedUpdateManyWithoutGroupMeetingNestedInput
   }
 
-  export type WeekDayCreateManyAvailabilityScheduleInput = {
-    id?: number
-    day: number
-    timeSelectId: number
-    eventTypeId?: number | null
-    status: string
-    date: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type WeekDayUpdateWithoutAvailabilityScheduleInput = {
-    day?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    timeSelect?: TimeSelectUpdateOneRequiredWithoutWeekDaysNestedInput
-    eventType?: EventTypeUpdateOneWithoutWeekDaysNestedInput
-  }
-
-  export type WeekDayUncheckedUpdateWithoutAvailabilityScheduleInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    day?: IntFieldUpdateOperationsInput | number
-    timeSelectId?: IntFieldUpdateOperationsInput | number
-    eventTypeId?: NullableIntFieldUpdateOperationsInput | number | null
-    status?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type WeekDayCreateManyTimeSelectInput = {
-    id?: number
-    day: number
-    availabilityScheduleId?: number | null
-    eventTypeId?: number | null
-    status: string
-    date: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type WeekDayUpdateWithoutTimeSelectInput = {
-    day?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutWeekDaysNestedInput
-    eventType?: EventTypeUpdateOneWithoutWeekDaysNestedInput
-  }
-
-  export type WeekDayUncheckedUpdateWithoutTimeSelectInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    day?: IntFieldUpdateOperationsInput | number
-    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
-    eventTypeId?: NullableIntFieldUpdateOperationsInput | number | null
-    status?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type EventTypeCreateManyCustomerInput = {
+  export type EventTypeCreateManyAvailabilityScheduleInput = {
     id?: number
     name: string
     userId: number
     description: string
     price: number
     timeDuration: number
-    calendarSelectId: number
-    status: string
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type DateSlotCreateManyAvailabilityScheduleInput = {
+    id?: number
+    name: Date | string
+    custormerId?: number | null
+    eventId: number
+    dayName: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EventTypeUpdateWithoutAvailabilityScheduleInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
+    eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
+    dateSlots?: DateSlotUpdateManyWithoutEventTypeNestedInput
+    groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
+  }
+
+  export type EventTypeUncheckedUpdateWithoutAvailabilityScheduleInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    userId?: IntFieldUpdateOperationsInput | number
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    timeDuration?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
+    dateSlots?: DateSlotUncheckedUpdateManyWithoutEventTypeNestedInput
+    groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
+  }
+
+  export type DateSlotUpdateWithoutAvailabilityScheduleInput = {
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    custormer?: CustomerUpdateOneWithoutDateSlotsNestedInput
+    eventType?: EventTypeUpdateOneRequiredWithoutDateSlotsNestedInput
+    daySlot?: DaySlotUpdateOneRequiredWithoutDateSlotsNestedInput
+    dateOnTimeSlots?: DateOnTimeSlotUpdateManyWithoutDateSlotNestedInput
+  }
+
+  export type DateSlotUncheckedUpdateWithoutAvailabilityScheduleInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
+    custormerId?: NullableIntFieldUpdateOperationsInput | number | null
+    eventId?: IntFieldUpdateOperationsInput | number
+    dayName?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dateOnTimeSlots?: DateOnTimeSlotUncheckedUpdateManyWithoutDateSlotNestedInput
+  }
+
+  export type DateSlotCreateManyDaySlotInput = {
+    id?: number
+    availabilityScheduleId?: number | null
+    name: Date | string
+    custormerId?: number | null
+    eventId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DateSlotUpdateWithoutDaySlotInput = {
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutDateSlotsNestedInput
+    custormer?: CustomerUpdateOneWithoutDateSlotsNestedInput
+    eventType?: EventTypeUpdateOneRequiredWithoutDateSlotsNestedInput
+    dateOnTimeSlots?: DateOnTimeSlotUpdateManyWithoutDateSlotNestedInput
+  }
+
+  export type DateSlotUncheckedUpdateWithoutDaySlotInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
+    custormerId?: NullableIntFieldUpdateOperationsInput | number | null
+    eventId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dateOnTimeSlots?: DateOnTimeSlotUncheckedUpdateManyWithoutDateSlotNestedInput
+  }
+
+  export type DateOnTimeSlotCreateManyDateSlotInput = {
+    id?: number
+    timeSlotId: number
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DateOnTimeSlotUpdateWithoutDateSlotInput = {
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeSlot?: TimeSlotUpdateOneRequiredWithoutDateOnTimeSlotsNestedInput
+  }
+
+  export type DateOnTimeSlotUncheckedUpdateWithoutDateSlotInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    timeSlotId?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DateOnTimeSlotUncheckedUpdateManyWithoutDateOnTimeSlotsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    timeSlotId?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DateOnTimeSlotCreateManyTimeSlotInput = {
+    id?: number
+    dateSlotId: number
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DateOnTimeSlotUpdateWithoutTimeSlotInput = {
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dateSlot?: DateSlotUpdateOneRequiredWithoutDateOnTimeSlotsNestedInput
+  }
+
+  export type DateOnTimeSlotUncheckedUpdateWithoutTimeSlotInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    dateSlotId?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type GroupMeetingCreateManyCustomerInput = {
@@ -20989,49 +20500,14 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
-  export type EventSelectCreateManyCustomerInput = {
+  export type DateSlotCreateManyCustormerInput = {
     id?: number
-    eventTypeId: number
-    selectDate: string
-    selectTime: Date | string
-    status: string
+    availabilityScheduleId?: number | null
+    name: Date | string
+    eventId: number
+    dayName: string
     createdAt?: Date | string
     updatedAt?: Date | string
-  }
-
-  export type EventTypeUpdateWithoutCustomerInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
-    price?: IntFieldUpdateOperationsInput | number
-    timeDuration?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
-    eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
-    availabilitySchedules?: AvailabilityScheduleUpdateManyWithoutEventTypeNestedInput
-    weekDays?: WeekDayUpdateManyWithoutEventTypeNestedInput
-    calendarSelect?: CalendarSelectUpdateOneRequiredWithoutEventTypesNestedInput
-    groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
-    eventSelects?: EventSelectUpdateManyWithoutEventTypeNestedInput
-  }
-
-  export type EventTypeUncheckedUpdateWithoutCustomerInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    userId?: IntFieldUpdateOperationsInput | number
-    description?: StringFieldUpdateOperationsInput | string
-    price?: IntFieldUpdateOperationsInput | number
-    timeDuration?: IntFieldUpdateOperationsInput | number
-    calendarSelectId?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
-    availabilitySchedules?: AvailabilityScheduleUncheckedUpdateManyWithoutEventTypeNestedInput
-    weekDays?: WeekDayUncheckedUpdateManyWithoutEventTypeNestedInput
-    groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
-    eventSelects?: EventSelectUncheckedUpdateManyWithoutEventTypeNestedInput
   }
 
   export type GroupMeetingUpdateWithoutCustomerInput = {
@@ -21055,71 +20531,25 @@ export namespace Prisma {
     userOnGroupMeetings?: UserOnGroupMeetingUncheckedUpdateManyWithoutGroupMeetingNestedInput
   }
 
-  export type EventSelectUpdateWithoutCustomerInput = {
-    selectDate?: StringFieldUpdateOperationsInput | string
-    selectTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
+  export type DateSlotUpdateWithoutCustormerInput = {
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    eventType?: EventTypeUpdateOneRequiredWithoutEventSelectsNestedInput
+    availabilitySchedule?: AvailabilityScheduleUpdateOneWithoutDateSlotsNestedInput
+    eventType?: EventTypeUpdateOneRequiredWithoutDateSlotsNestedInput
+    daySlot?: DaySlotUpdateOneRequiredWithoutDateSlotsNestedInput
+    dateOnTimeSlots?: DateOnTimeSlotUpdateManyWithoutDateSlotNestedInput
   }
 
-  export type EventSelectUncheckedUpdateWithoutCustomerInput = {
+  export type DateSlotUncheckedUpdateWithoutCustormerInput = {
     id?: IntFieldUpdateOperationsInput | number
-    eventTypeId?: IntFieldUpdateOperationsInput | number
-    selectDate?: StringFieldUpdateOperationsInput | string
-    selectTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
+    availabilityScheduleId?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventId?: IntFieldUpdateOperationsInput | number
+    dayName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type EventTypeCreateManyCalendarSelectInput = {
-    id?: number
-    name: string
-    userId: number
-    description: string
-    price: number
-    timeDuration: number
-    customerId: number
-    status: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type EventTypeUpdateWithoutCalendarSelectInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
-    price?: IntFieldUpdateOperationsInput | number
-    timeDuration?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutEventTypesNestedInput
-    eventTypeOnLocations?: EventTypeOnLocationUpdateManyWithoutEventTypeNestedInput
-    availabilitySchedules?: AvailabilityScheduleUpdateManyWithoutEventTypeNestedInput
-    weekDays?: WeekDayUpdateManyWithoutEventTypeNestedInput
-    customer?: CustomerUpdateOneRequiredWithoutEventTypesNestedInput
-    groupMeetings?: GroupMeetingUpdateManyWithoutEventTypeNestedInput
-    eventSelects?: EventSelectUpdateManyWithoutEventTypeNestedInput
-  }
-
-  export type EventTypeUncheckedUpdateWithoutCalendarSelectInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    userId?: IntFieldUpdateOperationsInput | number
-    description?: StringFieldUpdateOperationsInput | string
-    price?: IntFieldUpdateOperationsInput | number
-    timeDuration?: IntFieldUpdateOperationsInput | number
-    customerId?: IntFieldUpdateOperationsInput | number
-    status?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    eventTypeOnLocations?: EventTypeOnLocationUncheckedUpdateManyWithoutEventTypeNestedInput
-    availabilitySchedules?: AvailabilityScheduleUncheckedUpdateManyWithoutEventTypeNestedInput
-    weekDays?: WeekDayUncheckedUpdateManyWithoutEventTypeNestedInput
-    groupMeetings?: GroupMeetingUncheckedUpdateManyWithoutEventTypeNestedInput
-    eventSelects?: EventSelectUncheckedUpdateManyWithoutEventTypeNestedInput
+    dateOnTimeSlots?: DateOnTimeSlotUncheckedUpdateManyWithoutDateSlotNestedInput
   }
 
   export type UserOnGroupMeetingCreateManyGroupMeetingInput = {
