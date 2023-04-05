@@ -10,7 +10,7 @@ const routes_1 = require("./routes");
 const app = (0, express_1.default)();
 const corsOptions = {
     // origin: ["http://localhost:3000", "https://karentoroku-api.vercel.app"],
-    origin: false,
+    origin: true,
     optionsSuccessStatus: 200,
 };
 app.use(express_1.default.json());
